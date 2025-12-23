@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 
 class LoadingOrShowMsg extends StatelessWidget {
   final String? msg;
-  const LoadingOrShowMsg({super.key, this.msg});
+  final Color backgroundColor;
+  const LoadingOrShowMsg({
+    super.key,
+    this.msg,
+    this.backgroundColor = Colors.transparent,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      color: backgroundColor,
       child: Center(
         child: msg == null || msg!.isEmpty
             ? const CircularProgressIndicator()

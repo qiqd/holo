@@ -78,7 +78,7 @@ class MeidaCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
-                        maxLines: 2,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
                       // 初始名称
@@ -89,7 +89,7 @@ class MeidaCard extends StatelessWidget {
                             color: Colors.grey,
                             fontSize: 14,
                           ),
-                          maxLines: 2,
+                          maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
                     ],
@@ -105,11 +105,12 @@ class MeidaCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
+                  // 类型
                   if (genre != null)
                     Text(
                       genre!,
                       style: const TextStyle(color: Colors.blue, fontSize: 12),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   Row(

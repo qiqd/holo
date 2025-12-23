@@ -42,8 +42,9 @@ class _DetailScreenState extends State<DetailScreen>
   );
   String _msg = "";
   Media? defaultMedia;
-
   SourceService? defaultSource;
+  bool isSubscribed = false;
+
   void _fetchSubjec() async {
     final res = await Api.bangumi.fetchSubjectSync(widget.id, (e) {
       setState(() {
@@ -119,6 +120,9 @@ class _DetailScreenState extends State<DetailScreen>
     });
   }
 
+  void subscribeHandle() async {
+    //todo 订阅处理
+  }
   @override
   void initState() {
     super.initState();
@@ -154,8 +158,26 @@ class _DetailScreenState extends State<DetailScreen>
         child: const Icon(Icons.play_arrow_rounded),
       ),
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_rounded),
+          onPressed: () {
+            context.pop(context);
+          },
+        ),
         title: const Text('详情'),
         actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                isSubscribed = !isSubscribed;
+              });
+            },
+            icon: Icon(
+              isSubscribed
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
+            ),
+          ),
           IconButton(
             onPressed: () {
               if (isLoading) {

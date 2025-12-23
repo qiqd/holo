@@ -55,13 +55,16 @@ class _PlayerScreenState extends State<PlayerScreen>
       final res = await source.fetchDetail(
         mediaId,
         (e) => setState(() {
+          log("fetchDetail1 error: $e");
           msg = e.toString();
         }),
       );
+
       setState(() {
         _detail = res;
       });
     } catch (e) {
+      log("fetchDetail2 error: $e");
       setState(() {
         msg = e.toString();
       });
@@ -71,26 +74,32 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _fetchViewInfo() async {
+    msg = "";
     isloading = true;
     try {
       if (_detail != null) {
+        await _controller?.pause();
+        await _controller?.dispose();
+        _controller = null;
         final newUrl = await source.fetchView(
           _detail!.lines![lineIndex].episodes![episodeIndex],
           (e) => setState(() {
-            msg = e.toString();
+            log("fetchView error: $e");
+            msg = "无法获取播放地址,换条路线试试";
           }),
         );
-        if (mounted) {
-          setState(() {
-            _controller = VideoPlayerController.networkUrl(Uri.parse(newUrl!));
-            _controller?.initialize().then((_) {
-              setState(() {});
-              _controller?.play();
-            });
-          });
-        }
+
+        final newController = VideoPlayerController.networkUrl(
+          Uri.parse(newUrl ?? ""),
+        );
+        await newController.initialize();
+        setState(() {
+          _controller = newController;
+          _controller?.play();
+        });
       }
     } catch (e) {
+      log("fetchView error: $e");
       setState(() {
         msg = e.toString();
       });
@@ -103,6 +112,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     setState(() {
       lineIndex = index;
     });
+    _fetchViewInfo();
   }
 
   void _onEpisodeSelected(int index) {
@@ -114,6 +124,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   void _fetchEpisode() async {
     final newSubject = await Api.bangumi.fetchSearchSync(nameCn, (e) {
+      log("fetchSearchSync error: $e");
       setState(() {
         msg = e.toString();
       });
@@ -131,7 +142,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     final res = await Api.bangumi.fethcEpisodeSync(
       subjectId!,
       (e) => setState(() {
-        log(e.toString());
+        log("fetchEpisode error: $e");
         msg = e.toString();
       }),
     );
@@ -142,9 +153,9 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void initState() {
-    super.initState();
     _fetchEpisode();
     _fetchMediaEpisode().then((value) => _fetchViewInfo());
+    super.initState();
   }
 
   @override
@@ -165,82 +176,157 @@ class _PlayerScreenState extends State<PlayerScreen>
           child: _isFullScreen
               ? Center(
                   child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: _controller != null
+                    aspectRatio: _controller == null
+                        ? 16 / 9
+                        : _controller!.value.aspectRatio,
+                    child: _controller != null && !isloading
                         ? CapVideoPlayer(
                             title: widget.nameCn,
                             isloading: isloading,
                             controller: _controller!,
                             isFullScreen: _isFullScreen,
+                            onNextTab: () {
+                              if (isloading ||
+                                  episodeIndex + 1 >
+                                      _detail!
+                                              .lines![lineIndex]
+                                              .episodes!
+                                              .length -
+                                          1) {
+                                return;
+                              }
+                              setState(() {
+                                ++episodeIndex;
+                              });
+                              _fetchViewInfo();
+                            },
                             onFullScreenChanged: (isFullScreen) {
                               setState(() {
                                 _isFullScreen = isFullScreen;
                               });
                             },
                           )
-                        : LoadingOrShowMsg(msg: msg),
+                        : LoadingOrShowMsg(
+                            msg: msg,
+                            backgroundColor: Colors.black,
+                          ),
                   ),
                 )
               : Column(
                   children: [
                     AspectRatio(
                       aspectRatio: 16 / 9,
-                      child: _controller != null
+                      child: _controller != null && !isloading
                           ? CapVideoPlayer(
                               title: widget.nameCn,
                               isloading: isloading,
                               controller: _controller!,
                               isFullScreen: _isFullScreen,
+                              onNextTab: () {
+                                if (isloading ||
+                                    episodeIndex + 1 >
+                                        _detail!
+                                                .lines![lineIndex]
+                                                .episodes!
+                                                .length -
+                                            1) {
+                                  return;
+                                }
+                                setState(() {
+                                  ++episodeIndex;
+                                });
+                                _fetchViewInfo();
+                              },
                               onFullScreenChanged: (isFullScreen) {
                                 setState(() {
                                   _isFullScreen = isFullScreen;
                                 });
                               },
                             )
-                          : LoadingOrShowMsg(msg: msg),
+                          : LoadingOrShowMsg(
+                              msg: msg,
+                              backgroundColor: Colors.black,
+                            ),
                     ),
                     Expanded(
                       child: Column(
                         children: [
-                          TabBar(
-                            controller: _tabController,
-                            tabs: [
-                              Tab(text: "评论"),
-                              Tab(text: "选集"),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TabBar(
+                                  dividerColor: Colors.transparent,
+                                  isScrollable: true,
+                                  tabAlignment: TabAlignment.start,
+                                  padding: EdgeInsets.all(0),
+                                  controller: _tabController,
+                                  tabs: [
+                                    Tab(text: "评论"),
+                                    Tab(text: "选集"),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(right: 20),
+                                child: PopupMenuButton(
+                                  child: Text('路线选择'),
+                                  itemBuilder: (context) => [
+                                    ...List.generate(
+                                      _detail?.lines?.length ?? 1,
+                                      (index) => PopupMenuItem(
+                                        value: index,
+                                        child: Text('路线${index + 1}'),
+                                        onTap: () {
+                                          if (index == lineIndex || isloading) {
+                                            return;
+                                          }
+                                          _onLineSelected(index);
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
+
                           Expanded(
                             child: TabBarView(
                               controller: _tabController,
                               children: [
                                 Container(),
                                 Container(
-                                  child: GridView.builder(
-                                    itemCount: _episode?.data?.length,
-                                    padding: EdgeInsets.all(6),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                          mainAxisSpacing: 6,
-                                          crossAxisSpacing: 6,
-                                          crossAxisCount: 3,
-                                          childAspectRatio: 1.6,
-                                        ),
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                    itemCount: _episode?.data?.length ?? 0,
+                                    itemBuilder: (itemBuilder, index) {
+                                      return Column(
+                                        children: [
+                                          ListTile(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            selected: episodeIndex == index,
+                                            onTap: () {
+                                              if (episodeIndex == index ||
+                                                  isloading) {
+                                                return;
+                                              }
+                                              _onEpisodeSelected(index);
+                                            },
+                                            subtitle: Text(
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              _episode?.data?[index].nameCn ??
+                                                  "暂无剧集名称",
+                                            ),
+                                            title: Text((index + 1).toString()),
                                           ),
-                                        ),
-                                        selected: episodeIndex == index,
-                                        onTap: () {
-                                          _onEpisodeSelected(index);
-                                        },
-                                        subtitle: Text(
-                                          _episode?.data?[index].nameCn ??
-                                              "暂无剧集名称",
-                                        ),
-                                        title: Text((index + 1).toString()),
+                                          Divider(height: 6),
+                                        ],
                                       );
                                     },
                                   ),

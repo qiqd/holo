@@ -1,0 +1,97 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile_mikufans/entity/calendar.dart';
+import 'package:mobile_mikufans/service/api.dart';
+import 'package:mobile_mikufans/ui/component/loading_msg.dart';
+import 'package:mobile_mikufans/ui/component/media_grid.dart';
+
+class CalendarScreen extends StatefulWidget {
+  const CalendarScreen({super.key});
+
+  @override
+  State<CalendarScreen> createState() => _CalendarScreenState();
+}
+
+class _CalendarScreenState extends State<CalendarScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController = TabController(
+    vsync: this,
+    length: 7,
+  );
+  List<Calendar> _calendar = [];
+  String? _msg;
+  final List<String> _weekdays = [' 一', ' 二', ' 三', ' 四', ' 五', ' 六', ' 日'];
+  void _fetchCalendar() async {
+    final calendar = await Api.bangumi.fetchCalendarSync(
+      (e) => setState(() {
+        _msg = e.toString();
+      }),
+    );
+    setState(() {
+      _calendar = calendar;
+    });
+  }
+
+  @override
+  void initState() {
+    _fetchCalendar();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('周更表')),
+      body: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            tabs: List.generate(7, (index) => Tab(text: _weekdays[index])),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: List.generate(7, (index) {
+                return _calendar.isEmpty
+                    ? LoadingOrShowMsg(msg: _msg)
+                    : GridView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: _calendar[index].items?.length ?? 0,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                          childAspectRatio: 0.6,
+                        ),
+                        itemBuilder: (context, itemIndex) {
+                          final item = _calendar[index].items;
+                          return MediaGrid(
+                            id: item![itemIndex].id ?? 0,
+                            rating:
+                                item[itemIndex].rating?.score?.toDouble() ?? 0,
+                            imageUrl: item[itemIndex].images?.large ?? '',
+                            title:
+                                item[itemIndex].nameCn ??
+                                item[itemIndex].name ??
+                                '',
+                            onTap: () => context.push(
+                              '/detail',
+                              extra: {
+                                'id': item[itemIndex].id!,
+                                'keyword':
+                                    item[itemIndex].nameCn ??
+                                    item[itemIndex].name ??
+                                    "",
+                              },
+                            ),
+                          );
+                        },
+                      );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

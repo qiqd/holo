@@ -10,6 +10,6 @@ class SubscribeScreen extends StatefulWidget {
 class _SubscribeScreenState extends State<SubscribeScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Placeholder(child: Text('SubscribeScreen'));
   }
 }

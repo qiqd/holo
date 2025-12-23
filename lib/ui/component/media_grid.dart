@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class MediaGrid extends StatelessWidget {
@@ -18,6 +19,7 @@ class MediaGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      borderRadius: BorderRadius.circular(10),
       onTap: () => onTap?.call(),
       child: Column(
         children: [
@@ -26,17 +28,16 @@ class MediaGrid extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
+                  child: CachedNetworkImage(
                     width: double.infinity,
                     height: double.infinity,
                     fit: BoxFit.cover,
-                    imageUrl!,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.broken_image),
-                    loadingBuilder: (context, child, loadingProgress) =>
-                        loadingProgress == null
-                        ? child
-                        : const CircularProgressIndicator(),
+                    memCacheHeight: 1000,
+                    memCacheWidth: 800,
+                    imageUrl: imageUrl!,
+                    placeholder: (context, url) =>
+                        Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),
                 if (rating != null)

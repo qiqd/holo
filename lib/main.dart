@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_mikufans/service/source_service.dart';
 
 import 'package:mobile_mikufans/service/util/store_util.dart';
+import 'package:mobile_mikufans/ui/screen/calendar.dart';
 import 'package:mobile_mikufans/ui/screen/detail.dart';
 import 'package:mobile_mikufans/ui/screen/history.dart';
 import 'package:mobile_mikufans/ui/screen/home.dart';
@@ -43,16 +44,16 @@ class _MyAppState extends State<MyApp> {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/subscribe',
-                builder: (context, state) => SubscribeScreen(),
+                path: '/calendar',
+                builder: (context, state) => CalendarScreen(),
               ),
             ],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/history',
-                builder: (context, state) => HistoryScreen(),
+                path: '/subscribe',
+                builder: (context, state) => SubscribeScreen(),
               ),
             ],
           ),
@@ -103,11 +104,11 @@ class _MyAppState extends State<MyApp> {
           themeMode: ThemeMode.system,
           theme: ThemeData(
             brightness: Brightness.light,
-            colorSchemeSeed: const Color(0xfffb739a),
+            colorSchemeSeed: const Color(0xffd08b57),
             useMaterial3: true,
           ),
           darkTheme: ThemeData(
-            colorSchemeSeed: const Color(0xfffb739a),
+            colorSchemeSeed: const Color(0xffd08b57),
             brightness: Brightness.dark,
             useMaterial3: true,
           ),
@@ -124,8 +125,8 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final router = GoRouter.of(context);
-    var currentPath = router.routerDelegate.currentConfiguration.uri.toString();
+    // final router = GoRouter.of(context);
+    // var currentPath = router.routerDelegate.currentConfiguration.uri.toString();
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Theme.of(context).colorScheme.primary,
@@ -136,12 +137,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.subscriptions_rounded),
-            label: 'Subscribe',
+            icon: Icon(Icons.calendar_month_rounded),
+            label: 'Calendar',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history_rounded),
-            label: 'History',
+            icon: Icon(Icons.subscriptions_rounded),
+            label: 'Subscribe',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings_rounded),
