@@ -1,0 +1,76 @@
+name: Build Flutter App
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - debug
+          - release
+          - profile
+
+jobs:
+  build-android:
+    name: Build Android APKs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.x'
+          cache: true
+      
+      - name: Install dependencies
+        run: flutter pub get
+      
+      - name: Build Android APKs for all architectures
+        run: |
+          flutter build apk --${{ github.event.inputs.build_type }} --split-per-abi
+      
+      - name: List built APKs
+        run: ls -la build/app/outputs/flutter-apk/
+      
+      - name: Upload Android APKs
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-apks
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 14
+
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.x'
+          cache: true
+      
+      - name: Install dependencies
+        run: flutter pub get
+      
+      - name: Build iOS IPA
+        run: |
+          flutter build ios --${{ github.event.inputs.build_type }} --no-codesign
+          mkdir -p build/ios/ipa
+          cd build/ios/Release-iphoneos
+          zip -r ../../ipa/Runner.ipa Runner.app
+      
+      - name: List built IPA
+        run: ls -la build/ios/ipa/
+      
+      - name: Upload iOS IPA
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-ipa
+          path: build/ios/ipa/*.ipa
+          retention-days: 14

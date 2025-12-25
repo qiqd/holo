@@ -126,7 +126,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('一个开源的动漫观看应用！'),
+              const Text('一个开源的追番APP！'),
               const SizedBox(height: 16),
               const Text('开源协议', style: TextStyle(fontWeight: FontWeight.bold)),
               const Text('AGPL-3.0 license'),
@@ -316,6 +316,10 @@ class _SetttingScreenState extends State<SetttingScreen> {
                   title: const Text('深色'),
                   onTap: () {
                     setState(() {
+                      LocalStore.setString(
+                        'theme_mode',
+                        currentTheme.toString(),
+                      );
                       MyApp.themeNotifier.value = currentTheme!;
                     });
                   },

@@ -64,9 +64,11 @@ class _PlayerScreenState extends State<PlayerScreen>
         }),
       );
 
-      setState(() {
-        _detail = res;
-      });
+      if (mounted) {
+        setState(() {
+          _detail = res;
+        });
+      }
     } catch (e) {
       log("fetchDetail2 error: $e");
       setState(() {
@@ -97,11 +99,13 @@ class _PlayerScreenState extends State<PlayerScreen>
           Uri.parse(newUrl ?? ""),
         );
         await newController.initialize();
-        setState(() {
-          _controller = newController;
-          _controller?.seekTo(Duration(seconds: position));
-          _controller?.play();
-        });
+        if (mounted) {
+          setState(() {
+            _controller = newController;
+            _controller?.seekTo(Duration(seconds: position));
+            _controller?.play();
+          });
+        }
       }
     } catch (e) {
       log("fetchView error: $e");
@@ -168,9 +172,11 @@ class _PlayerScreenState extends State<PlayerScreen>
         msg = e.toString();
       }),
     );
-    setState(() {
-      _episode = res;
-    });
+    if (mounted) {
+      setState(() {
+        _episode = res;
+      });
+    }
   }
 
   void _storeLocalHistory() {

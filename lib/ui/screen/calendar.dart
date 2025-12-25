@@ -35,6 +35,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   @override
   void initState() {
     _fetchCalendar();
+    _tabController.animateTo(DateTime.now().weekday - 1);
     super.initState();
   }
 

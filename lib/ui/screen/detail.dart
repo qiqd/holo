@@ -49,10 +49,12 @@ class _DetailScreenState extends State<DetailScreen>
         _msg = e.toString();
       });
     });
-    setState(() {
-      data = res;
-      _loadHistory();
-    });
+    if (mounted) {
+      setState(() {
+        data = res;
+        _loadHistory();
+      });
+    }
   }
 
   Future<void> _fetchMedia() async {
@@ -94,9 +96,11 @@ class _DetailScreenState extends State<DetailScreen>
         _msg = e.toString();
       });
     });
-    setState(() {
-      person = res;
-    });
+    if (mounted) {
+      setState(() {
+        person = res;
+      });
+    }
   }
 
   void _fetchCharacter() async {
@@ -105,9 +109,11 @@ class _DetailScreenState extends State<DetailScreen>
         _msg = e.toString();
       });
     });
-    setState(() {
-      character = res;
-    });
+    if (mounted) {
+      setState(() {
+        character = res;
+      });
+    }
   }
 
   void _fetchRelation() async {
@@ -116,9 +122,11 @@ class _DetailScreenState extends State<DetailScreen>
         _msg = e.toString();
       });
     });
-    setState(() {
-      relation = res;
-    });
+    if (mounted) {
+      setState(() {
+        relation = res;
+      });
+    }
   }
 
   void _loadHistory() {

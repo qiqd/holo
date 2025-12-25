@@ -101,6 +101,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
+      (element) => element.toString() == LocalStore.getString('theme_mode'),
+      orElse: () => ThemeMode.system,
+    );
     initSource();
   }
 
@@ -141,6 +145,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
     // var currentPath = router.routerDelegate.currentConfiguration.uri.toString();
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: false,
         selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
         items: const [
