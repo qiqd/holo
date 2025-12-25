@@ -62,8 +62,8 @@ jobs:
         run: |
           flutter build ios --${{ github.event.inputs.build_type }} --no-codesign
           mkdir -p build/ios/ipa
-          cd build/ios/Release-iphoneos
-          zip -r ../../ipa/Runner.ipa Runner.app
+          cd build/ios
+          zip -r ipa/Runner.ipa Release-iphoneos/Runner.app
       
       - name: List built IPA
         run: ls -la build/ios/ipa/
