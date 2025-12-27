@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_holo/api/record_api.dart';
 import 'package:mobile_holo/entity/history.dart';
-import 'package:mobile_holo/service/util/local_store.dart';
+import 'package:mobile_holo/util/local_store.dart';
 import 'package:mobile_holo/ui/component/loading_msg.dart';
 import 'package:mobile_holo/ui/component/media_grid.dart';
 import 'package:mobile_holo/ui/component/meida_card.dart';
@@ -23,24 +24,64 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     vsync: this,
     length: 2,
   );
+  void _fetchRecordFromServer() async {
+    final records = await RecordApi.fetchHistory((_) {});
+    setState(() {
+      histories = records;
+      subscribe = histories.where((history) => history.isLove).toList();
+    });
+  }
+
+  void _loadHistory() {
+    final allHistory = LocalStore.gerAllHistory();
+    histories = allHistory
+        .where((history) => history.isPlaybackHistory)
+        .toList();
+    subscribe = allHistory
+        .where((history) => !history.isPlaybackHistory && history.isLove)
+        .toList();
+    histories.sort((a, b) => b.lastViewAt!.compareTo(a.lastViewAt!));
+    subscribe.sort((a, b) => b.lastSubscribeAt!.compareTo(a.lastSubscribeAt!));
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
-    histories = LocalStore.gerAllHistory();
-    subscribe = histories.where((history) => history.isLove).toList();
+    // _fetchRecordFromServer();
+    _loadHistory();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('订阅')),
+      appBar: AppBar(
+        title: const Text('订阅'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: () {
+              if (LocalStore.getToken() == null) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("未配置ServerUrl,请先配置")));
+                return;
+              }
+              RecordApi.saveAllRecord(
+                (e) => ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(e.toString()))),
+              );
+            },
+          ),
+        ],
+      ),
+
       body: VisibilityDetector(
         key: const Key('subscribe_screen'),
         onVisibilityChanged: (visibilityInfo) {
           if (visibilityInfo.visibleFraction > 0) {
-            histories = LocalStore.gerAllHistory();
-            subscribe = histories.where((history) => history.isLove).toList();
-            setState(() {});
+            _loadHistory();
           }
         },
         child: Column(

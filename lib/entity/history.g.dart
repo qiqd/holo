@@ -17,6 +17,8 @@ History _$HistoryFromJson(Map<String, dynamic> json) => History(
   imgUrl: json['imgUrl'] as String,
   episodeIndex: (json['episodeIndex'] as num?)?.toInt() ?? 0,
   lineIndex: (json['lineIndex'] as num?)?.toInt() ?? 0,
+  isSync: json['isSync'] as bool? ?? false,
+  isPlaybackHistory: json['isHistory'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$HistoryToJson(History instance) => <String, dynamic>{
@@ -28,4 +30,6 @@ Map<String, dynamic> _$HistoryToJson(History instance) => <String, dynamic>{
   'isLove': instance.isLove,
   'episodeIndex': instance.episodeIndex,
   'lineIndex': instance.lineIndex,
+  'isSync': instance.isSync,
+  'isHistory': instance.isPlaybackHistory,
 };

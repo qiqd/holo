@@ -1,11 +1,14 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile_holo/api/record_api.dart';
 import 'package:mobile_holo/main.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:mobile_holo/service/util/local_store.dart';
+import 'package:mobile_holo/util/local_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class SetttingScreen extends StatefulWidget {
   const SetttingScreen({super.key});
@@ -16,7 +19,7 @@ class SetttingScreen extends StatefulWidget {
 
 class _SetttingScreenState extends State<SetttingScreen> {
   String _version = '';
-
+  String? _email;
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,27 @@ class _SetttingScreenState extends State<SetttingScreen> {
       appBar: AppBar(title: const Text('设置')),
       body: ListView(
         children: [
+          _buildSectionHeader('账户状态'),
+          VisibilityDetector(
+            key: const Key('account_info_section'),
+            child: ListTile(
+              leading: const Icon(Icons.account_circle_rounded),
+              title: Text(_email ?? '未登录'),
+              onTap: () => context.push('/sign'),
+            ),
+            onVisibilityChanged: (visibilityInfo) {
+              log('Visibility: ${visibilityInfo.visibleFraction}');
+              setState(() {
+                _email = LocalStore.getEmail();
+              });
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text('退出账号'),
+            subtitle: Text('退出当前账号,但是本地数据不会删除'),
+            onTap: () => _showSignoutAccountDialog(),
+          ),
           // 应用信息部分
           _buildSectionHeader('应用信息'),
           ListTile(
@@ -197,8 +221,8 @@ class _SetttingScreenState extends State<SetttingScreen> {
           ),
           TextButton(
             onPressed: () {
-              // 清除历史逻辑
               Navigator.pop(context);
+              RecordApi.deleteAllRecord((_) {});
               LocalStore.clearHistory();
               ScaffoldMessenger.of(
                 context,
@@ -365,6 +389,32 @@ class _SetttingScreenState extends State<SetttingScreen> {
               LocalStore.setString('theme_mode', currentTheme.toString());
               Navigator.pop(context);
               setState(() {});
+            },
+            child: const Text('确定'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSignoutAccountDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('退出账号'),
+        content: const Text('确定删除当前账号吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _email = null;
+              });
+              LocalStore.removeLocalAccount();
+              Navigator.pop(context);
             },
             child: const Text('确定'),
           ),

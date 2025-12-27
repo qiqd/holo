@@ -8,8 +8,8 @@ import 'package:mobile_holo/entity/media.dart';
 import 'package:mobile_holo/entity/subject.dart';
 import 'package:mobile_holo/service/api.dart';
 import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/service/util/jaro_winkler_similarity.dart';
-import 'package:mobile_holo/service/util/local_store.dart';
+import 'package:mobile_holo/util/jaro_winkler_similarity.dart';
+import 'package:mobile_holo/util/local_store.dart';
 import 'package:mobile_holo/ui/component/cap_video_player.dart';
 import 'package:mobile_holo/ui/component/loading_msg.dart';
 
@@ -20,12 +20,14 @@ class PlayerScreen extends StatefulWidget {
   final Data subject;
   final SourceService source;
   final String nameCn;
+  final bool isLove;
   const PlayerScreen({
     super.key,
     required this.mediaId,
     required this.subject,
     required this.source,
     required this.nameCn,
+    this.isLove = false,
   });
 
   @override

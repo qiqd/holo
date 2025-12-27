@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:html/parser.dart';
 import 'package:mobile_holo/entity/media.dart';
 import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/service/util/http_util.dart';
+import 'package:mobile_holo/util/http_util.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes.dart';
 import 'package:pointycastle/block/modes/cbc.dart';

@@ -5,8 +5,8 @@ import 'package:mobile_holo/service/impl/animation/mwcy.dart';
 import 'package:mobile_holo/service/impl/animation/senfen.dart';
 import 'package:mobile_holo/service/impl/meta/bangumi.dart';
 import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/service/util/dio_timing_extension.dart';
-import 'package:mobile_holo/service/util/http_util.dart';
+import 'package:mobile_holo/util/dio_timing_extension.dart';
+import 'package:mobile_holo/util/http_util.dart';
 
 class Api {
   static Bangumi bangumi = Bangumi();

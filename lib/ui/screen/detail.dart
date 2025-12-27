@@ -8,11 +8,10 @@ import 'package:mobile_holo/entity/subject.dart' show Data;
 import 'package:mobile_holo/entity/subject_relation.dart';
 import 'package:mobile_holo/service/api.dart';
 import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/service/util/jaro_winkler_similarity.dart';
-import 'package:mobile_holo/service/util/local_store.dart';
+import 'package:mobile_holo/util/jaro_winkler_similarity.dart';
+import 'package:mobile_holo/util/local_store.dart';
 import 'package:mobile_holo/ui/component/loading_msg.dart';
 import 'package:mobile_holo/ui/component/meida_card.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;
@@ -43,7 +42,7 @@ class _DetailScreenState extends State<DetailScreen>
   Media? defaultMedia;
   SourceService? defaultSource;
   bool isSubscribed = false;
-
+  History? _history;
   void _fetchSubjec() async {
     final res = await Api.bangumi.fetchSubjectSync(widget.id, (e) {
       setState(() {
@@ -129,7 +128,10 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _loadHistory() {
-    final history = LocalStore.getHistoryById(data!.id!);
+    final history = LocalStore.getHistoryById(
+      data!.id!,
+      isPlaybackHistory: false,
+    );
     if (mounted) {
       setState(() {
         isSubscribed = history?.isLove ?? false;
@@ -138,19 +140,19 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _storeLocalHistory() {
-    var history = LocalStore.getHistoryById(data!.id!);
-    if (history == null) {
-      history = History(
+    if (_history == null) {
+      _history = History(
         id: data!.id!,
         title: data!.nameCn!,
         imgUrl: data!.images?.large ?? "",
         isLove: isSubscribed,
       );
     } else {
-      history.isLove = isSubscribed;
-      history.lastViewAt = DateTime.now();
+      _history!.isLove = isSubscribed;
     }
-    LocalStore.addHistory(history);
+    _history!.lastSubscribeAt = DateTime.now();
+    _history!.isPlaybackHistory = false;
+    LocalStore.addHistory(_history!, isPlaybackHistory: false);
   }
 
   void subscribeHandle() {
@@ -197,6 +199,7 @@ class _DetailScreenState extends State<DetailScreen>
               "subject": data!,
               "source": defaultSource!,
               "nameCn": defaultMedia!.title!,
+              "isLove": isSubscribed,
             },
           );
         },
@@ -290,6 +293,8 @@ class _DetailScreenState extends State<DetailScreen>
                                                           context.push(
                                                             "/player",
                                                             extra: {
+                                                              "isLove":
+                                                                  isSubscribed,
                                                               "mediaId": m.id!,
                                                               "subject": data,
                                                               "source": e,

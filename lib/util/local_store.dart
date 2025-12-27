@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:mobile_holo/api/account_api.dart';
 import 'package:mobile_holo/entity/history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile_holo/api/record_api.dart' show RecordApi;
 
 class LocalStore {
   static const String _key = "holo_local_store";
@@ -9,32 +11,90 @@ class LocalStore {
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
+    AccountApi.initServer();
+    RecordApi.initServer();
   }
 
-  static void addHistory(History history) {
+  static String? getServerUrl() {
+    return _prefs!.getString("${_key}_server_url");
+  }
+
+  static void setServerUrl(String serverUrl) {
     if (_prefs == null) return;
-    var histories = _prefs!.getStringList(_key) ?? [];
-    List<History> historyList = histories
-        .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
-        .toList();
-    historyList.add(history);
+    _prefs!.setString("${_key}_server_url", serverUrl);
+  }
+
+  static String? getToken() {
+    return _prefs!.getString("${_key}_token");
+  }
+
+  static void setToken(String token) {
+    if (_prefs == null) return;
+    _prefs!.setString("${_key}_token", token);
+  }
+
+  static String? getEmail() {
+    return _prefs!.getString("${_key}_email");
+  }
+
+  static void setEmail(String email) {
+    if (_prefs == null) return;
+    _prefs!.setString("${_key}_email", email);
+  }
+
+  static void removeLocalAccount() {
+    if (_prefs == null) return;
+    _prefs!.remove("${_key}_token");
+    _prefs!.remove("${_key}_email");
+    _prefs!.remove("${_key}_server_url");
+  }
+
+  static void addHistory(History history, {bool isPlaybackHistory = true}) {
+    if (_prefs == null) return;
+    RecordApi.saveRecord(history, (_) => history.isSync = false);
     Map<int, History> idToHistory = {};
-    for (var item in historyList) {
-      if (!idToHistory.containsKey(item.id) ||
-          item.lastViewAt == null ||
-          item.lastViewAt!.isAfter(idToHistory[item.id]!.lastViewAt!)) {
-        idToHistory[item.id] = item;
+    if (isPlaybackHistory) {
+      var histories = _prefs!.getStringList("${_key}_playback") ?? [];
+      List<History> historyList = histories
+          .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
+          .toList();
+      historyList.add(history);
+      for (var item in historyList) {
+        if (!idToHistory.containsKey(item.id) ||
+            item.lastViewAt == null ||
+            item.lastViewAt!.isAfter(
+              idToHistory[item.id]!.lastViewAt ?? DateTime(1980),
+            )) {
+          idToHistory[item.id] = item;
+        }
+      }
+    } else {
+      var histories = _prefs!.getStringList("${_key}_subscribe") ?? [];
+      List<History> historyList = histories
+          .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
+          .toList();
+      historyList.add(history);
+      for (var item in historyList) {
+        if (!idToHistory.containsKey(item.id) ||
+            item.lastSubscribeAt == null ||
+            item.lastSubscribeAt!.isAfter(
+              idToHistory[item.id]!.lastSubscribeAt ?? DateTime(1980),
+            )) {
+          idToHistory[item.id] = item;
+        }
       }
     }
     List<String> updatedHistories = idToHistory.values
         .map((item) => json.encode(item.toJson()))
         .toList();
-    _prefs!.setStringList(_key, updatedHistories);
+    final key = isPlaybackHistory ? "${_key}_playback" : "${_key}_subscribe";
+    _prefs!.setStringList(key, updatedHistories);
   }
 
-  static History? getHistoryById(int id) {
+  static History? getHistoryById(int id, {bool isPlaybackHistory = true}) {
     if (_prefs == null) return null;
-    var histories = _prefs!.getStringList(_key) ?? [];
+    final key = isPlaybackHistory ? "${_key}_playback" : "${_key}_subscribe";
+    var histories = _prefs!.getStringList(key) ?? [];
     List<History> historyList = histories
         .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
         .toList();
@@ -47,7 +107,9 @@ class LocalStore {
 
   static List<History> gerAllHistory() {
     if (_prefs == null) return [];
-    var histories = _prefs!.getStringList(_key) ?? [];
+    var h2 = _prefs!.getStringList("${_key}_subscribe") ?? [];
+    var h3 = _prefs!.getStringList("${_key}_playback") ?? [];
+    var histories = [...h2, ...h3];
     return histories
         .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
         .toList();
@@ -55,6 +117,7 @@ class LocalStore {
 
   static void deleteHistoryById(int id) {
     if (_prefs == null) return;
+    RecordApi.deleteRecordById(id, (_) => {});
     var histories = _prefs!.getStringList(_key) ?? [];
     List<History> historyList = histories
         .map((jsonStr) => History.fromJson(json.decode(jsonStr)))

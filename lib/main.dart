@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_holo/api/record_api.dart';
 import 'package:mobile_holo/entity/subject.dart' show Data;
 import 'package:mobile_holo/service/api.dart';
 import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/service/util/local_store.dart';
+import 'package:mobile_holo/ui/screen/sign.dart';
+import 'package:mobile_holo/util/local_store.dart';
 
 import 'package:mobile_holo/ui/screen/calendar.dart';
 import 'package:mobile_holo/ui/screen/detail.dart';
@@ -29,7 +33,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   late final GoRouter _router = GoRouter(
     // observers: [routeObserver],
     initialLocation: '/home',
@@ -90,6 +94,7 @@ class _MyAppState extends State<MyApp> {
             subject: map['subject'] as Data,
             source: map['source'] as SourceService,
             nameCn: map['nameCn'] as String,
+            isLove: map['isLove'] as bool,
           );
         },
       ),
@@ -97,6 +102,12 @@ class _MyAppState extends State<MyApp> {
         path: '/search',
         builder: (context, state) {
           return SearchScreen();
+        },
+      ),
+      GoRoute(
+        path: '/sign',
+        builder: (context, state) {
+          return SignScreen();
         },
       ),
     ],
@@ -108,11 +119,28 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
       (element) => element.toString() == LocalStore.getString('theme_mode'),
       orElse: () => ThemeMode.system,
     );
     initSource();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      log("AppLifecycleState.paused");
+      RecordApi.saveAllRecord((e) => log("saveAllRecord error: $e"));
+    }
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

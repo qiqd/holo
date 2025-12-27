@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_holo/service/util/datetime_util.dart';
+import 'package:mobile_holo/util/datetime_util.dart';
 
 class MeidaCard extends StatelessWidget {
   final int id;
