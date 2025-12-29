@@ -21,7 +21,7 @@ abstract class SourceService {
   /// @param page 页码
   /// @param size 每页数量
   /// @param exceptionHandler 异常处理器
-  /// @return List<Media>
+  /// @return List @gt;Media@lt
   Future<List<Media>> fetchSearch(
     String keyword,
     int page,

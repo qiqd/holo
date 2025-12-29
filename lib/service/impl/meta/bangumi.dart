@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:mobile_holo/entity/calendar.dart';
 import 'package:mobile_holo/entity/character.dart';
 import 'package:mobile_holo/entity/episode.dart' hide EpisodeData;
@@ -127,7 +129,7 @@ class Bangumi implements MetaService {
       }
       return null;
     } catch (e) {
-      print(e);
+      log(e.toString());
       exception(e);
       return null;
     }

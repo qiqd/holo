@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_holo/api/playback_api.dart';
+import 'package:mobile_holo/api/subscribe_api.dart';
 import 'package:mobile_holo/entity/character.dart';
-import 'package:mobile_holo/entity/history.dart';
 import 'package:mobile_holo/entity/media.dart';
 import 'package:mobile_holo/entity/person.dart';
 import 'package:mobile_holo/entity/subject.dart' show Data;
 import 'package:mobile_holo/entity/subject_relation.dart';
+import 'package:mobile_holo/entity/subscribe_history.dart';
 import 'package:mobile_holo/service/api.dart';
 import 'package:mobile_holo/service/source_service.dart';
 import 'package:mobile_holo/util/jaro_winkler_similarity.dart';
@@ -42,7 +46,9 @@ class _DetailScreenState extends State<DetailScreen>
   Media? defaultMedia;
   SourceService? defaultSource;
   bool isSubscribed = false;
-  History? _history;
+  Timer? _syncTimer;
+  Timer? _cancelSyncTimer;
+
   void _fetchSubjec() async {
     final res = await Api.bangumi.fetchSubjectSync(widget.id, (e) {
       setState(() {
@@ -128,31 +134,31 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _loadHistory() {
-    final history = LocalStore.getHistoryById(
-      data!.id!,
-      isPlaybackHistory: false,
-    );
-    if (mounted) {
+    final history = LocalStore.getSubscribeHistoryById(data!.id!);
+    if (mounted && history != null) {
       setState(() {
-        isSubscribed = history?.isLove ?? false;
+        isSubscribed = true;
       });
     }
   }
 
-  void _storeLocalHistory() {
-    if (_history == null) {
-      _history = History(
-        id: data!.id!,
+  void _storeLocalHistory() async {
+    if (data == null) {
+      return;
+    }
+    if (isSubscribed) {
+      SubscribeHistory history = SubscribeHistory(
+        subId: data!.id!,
         title: data!.nameCn!,
         imgUrl: data!.images?.large ?? "",
-        isLove: isSubscribed,
+        createdAt: DateTime.now(),
       );
+      _syncSubscribeHistory(history);
+      LocalStore.addSubscribeHistory(history);
     } else {
-      _history!.isLove = isSubscribed;
+      _cancelSync(data!.id!);
+      LocalStore.removeSubscribeHistoryBySubId(data!.id!);
     }
-    _history!.lastSubscribeAt = DateTime.now();
-    _history!.isPlaybackHistory = false;
-    LocalStore.addHistory(_history!, isPlaybackHistory: false);
   }
 
   void subscribeHandle() {
@@ -160,6 +166,37 @@ class _DetailScreenState extends State<DetailScreen>
       isSubscribed = !isSubscribed;
     });
     _storeLocalHistory();
+  }
+
+  void _cancelSync(int subId) {
+    _syncTimer?.cancel();
+    if (isSubscribed) {
+      return;
+    }
+    _cancelSyncTimer = Timer(Duration(seconds: 5), () {
+      SubscribeApi.deleteSubscribeRecordBySubId(subId, () {}, (msg) {});
+    });
+  }
+
+  void _syncSubscribeHistory(SubscribeHistory history) async {
+    _syncTimer?.cancel();
+
+    _syncTimer = Timer(Duration(seconds: 5), () async {
+      if (!isSubscribed) {
+        return;
+      }
+      SubscribeApi.saveSubscribeHistory(
+        history,
+        () {
+          history.isSync = true;
+        },
+        (e) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("同步订阅记录失败")));
+        },
+      ).then((newSubscribe) {});
+    });
   }
 
   @override

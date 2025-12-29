@@ -1,11 +1,13 @@
 import 'dart:developer' show log;
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_holo/api/playback_api.dart';
 import 'package:mobile_holo/entity/episode.dart';
-import 'package:mobile_holo/entity/history.dart';
 import 'package:mobile_holo/entity/media.dart';
+import 'package:mobile_holo/entity/playback_history.dart';
 import 'package:mobile_holo/entity/subject.dart';
 import 'package:mobile_holo/service/api.dart';
 import 'package:mobile_holo/service/source_service.dart';
@@ -146,8 +148,8 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _loadHistory() async {
-    final history = LocalStore.getHistoryById(widget.subject.id!);
-    if (history != null) {
+    final history = LocalStore.getPlaybackHistoryById(widget.subject.id!);
+    if (history != null && mounted) {
       setState(() {
         episodeIndex = history.episodeIndex;
         lineIndex = history.lineIndex;
@@ -188,17 +190,18 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _storeLocalHistory() {
-    History history = History(
-      id: widget.subject.id!,
+    PlaybackHistory history = PlaybackHistory(
+      subId: widget.subject.id!,
       title: nameCn,
       episodeIndex: episodeIndex,
       lineIndex: lineIndex,
-      lastViewAt: DateTime.now(),
+      lastPlaybackAt: DateTime.now(),
+      createdAt: DateTime.now(),
       position: _controller?.value.position.inSeconds ?? 0,
       imgUrl: widget.subject.images?.large ?? "",
-      isLove: false,
     );
-    LocalStore.addHistory(history);
+    _syncPlaybackHistory(history);
+    LocalStore.addPlaybackHistory(history);
   }
 
   void _toggleFullScreen() async {
@@ -218,6 +221,18 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  void _syncPlaybackHistory(PlaybackHistory history) {
+    PlayBackApi.savePlaybackHistory(
+      history,
+      () {
+        history.isSync = true;
+      },
+      (e) {
+        log("savePlaybackHistory error: $e");
+      },
+    );
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -226,6 +241,8 @@ class _PlayerScreenState extends State<PlayerScreen>
       _storeLocalHistory();
     } else if (state == AppLifecycleState.resumed) {
       log("resume");
+    } else if (state == AppLifecycleState.inactive) {
+      log("inactive");
     }
   }
 

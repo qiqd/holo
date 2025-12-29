@@ -2,7 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/api/record_api.dart';
+import 'package:mobile_holo/api/playback_api.dart';
+import 'package:mobile_holo/api/subscribe_api.dart';
 import 'package:mobile_holo/entity/subject.dart' show Data;
 import 'package:mobile_holo/service/api.dart';
 import 'package:mobile_holo/service/source_service.dart';
@@ -126,19 +127,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       orElse: () => ThemeMode.system,
     );
     initSource();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive) {
-      log("AppLifecycleState.inactive");
-      RecordApi.saveAllRecord(
-        () => log("saveAllRecord success"),
-        (e) => log("saveAllRecord error: $e"),
-      );
-    }
-
-    super.didChangeAppLifecycleState(state);
   }
 
   @override

@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:mobile_holo/entity/history.dart';
+import 'package:mobile_holo/entity/playback_history.dart';
+import 'package:mobile_holo/entity/subscribe_history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mobile_holo/api/record_api.dart' show RecordApi;
+import 'package:mobile_holo/api/playback_api.dart' show PlayBackApi;
 
 class LocalStore {
   static const String _key = "holo_local_store";
@@ -11,7 +12,7 @@ class LocalStore {
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
 
-    RecordApi.initServer();
+    PlayBackApi.initServer();
   }
 
   static String? getServerUrl() {
@@ -49,88 +50,163 @@ class LocalStore {
     _prefs!.remove("${_key}_server_url");
   }
 
-  static void addHistory(History history, {bool isPlaybackHistory = true}) {
+  static void removeSubscribeHistoryBySubId(int subId) {
     if (_prefs == null) return;
-    Map<int, History> idToHistory = {};
-    if (isPlaybackHistory) {
-      var histories = _prefs!.getStringList("${_key}_playback") ?? [];
-      List<History> historyList = histories
-          .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
-          .toList();
-      historyList.add(history);
-      for (var item in historyList) {
-        if (!idToHistory.containsKey(item.id) ||
-            item.lastViewAt == null ||
-            item.lastViewAt!.isAfter(
-              idToHistory[item.id]!.lastViewAt ?? DateTime(1980),
-            )) {
-          idToHistory[item.id] = item;
-        }
-      }
-    } else {
-      var histories = _prefs!.getStringList("${_key}_subscribe") ?? [];
-      List<History> historyList = histories
-          .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
-          .toList();
-      historyList.add(history);
-      for (var item in historyList) {
-        if (!idToHistory.containsKey(item.id) ||
-            item.lastSubscribeAt == null ||
-            item.lastSubscribeAt!.isAfter(
-              idToHistory[item.id]!.lastSubscribeAt ?? DateTime(1980),
-            )) {
-          idToHistory[item.id] = item;
-        }
-      }
-    }
-    List<String> updatedHistories = idToHistory.values
-        .map((item) => json.encode(item.toJson()))
+    var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
+    var subs = subsStr
+        .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
         .toList();
-    final key = isPlaybackHistory ? "${_key}_playback" : "${_key}_subscribe";
-    _prefs!.setStringList(key, updatedHistories);
+    subs.removeWhere((item) => item.subId == subId);
+    subsStr = subs.map((item) => json.encode(item.toJson())).toList();
+    _prefs!.setStringList("${_key}_subscribe", subsStr);
   }
 
-  static History? getHistoryById(int id, {bool isPlaybackHistory = true}) {
+  static void removePlaybackHistoryBySubId(int subId) {
+    if (_prefs == null) return;
+    var playStr = _prefs!.getStringList("${_key}_playback") ?? [];
+    var subs = playStr
+        .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
+        .toList();
+    subs.removeWhere((item) => item.subId == subId);
+    playStr = subs.map((item) => json.encode(item.toJson())).toList();
+    _prefs!.setStringList("${_key}_playback", playStr);
+  }
+
+  static void addSubscribeHistory(SubscribeHistory history) {
+    if (_prefs == null) return;
+    var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
+    var subs = subsStr
+        .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
+        .toList();
+    var firstWhere = subs.firstWhere(
+      (item) => item.subId == history.subId,
+      orElse: () => SubscribeHistory(
+        id: history.id,
+        subId: history.subId,
+        title: history.title,
+        imgUrl: history.imgUrl,
+        airDate: history.airDate,
+        createdAt: history.createdAt,
+        isSync: history.isSync,
+      ),
+    );
+    subs.removeWhere((item) => item.subId == history.subId);
+    subs.add(firstWhere);
+    subsStr = subs.map((item) => json.encode(item.toJson())).toList();
+    _prefs!.setStringList("${_key}_subscribe", subsStr);
+  }
+
+  static List<SubscribeHistory> getSubscribeHistory() {
+    if (_prefs == null) return [];
+    var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
+    return subsStr
+        .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
+        .toList();
+  }
+
+  static void addPlaybackHistory(PlaybackHistory history) {
+    if (_prefs == null) return;
+    var playbackStr = _prefs!.getStringList("${_key}_playback") ?? [];
+    var playback = playbackStr
+        .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
+        .toList();
+    var firstWhere = playback.firstWhere(
+      (item) => item.subId == history.subId,
+      orElse: () => PlaybackHistory(
+        id: history.id,
+        subId: history.subId,
+        position: history.position,
+        title: history.title,
+        imgUrl: history.imgUrl,
+        airDate: history.airDate,
+        createdAt: history.createdAt,
+        lastPlaybackAt: history.lastPlaybackAt,
+        isSync: history.isSync,
+        episodeIndex: history.episodeIndex,
+        lineIndex: history.lineIndex,
+      ),
+    );
+    playback.removeWhere((item) => item.subId == history.subId);
+    firstWhere.position = history.position;
+    firstWhere.episodeIndex = history.episodeIndex;
+    firstWhere.lineIndex = history.lineIndex;
+    firstWhere.lastPlaybackAt = history.lastPlaybackAt;
+    playback.add(firstWhere);
+    playbackStr = playback.map((item) => json.encode(item.toJson())).toList();
+    _prefs!.setStringList("${_key}_playback", playbackStr);
+  }
+
+  static List<PlaybackHistory> getPlaybackHistory() {
+    if (_prefs == null) return [];
+    var playbackStr = _prefs!.getStringList("${_key}_playback") ?? [];
+    return playbackStr
+        .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
+        .toList();
+  }
+
+  static SubscribeHistory? getSubscribeHistoryById(int id) {
     if (_prefs == null) return null;
-    final key = isPlaybackHistory ? "${_key}_playback" : "${_key}_subscribe";
+    final key = "${_key}_subscribe";
     var histories = _prefs!.getStringList(key) ?? [];
-    List<History> historyList = histories
-        .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
+    List<SubscribeHistory> historyList = histories
+        .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
         .toList();
     try {
-      return historyList.firstWhere((history) => history.id == id);
+      return historyList.firstWhere((history) => history.subId == id);
     } catch (e) {
       return null;
     }
   }
 
-  static List<History> gerAllHistory() {
-    if (_prefs == null) return [];
-    var h2 = _prefs!.getStringList("${_key}_subscribe") ?? [];
-    var h3 = _prefs!.getStringList("${_key}_playback") ?? [];
-    var histories = [...h2, ...h3];
-    return histories
-        .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
+  static PlaybackHistory? getPlaybackHistoryById(int id) {
+    if (_prefs == null) return null;
+    final key = "${_key}_playback";
+    var histories = _prefs!.getStringList(key) ?? [];
+    List<PlaybackHistory> historyList = histories
+        .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
         .toList();
+    try {
+      return historyList.firstWhere((history) => history.subId == id);
+    } catch (e) {
+      return null;
+    }
   }
 
-  static void deleteHistoryById(int id) {
+  // static void deleteHistoryById(int id) {
+  //   if (_prefs == null) return;
+  //   var histories = _prefs!.getStringList(_key) ?? [];
+  //   List<History> historyList = histories
+  //       .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
+  //       .toList();
+  //   historyList.removeWhere((history) => history.id == id);
+  //   List<String> updatedHistories = historyList
+  //       .map((item) => json.encode(item.toJson()))
+  //       .toList();
+  //   _prefs!.setStringList(_key, updatedHistories);
+  // }
+  static void updateSubscribeHistory(List<SubscribeHistory> histories) {
     if (_prefs == null) return;
-    var histories = _prefs!.getStringList(_key) ?? [];
-    List<History> historyList = histories
-        .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
-        .toList();
-    historyList.removeWhere((history) => history.id == id);
-    List<String> updatedHistories = historyList
+    clearHistory(clearPlayback: false);
+    var subsStr = histories.map((item) => json.encode(item.toJson())).toList();
+    _prefs!.setStringList("${_key}_subscribe", subsStr);
+  }
+
+  static void updatePlaybackHistory(List<PlaybackHistory> histories) {
+    if (_prefs == null) return;
+    clearHistory(clearPlayback: true);
+    var playbackStr = histories
         .map((item) => json.encode(item.toJson()))
         .toList();
-    _prefs!.setStringList(_key, updatedHistories);
+    _prefs!.setStringList("${_key}_playback", playbackStr);
   }
 
-  static void clearHistory() {
+  static void clearHistory({bool clearPlayback = true}) {
     if (_prefs == null) return;
-    _prefs!.remove("${_key}_playback");
-    _prefs!.remove("${_key}_subscribe");
+    if (clearPlayback) {
+      _prefs!.remove("${_key}_playback");
+    } else {
+      _prefs!.remove("${_key}_subscribe");
+    }
   }
 
   static List<String> getSearchHistory() {

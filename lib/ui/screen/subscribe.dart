@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/api/record_api.dart';
-import 'package:mobile_holo/entity/history.dart';
+import 'package:mobile_holo/api/playback_api.dart';
+import 'package:mobile_holo/api/subscribe_api.dart';
+import 'package:mobile_holo/entity/playback_history.dart';
+import 'package:mobile_holo/entity/subscribe_history.dart';
 import 'package:mobile_holo/util/local_store.dart';
 import 'package:mobile_holo/ui/component/loading_msg.dart';
 import 'package:mobile_holo/ui/component/media_grid.dart';
@@ -17,88 +19,63 @@ class SubscribeScreen extends StatefulWidget {
 
 class _SubscribeScreenState extends State<SubscribeScreen>
     with SingleTickerProviderStateMixin, RouteAware {
-  List<History> histories = [];
-  List<History> subscribe = [];
+  List<PlaybackHistory> playback = [];
+  List<SubscribeHistory> subscribe = [];
 
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
   );
-  Future<void> _fetchRecordFromServer() async {
-    final records = await RecordApi.fetchAllHistory((_) {
+  Future<void> _fetchPlaybackHistoryFromServer() async {
+    final records = await PlayBackApi.fetchPlaybackHistory((_) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("获取云端记录失败")));
+      ).showSnackBar(SnackBar(content: Text("获取云端播放记录失败")));
     });
     if (records.isNotEmpty) {
-      for (var item in records) {
-        LocalStore.addHistory(item);
-      }
       setState(() {
-        histories = records
-            .where((history) => history.isPlaybackHistory)
-            .toList();
-        subscribe = records
-            .where((history) => !history.isPlaybackHistory && history.isLove)
-            .toList();
-        histories.sort((a, b) => b.lastViewAt!.compareTo(a.lastViewAt!));
-        subscribe.sort(
-          (a, b) => b.lastSubscribeAt!.compareTo(a.lastSubscribeAt!),
-        );
+        playback = records;
+        LocalStore.updatePlaybackHistory(records);
+      });
+    }
+  }
+
+  Future<void> _fetchSubscribeHistoryFromServer() async {
+    final records = await SubscribeApi.fetchSubscribeHistory((_) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("获取云端订阅记录失败")));
+    });
+    if (records.isNotEmpty) {
+      setState(() {
+        subscribe = records;
+        LocalStore.updateSubscribeHistory(records);
       });
     }
   }
 
   void _loadHistory() {
-    final allHistory = LocalStore.gerAllHistory();
-    histories = allHistory
-        .where((history) => history.isPlaybackHistory)
-        .toList();
-    subscribe = allHistory
-        .where((history) => !history.isPlaybackHistory && history.isLove)
-        .toList();
-    histories.sort((a, b) => b.lastViewAt!.compareTo(a.lastViewAt!));
-    subscribe.sort((a, b) => b.lastSubscribeAt!.compareTo(a.lastSubscribeAt!));
+    final playbackHistory = LocalStore.getPlaybackHistory();
+    playback = playbackHistory;
+    final subscribeHistory = LocalStore.getSubscribeHistory();
+    subscribe = subscribeHistory;
+    playback.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    subscribe.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchRecordFromServer();
     _loadHistory();
+    _fetchPlaybackHistoryFromServer();
+    _fetchSubscribeHistoryFromServer();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('订阅'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: () {
-              if (LocalStore.getToken() == null) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text("未配置ServerUrl,请先配置")));
-                return;
-              }
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text("同步中")));
-              RecordApi.saveAllRecord(
-                () => ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text("同步成功"))),
-                (e) => ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(e.toString()))),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('订阅')),
 
       body: VisibilityDetector(
         key: const Key('subscribe_screen'),
@@ -136,13 +113,13 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                             itemBuilder: (context, index) {
                               return MediaGrid(
                                 showRating: false,
-                                id: subscribe[index].id,
+                                id: subscribe[index].subId,
                                 imageUrl: subscribe[index].imgUrl,
                                 title: subscribe[index].title,
                                 onTap: () => context.push(
                                   '/detail',
                                   extra: {
-                                    "id": subscribe[index].id,
+                                    "id": subscribe[index].subId,
                                     "keyword": subscribe[index].title,
                                   },
                                 ),
@@ -150,37 +127,37 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                             },
                           ),
                           onRefresh: () async {
-                            await _fetchRecordFromServer();
+                            await _fetchSubscribeHistoryFromServer();
                           },
                         ),
-                  histories.isEmpty
+                  playback.isEmpty
                       ? LoadingOrShowMsg(msg: '暂无历史记录')
                       : RefreshIndicator(
                           child: ListView.separated(
                             padding: const EdgeInsets.all(8),
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 10),
-                            itemCount: histories.length,
+                            itemCount: playback.length,
                             itemBuilder: (context, index) {
                               return MeidaCard(
                                 height: 190,
-                                lastViewAt: histories[index].lastViewAt,
-                                historyEpisode: histories[index].episodeIndex,
-                                id: histories[index].id,
-                                imageUrl: histories[index].imgUrl,
-                                nameCn: histories[index].title,
+                                lastViewAt: playback[index].createdAt,
+                                historyEpisode: playback[index].episodeIndex,
+                                id: playback[index].subId,
+                                imageUrl: playback[index].imgUrl,
+                                nameCn: playback[index].title,
                                 onTap: () => context.push(
                                   '/detail',
                                   extra: {
-                                    "id": histories[index].id,
-                                    "keyword": histories[index].title,
+                                    "id": playback[index].subId,
+                                    "keyword": playback[index].title,
                                   },
                                 ),
                               );
                             },
                           ),
                           onRefresh: () async {
-                            await _fetchRecordFromServer();
+                            await _fetchPlaybackHistoryFromServer();
                           },
                         ),
                 ],

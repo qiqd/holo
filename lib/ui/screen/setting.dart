@@ -2,7 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/api/record_api.dart';
+import 'package:mobile_holo/api/playback_api.dart';
+import 'package:mobile_holo/api/subscribe_api.dart';
 import 'package:mobile_holo/main.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:mobile_holo/util/local_store.dart';
@@ -81,8 +82,9 @@ class _SetttingScreenState extends State<SetttingScreen> {
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text('清除观看历史'),
-            subtitle: const Text('删除所有记录'),
+            subtitle: const Text('删除所有观看历史记录,包括云端'),
             onTap: () => _clearHistory(
+              true,
               () => ScaffoldMessenger.of(
                 context,
               ).showSnackBar(const SnackBar(content: Text('云端历史记录已清除'))),
@@ -94,7 +96,23 @@ class _SetttingScreenState extends State<SetttingScreen> {
               ).showSnackBar(const SnackBar(content: Text('本地历史已清除'))),
             ),
           ),
-
+          ListTile(
+            leading: const Icon(Icons.favorite_border_rounded),
+            title: const Text('清除订阅历史'),
+            subtitle: const Text('删除所有订阅记录,包括云端'),
+            onTap: () => _clearHistory(
+              false,
+              () => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('云端历史记录已清除'))),
+              (msg) => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('云端历史记录清除失败$msg'))),
+              () => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('本地历史已清除'))),
+            ),
+          ),
           // ListTile(
           //   leading: const Icon(Icons.favorite_outline),
           //   title: const Text('清除收藏'),
@@ -117,7 +135,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
             onTap: () => _showThemeModeDialog(),
           ),
 
-          // 开源项目特色部分
+          // 开源项目部分
           _buildSectionHeader('开源项目'),
           ListTile(
             leading: const Icon(Icons.code),
@@ -226,6 +244,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
   }
 
   void _clearHistory(
+    bool isPlayback,
     Function onCloudSuccess,
     Function(dynamic msg) onCloudfaild,
     Function onLocalSuccess,
@@ -234,7 +253,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('确认清除'),
-        content: const Text("确定要清除所有观看历史记录吗？"),
+        content: Text("确定要清除所有${isPlayback ? '播放' : '订阅'}历史记录吗？"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -243,11 +262,16 @@ class _SetttingScreenState extends State<SetttingScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              RecordApi.deleteAllRecord(
-                () => onCloudSuccess(),
-                (e) => onCloudfaild(e),
-              );
-              LocalStore.clearHistory();
+              if (isPlayback) {
+                PlayBackApi.deleteAllPlaybackRecord(() {
+                  onCloudSuccess();
+                }, (e) => onCloudfaild(e));
+              } else {
+                SubscribeApi.deleteAllSubscribeRecord(() {
+                  onCloudSuccess();
+                }, (e) => onCloudfaild(e));
+              }
+              LocalStore.clearHistory(clearPlayback: isPlayback);
               onLocalSuccess();
             },
             child: const Text('确定'),
@@ -255,10 +279,6 @@ class _SetttingScreenState extends State<SetttingScreen> {
         ],
       ),
     );
-  }
-
-  void _clearFavorites() {
-    // 类似清除历史的逻辑
   }
 
   void _clearCache() {
