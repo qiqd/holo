@@ -130,10 +130,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      log("AppLifecycleState.paused");
-      RecordApi.saveAllRecord((e) => log("saveAllRecord error: $e"));
+    if (state == AppLifecycleState.inactive) {
+      log("AppLifecycleState.inactive");
+      RecordApi.saveAllRecord(
+        () => log("saveAllRecord success"),
+        (e) => log("saveAllRecord error: $e"),
+      );
     }
+
     super.didChangeAppLifecycleState(state);
   }
 

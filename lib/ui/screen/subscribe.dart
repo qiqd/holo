@@ -24,12 +24,29 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     vsync: this,
     length: 2,
   );
-  void _fetchRecordFromServer() async {
-    final records = await RecordApi.fetchHistory((_) {});
-    setState(() {
-      histories = records;
-      subscribe = histories.where((history) => history.isLove).toList();
+  Future<void> _fetchRecordFromServer() async {
+    final records = await RecordApi.fetchAllHistory((_) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("获取云端记录失败")));
     });
+    if (records.isNotEmpty) {
+      for (var item in records) {
+        LocalStore.addHistory(item);
+      }
+      setState(() {
+        histories = records
+            .where((history) => history.isPlaybackHistory)
+            .toList();
+        subscribe = records
+            .where((history) => !history.isPlaybackHistory && history.isLove)
+            .toList();
+        histories.sort((a, b) => b.lastViewAt!.compareTo(a.lastViewAt!));
+        subscribe.sort(
+          (a, b) => b.lastSubscribeAt!.compareTo(a.lastSubscribeAt!),
+        );
+      });
+    }
   }
 
   void _loadHistory() {
@@ -48,7 +65,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   @override
   void initState() {
     super.initState();
-    // _fetchRecordFromServer();
+    _fetchRecordFromServer();
     _loadHistory();
   }
 
@@ -67,7 +84,13 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 ).showSnackBar(SnackBar(content: Text("未配置ServerUrl,请先配置")));
                 return;
               }
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text("同步中")));
               RecordApi.saveAllRecord(
+                () => ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("同步成功"))),
                 (e) => ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text(e.toString()))),
@@ -99,55 +122,65 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 children: [
                   subscribe.isEmpty
                       ? LoadingOrShowMsg(msg: '暂无订阅')
-                      : GridView.builder(
-                          padding: const EdgeInsets.all(8),
-                          itemCount: subscribe.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 6,
-                                mainAxisSpacing: 6,
-                                childAspectRatio: 0.6,
-                              ),
-                          itemBuilder: (context, index) {
-                            return MediaGrid(
-                              showRating: false,
-                              id: subscribe[index].id,
-                              imageUrl: subscribe[index].imgUrl,
-                              title: subscribe[index].title,
-                              onTap: () => context.push(
-                                '/detail',
-                                extra: {
-                                  "id": subscribe[index].id,
-                                  "keyword": subscribe[index].title,
-                                },
-                              ),
-                            );
+                      : RefreshIndicator(
+                          child: GridView.builder(
+                            padding: const EdgeInsets.all(8),
+                            itemCount: subscribe.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 6,
+                                  mainAxisSpacing: 6,
+                                  childAspectRatio: 0.6,
+                                ),
+                            itemBuilder: (context, index) {
+                              return MediaGrid(
+                                showRating: false,
+                                id: subscribe[index].id,
+                                imageUrl: subscribe[index].imgUrl,
+                                title: subscribe[index].title,
+                                onTap: () => context.push(
+                                  '/detail',
+                                  extra: {
+                                    "id": subscribe[index].id,
+                                    "keyword": subscribe[index].title,
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          onRefresh: () async {
+                            await _fetchRecordFromServer();
                           },
                         ),
                   histories.isEmpty
                       ? LoadingOrShowMsg(msg: '暂无历史记录')
-                      : ListView.separated(
-                          padding: const EdgeInsets.all(8),
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 10),
-                          itemCount: histories.length,
-                          itemBuilder: (context, index) {
-                            return MeidaCard(
-                              height: 190,
-                              lastViewAt: histories[index].lastViewAt,
-                              historyEpisode: histories[index].episodeIndex,
-                              id: histories[index].id,
-                              imageUrl: histories[index].imgUrl,
-                              nameCn: histories[index].title,
-                              onTap: () => context.push(
-                                '/detail',
-                                extra: {
-                                  "id": histories[index].id,
-                                  "keyword": histories[index].title,
-                                },
-                              ),
-                            );
+                      : RefreshIndicator(
+                          child: ListView.separated(
+                            padding: const EdgeInsets.all(8),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 10),
+                            itemCount: histories.length,
+                            itemBuilder: (context, index) {
+                              return MeidaCard(
+                                height: 190,
+                                lastViewAt: histories[index].lastViewAt,
+                                historyEpisode: histories[index].episodeIndex,
+                                id: histories[index].id,
+                                imageUrl: histories[index].imgUrl,
+                                nameCn: histories[index].title,
+                                onTap: () => context.push(
+                                  '/detail',
+                                  extra: {
+                                    "id": histories[index].id,
+                                    "keyword": histories[index].title,
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          onRefresh: () async {
+                            await _fetchRecordFromServer();
                           },
                         ),
                 ],

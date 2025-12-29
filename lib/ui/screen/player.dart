@@ -2,6 +2,7 @@ import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_holo/entity/episode.dart';
 import 'package:mobile_holo/entity/history.dart';
 import 'package:mobile_holo/entity/media.dart';
@@ -200,6 +201,23 @@ class _PlayerScreenState extends State<PlayerScreen>
     LocalStore.addHistory(history);
   }
 
+  void _toggleFullScreen() async {
+    if (_isFullScreen) {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -233,14 +251,19 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      child: Scaffold(
-        backgroundColor: _isFullScreen ? Colors.black : null,
-        body: SafeArea(
-          child: _isFullScreen
-              ? Center(
+    return Scaffold(
+      backgroundColor: _isFullScreen ? Colors.black : null,
+      body: SafeArea(
+        child: _isFullScreen
+            ? Center(
+                child: PopScope(
+                  canPop: false,
+                  onPopInvokedWithResult: (didPop, result) {
+                    setState(() {
+                      _isFullScreen = false;
+                      _toggleFullScreen();
+                    });
+                  },
                   child: AspectRatio(
                     aspectRatio: _controller == null
                         ? 16 / 9
@@ -278,25 +301,28 @@ class _PlayerScreenState extends State<PlayerScreen>
                             onFullScreenChanged: (isFullScreen) {
                               setState(() {
                                 _isFullScreen = isFullScreen;
+                                _toggleFullScreen();
+                              });
+                            },
+                            onBackPressed: () {
+                              setState(() {
+                                _isFullScreen = false;
+                                _toggleFullScreen();
                               });
                             },
                           )
-                        : PopScope(
-                            canPop: false,
-                            onPopInvokedWithResult: (didPop, result) =>
-                                setState(() {
-                                  _isFullScreen = false;
-                                }),
-                            child: LoadingOrShowMsg(
-                              msg: msg,
-                              backgroundColor: Colors.black,
-                            ),
+                        : LoadingOrShowMsg(
+                            msg: msg,
+                            backgroundColor: Colors.black,
                           ),
                   ),
-                )
-              : Column(
-                  children: [
-                    AspectRatio(
+                ),
+              )
+            : Column(
+                children: [
+                  SizedBox(
+                    height: 220,
+                    child: AspectRatio(
                       aspectRatio: 16 / 9,
                       child: _controller != null && !isloading
                           ? CapVideoPlayer(
@@ -325,7 +351,11 @@ class _PlayerScreenState extends State<PlayerScreen>
                               onFullScreenChanged: (isFullScreen) {
                                 setState(() {
                                   _isFullScreen = isFullScreen;
+                                  _toggleFullScreen();
                                 });
+                              },
+                              onBackPressed: () {
+                                context.pop();
                               },
                             )
                           : LoadingOrShowMsg(
@@ -333,101 +363,99 @@ class _PlayerScreenState extends State<PlayerScreen>
                               backgroundColor: Colors.black,
                             ),
                     ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TabBar(
-                                  dividerColor: Colors.transparent,
-                                  isScrollable: true,
-                                  tabAlignment: TabAlignment.start,
-                                  padding: EdgeInsets.all(0),
-                                  controller: _tabController,
-                                  tabs: [
-                                    Tab(text: "评论"),
-                                    Tab(text: "选集"),
-                                  ],
-                                ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TabBar(
+                                dividerColor: Colors.transparent,
+                                isScrollable: true,
+                                tabAlignment: TabAlignment.start,
+                                padding: EdgeInsets.all(0),
+                                controller: _tabController,
+                                tabs: [
+                                  Tab(text: "评论"),
+                                  Tab(text: "选集"),
+                                ],
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(right: 20),
-                                child: PopupMenuButton(
-                                  child: TextButton.icon(
-                                    onPressed: null,
-                                    label: Text('路线选择'),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: 20),
+                              child: PopupMenuButton(
+                                child: TextButton.icon(
+                                  onPressed: null,
+                                  label: Text('路线选择'),
+                                ),
+                                itemBuilder: (context) => [
+                                  ...List.generate(
+                                    _detail?.lines?.length ?? 1,
+                                    (index) => PopupMenuItem(
+                                      value: index,
+                                      child: Text('路线${index + 1}'),
+                                      onTap: () {
+                                        if (index == lineIndex || isloading) {
+                                          return;
+                                        }
+                                        _onLineSelected(index);
+                                      },
+                                    ),
                                   ),
-                                  itemBuilder: (context) => [
-                                    ...List.generate(
-                                      _detail?.lines?.length ?? 1,
-                                      (index) => PopupMenuItem(
-                                        value: index,
-                                        child: Text('路线${index + 1}'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        Flexible(
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: [
+                              SizedBox(child: Center(child: Text("暂无评论"))),
+                              _episode == null
+                                  ? LoadingOrShowMsg(msg: msg)
+                                  : GridView.builder(
+                                      padding: EdgeInsets.all(10),
+                                      itemCount: _episode?.data?.length ?? 0,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 3,
+                                            mainAxisSpacing: 5,
+                                            crossAxisSpacing: 5,
+                                          ),
+                                      itemBuilder: (context, index) => ListTile(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        selected: episodeIndex == index,
                                         onTap: () {
-                                          if (index == lineIndex || isloading) {
+                                          if (episodeIndex == index ||
+                                              isloading) {
                                             return;
                                           }
-                                          _onLineSelected(index);
+                                          _onEpisodeSelected(index);
                                         },
+                                        subtitle: Text(
+                                          maxLines: 4,
+                                          overflow: TextOverflow.ellipsis,
+                                          _episode?.data?[index].nameCn ??
+                                              "暂无剧集名称",
+                                        ),
+                                        title: Text((index + 1).toString()),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
                             ],
                           ),
-
-                          Expanded(
-                            child: TabBarView(
-                              controller: _tabController,
-                              children: [
-                                Container(child: Center(child: Text("暂无评论"))),
-                                _episode == null
-                                    ? LoadingOrShowMsg(msg: msg)
-                                    : GridView.builder(
-                                        padding: EdgeInsets.all(10),
-                                        itemCount: _episode?.data?.length ?? 0,
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 3,
-                                              mainAxisSpacing: 5,
-                                              crossAxisSpacing: 5,
-                                            ),
-                                        itemBuilder: (context, index) =>
-                                            ListTile(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              selected: episodeIndex == index,
-                                              onTap: () {
-                                                if (episodeIndex == index ||
-                                                    isloading) {
-                                                  return;
-                                                }
-                                                _onEpisodeSelected(index);
-                                              },
-                                              subtitle: Text(
-                                                maxLines: 4,
-                                                overflow: TextOverflow.ellipsis,
-                                                _episode?.data?[index].nameCn ??
-                                                    "暂无剧集名称",
-                                              ),
-                                              title: Text(
-                                                (index + 1).toString(),
-                                              ),
-                                            ),
-                                      ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-        ),
+                  ),
+                ],
+              ),
       ),
     );
   }

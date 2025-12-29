@@ -14,15 +14,17 @@ class RecordApi {
     dio.options = BaseOptions(
       headers: {"Authorization": token, "User-Agent": "Holo/client"},
       baseUrl: "$serverUrl/history",
+      contentType: "application/json",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
     );
   }
 
-  static Future<List<History>> fetchHistory(
+  static Future<List<History>> fetchAllHistory(
     Function(String msg) exceptionHandler,
   ) async {
     try {
+      initServer();
       final response = await dio.get("/query");
       if (response.statusCode == 200) {
         return (response.data as List)
@@ -37,43 +39,20 @@ class RecordApi {
     }
   }
 
-  static Future<void> saveRecord(
-    History history,
-    Function(String msg) exceptionHandler,
-  ) async {
-    try {
-      final response = await dio.post("/save/batch", data: [history.toJson()]);
-      if (response.statusCode != 200) {
-        exceptionHandler.call("保存记录失败");
-      }
-    } catch (e) {
-      log("Record saveRecord error: $e");
-      exceptionHandler(e.toString());
-    }
-  }
-
-  static Future<void> deleteRecordById(
-    int id,
-    Function(String msg) exceptionHandler,
-  ) async {
-    try {
-      final response = await dio.delete("/delete/$id");
-      if (response.statusCode != 200) {
-        exceptionHandler.call("删除记录失败");
-      }
-    } catch (e) {
-      log("Record deleteRecord error: $e");
-      exceptionHandler(e.toString());
-    }
-  }
-
   static Future<void> deleteAllRecord(
+    Function() successHandler,
     Function(String msg) exceptionHandler,
   ) async {
     try {
-      final response = await dio.delete("/delete-all");
+      initServer();
+      if (LocalStore.getServerUrl() == null) {
+        return;
+      }
+      final response = await dio.delete("/delete/all");
       if (response.statusCode != 200) {
         exceptionHandler.call("删除所有记录失败");
+      } else {
+        successHandler();
       }
     } catch (e) {
       log("Record deleteAllRecord error: $e");
@@ -82,14 +61,17 @@ class RecordApi {
   }
 
   static Future<void> saveAllRecord(
+    Function() successHandler,
     Function(String msg) exceptionHandler,
   ) async {
     try {
+      initServer();
       var all = LocalStore.gerAllHistory();
       final response = await dio.post("/save/batch", data: all);
       if (response.statusCode != 200) {
         exceptionHandler.call("保存所有记录失败");
       }
+      successHandler.call();
     } catch (e) {
       log("Record saveAllRecord error: $e");
       exceptionHandler(e.toString());

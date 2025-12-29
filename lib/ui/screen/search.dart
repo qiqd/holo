@@ -92,17 +92,22 @@ class _SearchScreenState extends State<SearchScreen> {
           onSubmitted: (value) {
             _fetchSearch(value, context);
           },
+          onChanged: (_) {
+            setState(() {});
+          },
           maxLines: 1,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             prefixIcon: Icon(Icons.search_rounded),
-            suffixIcon: IconButton(
-              icon: Icon(Icons.clear_rounded),
-              onPressed: () => setState(() {
-                _recommended = null;
-                _controller.clear();
-              }),
-            ),
+            suffixIcon: _controller.value.text.isNotEmpty
+                ? IconButton(
+                    icon: Icon(Icons.clear_rounded),
+                    onPressed: () => setState(() {
+                      _recommended = null;
+                      _controller.clear();
+                    }),
+                  )
+                : null,
             hintText: "搜索",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0)),

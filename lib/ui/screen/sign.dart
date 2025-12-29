@@ -14,6 +14,7 @@ class SignScreen extends StatefulWidget {
 
 class _SignScreenState extends State<SignScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _serverUrlController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -25,29 +26,24 @@ class _SignScreenState extends State<SignScreen> {
   bool _isPasswordVisible = false;
   @override
   void dispose() {
+    _serverUrlController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _login() {
-    LocalStore.setServerUrl(_serverUrl);
+  void _login(BuildContext context) {
     AccountApi.login(
+      serverUrl: _serverUrl,
       email: _email,
       password: _password,
-      exceptionHandler: (e) {
+      successHandler: () {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        ).showSnackBar(SnackBar(content: Text("登录成功")));
+        context.go('/home');
       },
-    );
-  }
-
-  void _register() {
-    AccountApi.register(
-      email: _email,
-      password: _password,
       exceptionHandler: (e) {
         ScaffoldMessenger.of(
           context,
@@ -60,10 +56,8 @@ class _SignScreenState extends State<SignScreen> {
     if (_formKey.currentState!.validate()) {
       switch (_authMode) {
         case AuthMode.login:
-          _login();
           break;
         case AuthMode.register:
-          _register();
           break;
         case AuthMode.reset:
           // 重置密码逻辑
@@ -100,7 +94,7 @@ class _SignScreenState extends State<SignScreen> {
                 // Server Url
                 TextFormField(
                   onChanged: (value) => _serverUrl = value,
-                  controller: _emailController,
+                  controller: _serverUrlController,
                   decoration: const InputDecoration(
                     labelText: "Server Url",
                     hintText: "example: https://api.example.com",
@@ -141,6 +135,7 @@ class _SignScreenState extends State<SignScreen> {
 
                 // 密码输入框
                 TextFormField(
+                  onChanged: (value) => _password = value,
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: '密码',
@@ -173,7 +168,10 @@ class _SignScreenState extends State<SignScreen> {
                 SizedBox(
                   width: double.infinity,
                   height: 48,
-                  child: ElevatedButton(onPressed: _submit, child: Text("验证")),
+                  child: ElevatedButton(
+                    onPressed: () => _login(context),
+                    child: Text("验证"),
+                  ),
                 ),
               ],
             ),

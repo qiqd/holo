@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:mobile_holo/api/account_api.dart';
 import 'package:mobile_holo/entity/history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_holo/api/record_api.dart' show RecordApi;
@@ -11,7 +10,7 @@ class LocalStore {
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
-    AccountApi.initServer();
+
     RecordApi.initServer();
   }
 
@@ -34,6 +33,7 @@ class LocalStore {
   }
 
   static String? getEmail() {
+    if (_prefs == null) return null;
     return _prefs!.getString("${_key}_email");
   }
 
@@ -51,7 +51,6 @@ class LocalStore {
 
   static void addHistory(History history, {bool isPlaybackHistory = true}) {
     if (_prefs == null) return;
-    RecordApi.saveRecord(history, (_) => history.isSync = false);
     Map<int, History> idToHistory = {};
     if (isPlaybackHistory) {
       var histories = _prefs!.getStringList("${_key}_playback") ?? [];
@@ -117,7 +116,6 @@ class LocalStore {
 
   static void deleteHistoryById(int id) {
     if (_prefs == null) return;
-    RecordApi.deleteRecordById(id, (_) => {});
     var histories = _prefs!.getStringList(_key) ?? [];
     List<History> historyList = histories
         .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
@@ -131,7 +129,8 @@ class LocalStore {
 
   static void clearHistory() {
     if (_prefs == null) return;
-    _prefs!.clear();
+    _prefs!.remove("${_key}_playback");
+    _prefs!.remove("${_key}_subscribe");
   }
 
   static List<String> getSearchHistory() {

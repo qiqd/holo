@@ -21,6 +21,7 @@ class CapVideoPlayer extends StatefulWidget {
   final Function(String)? onError;
   final Function()? onNextTab;
   final Function(int index)? onEpisodeSelected;
+  final Function()? onBackPressed;
   const CapVideoPlayer({
     super.key,
     required this.controller,
@@ -33,6 +34,7 @@ class CapVideoPlayer extends StatefulWidget {
     this.onNextTab,
     this.onError,
     this.onEpisodeSelected,
+    this.onBackPressed,
   });
 
   @override
@@ -73,24 +75,6 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
         });
       }
     });
-  }
-
-  void _toggleFullScreen() async {
-    if (_isFullScreen) {
-      await SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
-
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    } else {
-      await SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-      ]);
-
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    }
-    widget.onFullScreenChanged?.call(_isFullScreen);
   }
 
   void _addListener() {
@@ -232,18 +216,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: !_isFullScreen,
-      onPopInvokedWithResult: (didPop, result) {
-        if (_isFullScreen) {
-          setState(() {
-            _isFullScreen = false;
-          });
-          _toggleFullScreen();
-        } else if (!didPop) {
-          context.pop();
-        }
-      },
+    return Theme(
+      data: Theme.of(context).copyWith(brightness: Brightness.light),
       child: Stack(
         children: [
           //播放器
@@ -273,14 +247,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       IconButton(
                         icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                         onPressed: () {
-                          if (_isFullScreen) {
-                            setState(() {
-                              _isFullScreen = false;
-                            });
-                            _toggleFullScreen();
-                          } else {
-                            context.pop();
-                          }
+                          _showVideoControlsTimer();
+                          widget.onBackPressed?.call();
                         },
                       ),
                       // 标题
@@ -430,11 +398,20 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                               color: Colors.white,
                             ),
                           ),
+                          //进度
+                          TextButton(
+                            onPressed: null,
+                            child: Text(
+                              "${widget.controller.value.position.inMinutes}:${widget.controller.value.position.inSeconds.remainder(60)}/${widget.controller.value.duration.inMinutes}:${widget.controller.value.duration.inSeconds.remainder(60)}",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+
                           //剧集列表
                           if (_isFullScreen) ...[
                             Badge(
                               backgroundColor: Colors.transparent,
-
+                              textColor: Colors.white,
                               offset: Offset(0, 5),
                               label: Text("${widget.currentEpisodeIndex + 1} "),
                               child: IconButton(
@@ -451,19 +428,12 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                               ),
                             ),
                           ],
-                          //进度
-                          TextButton(
-                            onPressed: null,
-                            child: Text(
-                              "${widget.controller.value.position.inMinutes}:${widget.controller.value.position.inSeconds.remainder(60)}/${widget.controller.value.duration.inMinutes}:${widget.controller.value.duration.inSeconds.remainder(60)}",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-
+                          // 播放速度
                           Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: PopupMenuButton(
                               child: Badge(
+                                textColor: Colors.white,
                                 offset: Offset(8, -5),
                                 backgroundColor: Colors.transparent,
                                 label: Text(
@@ -526,13 +496,14 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                           //   ),
                           // ),
                           Spacer(),
+                          // 全屏
                           IconButton(
                             onPressed: () {
                               _showVideoControlsTimer();
                               setState(() {
                                 _isFullScreen = !_isFullScreen;
                               });
-                              _toggleFullScreen();
+                              widget.onFullScreenChanged?.call(_isFullScreen);
                             },
                             icon: Icon(
                               _isFullScreen
@@ -549,6 +520,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
               ),
             ],
           ),
+          // 锁定
           AnimatedOpacity(
             opacity: showVideoControls ? 1 : 0,
             duration: Duration(milliseconds: 100),
@@ -570,6 +542,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
               ),
             ),
           ),
+          // 时间
           AnimatedOpacity(
             opacity: showVideoControls ? 1 : 0,
             duration: Duration(milliseconds: 100),
@@ -584,6 +557,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
               ),
             ),
           ),
+          // 剧集列表
           AnimatedPositioned(
             top: 0,
             right: showEpisodeList ? 0 : -200,
@@ -598,7 +572,13 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                   return ListTile(
                     selected: index == widget.currentEpisodeIndex,
                     horizontalTitleGap: 0,
-                    leading: Text((index + 1).toString()),
+                    leading: Text(
+                      (index + 1).toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     title: Text(widget.episodeList[index]),
                     onTap: () => widget.onEpisodeSelected?.call(index),
                   );

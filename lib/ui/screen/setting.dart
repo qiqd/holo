@@ -46,19 +46,25 @@ class _SetttingScreenState extends State<SetttingScreen> {
             child: ListTile(
               leading: const Icon(Icons.account_circle_rounded),
               title: Text(_email ?? '未登录'),
-              onTap: () => context.push('/sign'),
+              onTap: () {
+                if (_email == null) {
+                  context.push('/sign');
+                }
+              },
             ),
             onVisibilityChanged: (visibilityInfo) {
               log('Visibility: ${visibilityInfo.visibleFraction}');
-              setState(() {
-                _email = LocalStore.getEmail();
-              });
+              if (visibilityInfo.visibleFraction > 0) {
+                setState(() {
+                  _email = LocalStore.getEmail();
+                });
+              }
             },
           ),
           ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: const Text('退出账号'),
-            subtitle: Text('退出当前账号,但是本地数据不会删除'),
+            subtitle: Text('退出当前账号,但是本地历史记录数据不会删除'),
             onTap: () => _showSignoutAccountDialog(),
           ),
           // 应用信息部分
@@ -75,9 +81,20 @@ class _SetttingScreenState extends State<SetttingScreen> {
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text('清除观看历史'),
-            subtitle: const Text('删除所有观看记录'),
-            onTap: () => _clearHistory(),
+            subtitle: const Text('删除所有记录'),
+            onTap: () => _clearHistory(
+              () => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('云端历史记录已清除'))),
+              (msg) => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('云端历史记录清除失败$msg'))),
+              () => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('本地历史已清除'))),
+            ),
           ),
+
           // ListTile(
           //   leading: const Icon(Icons.favorite_outline),
           //   title: const Text('清除收藏'),
@@ -208,12 +225,16 @@ class _SetttingScreenState extends State<SetttingScreen> {
     );
   }
 
-  void _clearHistory() {
+  void _clearHistory(
+    Function onCloudSuccess,
+    Function(dynamic msg) onCloudfaild,
+    Function onLocalSuccess,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('确认清除'),
-        content: const Text('确定要清除所有观看历史吗？'),
+        content: const Text("确定要清除所有观看历史记录吗？"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -222,11 +243,12 @@ class _SetttingScreenState extends State<SetttingScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              RecordApi.deleteAllRecord((_) {});
+              RecordApi.deleteAllRecord(
+                () => onCloudSuccess(),
+                (e) => onCloudfaild(e),
+              );
               LocalStore.clearHistory();
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('观看历史已清除')));
+              onLocalSuccess();
             },
             child: const Text('确定'),
           ),
