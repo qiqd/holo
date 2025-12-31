@@ -215,13 +215,11 @@ class _PlayerScreenState extends State<PlayerScreen>
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
       ]);
-
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     } else {
       await SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
       ]);
-
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
   }
@@ -238,10 +236,29 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
+  void initListenForPlayer() {
+    _controller?.addListener(() {
+      if (_controller!.value.isPlaying) {
+        if (_syncTimer == null || _syncTimer!.isActive == false) {
+          _startSyncTimer();
+        }
+      } else {
+        _syncTimer?.cancel();
+        _syncTimer = null;
+      }
+    });
+  }
+
+  void _startSyncTimer() {
+    _syncTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+      _storeLocalHistory();
+    });
+  }
+
   @override
   void didChangeDependencies() {
     _syncTimer?.cancel();
-    _syncTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    _syncTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
       _storeLocalHistory();
     });
     super.didChangeDependencies();
@@ -251,13 +268,10 @@ class _PlayerScreenState extends State<PlayerScreen>
   void initState() {
     _loadHistory();
     _fetchEpisode();
+    initListenForPlayer();
     _fetchMediaEpisode().then(
       (value) => _fetchViewInfo(position: historyPosition),
     );
-    _syncTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      log("sync playback history${DateTime.now()}");
-      _storeLocalHistory();
-    });
     super.initState();
   }
 

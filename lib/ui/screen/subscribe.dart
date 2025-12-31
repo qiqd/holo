@@ -103,6 +103,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                       ? LoadingOrShowMsg(msg: '暂无订阅')
                       : RefreshIndicator(
                           child: GridView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             padding: const EdgeInsets.all(8),
                             itemCount: subscribe.length,
                             gridDelegate:
@@ -136,6 +137,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                       ? LoadingOrShowMsg(msg: '暂无历史记录')
                       : RefreshIndicator(
                           child: ListView.separated(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             padding: const EdgeInsets.all(8),
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 10),
