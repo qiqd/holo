@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/entity/subject.dart';
-import 'package:mobile_holo/service/api.dart';
-import 'package:mobile_holo/util/local_store.dart';
-import 'package:mobile_holo/ui/component/media_grid.dart';
+import 'package:holo/entity/subject.dart';
+import 'package:holo/service/api.dart';
+import 'package:holo/util/local_store.dart';
+import 'package:holo/ui/component/media_grid.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});

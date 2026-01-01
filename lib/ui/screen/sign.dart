@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/api/account_api.dart';
+import 'package:holo/api/account_api.dart';
 
 enum AuthMode { login, register, reset }
 

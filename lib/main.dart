@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/entity/subject.dart' show Data;
-import 'package:mobile_holo/service/api.dart';
-import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/ui/screen/sign.dart';
-import 'package:mobile_holo/util/local_store.dart';
+import 'package:holo/entity/subject.dart' show Data;
+import 'package:holo/service/api.dart';
+import 'package:holo/service/source_service.dart';
+import 'package:holo/ui/screen/sign.dart';
+import 'package:holo/util/local_store.dart';
 
-import 'package:mobile_holo/ui/screen/calendar.dart';
-import 'package:mobile_holo/ui/screen/detail.dart';
+import 'package:holo/ui/screen/calendar.dart';
+import 'package:holo/ui/screen/detail.dart';
 
-import 'package:mobile_holo/ui/screen/home.dart';
-import 'package:mobile_holo/ui/screen/player.dart';
-import 'package:mobile_holo/ui/screen/search.dart';
+import 'package:holo/ui/screen/home.dart';
+import 'package:holo/ui/screen/player.dart';
+import 'package:holo/ui/screen/search.dart';
 
-import 'package:mobile_holo/ui/screen/setting.dart';
-import 'package:mobile_holo/ui/screen/subscribe.dart';
+import 'package:holo/ui/screen/setting.dart';
+import 'package:holo/ui/screen/subscribe.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

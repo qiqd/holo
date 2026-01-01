@@ -1,10 +1,10 @@
-import 'package:mobile_holo/entity/calendar.dart';
-import 'package:mobile_holo/entity/character.dart';
-import 'package:mobile_holo/entity/episode.dart';
-import 'package:mobile_holo/entity/person.dart';
-import 'package:mobile_holo/entity/subject.dart' show Data, Subject;
+import 'package:holo/entity/calendar.dart';
+import 'package:holo/entity/character.dart';
+import 'package:holo/entity/episode.dart';
+import 'package:holo/entity/person.dart';
+import 'package:holo/entity/subject.dart' show Data, Subject;
 
-import 'package:mobile_holo/entity/subject_relation.dart';
+import 'package:holo/entity/subject_relation.dart';
 
 abstract class MetaService {
   String get name;

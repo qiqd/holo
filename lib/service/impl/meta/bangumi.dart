@@ -1,13 +1,13 @@
 import 'dart:developer';
 
-import 'package:mobile_holo/entity/calendar.dart';
-import 'package:mobile_holo/entity/character.dart';
-import 'package:mobile_holo/entity/episode.dart' hide EpisodeData;
-import 'package:mobile_holo/entity/person.dart';
-import 'package:mobile_holo/entity/subject.dart';
-import 'package:mobile_holo/entity/subject_relation.dart';
-import 'package:mobile_holo/service/meta_service.dart';
-import 'package:mobile_holo/util/http_util.dart';
+import 'package:holo/entity/calendar.dart';
+import 'package:holo/entity/character.dart';
+import 'package:holo/entity/episode.dart' hide EpisodeData;
+import 'package:holo/entity/person.dart';
+import 'package:holo/entity/subject.dart';
+import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/service/meta_service.dart';
+import 'package:holo/util/http_util.dart';
 
 class Bangumi implements MetaService {
   @override

@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:dio/dio.dart';
-import 'package:mobile_holo/util/local_store.dart';
+import 'package:holo/util/local_store.dart';
 
 class HttpUtil {
   static final List<String> userAgents = [
@@ -40,8 +40,7 @@ class HttpUtil {
     // 基础配置
     dio.options
       ..headers = {
-        'User-Agent':
-            "mobile_holo/v1.0.0 (Android,IOS)(https://github.com/qiqd/mobile_holo)",
+        'User-Agent': "holo/v1.0.0 (Android,IOS)(https://github.com/qiqd/holo)",
         'Accept': '*/*',
       }
       ..connectTimeout = const Duration(seconds: 20)

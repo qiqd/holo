@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mobile_holo/entity/media.dart';
+import 'package:holo/entity/media.dart';
 
 part 'match_result.g.dart';
 

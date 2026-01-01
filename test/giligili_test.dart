@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_holo/service/impl/animation/girugiru.dart';
+import 'package:holo/service/impl/animation/girugiru.dart';
 
 void main() {
   var girugiru = Girugiru();

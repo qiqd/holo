@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_holo/service/api.dart';
-import 'package:mobile_holo/service/impl/animation/aafun.dart';
-import 'package:mobile_holo/util/dio_timing_extension.dart';
-import 'package:mobile_holo/util/http_util.dart';
+import 'package:holo/service/api.dart';
+import 'package:holo/service/impl/animation/aafun.dart';
+import 'package:holo/util/dio_timing_extension.dart';
+import 'package:holo/util/http_util.dart';
 
 void main() {
   var aafun = AAfun();

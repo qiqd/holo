@@ -1,12 +1,12 @@
-import 'package:mobile_holo/service/impl/animation/aafun.dart';
-import 'package:mobile_holo/service/impl/animation/girugiru.dart';
-import 'package:mobile_holo/service/impl/animation/mengdao.dart';
-import 'package:mobile_holo/service/impl/animation/mwcy.dart';
-import 'package:mobile_holo/service/impl/animation/senfen.dart';
-import 'package:mobile_holo/service/impl/meta/bangumi.dart';
-import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/util/dio_timing_extension.dart';
-import 'package:mobile_holo/util/http_util.dart';
+import 'package:holo/service/impl/animation/aafun.dart';
+import 'package:holo/service/impl/animation/girugiru.dart';
+import 'package:holo/service/impl/animation/mengdao.dart';
+import 'package:holo/service/impl/animation/mwcy.dart';
+import 'package:holo/service/impl/animation/senfen.dart';
+import 'package:holo/service/impl/meta/bangumi.dart';
+import 'package:holo/service/source_service.dart';
+import 'package:holo/util/dio_timing_extension.dart';
+import 'package:holo/util/http_util.dart';
 
 class Api {
   static Bangumi bangumi = Bangumi();

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/api/playback_api.dart';
-import 'package:mobile_holo/api/subscribe_api.dart';
-import 'package:mobile_holo/entity/playback_history.dart';
-import 'package:mobile_holo/entity/subscribe_history.dart';
-import 'package:mobile_holo/util/local_store.dart';
-import 'package:mobile_holo/ui/component/loading_msg.dart';
-import 'package:mobile_holo/ui/component/media_grid.dart';
-import 'package:mobile_holo/ui/component/meida_card.dart';
+import 'package:holo/api/playback_api.dart';
+import 'package:holo/api/subscribe_api.dart';
+import 'package:holo/entity/playback_history.dart';
+import 'package:holo/entity/subscribe_history.dart';
+import 'package:holo/util/local_store.dart';
+import 'package:holo/ui/component/loading_msg.dart';
+import 'package:holo/ui/component/media_grid.dart';
+import 'package:holo/ui/component/meida_card.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class SubscribeScreen extends StatefulWidget {

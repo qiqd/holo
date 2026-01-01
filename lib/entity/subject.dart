@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mobile_holo/entity/image.dart' show Image;
+import 'package:holo/entity/image.dart' show Image;
 
 part 'subject.g.dart';
 

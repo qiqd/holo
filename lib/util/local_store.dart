@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:mobile_holo/entity/playback_history.dart';
-import 'package:mobile_holo/entity/subscribe_history.dart';
+import 'package:holo/entity/playback_history.dart';
+import 'package:holo/entity/subscribe_history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStore {

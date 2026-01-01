@@ -2,11 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/api/playback_api.dart';
-import 'package:mobile_holo/api/subscribe_api.dart';
-import 'package:mobile_holo/main.dart';
+import 'package:holo/api/playback_api.dart';
+import 'package:holo/api/subscribe_api.dart';
+import 'package:holo/main.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:mobile_holo/util/local_store.dart';
+import 'package:holo/util/local_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -47,7 +47,22 @@ class _SetttingScreenState extends State<SetttingScreen> {
             key: const Key('account_info_section'),
             child: ListTile(
               leading: const Icon(Icons.account_circle_rounded),
-              title: Text(_email != null && _token != null ? _email! : '未登录'),
+              title: AnimatedSwitcher(
+                duration: Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _email != null && _token != null ? _email! : '未登录',
+                    key: ValueKey<String>(
+                      _email != null && _token != null ? _email! : '未登录',
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
               onTap: () {
                 if (_email == null || _token == null) {
                   context.push('/sign');
@@ -143,20 +158,19 @@ class _SetttingScreenState extends State<SetttingScreen> {
             leading: const Icon(Icons.code),
             title: const Text('源代码'),
             subtitle: const Text('在GitHub上查看源代码'),
-            onTap: () => _openGitHub('https://github.com/qiqd/mobile_holo'),
+            onTap: () => _openGitHub('https://github.com/qiqd/holo'),
           ),
           ListTile(
             leading: const Icon(Icons.bug_report),
             title: const Text('报告问题'),
             subtitle: const Text('提交Bug或功能建议'),
-            onTap: () =>
-                _openGitHub('https://github.com/qiqd/mobile_holo/issues'),
+            onTap: () => _openGitHub('https://github.com/qiqd/holo/issues'),
           ),
           ListTile(
             leading: const Icon(Icons.star),
             title: const Text('给项目点赞'),
             subtitle: const Text('在GitHub上为项目点星'),
-            onTap: () => _openGitHub('https://github.com/qiqd/mobile_holo'),
+            onTap: () => _openGitHub('https://github.com/qiqd/holo'),
           ),
         ],
       ),

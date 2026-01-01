@@ -2,19 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_holo/api/subscribe_api.dart';
-import 'package:mobile_holo/entity/character.dart';
-import 'package:mobile_holo/entity/media.dart';
-import 'package:mobile_holo/entity/person.dart';
-import 'package:mobile_holo/entity/subject.dart' show Data;
-import 'package:mobile_holo/entity/subject_relation.dart';
-import 'package:mobile_holo/entity/subscribe_history.dart';
-import 'package:mobile_holo/service/api.dart';
-import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/util/jaro_winkler_similarity.dart';
-import 'package:mobile_holo/util/local_store.dart';
-import 'package:mobile_holo/ui/component/loading_msg.dart';
-import 'package:mobile_holo/ui/component/meida_card.dart';
+import 'package:holo/api/subscribe_api.dart';
+import 'package:holo/entity/character.dart';
+import 'package:holo/entity/media.dart';
+import 'package:holo/entity/person.dart';
+import 'package:holo/entity/subject.dart' show Data;
+import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/subscribe_history.dart';
+import 'package:holo/service/api.dart';
+import 'package:holo/service/source_service.dart';
+import 'package:holo/util/jaro_winkler_similarity.dart';
+import 'package:holo/util/local_store.dart';
+import 'package:holo/ui/component/loading_msg.dart';
+import 'package:holo/ui/component/meida_card.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;

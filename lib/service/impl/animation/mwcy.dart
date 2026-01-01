@@ -4,9 +4,9 @@ import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:html/parser.dart';
-import 'package:mobile_holo/entity/media.dart';
-import 'package:mobile_holo/service/source_service.dart';
-import 'package:mobile_holo/util/http_util.dart';
+import 'package:holo/entity/media.dart';
+import 'package:holo/service/source_service.dart';
+import 'package:holo/util/http_util.dart';
 
 class Mwcy implements SourceService {
   @override

@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:mobile_holo/entity/subscribe_history.dart';
-import 'package:mobile_holo/util/http_util.dart';
-import 'package:mobile_holo/util/local_store.dart';
+import 'package:holo/entity/subscribe_history.dart';
+import 'package:holo/util/http_util.dart';
+import 'package:holo/util/local_store.dart';
 
 class SubscribeApi {
   static Dio dio = HttpUtil.createDioWithInterceptor();
