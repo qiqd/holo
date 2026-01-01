@@ -4,7 +4,7 @@ description: "a open source project for mobile holo"
 
 publish_to: "none"
 
-version: 1.0.3+1
+version: 1.0.4+1
 
 environment:
   sdk: ^3.10.3
