@@ -158,20 +158,19 @@ class _SetttingScreenState extends State<SetttingScreen> {
             leading: const Icon(Icons.code),
             title: const Text('源代码'),
             subtitle: const Text('在GitHub上查看源代码'),
-            onTap: () => _openGitHub('https://github.com/qiqd/mobile_holo'),
+            onTap: () => _openGitHub('https://github.com/qiqd/holo'),
           ),
           ListTile(
             leading: const Icon(Icons.bug_report),
             title: const Text('报告问题'),
             subtitle: const Text('提交Bug或功能建议'),
-            onTap: () =>
-                _openGitHub('https://github.com/qiqd/mobile_holo/issues'),
+            onTap: () => _openGitHub('https://github.com/qiqd/holo/issues'),
           ),
           ListTile(
             leading: const Icon(Icons.star),
             title: const Text('给项目点赞'),
             subtitle: const Text('在GitHub上为项目点星'),
-            onTap: () => _openGitHub('https://github.com/qiqd/mobile_holo'),
+            onTap: () => _openGitHub('https://github.com/qiqd/holo'),
           ),
         ],
       ),

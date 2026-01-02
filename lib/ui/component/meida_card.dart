@@ -109,29 +109,50 @@ class MeidaCard extends StatelessWidget {
                     ),
                   // 类型
                   if (genre != null)
-                    Text(
-                      genre!,
-                      style: const TextStyle(color: Colors.blue, fontSize: 12),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  // 集数和上映时间
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (episode != null)
-                        Text(
-                          episode == 0 ? '待更新' : '共 $episode 集',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.category_outlined,
+                          size: 16,
+                          color: Colors.blue,
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            genre!,
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              fontSize: 12,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                      ],
+                    ),
+                  // 集数
+                  Row(
+                    spacing: 5,
+                    children: [
+                      if (episode != null)
+                        const Icon(
+                          Icons.info_outline,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                      Text(
+                        episode == 0 ? '待更新' : '共 $episode 集',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                   //评分
                   if (rating != null)
                     Row(
+                      spacing: 1,
                       children: [
                         const Icon(Icons.star, color: Colors.orange, size: 16),
                         const SizedBox(width: 4),
@@ -141,10 +162,24 @@ class MeidaCard extends StatelessWidget {
                         ),
                       ],
                     ),
+                  //上映时间
                   if (airDate != null)
-                    Text(
-                      airDate!,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    Row(
+                      spacing: 5,
+                      children: [
+                        const Icon(
+                          Icons.date_range,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                        Text(
+                          airDate!,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
 
                   // 历史集数

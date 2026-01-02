@@ -64,6 +64,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   Timer? _timer;
   Timer? _videoControlsTimer;
   Timer? _videoTimer;
+  final ScrollController episodeListScrollController = ScrollController();
   void _showVideoControlsTimer() {
     log("showVideoControlsTimer");
 
@@ -421,6 +422,11 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                 onPressed: () {
                                   setState(() {
                                     showEpisodeList = !showEpisodeList;
+                                    episodeListScrollController.animateTo(
+                                      widget.currentEpisodeIndex * 50,
+                                      duration: Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    );
                                   });
                                   _showVideoControlsTimer();
                                 },
@@ -547,7 +553,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
           ),
           // 时间
           AnimatedOpacity(
-            opacity: showVideoControls ? 1 : 0,
+            opacity: showVideoControls && widget.isFullScreen ? 1 : 0,
             duration: Duration(milliseconds: 100),
             child: Padding(
               padding: EdgeInsets.only(top: 20),
@@ -570,6 +576,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             child: Container(
               color: Colors.white,
               child: ListView.builder(
+                controller: episodeListScrollController,
                 itemCount: widget.episodeList.length,
                 itemBuilder: (context, index) {
                   return ListTile(

@@ -271,8 +271,9 @@ class _DetailScreenState extends State<DetailScreen>
                           children: [
                             TextField(
                               textInputAction: TextInputAction.search,
+                              textAlign: TextAlign.center,
                               decoration: const InputDecoration(
-                                hintText: '若搜索结果为空，请尝试输入其他关键词',
+                                hintText: '若结果为空，尝试输入其他关键词搜索',
                               ),
                               onSubmitted: (value) async {
                                 setState(() {
@@ -288,6 +289,7 @@ class _DetailScreenState extends State<DetailScreen>
 
                             TabBar(
                               isScrollable: true,
+                              tabAlignment: TabAlignment.start,
                               controller: subTabController,
                               tabs: sourceService
                                   .map((e) => Tab(text: e.getName()))

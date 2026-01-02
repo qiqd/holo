@@ -35,10 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onScrollToBottom() {
-    log("scroll to bottom");
+    // log("scroll to bottom");
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 100 &&
         !_loading) {
+      log("home->load more");
       _fetchRecommended(page: ++_page, isLoadMore: true);
     }
   }

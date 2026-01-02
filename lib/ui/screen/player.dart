@@ -18,6 +18,7 @@ import 'package:holo/ui/component/cap_video_player.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class PlayerScreen extends StatefulWidget {
   final String mediaId;
@@ -59,7 +60,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     vsync: this,
     length: 2,
   );
-
+  final ScrollController episodeListScrollController = ScrollController();
   Future<void> _fetchMediaEpisode() async {
     isloading = true;
     try {
@@ -459,37 +460,54 @@ class _PlayerScreenState extends State<PlayerScreen>
                               ),
                               _episode == null
                                   ? LoadingOrShowMsg(msg: msg)
-                                  : GridView.builder(
-                                      padding: EdgeInsets.all(10),
-                                      itemCount: _episode?.data?.length ?? 0,
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 3,
-                                            mainAxisSpacing: 5,
-                                            crossAxisSpacing: 5,
-                                          ),
-                                      itemBuilder: (context, index) => ListTile(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        selected: episodeIndex == index,
-                                        onTap: () {
-                                          if (episodeIndex == index ||
-                                              isloading) {
-                                            return;
-                                          }
-                                          _onEpisodeSelected(index);
-                                        },
-                                        subtitle: Text(
-                                          maxLines: 4,
-                                          overflow: TextOverflow.ellipsis,
-                                          _episode?.data?[index].nameCn ??
-                                              "暂无剧集名称",
-                                        ),
-                                        title: Text((index + 1).toString()),
+                                  : VisibilityDetector(
+                                      key: Key("player_episodes"),
+                                      child: GridView.builder(
+                                        controller: episodeListScrollController,
+                                        padding: EdgeInsets.all(10),
+                                        itemCount: _episode?.data?.length ?? 0,
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 3,
+                                              mainAxisSpacing: 5,
+                                              crossAxisSpacing: 5,
+                                            ),
+                                        itemBuilder: (context, index) =>
+                                            ListTile(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              selected: episodeIndex == index,
+                                              onTap: () {
+                                                if (episodeIndex == index ||
+                                                    isloading) {
+                                                  return;
+                                                }
+                                                _onEpisodeSelected(index);
+                                              },
+                                              subtitle: Text(
+                                                maxLines: 4,
+                                                overflow: TextOverflow.ellipsis,
+                                                _episode?.data?[index].nameCn ??
+                                                    "暂无剧集名称",
+                                              ),
+                                              title: Text(
+                                                (index + 1).toString(),
+                                              ),
+                                            ),
                                       ),
+                                      onVisibilityChanged: (info) {
+                                        if (info.visibleFraction > 0) {
+                                          episodeListScrollController.animateTo(
+                                            episodeIndex * 1.0,
+                                            duration: Duration(
+                                              milliseconds: 300,
+                                            ),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                      },
                                     ),
                             ],
                           ),
