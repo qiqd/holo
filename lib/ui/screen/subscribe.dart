@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
@@ -21,7 +23,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     with SingleTickerProviderStateMixin, RouteAware {
   List<PlaybackHistory> playback = [];
   List<SubscribeHistory> subscribe = [];
-
+  final Set<int> _deleteModeIds = {};
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
@@ -66,9 +68,82 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     setState(() {});
   }
 
+  void _deletePlaybackHistory(int id) {
+    try {
+      LocalStore.removePlaybackHistoryBySubId(id);
+      PlayBackApi.deletePlaybackRecordBySubId(
+        id,
+        () {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("删除云端播放记录成功")));
+        },
+        (error) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("删除云端播放记录失败: $error")));
+        },
+      );
+
+      setState(() {
+        playback.removeWhere((item) => item.subId == id);
+        _deleteModeIds.remove(id);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("删除失败: $e")));
+    }
+  }
+
+  void _deleteSubscribeHistory(int id) {
+    try {
+      LocalStore.removeSubscribeHistoryBySubId(id);
+      SubscribeApi.deleteSubscribeRecordBySubId(
+        id,
+        () {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("删除云端订阅记录成功")));
+        },
+        (error) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("删除云端订阅记录失败: $error")));
+        },
+      );
+
+      setState(() {
+        subscribe.removeWhere((item) => item.subId == id);
+        _deleteModeIds.remove(id);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("删除失败: $e")));
+    }
+  }
+
+  void _toggleDeleteMode(int id) {
+    setState(() {
+      if (_deleteModeIds.contains(id)) {
+        _deleteModeIds.remove(id);
+      } else {
+        _deleteModeIds.add(id);
+      }
+    });
+  }
+
+  void initTabBarListener() {
+    _tabController.addListener(() {
+      _deleteModeIds.clear();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    initTabBarListener();
     _loadHistory();
     _fetchPlaybackHistoryFromServer();
     _fetchSubscribeHistoryFromServer();
@@ -118,16 +193,23 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                                   childAspectRatio: 0.6,
                                 ),
                             itemBuilder: (context, index) {
+                              final item = subscribe[index];
                               return MediaGrid(
                                 showRating: false,
-                                id: subscribe[index].subId,
-                                imageUrl: subscribe[index].imgUrl,
-                                title: subscribe[index].title,
+                                id: item.subId,
+                                imageUrl: item.imgUrl,
+                                title: item.title,
+                                showDeleteIcon: _deleteModeIds.contains(
+                                  item.subId,
+                                ),
+                                onLongPress: (_) =>
+                                    _toggleDeleteMode(item.subId),
+                                onDelete: _deleteSubscribeHistory,
                                 onTap: () => context.push(
                                   '/detail',
                                   extra: {
-                                    "id": subscribe[index].subId,
-                                    "keyword": subscribe[index].title,
+                                    "id": item.subId,
+                                    "keyword": item.title,
                                   },
                                 ),
                               );
@@ -151,18 +233,25 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                                 const SizedBox(height: 10),
                             itemCount: playback.length,
                             itemBuilder: (context, index) {
+                              final item = playback[index];
                               return MeidaCard(
                                 height: 190,
-                                lastViewAt: playback[index].lastPlaybackAt,
-                                historyEpisode: playback[index].episodeIndex,
-                                id: playback[index].subId,
-                                imageUrl: playback[index].imgUrl,
-                                nameCn: playback[index].title,
+                                lastViewAt: item.lastPlaybackAt,
+                                historyEpisode: item.episodeIndex,
+                                id: item.subId,
+                                imageUrl: item.imgUrl,
+                                nameCn: item.title,
+                                showDeleteIcon: _deleteModeIds.contains(
+                                  item.subId,
+                                ),
+                                onLongPress: (_) =>
+                                    _toggleDeleteMode(item.subId),
+                                onDelete: _deletePlaybackHistory,
                                 onTap: () => context.push(
                                   '/detail',
                                   extra: {
-                                    "id": playback[index].subId,
-                                    "keyword": playback[index].title,
+                                    "id": item.subId,
+                                    "keyword": item.title,
                                   },
                                 ),
                               );

@@ -69,7 +69,7 @@ class PlayBackApi {
     }
   }
 
-  static Future<void> deleteAllPlaybackRecordBySubId(
+  static Future<void> deletePlaybackRecordBySubId(
     int subId,
     Function() successHandler,
     Function(String msg) exceptionHandler,

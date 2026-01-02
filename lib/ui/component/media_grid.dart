@@ -9,6 +9,10 @@ class MediaGrid extends StatelessWidget {
   final Function? onTap;
   final bool showRating;
   final String? airDate;
+  final bool showDeleteIcon; // 新增删除图标显示状态
+  final Function(int)? onDelete; // 新增删除回调
+  final Function(bool)? onLongPress; // 新增长按回调
+
   const MediaGrid({
     super.key,
     required this.id,
@@ -18,98 +22,127 @@ class MediaGrid extends StatelessWidget {
     this.showRating = true,
     this.airDate,
     this.onTap,
+    this.showDeleteIcon = false,
+    this.onDelete,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: () => onTap?.call(),
-      child: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                    memCacheHeight: 1000,
-                    memCacheWidth: 800,
-                    imageUrl: imageUrl!,
-                    placeholder: (context, url) =>
-                        Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                  ),
-                ),
-
-                if (rating != null && showRating)
-                  Positioned(
-                    right: 4,
-                    top: 4,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                            size: 14,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            rating!.toStringAsFixed(1),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+    return Stack(
+      children: [
+        InkWell(
+          onLongPress: () => onLongPress?.call(true),
+          onTap: showDeleteIcon ? null : () => onTap?.call(), //
+          borderRadius: BorderRadius.circular(10),
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: CachedNetworkImage(
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        memCacheHeight: 1000,
+                        memCacheWidth: 800,
+                        imageUrl: imageUrl!,
+                        placeholder: (context, url) =>
+                            Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                     ),
-                  ),
-                // if (airDate != null)
-                //   Positioned(
-                //     left: 4,
-                //     bottom: 4,
-                //     child: Container(
-                //       padding: const EdgeInsets.symmetric(
-                //         horizontal: 6,
-                //         vertical: 2,
-                //       ),
-                //       decoration: BoxDecoration(
-                //         color: Colors.black54,
-                //         borderRadius: BorderRadius.circular(12),
-                //       ),
-                //       child: Text(
-                //         airDate!,
-                //         style: const TextStyle(
-                //           color: Colors.white,
-                //           fontSize: 12,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-              ],
+
+                    if (rating != null && showRating && !showDeleteIcon)
+                      Positioned(
+                        right: 4,
+                        top: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.yellow,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                rating!.toStringAsFixed(1),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    // if (airDate != null)
+                    //   Positioned(
+                    //     left: 4,
+                    //     bottom: 4,
+                    //     child: Container(
+                    //       padding: const EdgeInsets.symmetric(
+                    //         horizontal: 6,
+                    //         vertical: 2,
+                    //       ),
+                    //       decoration: BoxDecoration(
+                    //         color: Colors.black54,
+                    //         borderRadius: BorderRadius.circular(12),
+                    //       ),
+                    //       child: Text(
+                    //         airDate!,
+                    //         style: const TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 12,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                  ],
+                ),
+              ),
+              Container(
+                color: showDeleteIcon ? Colors.grey[200] : null, // 添加删除模式背景色
+                child: Text(
+                  title ?? '暂无标题',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // 删除图标
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 100),
+          top: showDeleteIcon ? 8 : -30,
+          right: 8,
+          child: GestureDetector(
+            onTap: () => onDelete?.call(id), // 调用删除回调
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.delete, color: Colors.white, size: 20),
             ),
           ),
-          Text(
-            title ?? '暂无标题',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

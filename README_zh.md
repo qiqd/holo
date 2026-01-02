@@ -1,6 +1,6 @@
-# Holo  
+# Holo
 
-一个使用 Flutter 构建的开源动漫流媒体应用，支持 Android、iOS平台。
+一个使用 Flutter 构建的开源动漫流媒体应用，支持 Android、iOS 平台。
 
 ## 功能特性
 
@@ -46,17 +46,20 @@ lib/
 ### 安装步骤
 
 1. 克隆仓库
+
    ```bash
-   git clone https://github.com/yourusername/mobile_mikufans.git
-   cd mobile_mikufans
+   git clone https://github.com/qiqd/holo.git
+   cd holo
    ```
 
 2. 安装依赖
+
    ```bash
    flutter pub get
    ```
 
 3. 生成 JSON 序列化文件
+
    ```bash
    flutter pub run build_runner build
    ```
@@ -69,6 +72,7 @@ lib/
 ### 构建生产版本
 
 - Android
+
   ```bash
   flutter build apk
   ```
@@ -78,8 +82,6 @@ lib/
   flutter build ios
   ```
 
- 
-
 ## 贡献指南
 
 欢迎贡献！请随时提交 Pull Request。
@@ -87,4 +89,3 @@ lib/
 ## 许可证
 
 本项目采用 AGPL-3.0 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
-

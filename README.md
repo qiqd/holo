@@ -9,7 +9,7 @@ An open-source anime streaming application built with Flutter, supporting Androi
 - 🔍 **Search**: Find anime quickly and efficiently
 - 💾 **History**: Keep track of your watching progress
 - 🔔 **Subscribe**: Get notified when new episodes are available
--  **Multi-platform**: Supports Android and iOS
+- **Multi-platform**: Supports Android and iOS
 
 ## Tech Stack
 
@@ -46,17 +46,20 @@ lib/
 ### Installation
 
 1. Clone the repository
+
    ```bash
-   git clone https://github.com/yourusername/mobile_mikufans.git
-   cd mobile_mikufans
+   git clone https://github.com/qiqd/holo.git
+   cd holo
    ```
 
 2. Install dependencies
+
    ```bash
    flutter pub get
    ```
 
 3. Generate JSON serialization files
+
    ```bash
    flutter pub run build_runner build
    ```
@@ -69,6 +72,7 @@ lib/
 ### Build for Production
 
 - Android
+
   ```bash
   flutter build apk
   ```
@@ -77,8 +81,6 @@ lib/
   ```bash
   flutter build ios
   ```
-
-
 
 ## Contributing
 
