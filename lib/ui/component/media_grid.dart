@@ -112,8 +112,7 @@ class MediaGrid extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                color: showDeleteIcon ? Colors.grey[200] : null, // 添加删除模式背景色
+              SizedBox(
                 child: Text(
                   title ?? '暂无标题',
                   maxLines: 2,

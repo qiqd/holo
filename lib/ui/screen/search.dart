@@ -96,6 +96,7 @@ class _SearchScreenState extends State<SearchScreen> {
             setState(() {});
           },
           maxLines: 1,
+          autofocus: true,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             prefixIcon: Icon(Icons.search_rounded),
@@ -113,7 +114,7 @@ class _SearchScreenState extends State<SearchScreen> {
               borderRadius: BorderRadius.all(Radius.circular(20.0)),
             ),
           ),
-          keyboardType: TextInputType.webSearch,
+          textInputAction: TextInputAction.search,
         ),
       ),
       body: SafeArea(
@@ -138,31 +139,35 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                             Row(
                               children: [
-                                Wrap(
-                                  spacing: 8,
-                                  children: _searchHistory.map((historyItem) {
-                                    return Chip(
-                                      label: InkWell(
-                                        child: Text(historyItem),
-                                        onTap: () =>
-                                            _fetchSearch(historyItem, context),
-                                      ),
-                                      avatar: Icon(Icons.history, size: 18),
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainerHighest
-                                          .withOpacity(0.5),
-                                      deleteIcon: Icon(Icons.close, size: 18),
-                                      onDeleted: () {
-                                        setState(() {
-                                          _searchHistory.remove(historyItem);
-                                          LocalStore.saveSearchHistory(
-                                            _searchHistory,
-                                          );
-                                        });
-                                      },
-                                    );
-                                  }).toList(),
+                                Expanded(
+                                  child: Wrap(
+                                    spacing: 8,
+                                    children: _searchHistory.map((historyItem) {
+                                      return Chip(
+                                        label: InkWell(
+                                          child: Text(historyItem),
+                                          onTap: () => _fetchSearch(
+                                            historyItem,
+                                            context,
+                                          ),
+                                        ),
+                                        avatar: Icon(Icons.history, size: 18),
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainerHighest
+                                            .withOpacity(0.5),
+                                        deleteIcon: Icon(Icons.close, size: 18),
+                                        onDeleted: () {
+                                          setState(() {
+                                            _searchHistory.remove(historyItem);
+                                            LocalStore.saveSearchHistory(
+                                              _searchHistory,
+                                            );
+                                          });
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
                               ],
                             ),
