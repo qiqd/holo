@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class MediaGrid extends StatelessWidget {
@@ -9,9 +10,9 @@ class MediaGrid extends StatelessWidget {
   final Function? onTap;
   final bool showRating;
   final String? airDate;
-  final bool showDeleteIcon; // 新增删除图标显示状态
-  final Function(int)? onDelete; // 新增删除回调
-  final Function(bool)? onLongPress; // 新增长按回调
+  final bool showDeleteIcon;
+  final Function(int)? onDelete;
+  final Function(bool)? onLongPress;
 
   const MediaGrid({
     super.key,
@@ -114,7 +115,7 @@ class MediaGrid extends StatelessWidget {
               ),
               SizedBox(
                 child: Text(
-                  title ?? '暂无标题',
+                  title ?? context.tr("component.title"),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 14),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/calendar.dart';
@@ -20,7 +21,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   );
   List<Calendar> _calendar = [];
   String? _msg;
-  final List<String> _weekdays = [' 一', ' 二', ' 三', ' 四', ' 五', ' 六', ' 日'];
+  final List<String> _weekdays = tr("calendar.week").split(',');
   void _fetchCalendar() async {
     final calendar = await Api.bangumi.fetchCalendarSync(
       (e) => setState(() {
@@ -42,7 +43,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('周更表')),
+      appBar: AppBar(title: Text(tr("calendar.title"))),
       body: Column(
         children: [
           TabBar(

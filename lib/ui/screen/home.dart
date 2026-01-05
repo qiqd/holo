@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject.dart';
@@ -18,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Subject? _recommended;
   bool _loading = false;
   int _page = 1;
-
   void _fetchRecommended({int page = 1, bool isLoadMore = false}) async {
     setState(() {
       _loading = true;
@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: InputDecoration(
             prefixIcon: Icon(Icons.search_rounded),
             contentPadding: EdgeInsets.all(0),
-            hintText: "搜索",
+            hintText: context.tr("home.hint_text"),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide(color: Colors.grey.shade400),
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Center(
               child: _recommended == null
-                  ? const Text("暂无推荐")
+                  ? Text(context.tr("home.recommand_text"))
                   : GridView.builder(
                       controller: _scrollController,
                       itemCount: _recommended!.data!.length,

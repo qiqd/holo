@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/entity/episode.dart';
 import 'package:holo/entity/media.dart';
+
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
@@ -52,6 +53,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   int historyPosition = 0;
   String? playUrl;
   bool _isActive = true;
+
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;

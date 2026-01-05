@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
@@ -30,9 +29,9 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   );
   Future<void> _fetchPlaybackHistoryFromServer() async {
     final records = await PlayBackApi.fetchPlaybackHistory((_) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("获取云端播放记录失败")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(tr("subscribe.fetch_subs_failed"))),
+      );
     });
     if (records.isNotEmpty) {
       setState(() {
@@ -45,9 +44,9 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
   Future<void> _fetchSubscribeHistoryFromServer() async {
     final records = await SubscribeApi.fetchSubscribeHistory((_) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("获取云端订阅记录失败")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(tr("subscribe.fetch_view_failed"))),
+      );
     });
     if (records.isNotEmpty) {
       setState(() {
@@ -74,14 +73,14 @@ class _SubscribeScreenState extends State<SubscribeScreen>
       PlayBackApi.deletePlaybackRecordBySubId(
         id,
         () {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("删除云端播放记录成功")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(tr("subscribe.delete_view_success"))),
+          );
         },
         (error) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("删除云端播放记录失败: $error")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(tr("subscribe.delete_view_failed"))),
+          );
         },
       );
 
@@ -92,7 +91,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("删除失败: $e")));
+      ).showSnackBar(SnackBar(content: Text(tr("subscribe.delete_failed"))));
     }
   }
 
@@ -102,14 +101,14 @@ class _SubscribeScreenState extends State<SubscribeScreen>
       SubscribeApi.deleteSubscribeRecordBySubId(
         id,
         () {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("删除云端订阅记录成功")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(tr("subscribe.delete_subs_success"))),
+          );
         },
         (error) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("删除云端订阅记录失败: $error")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(tr("subscribe.delete_subs_failed"))),
+          );
         },
       );
 
@@ -120,7 +119,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("删除失败: $e")));
+      ).showSnackBar(SnackBar(content: Text(tr("subscribe.delete_failed"))));
     }
   }
 
@@ -152,7 +151,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('订阅')),
+      appBar: AppBar(title: Text(tr("subscribe.title"))),
 
       body: VisibilityDetector(
         key: const Key('subscribe_screen'),
@@ -165,9 +164,9 @@ class _SubscribeScreenState extends State<SubscribeScreen>
           children: [
             TabBar(
               controller: _tabController,
-              tabs: const [
-                Tab(text: '订阅'),
-                Tab(text: '历史记录'),
+              tabs: [
+                Tab(text: tr("subscribe.tab_subs")),
+                Tab(text: tr("subscribe.tab_view")),
               ],
             ),
             Expanded(
@@ -176,7 +175,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 children: [
                   subscribe.isEmpty
                       ? LoadingOrShowMsg(
-                          msg: '暂无订阅,点我刷新试试',
+                          msg: tr("subscribe.refresh_btn_subs"),
                           onMsgTab: () async {
                             await _fetchSubscribeHistoryFromServer();
                           },
@@ -221,7 +220,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                         ),
                   playback.isEmpty
                       ? LoadingOrShowMsg(
-                          msg: '暂无历史记录,点我刷新试试',
+                          msg: tr("subscribe.refresh_btn_view"),
                           onMsgTab: () async {
                             await _fetchPlaybackHistoryFromServer();
                           },

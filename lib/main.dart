@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject.dart' show Data;
@@ -19,7 +20,15 @@ import 'package:holo/ui/screen/subscribe.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStore.init();
-  runApp(const MyApp());
+  await EasyLocalization.ensureInitialized();
+  runApp(
+    EasyLocalization(
+      supportedLocales: [Locale('en', 'US'), Locale('zh', 'CN')],
+      path: 'assets/translations',
+      fallbackLocale: Locale('zh', 'CN'),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -137,9 +146,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       valueListenable: MyApp.themeNotifier,
       builder: (context, themeMode, child) {
         return MaterialApp.router(
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
           debugShowCheckedModeBanner: false,
           routerConfig: _router,
-          title: 'MikuFans',
           themeMode: themeMode,
           theme: ThemeData(
             brightness: Brightness.light,

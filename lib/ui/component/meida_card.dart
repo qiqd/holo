@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -106,7 +107,7 @@ class MeidaCard extends StatelessWidget {
                         //匹配度
                         if (score != 0)
                           Text(
-                            "匹配度:${(score * 100).toStringAsFixed(1)}%",
+                            "${context.tr("component.media_card.score")}:${(score * 100).toStringAsFixed(1)}%",
                             style: const TextStyle(
                               color: Colors.orange,
                               fontSize: 12,
@@ -143,7 +144,14 @@ class MeidaCard extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Text(
-                                  episode == 0 ? '待更新' : '共 $episode 集',
+                                  episode == 0
+                                      ? context.tr(
+                                          "component.media_card.status",
+                                        )
+                                      : context.tr(
+                                          "component.media_card.total_episode",
+                                          args: [episode.toString()],
+                                        ),
                                   style: const TextStyle(
                                     color: Colors.grey,
                                     fontSize: 12,
@@ -195,7 +203,10 @@ class MeidaCard extends StatelessWidget {
                         // 历史集数
                         if (historyEpisode != null)
                           Text(
-                            '观看至第 ${historyEpisode! + 1} 集',
+                            context.tr(
+                              "component.media_card.lastviewAtEpisode",
+                              args: [(historyEpisode! + 1).toString()],
+                            ),
                             style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
@@ -203,7 +214,10 @@ class MeidaCard extends StatelessWidget {
                           ),
                         if (lastViewAt != null)
                           Text(
-                            '上次观看时间: ${formatTimeAgo(lastViewAt!)}',
+                            context.tr(
+                              "component.media_card.lastviewAtTime",
+                              args: [formatTimeAgo(lastViewAt!, context)],
+                            ),
                             style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
@@ -238,18 +252,27 @@ class MeidaCard extends StatelessWidget {
     );
   }
 
-  String formatTimeAgo(DateTime dateTime) {
+  String formatTimeAgo(DateTime dateTime, BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays}天前';
+      return context.tr(
+        "component.media_card.days_ago",
+        args: [difference.inDays.toString()],
+      );
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}小时前';
+      return context.tr(
+        "component.media_card.hours_ago",
+        args: [difference.inHours.toString()],
+      );
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}分钟前';
+      return context.tr(
+        "component.media_card.minutes_ago",
+        args: [difference.inMinutes.toString()],
+      );
     } else {
-      return '刚刚';
+      return context.tr("component.media_card.just_now");
     }
   }
 }

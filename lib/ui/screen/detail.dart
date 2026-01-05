@@ -405,8 +405,8 @@ class _DetailScreenState extends State<DetailScreen>
                                           leading: p.images != null
                                               ? Image.network(
                                                   p.images!.medium!,
-                                                  width: 70,
-                                                  height: 70,
+                                                  // width: 70,
+                                                  // height: 70,
                                                   fit: BoxFit.fill,
                                                   errorBuilder:
                                                       (
@@ -434,7 +434,6 @@ class _DetailScreenState extends State<DetailScreen>
                                           leading: c.images != null
                                               ? Image.network(
                                                   fit: BoxFit.fill,
-
                                                   c.images!.medium!,
                                                   // color: Colors.limeAccent,
                                                   errorBuilder:

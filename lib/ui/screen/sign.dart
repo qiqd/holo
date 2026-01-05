@@ -20,9 +20,9 @@ class _SignScreenState extends State<SignScreen> {
   final _confirmPasswordController = TextEditingController();
 
   AuthMode _authMode = AuthMode.login;
-  final String _email = '';
-  final String _password = '';
-  final String _serverUrl = '';
+  // final String _email = '';
+  // final String _password = '';
+  // final String _serverUrl = '';
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;

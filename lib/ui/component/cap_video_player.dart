@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:screen_brightness/screen_brightness.dart';
@@ -27,7 +28,7 @@ class CapVideoPlayer extends StatefulWidget {
     required this.isloading,
     this.isFullScreen = false,
     this.currentEpisodeIndex = 0,
-    this.title = "暂无标题",
+    this.title,
     this.episodeList = const [],
     this.onFullScreenChanged,
     this.onNextTab,
@@ -43,7 +44,7 @@ class CapVideoPlayer extends StatefulWidget {
 
 class _CapVideoPlayerState extends State<CapVideoPlayer> {
   late bool _isFullScreen = widget.isFullScreen;
-  late final String title = widget.title ?? "暂无标题";
+  late final String title = widget.title ?? context.tr("component.title");
   late final VideoPlayerController player = widget.controller;
 
   late final ScreenBrightness brightnessController;
@@ -81,7 +82,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   void _addListener() {
     player.addListener(() {
       if (player.value.hasError) {
-        log("播放器发生错误: ${player.value.errorDescription}");
+        log("error on video player: ${player.value.errorDescription}");
         widget.onError?.call(player.value.errorDescription ?? "");
       }
       if (mounted) {
@@ -153,7 +154,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     );
     setState(() {
       showMsg = true;
-      msgText = '亮度: ${(newBrightness * 100).toStringAsFixed(0)}%';
+      msgText =
+          ' ${context.tr("component.cap_video_player.brightness")}: ${(newBrightness * 100).toStringAsFixed(0)}%';
     });
   }
 
@@ -175,7 +177,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     widget.controller.setVolume(newVolume);
     setState(() {
       showMsg = true;
-      msgText = '音量: ${(newVolume * 100).toStringAsFixed(0)}%';
+      msgText =
+          '${context.tr("component.cap_video_player.volume")}: ${(newVolume * 100).toStringAsFixed(0)}%';
     });
   }
 
@@ -193,7 +196,9 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     }
 
     setState(() {
-      msgText = dragOffset < 0 ? "后退${dragOffset.abs()}秒" : "前进$dragOffset秒";
+      msgText = dragOffset < 0
+          ? "${context.tr("component.cap_video_player.background")}${dragOffset.abs()}s"
+          : "${context.tr("component.cap_video_player.foreground")}${dragOffset.abs()}s";
     });
   }
 

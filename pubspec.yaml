@@ -31,7 +31,7 @@ dependencies:
   package_info_plus: ^9.0.0
   path_provider: ^2.1.1
   flutter_cache_manager: ^3.4.1
-
+  easy_localization: ^3.0.8
 dev_dependencies:
   flutter_test:
     sdk: flutter
