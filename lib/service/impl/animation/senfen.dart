@@ -21,7 +21,7 @@ class Senfen implements SourceService {
 
   @override
   String getName() {
-    return "森之屋";
+    return "Senfen";
   }
 
   @override

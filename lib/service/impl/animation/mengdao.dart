@@ -27,7 +27,7 @@ class Mengdao implements SourceService {
 
   @override
   String getName() {
-    return "萌岛动漫";
+    return "Mengdao";
   }
 
   @override

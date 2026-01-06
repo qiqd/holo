@@ -24,7 +24,7 @@ class AAfun implements SourceService {
 
   @override
   String getName() {
-    return "风铃动漫";
+    return "Aafun";
   }
 
   @override

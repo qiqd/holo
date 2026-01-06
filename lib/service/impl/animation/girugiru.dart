@@ -21,7 +21,7 @@ class Girugiru implements SourceService {
 
   @override
   String getName() {
-    return "Girugiri爱动漫";
+    return "Girugiri";
   }
 
   @override

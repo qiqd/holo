@@ -23,7 +23,7 @@ class Mwcy implements SourceService {
 
   @override
   String getName() {
-    return "喵物次元";
+    return "Mwcy";
   }
 
   @override
