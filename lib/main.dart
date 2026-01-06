@@ -23,8 +23,13 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(
-      supportedLocales: [Locale('en', 'US'), Locale('zh', 'CN')],
-      path: 'assets/translations',
+      supportedLocales: [
+        Locale('en', 'US'),
+        Locale('zh', 'CN'),
+        Locale('zh', 'TW'),
+        Locale('ja', 'JP'),
+      ],
+      path: 'lib/assert/translations',
       fallbackLocale: Locale('zh', 'CN'),
       child: MyApp(),
     ),

@@ -41,5 +41,141 @@
         "delete_subs_success": "删除云端订阅记录成功",
         "delete_view_failed": "删除云端播放记录失败",
         "delete_view_success": "删除云端播放记录成功"
+    },
+    "setting": {
+        "title": "设置",
+        "section": {
+            "account_status": "账户状态",
+            "app_info": "应用信息",
+            "data_management": "数据管理",
+            "appearance": "外观设置",
+            "open_source": "开源项目",
+            "language": "语言"
+        },
+        "account": {
+            "logged_in": "已登录",
+            "logged_out": "未登录",
+            "logout": "退出账号",
+            "logout_description": "退出当前账号,但是本地历史记录数据不会删除",
+            "signout_dialog_title": "退出账号",
+            "signout_dialog_content": "确定删除当前账号吗？",
+            "signout_dialog_cancel": "取消",
+            "signout_dialog_confirm": "确定"
+        },
+        "app_info": {
+            "about": "关于应用",
+            "version": "版本 {}",
+            "about_dialog_title": "关于 Holo",
+            "about_dialog_content": "一个开源的追番APP！",
+            "license_title": "开源协议",
+            "license_content": "AGPL-3.0 license",
+            "metadata_title": "番剧元信息",
+            "metadata_content": "Bangumi 番组计划",
+            "libraries_title": "第三方库"
+        },
+        "language": {
+            "change": "切换语言"
+        },
+        "data_management": {
+            "clear_playback_history": "清除观看历史",
+            "clear_playback_history_description": "删除所有观看历史记录,包括云端",
+            "clear_subscribe_history": "清除订阅历史",
+            "clear_subscribe_history_description": "删除所有订阅记录,包括云端",
+            "clear_cache": "清除缓存",
+            "clear_cache_description": "清理应用缓存数据",
+            "clear_dialog_title": "确认清除",
+            "clear_dialog_content_playback": "确定要清除所有播放历史记录吗？",
+            "clear_dialog_content_subscribe": "确定要清除所有订阅历史记录吗？",
+            "clear_dialog_cancel": "取消",
+            "clear_dialog_confirm": "确定",
+            "cloud_success": "云端历史记录已清除",
+            "cloud_failed": "云端历史记录清除失败{}",
+            "local_success": "本地历史已清除",
+            "cache_dialog_content": "确定要清除所有缓存吗？",
+            "cache_success": "应用缓存已清除",
+            "cache_failed": "清除缓存失败: {}"
+        },
+        "appearance": {
+            "theme_mode": "主题模式",
+            "theme_mode_system": "跟随系统",
+            "theme_mode_light": "浅色",
+            "theme_mode_dark": "深色",
+            "theme_dialog_title": "选择主题模式",
+            "theme_dialog_cancel": "取消",
+            "theme_dialog_confirm": "确定"
+        },
+        "open_source": {
+            "source_code": "源代码",
+            "source_code_description": "在GitHub上查看源代码",
+            "report_issue": "报告问题",
+            "report_issue_description": "提交Bug或功能建议",
+            "star_project": "给项目点赞",
+            "star_project_description": "在GitHub上为项目点星"
+        }
+    },
+    "sign": {
+        "title": "欢迎回来",
+        "server_url": "Server Url",
+        "server_url_hint": "example: https://api.example.com",
+        "email": "邮箱",
+        "password": "密码",
+        "confirm_password": "确认密码",
+        "login": "登录",
+        "register": "注册",
+        "switch_to_register": "切换至注册",
+        "switch_to_login": "切换至登录",
+        "login_success": "登录成功",
+        "register_success": "注册成功",
+        "password_not_match": "两次输入密码不一致",
+        "error": "错误",
+        "please_enter_server_url": "请输入Server Url",
+        "please_enter_valid_server_url": "请输入有效的Server Url",
+        "please_enter_email": "请输入邮箱",
+        "please_enter_valid_email": "请输入有效的邮箱地址",
+        "please_enter_password": "请输入密码",
+        "please_enter_confirm_password": "请输入确认密码",
+        "help": "如何使用",
+        "how_to_deploy": "如何部署",
+        "close": "关闭",
+        "help_content": "由于App不会存储任何有关用户的信息，如果想要保存自己的账号信息，在使用前请部署自己的服务器,点击查看如何部署",
+        "app_bar_title": "欢迎回来"
+    },
+    "search": {
+        "hint_text": "搜索",
+        "search_history": "搜索历史",
+        "delete_search_history": "删除所有搜索记录",
+        "confirm_delete_search_history": "确定删除所有搜索记录吗？",
+        "error_searching": "搜索出错: {}",
+        "cancel": "取消",
+        "confirm": "确定"
+    },
+    "detail": {
+        "title": "详情",
+        "no_source_found": "没有匹配到播放源,请点击右上角手动搜索",
+        "search_hint": "若结果为空,尝试输入其他关键词搜索",
+        "no_search_results": "暂无搜索结果",
+        "no_title": "暂无标题",
+        "tabs": {
+            "summary": "简介",
+            "characters": "人物",
+            "relations": "角色",
+            "related_works": "关联作品"
+        },
+        "no_summary": "暂无简介",
+        "unknown": "未知",
+        "no_character_data": "人物暂无数据",
+        "no_relation_data": "角色暂无数据",
+        "no_related_works_data": "关联作品暂无数据",
+        "air_date_key": "放送开始"
+    },
+    "player": {
+        "comments": "评论",
+        "episodes": "选集",
+        "route_selection": "路线选择",
+        "route_number": "路线{}",
+        "no_comments": "暂无评论",
+        "no_episode_name": "暂无剧集名称",
+        "episode_not_exist": "该集不存在",
+        "playback_error": "无法获取播放地址,换条路线试试"
     }
 }

@@ -45,6 +45,7 @@ flutter:
   uses-material-design: true
   assets:
     - lib/images/launcher.png
+    - lib/assert/translations/
 
 package_rename_config:
   android:

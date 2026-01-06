@@ -10,6 +10,7 @@ import 'package:holo/util/local_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SetttingScreen extends StatefulWidget {
   const SetttingScreen({super.key});
@@ -39,10 +40,10 @@ class _SetttingScreenState extends State<SetttingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('设置')),
+      appBar: AppBar(title: Text('setting.title'.tr())),
       body: ListView(
         children: [
-          _buildSectionHeader('账户状态'),
+          _buildSectionHeader('setting.section.account_status'.tr()),
           VisibilityDetector(
             key: const Key('account_info_section'),
             child: ListTile(
@@ -55,9 +56,13 @@ class _SetttingScreenState extends State<SetttingScreen> {
                 child: Container(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    _email != null && _token != null ? _email! : '未登录',
+                    _email != null && _token != null
+                        ? _email!
+                        : 'setting.account.logged_out'.tr(),
                     key: ValueKey<String>(
-                      _email != null && _token != null ? _email! : '未登录',
+                      _email != null && _token != null
+                          ? _email!
+                          : 'setting.account.logged_out'.tr(),
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -81,53 +86,119 @@ class _SetttingScreenState extends State<SetttingScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.exit_to_app),
-            title: const Text('退出账号'),
-            subtitle: const Text('退出当前账号,但是本地历史记录数据不会删除'),
+            title: Text('setting.account.logout'.tr()),
+            subtitle: Text('setting.account.logout_description'.tr()),
             onTap: () => _showSignoutAccountDialog(),
           ),
           // 应用信息部分
-          _buildSectionHeader('应用信息'),
+          _buildSectionHeader('setting.section.app_info'.tr()),
           ListTile(
             leading: const Icon(Icons.info_outline),
-            title: const Text('关于应用'),
-            subtitle: Text('版本 $_version'),
+            title: Text('setting.app_info.about'.tr()),
+            subtitle: Text('v$_version'),
             onTap: () => _showAboutDialog(),
+          ),
+          // 切换语言部分
+          _buildSectionHeader('setting.section.language'.tr()),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: Text('setting.language.change'.tr()),
+            trailing: PopupMenuButton(
+              itemBuilder: (content) {
+                return [
+                  PopupMenuItem(
+                    value: 'zh-CN',
+                    child: Text('中文简体'),
+                    onTap: () {
+                      context.setLocale(Locale('zh', 'CN'));
+                      setState(() {});
+                    },
+                  ),
+                  PopupMenuItem(
+                    value: 'zh-TW',
+                    child: Text('中文繁體'),
+                    onTap: () {
+                      context.setLocale(Locale('zh', 'TW'));
+                      setState(() {});
+                    },
+                  ),
+                  PopupMenuItem(
+                    value: 'en-US',
+                    child: Text('English'),
+                    onTap: () {
+                      context.setLocale(Locale('en', 'US'));
+                      setState(() {});
+                    },
+                  ),
+
+                  PopupMenuItem(
+                    value: 'ja-JP',
+                    child: Text('日本語'),
+                    onTap: () {
+                      context.setLocale(Locale('ja', 'JP'));
+                      setState(() {});
+                    },
+                  ),
+                ];
+              },
+            ),
           ),
 
           // 数据管理部分
-          _buildSectionHeader('数据管理'),
+          _buildSectionHeader('setting.section.data_management'.tr()),
           ListTile(
             leading: const Icon(Icons.history),
-            title: const Text('清除观看历史'),
-            subtitle: const Text('删除所有观看历史记录,包括云端'),
+            title: Text('setting.data_management.clear_playback_history'.tr()),
+            subtitle: Text(
+              'setting.data_management.clear_playback_history_description'.tr(),
+            ),
             onTap: () => _clearHistory(
               true,
-              () => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('云端历史记录已清除'))),
-              (msg) => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('云端历史记录清除失败$msg'))),
-              () => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('本地历史已清除'))),
+              () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('setting.data_management.cloud_success'.tr()),
+                ),
+              ),
+              (msg) => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'setting.data_management.cloud_failed'.tr() + msg,
+                  ),
+                ),
+              ),
+              () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('setting.data_management.local_success'.tr()),
+                ),
+              ),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.favorite_border_rounded),
-            title: const Text('清除订阅历史'),
-            subtitle: const Text('删除所有订阅记录,包括云端'),
+            title: Text('setting.data_management.clear_subscribe_history'.tr()),
+            subtitle: Text(
+              'setting.data_management.clear_subscribe_history_description'
+                  .tr(),
+            ),
             onTap: () => _clearHistory(
               false,
-              () => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('云端历史记录已清除'))),
-              (msg) => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('云端历史记录清除失败$msg'))),
-              () => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('本地历史已清除'))),
+              () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('setting.data_management.cloud_success'.tr()),
+                ),
+              ),
+              (msg) => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'setting.data_management.cloud_failed'.tr() + msg,
+                  ),
+                ),
+              ),
+              () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('setting.data_management.local_success'.tr()),
+                ),
+              ),
             ),
           ),
           // ListTile(
@@ -138,38 +209,40 @@ class _SetttingScreenState extends State<SetttingScreen> {
           // ),
           ListTile(
             leading: const Icon(Icons.delete_outline),
-            title: const Text('清除缓存'),
-            subtitle: const Text('清理应用缓存数据'),
+            title: Text('setting.data_management.clear_cache'.tr()),
+            subtitle: Text(
+              'setting.data_management.clear_cache_description'.tr(),
+            ),
             onTap: () => _clearCache(),
           ),
 
           // 外观设置部分
-          _buildSectionHeader('外观设置'),
+          _buildSectionHeader('setting.section.appearance'.tr()),
           ListTile(
             leading: const Icon(Icons.palette),
-            title: const Text('主题模式'),
+            title: Text('setting.appearance.theme_mode'.tr()),
             subtitle: Text(_getThemeModeText()),
             onTap: () => _showThemeModeDialog(),
           ),
 
           // 开源项目部分
-          _buildSectionHeader('开源项目'),
+          _buildSectionHeader('setting.section.open_source'.tr()),
           ListTile(
             leading: const Icon(Icons.code),
-            title: const Text('源代码'),
-            subtitle: const Text('在GitHub上查看源代码'),
+            title: Text('setting.open_source.source_code'.tr()),
+            subtitle: Text('setting.open_source.source_code_description'.tr()),
             onTap: () => _openGitHub('https://github.com/qiqd/holo'),
           ),
           ListTile(
             leading: const Icon(Icons.bug_report),
-            title: const Text('报告问题'),
-            subtitle: const Text('提交Bug或功能建议'),
+            title: Text('setting.open_source.report_issue'.tr()),
+            subtitle: Text('setting.open_source.report_issue_description'.tr()),
             onTap: () => _openGitHub('https://github.com/qiqd/holo/issues'),
           ),
           ListTile(
             leading: const Icon(Icons.star),
-            title: const Text('给项目点赞'),
-            subtitle: const Text('在GitHub上为项目点星'),
+            title: Text('setting.open_source.star_project'.tr()),
+            subtitle: Text('setting.open_source.star_project_description'.tr()),
             onTap: () => _openGitHub('https://github.com/qiqd/holo'),
           ),
         ],
@@ -195,23 +268,29 @@ class _SetttingScreenState extends State<SetttingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('关于 Holo'),
+        title: Text('setting.app_info.about_dialog_title'.tr()),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('一个开源的追番APP！'),
+              Text('setting.app_info.about_dialog_content'.tr()),
               const SizedBox(height: 16),
-              const Text('开源协议', style: TextStyle(fontWeight: FontWeight.bold)),
-              const Text('AGPL-3.0 license'),
-              const SizedBox(height: 8),
-              const Text(
-                '番剧元信息',
+              Text(
+                'setting.app_info.license_title'.tr(),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              const Text('Bangumi 番组计划'),
-              const Text('第三方库', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('AGPL-3.0 license'),
+              const SizedBox(height: 8),
+              Text(
+                'setting.app_info.metadata_title'.tr(),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text('Bangumi 番组计划'),
+              Text(
+                'setting.app_info.libraries_title'.tr(),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const Text('• flutter - BSD License'),
               const Text('• dio - MIT License'),
               const Text('• shared_preferences - BSD License'),
@@ -251,7 +330,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
+            child: Text('setting.data_management.clear_dialog_confirm'.tr()),
           ),
         ],
       ),
@@ -267,12 +346,16 @@ class _SetttingScreenState extends State<SetttingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认清除'),
-        content: Text("确定要清除所有${isPlayback ? '播放' : '订阅'}历史记录吗？"),
+        title: Text('setting.data_management.clear_dialog_title'.tr()),
+        content: Text(
+          isPlayback
+              ? 'setting.data_management.clear_dialog_content_playback'.tr()
+              : 'setting.data_management.clear_dialog_content_subscribe'.tr(),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('setting.data_management.clear_dialog_cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
@@ -289,7 +372,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
               LocalStore.clearHistory(clearPlayback: isPlayback);
               onLocalSuccess();
             },
-            child: const Text('确定'),
+            child: Text('setting.data_management.clear_dialog_confirm'.tr()),
           ),
         ],
       ),
@@ -301,23 +384,25 @@ class _SetttingScreenState extends State<SetttingScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('确认清除'),
-          content: const Text('确定要清除所有缓存吗？'),
+          title: Text('setting.data_management.clear_dialog_title'.tr()),
+          content: Text('setting.data_management.cache_dialog_content'.tr()),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('取消'),
+              child: Text('setting.data_management.clear_dialog_cancel'.tr()),
             ),
             TextButton(
               onPressed: () {
                 // 清除缓存逻辑
                 // Navigator.pop(context);
                 DefaultCacheManager().emptyCache();
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('应用缓存已清除')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('setting.data_management.cache_success'.tr()),
+                  ),
+                );
               },
-              child: const Text('确定'),
+              child: Text('setting.data_management.clear_dialog_confirm'.tr()),
             ),
           ],
         ),
@@ -338,16 +423,22 @@ class _SetttingScreenState extends State<SetttingScreen> {
         );
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('无法打开GitHub链接')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('setting.open_source.source_code_description'.tr()),
+            ),
+          );
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('打开链接失败: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${'setting.open_source.source_code_description'.tr()}: $e',
+            ),
+          ),
+        );
       }
     }
   }
@@ -356,11 +447,11 @@ class _SetttingScreenState extends State<SetttingScreen> {
     final themeMode = MyApp.themeNotifier.value;
     switch (themeMode) {
       case ThemeMode.system:
-        return '跟随系统';
+        return 'setting.appearance.theme_mode_system'.tr();
       case ThemeMode.light:
-        return '浅色';
+        return 'setting.appearance.theme_mode_light'.tr();
       case ThemeMode.dark:
-        return '深色';
+        return 'setting.appearance.theme_mode_dark'.tr();
     }
   }
 
@@ -370,7 +461,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('选择主题模式'),
+        title: Text('setting.appearance.theme_dialog_title'.tr()),
         content: StatefulBuilder(
           builder: (context, setState) {
             return Column(
@@ -386,7 +477,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
                       });
                     },
                   ),
-                  title: const Text('跟随系统'),
+                  title: Text('setting.appearance.theme_mode_system'.tr()),
                   onTap: () {
                     setState(() {
                       currentTheme = ThemeMode.system;
@@ -403,7 +494,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
                       });
                     },
                   ),
-                  title: const Text('浅色'),
+                  title: Text('setting.appearance.theme_mode_light'.tr()),
                   onTap: () {
                     setState(() {
                       currentTheme = ThemeMode.light;
@@ -420,7 +511,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
                       });
                     },
                   ),
-                  title: const Text('深色'),
+                  title: Text('setting.appearance.theme_mode_dark'.tr()),
                   onTap: () {
                     setState(() {
                       LocalStore.setString(
@@ -438,7 +529,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('setting.appearance.theme_dialog_cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
@@ -447,7 +538,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
               Navigator.pop(context);
               setState(() {});
             },
-            child: const Text('确定'),
+            child: Text('setting.appearance.theme_dialog_confirm'.tr()),
           ),
         ],
       ),
@@ -458,12 +549,12 @@ class _SetttingScreenState extends State<SetttingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('退出账号'),
-        content: const Text('确定删除当前账号吗？'),
+        title: Text('setting.account.signout_dialog_title'.tr()),
+        content: Text('setting.account.signout_dialog_content'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('setting.account.signout_dialog_cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
@@ -473,7 +564,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
               LocalStore.removeLocalAccount();
               Navigator.pop(context);
             },
-            child: const Text('确定'),
+            child: Text('setting.account.signout_dialog_confirm'.tr()),
           ),
         ],
       ),

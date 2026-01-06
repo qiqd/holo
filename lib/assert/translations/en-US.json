@@ -1,7 +1,181 @@
 {
     "component": {
+        "title": "No Title",
         "cap_video_player": {
-            "title": "{0}s"
+            "brightness": "Brightness",
+            "volume": "Volume",
+            "foreground": "Forward",
+            "background": "Backward"
+        },
+        "media_card": {
+            "score": "Match",
+            "status": "Pending Update",
+            "total_episode": "{} episodes",
+            "lastviewAtEpisode": "Watched to episode {}",
+            "lastviewAtTime": "Last watched {}",
+            "days_ago": "{} days ago",
+            "hours_ago": "{} hours ago",
+            "minutes_ago": "{} minutes ago",
+            "just_now": "Just now"
         }
+    },
+    "home": {
+        "hint_text": "Search",
+        "recommand_text": "Recommended"
+    },
+    "calendar": {
+        "title": "Weekly Schedule",
+        "week": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+    },
+    "subscribe": {
+        "title": "Subscriptions",
+        "tab_subs": "Subscriptions",
+        "tab_view": "Playback History",
+        "refresh_btn_subs": "No subscriptions, tap to refresh",
+        "refresh_btn_view": "No playback history, tap to refresh",
+        "empty_text": "No subscriptions",
+        "delete_failed": "Delete failed",
+        "fetch_subs_failed": "Failed to fetch cloud playback history",
+        "fetch_view_failed": "Failed to fetch cloud subscription history",
+        "delete_subs_failed": "Failed to delete cloud subscription records",
+        "delete_subs_success": "Successfully deleted cloud subscription records",
+        "delete_view_failed": "Failed to delete cloud playback history",
+        "delete_view_success": "Successfully deleted cloud playback history"
+    },
+    "setting": {
+        "title": "Settings",
+        "section": {
+            "account_status": "Account Status",
+            "app_info": "App Information",
+            "data_management": "Data Management",
+            "appearance": "Appearance",
+            "open_source": "Open Source",
+            "language": "Language"
+        },
+        "account": {
+            "logged_in": "Logged In",
+            "logged_out": "Not Logged In",
+            "logout": "Log Out",
+            "logout_description": "Log out of current account, but local history data will not be deleted",
+            "signout_dialog_title": "Log Out",
+            "signout_dialog_content": "Are you sure you want to delete the current account?",
+            "signout_dialog_cancel": "Cancel",
+            "signout_dialog_confirm": "Confirm"
+        },
+        "app_info": {
+            "about": "About App",
+            "version": "Version {}",
+            "about_dialog_title": "About Holo",
+            "about_dialog_content": "An open source anime tracking app!",
+            "license_title": "Open Source License",
+            "license_content": "AGPL-3.0 license",
+            "metadata_title": "Anime Metadata",
+            "metadata_content": "Bangumi Database",
+            "libraries_title": "Third-party Libraries"
+        },
+        "language": {
+            "change": "Change Language"
+        },
+        "data_management": {
+            "clear_playback_history": "Clear Playback History",
+            "clear_playback_history_description": "Delete all playback history, including cloud",
+            "clear_subscribe_history": "Clear Subscription History",
+            "clear_subscribe_history_description": "Delete all subscription records, including cloud",
+            "clear_cache": "Clear Cache",
+            "clear_cache_description": "Clear app cache data",
+            "clear_dialog_title": "Confirm Clear",
+            "clear_dialog_content_playback": "Are you sure you want to clear all playback history?",
+            "clear_dialog_content_subscribe": "Are you sure you want to clear all subscription history?",
+            "clear_dialog_cancel": "Cancel",
+            "clear_dialog_confirm": "Confirm",
+            "cloud_success": "Cloud history cleared",
+            "cloud_failed": "Failed to clear cloud history: {}",
+            "local_success": "Local history cleared",
+            "cache_dialog_content": "Are you sure you want to clear all cache?",
+            "cache_success": "App cache cleared",
+            "cache_failed": "Failed to clear cache: {}"
+        },
+        "appearance": {
+            "theme_mode": "Theme Mode",
+            "theme_mode_system": "Follow System",
+            "theme_mode_light": "Light",
+            "theme_mode_dark": "Dark",
+            "theme_dialog_title": "Select Theme Mode",
+            "theme_dialog_cancel": "Cancel",
+            "theme_dialog_confirm": "Confirm"
+        },
+        "open_source": {
+            "source_code": "Source Code",
+            "source_code_description": "View source code on GitHub",
+            "report_issue": "Report Issue",
+            "report_issue_description": "Submit bugs or feature requests",
+            "star_project": "Star Project",
+            "star_project_description": "Star the project on GitHub"
+        }
+    },
+    "sign": {
+        "title": "Welcome Back",
+        "server_url": "Server URL",
+        "server_url_hint": "example: https://api.example.com",
+        "email": "Email",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "login": "Login",
+        "register": "Register",
+        "switch_to_register": "Switch to Register",
+        "switch_to_login": "Switch to Login",
+        "login_success": "Login successful",
+        "register_success": "Registration successful",
+        "password_not_match": "Passwords do not match",
+        "error": "Error",
+        "please_enter_server_url": "Please enter Server URL",
+        "please_enter_valid_server_url": "Please enter a valid Server URL",
+        "please_enter_email": "Please enter email",
+        "please_enter_valid_email": "Please enter a valid email address",
+        "please_enter_password": "Please enter password",
+        "please_enter_confirm_password": "Please enter confirmation password",
+        "help": "How to Use",
+        "how_to_deploy": "How to Deploy",
+        "close": "Close",
+        "help_content": "Since the app does not store any user information, please deploy your own server before using. Click to see how to deploy",
+        "app_bar_title": "Welcome Back"
+    },
+    "search": {
+        "hint_text": "Search",
+        "search_history": "Search History",
+        "delete_search_history": "Delete All Search Records",
+        "confirm_delete_search_history": "Are you sure you want to delete all search records?",
+        "error_searching": "Search error: {}",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+    },
+    "detail": {
+        "title": "Details",
+        "no_source_found": "No playback source found, please click the top right corner to search manually",
+        "search_hint": "If results are empty, try searching with different keywords",
+        "no_search_results": "No search results",
+        "no_title": "No Title",
+        "tabs": {
+            "summary": "Summary",
+            "characters": "Characters",
+            "relations": "Roles",
+            "related_works": "Related Works"
+        },
+        "no_summary": "No summary",
+        "unknown": "Unknown",
+        "no_character_data": "No character data",
+        "no_relation_data": "No role data",
+        "no_related_works_data": "No related works data",
+        "air_date_key": "Air Date"
+    },
+    "player": {
+        "comments": "Comments",
+        "episodes": "Episodes",
+        "route_selection": "Route Selection",
+        "route_number": "Route {}",
+        "no_comments": "No comments",
+        "no_episode_name": "No episode name",
+        "episode_not_exist": "Episode does not exist",
+        "playback_error": "Unable to get playback address, try another route"
     }
 }

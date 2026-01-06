@@ -1,0 +1,181 @@
+{
+    "component": {
+        "title": "タイトルなし",
+        "cap_video_player": {
+            "brightness": "明るさ",
+            "volume": "音量",
+            "foreground": "早送り",
+            "background": "巻戻し"
+        },
+        "media_card": {
+            "score": "一致度",
+            "status": "更新待ち",
+            "total_episode": "全{}話",
+            "lastviewAtEpisode": "{}話まで視聴",
+            "lastviewAtTime": "前回視聴時間{}",
+            "days_ago": "{}日前",
+            "hours_ago": "{}時間前",
+            "minutes_ago": "{}分前",
+            "just_now": "たった今"
+        }
+    },
+    "home": {
+        "hint_text": "検索",
+        "recommand_text": "おすすめ"
+    },
+    "calendar": {
+        "title": "週間更新表",
+        "week": "月,火,水,木,金,土,日"
+    },
+    "subscribe": {
+        "title": "購読",
+        "tab_subs": "購読",
+        "tab_view": "再生履歴",
+        "refresh_btn_subs": "購読なし、タップして更新を試す",
+        "refresh_btn_view": "再生履歴なし、タップして更新を試す",
+        "empty_text": "購読なし",
+        "delete_failed": "削除失敗",
+        "fetch_subs_failed": "クラウド再生履歴の取得に失敗",
+        "fetch_view_failed": "クラウド購読記録の取得に失敗",
+        "delete_subs_failed": "クラウド購読記録の削除に失敗",
+        "delete_subs_success": "クラウド購読記録の削除に成功",
+        "delete_view_failed": "クラウド再生履歴の削除に失敗",
+        "delete_view_success": "クラウド再生履歴の削除に成功"
+    },
+    "setting": {
+        "title": "設定",
+        "section": {
+            "account_status": "アカウント状態",
+            "app_info": "アプリ情報",
+            "data_management": "データ管理",
+            "appearance": "外観設定",
+            "open_source": "オープンソース",
+            "language": "言語"
+        },
+        "account": {
+            "logged_in": "ログイン済み",
+            "logged_out": "未ログイン",
+            "logout": "アカウントからログアウト",
+            "logout_description": "現在のアカウントからログアウトしますが、ローカルの履歴データは削除されません",
+            "signout_dialog_title": "アカウントからログアウト",
+            "signout_dialog_content": "本当にアカウントを削除しますか？",
+            "signout_dialog_cancel": "キャンセル",
+            "signout_dialog_confirm": "確認"
+        },
+        "app_info": {
+            "about": "アプリについて",
+            "version": "バージョン {}",
+            "about_dialog_title": "Holoについて",
+            "about_dialog_content": "オープンソースの追番アプリ！",
+            "license_title": "オープンソースライセンス",
+            "license_content": "AGPL-3.0 license",
+            "metadata_title": "アニメーションメタデータ",
+            "metadata_content": "Bangumi バンジグループ",
+            "libraries_title": "サードパーティライブラリ"
+        },
+        "language": {
+            "change": "言語切替"
+        },
+        "data_management": {
+            "clear_playback_history": "視聴履歴をクリア",
+            "clear_playback_history_description": "すべての視聴履歴を削除します（クラウド含む）",
+            "clear_subscribe_history": "購読履歴をクリア",
+            "clear_subscribe_history_description": "すべての購読記録を削除します（クラウド含む）",
+            "clear_cache": "キャッシュをクリア",
+            "clear_cache_description": "アプリケーションキャッシュデータをクリア",
+            "clear_dialog_title": "クリア確認",
+            "clear_dialog_content_playback": "すべての再生履歴をクリアしてもよろしいですか？",
+            "clear_dialog_content_subscribe": "すべての購読履歴をクリアしてもよろしいですか？",
+            "clear_dialog_cancel": "キャンセル",
+            "clear_dialog_confirm": "確認",
+            "cloud_success": "クラウド履歴がクリアされました",
+            "cloud_failed": "クラウド履歴のクリアに失敗しました{}",
+            "local_success": "ローカル履歴がクリアされました",
+            "cache_dialog_content": "すべてのキャッシュをクリアしてもよろしいですか？",
+            "cache_success": "アプリケーションキャッシュがクリアされました",
+            "cache_failed": "キャッシュのクリアに失敗しました: {}"
+        },
+        "appearance": {
+            "theme_mode": "テーマモード",
+            "theme_mode_system": "システムに従う",
+            "theme_mode_light": "ライト",
+            "theme_mode_dark": "ダーク",
+            "theme_dialog_title": "テーマモードを選択",
+            "theme_dialog_cancel": "キャンセル",
+            "theme_dialog_confirm": "確認"
+        },
+        "open_source": {
+            "source_code": "ソースコード",
+            "source_code_description": "GitHubでソースコードを見る",
+            "report_issue": "問題を報告",
+            "report_issue_description": "バグや機能リクエストを送信",
+            "star_project": "プロジェクトにスターを付ける",
+            "star_project_description": "GitHubでプロジェクトにスターを付ける"
+        }
+    },
+    "sign": {
+        "title": "お帰りなさい",
+        "server_url": "サーバーURL",
+        "server_url_hint": "例: https://api.example.com",
+        "email": "メールアドレス",
+        "password": "パスワード",
+        "confirm_password": "パスワード確認",
+        "login": "ログイン",
+        "register": "登録",
+        "switch_to_register": "登録に切り替え",
+        "switch_to_login": "ログインに切り替え",
+        "login_success": "ログイン成功",
+        "register_success": "登録成功",
+        "password_not_match": "パスワードが一致しません",
+        "error": "エラー",
+        "please_enter_server_url": "サーバーURLを入力してください",
+        "please_enter_valid_server_url": "有効なサーバーURLを入力してください",
+        "please_enter_email": "メールアドレスを入力してください",
+        "please_enter_valid_email": "有効なメールアドレスを入力してください",
+        "please_enter_password": "パスワードを入力してください",
+        "please_enter_confirm_password": "パスワード確認を入力してください",
+        "help": "使い方",
+        "how_to_deploy": "デプロイ方法",
+        "close": "閉じる",
+        "help_content": "アプリはユーザー情報一切保存しません。アカウント情報を保存するには、使用前に自身のサーバーをデプロイしてください。クリックしてデプロイ方法を表示",
+        "app_bar_title": "お帰りなさい"
+    },
+    "search": {
+        "hint_text": "検索",
+        "search_history": "検索履歴",
+        "delete_search_history": "すべての検索記録を削除",
+        "confirm_delete_search_history": "すべての検索記録を削除してもよろしいですか？",
+        "error_searching": "検索エラー: {}",
+        "cancel": "キャンセル",
+        "confirm": "確認"
+    },
+    "detail": {
+        "title": "詳細",
+        "no_source_found": "再生ソースが見つかりません。右上をクリックして手動検索してください",
+        "search_hint": "結果がない場合は、他のキーワードで検索してみてください",
+        "no_search_results": "検索結果なし",
+        "no_title": "タイトルなし",
+        "tabs": {
+            "summary": "概要",
+            "characters": "キャラクター",
+            "relations": "キャラクター",
+            "related_works": "関連作品"
+        },
+        "no_summary": "概要なし",
+        "unknown": "不明",
+        "no_character_data": "キャラクター情報なし",
+        "no_relation_data": "キャラクター情報なし",
+        "no_related_works_data": "関連作品情報なし",
+        "air_date_key": "放送開始"
+    },
+    "player": {
+        "comments": "コメント",
+        "episodes": "エピソード",
+        "route_selection": "ルート選択",
+        "route_number": "ルート{}",
+        "no_comments": "コメントなし",
+        "no_episode_name": "エピソード名なし",
+        "episode_not_exist": "この話は存在しません",
+        "playback_error": "再生アドレスを取得できません。他のルートをお試しください"
+    }
+}

@@ -4,6 +4,7 @@ import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/media_grid.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -29,9 +30,11 @@ class _SearchScreenState extends State<SearchScreen> {
       _loading = true;
     });
     final result = await Api.bangumi.fetchSearchSync(keyword, (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('搜索出错: ${e.toString()}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("search.error_searching".tr(args: [e.toString()])),
+        ),
+      );
     });
     setState(() {
       _loading = false;
@@ -49,10 +52,13 @@ class _SearchScreenState extends State<SearchScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("删除所有搜索记录"),
-        content: const Text("确定删除所有搜索记录吗？"),
+        title: Text("search.delete_search_history".tr()),
+        content: Text("search.confirm_delete_search_history".tr()),
         actions: [
-          TextButton(onPressed: () => context.pop(), child: const Text("取消")),
+          TextButton(
+            onPressed: () => context.pop(),
+            child: Text("search.cancel".tr()),
+          ),
           TextButton(
             onPressed: () {
               LocalStore.removeAllSearchHistory();
@@ -61,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
               });
               context.pop();
             },
-            child: const Text("确定"),
+            child: Text("search.confirm".tr()),
           ),
         ],
       ),
@@ -78,7 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
               _showDeleteDialog();
             },
             icon: Icon(Icons.delete_forever_rounded),
-            tooltip: "删除所有搜索记录",
+            tooltip: "search.delete_search_history".tr(),
           ),
         ],
         leading: IconButton(
@@ -109,7 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     }),
                   )
                 : null,
-            hintText: "搜索",
+            hintText: "search.hint_text".tr(),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0)),
             ),
@@ -132,7 +138,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             Padding(
                               padding: EdgeInsets.only(bottom: 12),
                               child: Text(
-                                "搜索历史",
+                                "search.search_history".tr(),
                                 style: Theme.of(context).textTheme.titleMedium
                                     ?.copyWith(fontWeight: FontWeight.bold),
                               ),

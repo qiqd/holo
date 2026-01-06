@@ -15,6 +15,7 @@ import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/meida_card.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;
@@ -216,7 +217,7 @@ class _DetailScreenState extends State<DetailScreen>
         onPressed: () {
           if (defaultMedia == null || defaultSource == null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: const Text('没有匹配到播放源,请点击右上角手动搜索')),
+              SnackBar(content: Text("detail.no_source_found".tr())),
             );
             return;
           }
@@ -240,7 +241,7 @@ class _DetailScreenState extends State<DetailScreen>
             context.pop(context);
           },
         ),
-        title: const Text('详情'),
+        title: Text("detail.title".tr()),
         actions: [
           IconButton(
             onPressed: () {
@@ -272,8 +273,8 @@ class _DetailScreenState extends State<DetailScreen>
                             TextField(
                               textInputAction: TextInputAction.search,
                               textAlign: TextAlign.center,
-                              decoration: const InputDecoration(
-                                hintText: '若结果为空，尝试输入其他关键词搜索',
+                              decoration: InputDecoration(
+                                hintText: "detail.search_hint".tr(),
                               ),
                               onSubmitted: (value) async {
                                 setState(() {
@@ -297,7 +298,9 @@ class _DetailScreenState extends State<DetailScreen>
                             ),
                             Expanded(
                               child: source2Media.isEmpty
-                                  ? LoadingOrShowMsg(msg: "暂无搜索结果")
+                                  ? LoadingOrShowMsg(
+                                      msg: "detail.no_search_results".tr(),
+                                    )
                                   : TabBarView(
                                       controller: subTabController,
                                       children: sourceService.map((e) {
@@ -316,7 +319,9 @@ class _DetailScreenState extends State<DetailScreen>
                                                         score: m.score ?? 0,
                                                         imageUrl: m.coverUrl!,
                                                         nameCn:
-                                                            m.title ?? "暂无标题",
+                                                            m.title ??
+                                                            "detail.no_title"
+                                                                .tr(),
                                                         genre: m.type,
                                                         height: 150,
                                                         onTap: () {
@@ -330,7 +335,8 @@ class _DetailScreenState extends State<DetailScreen>
                                                               "source": e,
                                                               "nameCn":
                                                                   m.title ??
-                                                                  "暂无标题",
+                                                                  "detail.no_title"
+                                                                      .tr(),
                                                             },
                                                           );
                                                         },
@@ -372,7 +378,11 @@ class _DetailScreenState extends State<DetailScreen>
                     height: 250,
                     airDate: data!.infobox
                         ?.firstWhere(
-                          (element) => element.key?.contains("放送开始") ?? false,
+                          (element) =>
+                              element.key?.contains(
+                                "detail.air_date_key".tr(),
+                              ) ??
+                              false,
                           orElse: () => InfoBox(),
                         )
                         .value,
@@ -382,11 +392,11 @@ class _DetailScreenState extends State<DetailScreen>
                       children: [
                         TabBar(
                           controller: tabController,
-                          tabs: const [
-                            Tab(text: '简介'),
-                            Tab(text: '人物'),
-                            Tab(text: '角色'),
-                            Tab(text: '关联作品'),
+                          tabs: [
+                            Tab(text: "detail.tabs.summary".tr()),
+                            Tab(text: "detail.tabs.characters".tr()),
+                            Tab(text: "detail.tabs.relations".tr()),
+                            Tab(text: "detail.tabs.related_works".tr()),
                           ],
                         ),
                         Expanded(
@@ -394,7 +404,9 @@ class _DetailScreenState extends State<DetailScreen>
                             controller: tabController,
                             children: [
                               SingleChildScrollView(
-                                child: Text(data?.summary ?? '暂无简介'),
+                                child: Text(
+                                  data?.summary ?? "detail.no_summary".tr(),
+                                ),
                               ),
                               person != null
                                   ? ListView.builder(
@@ -419,12 +431,18 @@ class _DetailScreenState extends State<DetailScreen>
                                                       ),
                                                 )
                                               : const Icon(Icons.person),
-                                          title: Text(p.name ?? '未知'),
+                                          title: Text(
+                                            p.name ?? "detail.unknown".tr(),
+                                          ),
                                           subtitle: Text(p.relation ?? ''),
                                         );
                                       },
                                     )
-                                  : const Center(child: Text('人物暂无数据')),
+                                  : Center(
+                                      child: Text(
+                                        "detail.no_character_data".tr(),
+                                      ),
+                                    ),
                               character != null
                                   ? ListView.builder(
                                       itemCount: character?.length ?? 0,
@@ -447,12 +465,18 @@ class _DetailScreenState extends State<DetailScreen>
                                                       ),
                                                 )
                                               : const Icon(Icons.person),
-                                          title: Text(c.name ?? '未知'),
+                                          title: Text(
+                                            c.name ?? "detail.unknown".tr(),
+                                          ),
                                           subtitle: Text(c.relation ?? ''),
                                         );
                                       },
                                     )
-                                  : const Center(child: Text('角色暂无数据')),
+                                  : Center(
+                                      child: Text(
+                                        "detail.no_relation_data".tr(),
+                                      ),
+                                    ),
                               relation != null
                                   ? ListView.builder(
                                       itemCount: relation?.length ?? 0,
@@ -474,12 +498,18 @@ class _DetailScreenState extends State<DetailScreen>
                                                       ),
                                                 )
                                               : const Icon(Icons.person),
-                                          title: Text(r.nameCn ?? '未知'),
+                                          title: Text(
+                                            r.nameCn ?? "detail.unknown".tr(),
+                                          ),
                                           subtitle: Text(r.relation ?? ''),
                                         );
                                       },
                                     )
-                                  : const Center(child: Text('关联作品暂无数据')),
+                                  : Center(
+                                      child: Text(
+                                        "detail.no_related_works_data".tr(),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),

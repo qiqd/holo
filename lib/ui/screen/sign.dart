@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/account_api.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 enum AuthMode { login, register, reset }
 
@@ -51,7 +52,7 @@ class _SignScreenState extends State<SignScreen> {
       if (_passwordController.text != _confirmPasswordController.text) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('两次输入密码不一致')));
+        ).showSnackBar(SnackBar(content: Text('sign.password_not_match'.tr())));
         return;
       }
     }
@@ -68,7 +69,11 @@ class _SignScreenState extends State<SignScreen> {
       successHandler: () {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_authMode == AuthMode.register ? "注册成功" : "登录成功"),
+            content: Text(
+              _authMode == AuthMode.register
+                  ? "sign.register_success".tr()
+                  : "sign.login_success".tr(),
+            ),
           ),
         );
         setState(() {
@@ -94,18 +99,19 @@ class _SignScreenState extends State<SignScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("如何使用"),
-        content: const Text(
-          "由于App不会存储任何有关用户的信息，如果想要保存自己的账号信息，在使用前请部署自己的服务器,点击查看如何部署",
-        ),
+        title: Text("sign.help".tr()),
+        content: Text("sign.help_content".tr()),
         actions: [
           TextButton(
             onPressed: () {
               launchUrl(Uri.parse('https://github.com/qiqd/holo_backend'));
             },
-            child: const Text("如何部署"),
+            child: Text("sign.how_to_deploy".tr()),
           ),
-          TextButton(onPressed: () => context.pop(), child: const Text("关闭")),
+          TextButton(
+            onPressed: () => context.pop(),
+            child: Text("sign.close".tr()),
+          ),
         ],
       ),
     );
@@ -115,7 +121,7 @@ class _SignScreenState extends State<SignScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("欢迎回来"),
+        title: Text("sign.app_bar_title".tr()),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded),
@@ -158,19 +164,20 @@ class _SignScreenState extends State<SignScreen> {
                             // Server Url
                             TextFormField(
                               controller: _serverUrlController,
-                              decoration: const InputDecoration(
-                                labelText: "Server Url",
-                                hintText: "example: https://api.example.com",
+                              decoration: InputDecoration(
+                                labelText: "sign.server_url".tr(),
+                                hintText: "sign.server_url_hint".tr(),
                                 prefixIcon: Icon(Icons.link_rounded),
                                 border: OutlineInputBorder(),
                               ),
                               keyboardType: TextInputType.url,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return '请输入Server Url';
+                                  return 'sign.please_enter_server_url'.tr();
                                 }
                                 if (!value.contains('://')) {
-                                  return '请输入有效的Server Url';
+                                  return 'sign.please_enter_valid_server_url'
+                                      .tr();
                                 }
                                 return null;
                               },
@@ -178,18 +185,18 @@ class _SignScreenState extends State<SignScreen> {
                             // 邮箱输入框
                             TextFormField(
                               controller: _emailController,
-                              decoration: const InputDecoration(
-                                labelText: '邮箱',
+                              decoration: InputDecoration(
+                                labelText: 'sign.email'.tr(),
                                 prefixIcon: Icon(Icons.email_outlined),
                                 border: OutlineInputBorder(),
                               ),
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return '请输入邮箱';
+                                  return 'sign.please_enter_email'.tr();
                                 }
                                 if (!value.contains('@')) {
-                                  return '请输入有效的邮箱地址';
+                                  return 'sign.please_enter_valid_email'.tr();
                                 }
                                 return null;
                               },
@@ -199,7 +206,7 @@ class _SignScreenState extends State<SignScreen> {
                             TextFormField(
                               controller: _passwordController,
                               decoration: InputDecoration(
-                                labelText: '密码',
+                                labelText: 'sign.password'.tr(),
                                 prefixIcon: Icon(Icons.lock_outlined),
                                 border: OutlineInputBorder(),
                                 suffixIcon: InkWell(
@@ -218,7 +225,7 @@ class _SignScreenState extends State<SignScreen> {
                               obscureText: !_isPasswordVisible,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return '请输入密码';
+                                  return 'sign.please_enter_password'.tr();
                                 }
                                 return null;
                               },
@@ -233,7 +240,7 @@ class _SignScreenState extends State<SignScreen> {
                                   ? TextFormField(
                                       controller: _confirmPasswordController,
                                       decoration: InputDecoration(
-                                        labelText: '确认密码',
+                                        labelText: 'sign.confirm_password'.tr(),
                                         prefixIcon: Icon(Icons.lock),
                                         border: OutlineInputBorder(),
                                         suffixIcon: InkWell(
@@ -252,10 +259,11 @@ class _SignScreenState extends State<SignScreen> {
                                       obscureText: !_isConfirmPasswordVisible,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return '请输入确认密码';
+                                          return 'sign.please_enter_confirm_password'
+                                              .tr();
                                         }
                                         if (value != _passwordController.text) {
-                                          return '两次输入密码不一致';
+                                          return 'sign.password_not_match'.tr();
                                         }
                                         return null;
                                       },
@@ -271,7 +279,9 @@ class _SignScreenState extends State<SignScreen> {
                                     ? null
                                     : () => _loginOrRegister(),
                                 child: Text(
-                                  _authMode == AuthMode.login ? "登录" : "注册",
+                                  _authMode == AuthMode.login
+                                      ? "sign.login".tr()
+                                      : "sign.register".tr(),
                                 ),
                               ),
                             ),
@@ -286,7 +296,9 @@ class _SignScreenState extends State<SignScreen> {
                                   _confirmPasswordController.clear();
                                 }),
                                 child: Text(
-                                  "切换至${_authMode == AuthMode.login ? '注册' : '登录'}",
+                                  (_authMode == AuthMode.login
+                                      ? 'sign.switch_to_register'.tr()
+                                      : 'sign.switch_to_login'.tr()),
                                 ),
                               ),
                             ),

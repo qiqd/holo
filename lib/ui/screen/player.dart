@@ -17,6 +17,7 @@ import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/cap_video_player.dart';
 import 'package:holo/ui/component/loading_msg.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -106,7 +107,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           _detail!.lines![lineIndex].episodes![episodeIndex],
           (e) => setState(() {
             log("fetchView error: $e");
-            msg = "无法获取播放地址,换条路线试试";
+            msg = "player.playback_error".tr();
           }),
         );
         playUrl = newUrl;
@@ -125,7 +126,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     } catch (e) {
       log("fetchView error: $e");
       setState(() {
-        msg = "无法获取播放地址,换条路线试试";
+        msg = "player.playback_error".tr();
       });
     } finally {
       isloading = false;
@@ -142,7 +143,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   void _onEpisodeSelected(int index) {
     if (index >= _detail!.lines![lineIndex].episodes!.length) {
       setState(() {
-        msg = "该集不存在";
+        msg = "player.episode_not_exist".tr();
       });
       return;
     }
@@ -421,8 +422,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 padding: EdgeInsets.all(0),
                                 controller: _tabController,
                                 tabs: [
-                                  Tab(text: "评论"),
-                                  Tab(text: "选集"),
+                                  Tab(text: "player.comments".tr()),
+                                  Tab(text: "player.episodes".tr()),
                                 ],
                               ),
                             ),
@@ -431,14 +432,18 @@ class _PlayerScreenState extends State<PlayerScreen>
                               child: PopupMenuButton(
                                 child: TextButton.icon(
                                   onPressed: null,
-                                  label: const Text('路线选择'),
+                                  label: Text('player.route_selection'.tr()),
                                 ),
                                 itemBuilder: (context) => [
                                   ...List.generate(
                                     _detail?.lines?.length ?? 1,
                                     (index) => PopupMenuItem(
                                       value: index,
-                                      child: Text('路线${index + 1}'),
+                                      child: Text(
+                                        'player.route_number'.tr(
+                                          args: [(index + 1).toString()],
+                                        ),
+                                      ),
                                       onTap: () {
                                         if (index == lineIndex || isloading) {
                                           return;
@@ -458,7 +463,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                             controller: _tabController,
                             children: [
                               SizedBox(
-                                child: const Center(child: Text("暂无评论")),
+                                child: Center(
+                                  child: Text("player.no_comments".tr()),
+                                ),
                               ),
                               _episode == null
                                   ? LoadingOrShowMsg(msg: msg)
@@ -492,7 +499,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                                                 maxLines: 4,
                                                 overflow: TextOverflow.ellipsis,
                                                 _episode?.data?[index].nameCn ??
-                                                    "暂无剧集名称",
+                                                    "player.no_episode_name"
+                                                        .tr(),
                                               ),
                                               title: Text(
                                                 (index + 1).toString(),

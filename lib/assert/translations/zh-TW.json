@@ -1,0 +1,181 @@
+{
+    "component": {
+        "title": "暫無標題",
+        "cap_video_player": {
+            "brightness": "亮度",
+            "volume": "音量",
+            "foreground": "前進",
+            "background": "後退"
+        },
+        "media_card": {
+            "score": "匹配度",
+            "status": "待更新",
+            "total_episode": "共{}集",
+            "lastviewAtEpisode": "觀看至第{}集",
+            "lastviewAtTime": "上次觀看時間{}",
+            "days_ago": "{}天前",
+            "hours_ago": "{}小時前",
+            "minutes_ago": "{}分鐘前",
+            "just_now": "剛剛"
+        }
+    },
+    "home": {
+        "hint_text": "搜尋",
+        "recommand_text": "推薦"
+    },
+    "calendar": {
+        "title": "週更表",
+        "week": "一,二,三,四,五,六,日"
+    },
+    "subscribe": {
+        "title": "訂閱",
+        "tab_subs": "訂閱",
+        "tab_view": "播放記錄",
+        "refresh_btn_subs": "暫無訂閱,點我重新整理試試",
+        "refresh_btn_view": "暫無播放記錄,點我重新整理試試",
+        "empty_text": "暫無訂閱",
+        "delete_failed": "刪除失敗",
+        "fetch_subs_failed": "獲取雲端播放記錄失敗",
+        "fetch_view_failed": "獲取雲端訂閱記錄失敗",
+        "delete_subs_failed": "刪除雲端訂閱記錄失敗",
+        "delete_subs_success": "刪除雲端訂閱記錄成功",
+        "delete_view_failed": "刪除雲端播放記錄失敗",
+        "delete_view_success": "刪除雲端播放記錄成功"
+    },
+    "setting": {
+        "title": "設定",
+        "section": {
+            "account_status": "帳戶狀態",
+            "app_info": "應用程式資訊",
+            "data_management": "資料管理",
+            "appearance": "外觀設定",
+            "open_source": "開源專案",
+            "language": "語言"
+        },
+        "account": {
+            "logged_in": "已登入",
+            "logged_out": "未登入",
+            "logout": "登出帳戶",
+            "logout_description": "登出目前帳戶,但是本機歷史記錄資料不會刪除",
+            "signout_dialog_title": "登出帳戶",
+            "signout_dialog_content": "確定刪除目前帳戶嗎？",
+            "signout_dialog_cancel": "取消",
+            "signout_dialog_confirm": "確定"
+        },
+        "app_info": {
+            "about": "關於應用程式",
+            "version": "版本 {}",
+            "about_dialog_title": "關於 Holo",
+            "about_dialog_content": "一個開源的追番APP！",
+            "license_title": "開源協議",
+            "license_content": "AGPL-3.0 license",
+            "metadata_title": "動畫元資訊",
+            "metadata_content": "Bangumi 番組計劃",
+            "libraries_title": "第三方函式庫"
+        },
+        "language": {
+            "change": "切換語言"
+        },
+        "data_management": {
+            "clear_playback_history": "清除觀看歷史",
+            "clear_playback_history_description": "刪除所有觀看歷史記錄,包括雲端",
+            "clear_subscribe_history": "清除訂閱歷史",
+            "clear_subscribe_history_description": "刪除所有訂閱記錄,包括雲端",
+            "clear_cache": "清除快取",
+            "clear_cache_description": "清理應用程式快取資料",
+            "clear_dialog_title": "確認清除",
+            "clear_dialog_content_playback": "確定要清除所有播放歷史記錄嗎？",
+            "clear_dialog_content_subscribe": "確定要清除所有訂閱歷史記錄嗎？",
+            "clear_dialog_cancel": "取消",
+            "clear_dialog_confirm": "確定",
+            "cloud_success": "雲端歷史記錄已清除",
+            "cloud_failed": "雲端歷史記錄清除失敗{}",
+            "local_success": "本機歷史已清除",
+            "cache_dialog_content": "確定要清除所有快取嗎？",
+            "cache_success": "應用程式快取已清除",
+            "cache_failed": "清除快取失敗: {}"
+        },
+        "appearance": {
+            "theme_mode": "主題模式",
+            "theme_mode_system": "跟隨系統",
+            "theme_mode_light": "淺色",
+            "theme_mode_dark": "深色",
+            "theme_dialog_title": "選擇主題模式",
+            "theme_dialog_cancel": "取消",
+            "theme_dialog_confirm": "確定"
+        },
+        "open_source": {
+            "source_code": "原始碼",
+            "source_code_description": "在GitHub上檢視原始碼",
+            "report_issue": "回報問題",
+            "report_issue_description": "提交Bug或功能建議",
+            "star_project": "給專案按讚",
+            "star_project_description": "在GitHub上為專案點星"
+        }
+    },
+    "sign": {
+        "title": "歡迎回來",
+        "server_url": "Server Url",
+        "server_url_hint": "example: https://api.example.com",
+        "email": "信箱",
+        "password": "密碼",
+        "confirm_password": "確認密碼",
+        "login": "登入",
+        "register": "註冊",
+        "switch_to_register": "切換至註冊",
+        "switch_to_login": "切換至登入",
+        "login_success": "登入成功",
+        "register_success": "註冊成功",
+        "password_not_match": "兩次輸入密碼不一致",
+        "error": "錯誤",
+        "please_enter_server_url": "請輸入Server Url",
+        "please_enter_valid_server_url": "請輸入有效的Server Url",
+        "please_enter_email": "請輸入信箱",
+        "please_enter_valid_email": "請輸入有效的信箱地址",
+        "please_enter_password": "請輸入密碼",
+        "please_enter_confirm_password": "請輸入確認密碼",
+        "help": "如何使用",
+        "how_to_deploy": "如何部署",
+        "close": "關閉",
+        "help_content": "由於App不會儲存任何有關使用者的資訊，如果想要儲存自己的帳號資訊，在使用前請部署自己的伺服器,點擊檢視如何部署",
+        "app_bar_title": "歡迎回來"
+    },
+    "search": {
+        "hint_text": "搜尋",
+        "search_history": "搜尋歷史",
+        "delete_search_history": "刪除所有搜尋記錄",
+        "confirm_delete_search_history": "確定刪除所有搜尋記錄嗎？",
+        "error_searching": "搜尋出錯: {}",
+        "cancel": "取消",
+        "confirm": "確定"
+    },
+    "detail": {
+        "title": "詳情",
+        "no_source_found": "沒有匹配到播放源,請點擊右上角手動搜尋",
+        "search_hint": "若結果為空,嘗試輸入其他關鍵詞搜尋",
+        "no_search_results": "暫無搜尋結果",
+        "no_title": "暫無標題",
+        "tabs": {
+            "summary": "簡介",
+            "characters": "人物",
+            "relations": "角色",
+            "related_works": "關聯作品"
+        },
+        "no_summary": "暫無簡介",
+        "unknown": "未知",
+        "no_character_data": "人物暫無資料",
+        "no_relation_data": "角色暫無資料",
+        "no_related_works_data": "關聯作品暫無資料",
+        "air_date_key": "放送開始"
+    },
+    "player": {
+        "comments": "評論",
+        "episodes": "選集",
+        "route_selection": "路線選擇",
+        "route_number": "路線{}",
+        "no_comments": "暫無評論",
+        "no_episode_name": "暫無劇集名稱",
+        "episode_not_exist": "該集不存在",
+        "playback_error": "無法獲取播放位址,換條路線試試"
+    }
+}
