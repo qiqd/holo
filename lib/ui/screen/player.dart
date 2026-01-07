@@ -316,7 +316,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               height: 16,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.grey[500]!,
+                color: Colors.grey[800]!,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -328,7 +328,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               height: 14,
               width: double.infinity * 0.8,
               decoration: BoxDecoration(
-                color: Colors.grey[500]!,
+                color: Colors.grey[800]!,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

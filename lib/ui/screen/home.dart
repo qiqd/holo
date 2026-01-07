@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
+import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
+import 'package:holo/ui/component/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Subject? _recommended;
   bool _loading = false;
   int _page = 1;
+  String? _msg;
   void _fetchRecommended({int page = 1, bool isLoadMore = false}) async {
     setState(() {
       _loading = true;
@@ -81,16 +84,18 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_loading) LinearProgressIndicator(),
           Expanded(
             child: Center(
-              child: _recommended == null
-                  ? Text(context.tr("home.recommand_text"))
+              child: _msg != null
+                  ? LoadingOrShowMsg(msg: _msg)
+                  : _recommended == null
+                  ? buildShimmerSkeleton()
                   : GridView.builder(
                       controller: _scrollController,
                       itemCount: _recommended!.data!.length,
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                            mainAxisSpacing: 6,
-                            crossAxisSpacing: 6,
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 8,
                             crossAxisCount: 3,
                             childAspectRatio: 0.6,
                           ),
