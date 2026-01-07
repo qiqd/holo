@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject.dart' show Data;
 import 'package:holo/service/api.dart';
@@ -127,6 +128,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     await Api.delayTest();
   }
 
+  void _updateSystemNavigationBarColor(Brightness b) {
+    Color navigationBarColor;
+    Brightness iconBrightness;
+
+    if (b == Brightness.dark) {
+      navigationBarColor = const Color(0xff141400);
+      iconBrightness = Brightness.light;
+    } else {
+      navigationBarColor = const Color(0xfffff8f5);
+      iconBrightness = Brightness.dark;
+    }
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: navigationBarColor,
+        systemNavigationBarIconBrightness: iconBrightness,
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -136,7 +156,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       (element) => element.toString() == LocalStore.getString('theme_mode'),
       orElse: () => ThemeMode.system,
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateSystemNavigationBarColor(MediaQuery.platformBrightnessOf(context));
+    });
     initSource();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    _updateSystemNavigationBarColor(MediaQuery.platformBrightnessOf(context));
+    super.didChangePlatformBrightness();
   }
 
   @override

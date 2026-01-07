@@ -67,8 +67,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   Timer? _videoTimer;
   final ScrollController episodeListScrollController = ScrollController();
   void _showVideoControlsTimer() {
-    log("showVideoControlsTimer");
-
+    // log("showVideoControlsTimer");
     _videoControlsTimer?.cancel();
     _videoControlsTimer = Timer(Duration(seconds: 5), () {
       if (mounted) {

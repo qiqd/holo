@@ -6,7 +6,6 @@ import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
-import 'package:shimmer/shimmer.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});

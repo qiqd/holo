@@ -75,7 +75,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
               },
             ),
             onVisibilityChanged: (visibilityInfo) {
-              log('Visibility: ${visibilityInfo.visibleFraction}');
+              // log('Visibility: ${visibilityInfo.visibleFraction}');
               if (visibilityInfo.visibleFraction > 0) {
                 setState(() {
                   _email = LocalStore.getEmail();
