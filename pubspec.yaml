@@ -32,6 +32,7 @@ dependencies:
   path_provider: ^2.1.1
   flutter_cache_manager: ^3.4.1
   easy_localization: ^3.0.8
+  shimmer: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

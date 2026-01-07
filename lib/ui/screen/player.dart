@@ -18,6 +18,7 @@ import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/cap_video_player.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -294,6 +295,49 @@ class _PlayerScreenState extends State<PlayerScreen>
     return super.didRequestAppExit();
   }
 
+  Widget _buildShimmerSkeleton() {
+    return GridView.builder(
+      padding: EdgeInsets.all(10),
+      itemCount: 12,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 5,
+        crossAxisSpacing: 5,
+      ),
+      itemBuilder: (context, index) => Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: ListTile(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          title: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 16,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[500]!,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          subtitle: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 14,
+              width: double.infinity * 0.8,
+              decoration: BoxDecoration(
+                color: Colors.grey[500]!,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -467,8 +511,10 @@ class _PlayerScreenState extends State<PlayerScreen>
                                   child: Text("player.no_comments".tr()),
                                 ),
                               ),
-                              _episode == null
+                              msg.isNotEmpty
                                   ? LoadingOrShowMsg(msg: msg)
+                                  : _episode == null
+                                  ? _buildShimmerSkeleton()
                                   : VisibilityDetector(
                                       key: Key("player_episodes"),
                                       child: GridView.builder(

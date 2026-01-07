@@ -16,6 +16,7 @@ import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/meida_card.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;
@@ -301,52 +302,56 @@ class _DetailScreenState extends State<DetailScreen>
                                   ? LoadingOrShowMsg(
                                       msg: "detail.no_search_results".tr(),
                                     )
-                                  : TabBarView(
-                                      controller: subTabController,
-                                      children: sourceService.map((e) {
-                                        final item = source2Media[e] ?? [];
-                                        return isLoading
-                                            ? LoadingOrShowMsg(msg: _msg)
-                                            : ListView.builder(
-                                                itemCount: item.length,
-                                                itemBuilder: (context, index) {
-                                                  final m = item[index];
-                                                  return Column(
-                                                    children: [
-                                                      MeidaCard(
-                                                        id: 0,
+                                  : Padding(
+                                      padding: EdgeInsets.only(top: 6),
+                                      child: TabBarView(
+                                        controller: subTabController,
+                                        children: sourceService.map((e) {
+                                          final item = source2Media[e] ?? [];
+                                          return isLoading
+                                              ? LoadingOrShowMsg(msg: _msg)
+                                              : ListView.builder(
+                                                  itemCount: item.length,
+                                                  itemBuilder: (context, index) {
+                                                    final m = item[index];
+                                                    return Column(
+                                                      children: [
+                                                        MeidaCard(
+                                                          id: 0,
 
-                                                        score: m.score ?? 0,
-                                                        imageUrl: m.coverUrl!,
-                                                        nameCn:
-                                                            m.title ??
-                                                            "detail.no_title"
-                                                                .tr(),
-                                                        genre: m.type,
-                                                        height: 150,
-                                                        onTap: () {
-                                                          context.push(
-                                                            "/player",
-                                                            extra: {
-                                                              "isLove":
-                                                                  isSubscribed,
-                                                              "mediaId": m.id!,
-                                                              "subject": data,
-                                                              "source": e,
-                                                              "nameCn":
-                                                                  m.title ??
-                                                                  "detail.no_title"
-                                                                      .tr(),
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
-                                                      Divider(height: 5),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                      }).toList(),
+                                                          score: m.score ?? 0,
+                                                          imageUrl: m.coverUrl!,
+                                                          nameCn:
+                                                              m.title ??
+                                                              "detail.no_title"
+                                                                  .tr(),
+                                                          genre: m.type,
+                                                          height: 150,
+                                                          onTap: () {
+                                                            context.push(
+                                                              "/player",
+                                                              extra: {
+                                                                "isLove":
+                                                                    isSubscribed,
+                                                                "mediaId":
+                                                                    m.id!,
+                                                                "subject": data,
+                                                                "source": e,
+                                                                "nameCn":
+                                                                    m.title ??
+                                                                    "detail.no_title"
+                                                                        .tr(),
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
+                                                        Divider(height: 5),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                        }).toList(),
+                                      ),
                                     ),
                             ),
                           ],
@@ -362,7 +367,7 @@ class _DetailScreenState extends State<DetailScreen>
         ],
       ),
       body: data == null
-          ? Center(child: CircularProgressIndicator())
+          ? _buildShimmerSkeleton()
           : Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: Column(
@@ -519,6 +524,73 @@ class _DetailScreenState extends State<DetailScreen>
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildShimmerSkeleton() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        children: [
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 250,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(124, 158, 158, 158),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 48,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(4, (index) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: 80,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(124, 158, 158, 158),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // 内容区域骨架屏
+          Expanded(
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 8),
+                    child: Container(
+                      width: double.infinity,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(124, 158, 158, 158),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

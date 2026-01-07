@@ -323,6 +323,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
               const Text('• canvas_danmaku - MIT License'),
               const Text('• visibility_detector - BSD License'),
               const Text('• easy_localization - MIT License'),
+              const Text('• shimmer - BSD-3-Clause License'),
               const SizedBox(height: 8),
             ],
           ),

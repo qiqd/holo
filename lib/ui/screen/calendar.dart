@@ -5,6 +5,7 @@ import 'package:holo/entity/calendar.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -40,6 +41,30 @@ class _CalendarScreenState extends State<CalendarScreen>
     super.initState();
   }
 
+  Widget _buildShimmerSkeleton() {
+    return GridView.builder(
+      padding: const EdgeInsets.all(8),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 0.6,
+      ),
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[500]!,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,8 +79,10 @@ class _CalendarScreenState extends State<CalendarScreen>
             child: TabBarView(
               controller: _tabController,
               children: List.generate(7, (index) {
-                return _calendar.isEmpty
+                return _msg != null
                     ? LoadingOrShowMsg(msg: _msg)
+                    : _calendar.isEmpty
+                    ? _buildShimmerSkeleton()
                     : GridView.builder(
                         padding: const EdgeInsets.all(8),
                         itemCount: _calendar[index].items?.length ?? 0,

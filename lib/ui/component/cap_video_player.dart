@@ -561,7 +561,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             opacity: showVideoControls && widget.isFullScreen ? 1 : 0,
             duration: Duration(milliseconds: 100),
             child: Padding(
-              padding: EdgeInsets.only(top: 20),
+              padding: EdgeInsets.only(top: 40),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Text(
