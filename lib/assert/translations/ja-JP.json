@@ -176,6 +176,10 @@
         "no_comments": "コメントなし",
         "no_episode_name": "エピソード名なし",
         "episode_not_exist": "この話は存在しません",
-        "playback_error": "再生アドレスを取得できません。他のルートをお試しください"
+        "playback_error": "再生アドレスを取得できません。他のルートをお試しください",
+        "danmaku_not_exist": "この話は弹幕を提供していません",
+        "danmaku_loaded": "弹幕ロード完了",
+        "danmaku_load_error": "弹幕ロード失敗",
+        "danmaku_selection": "弹幕選択"
     }
 }

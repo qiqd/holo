@@ -4,13 +4,14 @@ import 'package:holo/service/impl/animation/mengdao.dart';
 import 'package:holo/service/impl/animation/mwcy.dart';
 import 'package:holo/service/impl/animation/senfen.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
+import 'package:holo/service/impl/meta/logvar.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/dio_timing_extension.dart';
 import 'package:holo/util/http_util.dart';
 
 class Api {
   static Bangumi bangumi = Bangumi();
-  static AAfun aafun = AAfun();
+  static Logvar logvar = Logvar();
   static final List<SourceService> _sources = [
     AAfun(),
     Senfen(),

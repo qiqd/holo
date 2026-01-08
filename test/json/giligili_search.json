@@ -1,65 +1,7237 @@
 {
-    "video_plays": [
+    "count": 904,
+    "comments": [
         {
-            "play_data": "https://play.xluuss.com/play/NbWkMGob/index.m3u8",
-            "src_site": "xlzy"
+            "cid": 1,
+            "type": 4,
+            "time": 0.0,
+            "text": "有1413条弹幕正在赶来，请遵守弹幕礼仪，祝您观影愉快~",
+            "color": 16777215,
+            "t": null
         },
         {
-            "play_data": "https://v.gsuus.com/play/5eVgLEoa/index.m3u8",
-            "src_site": "gszy"
+            "cid": 53,
+            "type": 1,
+            "time": 5.82,
+            "text": "开播大吉 x 236",
+            "color": 16244609,
+            "t": null
         },
         {
-            "play_data": "https://hd.ijycnd.com/play/BeXmNJVa/index.m3u8",
-            "src_site": "jyzy"
+            "cid": 85,
+            "type": 1,
+            "time": 29.93,
+            "text": "开播大吉！ x 61",
+            "color": 9874161,
+            "t": null
         },
         {
-            "play_data": "https://hn.bfvvs.com/play/PdR2Ezwd/index.m3u8",
-            "src_site": "hnzy"
+            "cid": 86,
+            "type": 1,
+            "time": 5.5,
+            "text": "开播大吉！！！ x 17",
+            "color": 16132919,
+            "t": null
         },
         {
-            "play_data": "https://vip.ffzy-plays.com/20251005/46074_e14dc01a/index.m3u8",
-            "src_site": "ffzy"
+            "cid": 92,
+            "type": 1,
+            "time": 0.0,
+            "text": "希望可以和我的女孩和好如初 x 2",
+            "color": 4065873,
+            "t": null
         },
         {
-            "play_data": "https://ukzy.ukubf3.com/20251005/zNQh4eDX/index.m3u8",
-            "src_site": "ukzy"
+            "cid": 221,
+            "type": 1,
+            "time": 0.0,
+            "text": "wtf",
+            "color": 8036109,
+            "t": null
         },
         {
-            "play_data": "https://bfikuncdn.com/20251004/wq88CG5A/index.m3u8",
-            "src_site": "ikzy"
+            "cid": 1206,
+            "type": 1,
+            "time": 0.0,
+            "text": "哇！",
+            "color": 2916719,
+            "t": null
         },
         {
-            "play_data": "https://v.cdnlz22.com/20251005/23629_7c49912f/index.m3u8",
-            "src_site": "lzzy"
+            "cid": 1288,
+            "type": 1,
+            "time": 0.03,
+            "text": "来了￼",
+            "color": 16304380,
+            "t": null
         },
         {
-            "play_data": "https://v.cdnlz22.com/20251005/23629_7c49912f/index.m3u8",
-            "src_site": "lzzy"
+            "cid": 1013,
+            "type": 1,
+            "time": 0.07,
+            "text": "看到我你就不是第一",
+            "color": 15457712,
+            "t": null
         },
         {
-            "play_data": "https://v10.qrssuv.com/wjv10/202510/05/8Kd2amsdNV82/video/index.m3u8",
-            "src_site": "wjzy2"
+            "cid": 937,
+            "type": 1,
+            "time": 0.2,
+            "text": "好耶 x 3",
+            "color": 359864,
+            "t": null
         },
         {
-            "play_data": "https://cdn.wlcdn88.com:777/57ee61b6/index.m3u8",
-            "src_site": "wlzy2"
+            "cid": 89,
+            "type": 1,
+            "time": 13.13,
+            "text": "来了来了 x 14",
+            "color": 13490057,
+            "t": null
         },
         {
-            "play_data": "https://vod12.wgslsw.com/20251007/8Kd2amsdNV82/index.m3u8",
-            "src_site": "yhzy"
+            "cid": 1397,
+            "type": 1,
+            "time": 0.31,
+            "text": "小熏子 我来啦 第一第一",
+            "color": 14800213,
+            "t": null
         },
         {
-            "play_data": "https://bf.jisuziyuanbf.com/play/QeZqPLgd/index.m3u8",
-            "src_site": "jszy"
+            "cid": 34,
+            "type": 1,
+            "time": 6.89,
+            "text": "来了 x 60",
+            "color": 5262230,
+            "t": null
         },
         {
-            "play_data": "https://v14.yuglf.com/202510/05/WpDN9TrCtn22/video/index.m3u8",
-            "src_site": "snzy"
+            "cid": 825,
+            "type": 1,
+            "time": 1.12,
+            "text": "八人八鹤",
+            "color": 5203505,
+            "t": null
         },
         {
-            "play_data": "https://play.modujx11.com/20251005/Pan6D0It/index.m3u8",
-            "src_site": "mdzy"
+            "cid": 1337,
+            "type": 1,
+            "time": 1.12,
+            "text": "第一，第一",
+            "color": 4330840,
+            "t": null
+        },
+        {
+            "cid": 1358,
+            "type": 1,
+            "time": 1.19,
+            "text": "我靠，你终于上了",
+            "color": 3355604,
+            "t": null
+        },
+        {
+            "cid": 303,
+            "type": 1,
+            "time": 1.22,
+            "text": "来啦来啦 x 3",
+            "color": 11902183,
+            "t": null
+        },
+        {
+            "cid": 291,
+            "type": 1,
+            "time": 3.47,
+            "text": "秒吃 x 12",
+            "color": 1357119,
+            "t": null
+        },
+        {
+            "cid": 111,
+            "type": 1,
+            "time": 1.42,
+            "text": "哇，真的是你啊",
+            "color": 14718875,
+            "t": null
+        },
+        {
+            "cid": 1275,
+            "type": 1,
+            "time": 1.45,
+            "text": "哈哈哈哈哈哈哈哈",
+            "color": 3575539,
+            "t": null
+        },
+        {
+            "cid": 1354,
+            "type": 1,
+            "time": 1.53,
+            "text": "终于更了！",
+            "color": 16413621,
+            "t": null
+        },
+        {
+            "cid": 1257,
+            "type": 1,
+            "time": 5.82,
+            "text": "我来！ x 4",
+            "color": 10213008,
+            "t": null
+        },
+        {
+            "cid": 1377,
+            "type": 1,
+            "time": 1.62,
+            "text": "我来啦！",
+            "color": 16694481,
+            "t": null
+        },
+        {
+            "cid": 153,
+            "type": 1,
+            "time": 1.8,
+            "text": "开播了，可爱的薰子，我来了！",
+            "color": 8685710,
+            "t": null
+        },
+        {
+            "cid": 259,
+            "type": 1,
+            "time": 1.96,
+            "text": "有生之年",
+            "color": 8925514,
+            "t": null
+        },
+        {
+            "cid": 1256,
+            "type": 1,
+            "time": 2.14,
+            "text": "你可总算来了",
+            "color": 12442368,
+            "t": null
+        },
+        {
+            "cid": 1398,
+            "type": 1,
+            "time": 2.71,
+            "text": "\\开播大吉/",
+            "color": 12016843,
+            "t": null
+        },
+        {
+            "cid": 915,
+            "type": 1,
+            "time": 2.81,
+            "text": "终于上线了口牙！！！",
+            "color": 10212826,
+            "t": null
+        },
+        {
+            "cid": 904,
+            "type": 1,
+            "time": 2.83,
+            "text": "终于来了啊",
+            "color": 10581505,
+            "t": null
+        },
+        {
+            "cid": 371,
+            "type": 1,
+            "time": 5.87,
+            "text": "秒赤 x 5",
+            "color": 7130792,
+            "t": null
+        },
+        {
+            "cid": 1233,
+            "type": 1,
+            "time": 2.98,
+            "text": "7月的番拖到8月可以的",
+            "color": 1473457,
+            "t": null
+        },
+        {
+            "cid": 806,
+            "type": 1,
+            "time": 3.0,
+            "text": "嗨嗨嗨 x 4",
+            "color": 13613186,
+            "t": null
+        },
+        {
+            "cid": 1095,
+            "type": 1,
+            "time": 3.01,
+            "text": "啊！",
+            "color": 16009641,
+            "t": null
+        },
+        {
+            "cid": 931,
+            "type": 1,
+            "time": 3.02,
+            "text": "垂死病中惊坐起，忽闻新番今日启",
+            "color": 911170,
+            "t": null
+        },
+        {
+            "cid": 1246,
+            "type": 1,
+            "time": 3.05,
+            "text": "秒了",
+            "color": 2982742,
+            "t": null
+        },
+        {
+            "cid": 1175,
+            "type": 1,
+            "time": 3.06,
+            "text": "开播大吉!!!",
+            "color": 14719472,
+            "t": null
+        },
+        {
+            "cid": 1116,
+            "type": 1,
+            "time": 3.2,
+            "text": "开播大吉啊，赶上了",
+            "color": 9991200,
+            "t": null
+        },
+        {
+            "cid": 927,
+            "type": 1,
+            "time": 3.32,
+            "text": "来了！！",
+            "color": 5827803,
+            "t": null
+        },
+        {
+            "cid": 91,
+            "type": 1,
+            "time": 3.33,
+            "text": "好耶！！！！",
+            "color": 1720691,
+            "t": null
+        },
+        {
+            "cid": 1277,
+            "type": 1,
+            "time": 3.33,
+            "text": "来啦！",
+            "color": 14243381,
+            "t": null
+        },
+        {
+            "cid": 1349,
+            "type": 1,
+            "time": 3.42,
+            "text": "睡死病中惊坐起！",
+            "color": 15928312,
+            "t": null
+        },
+        {
+            "cid": 738,
+            "type": 1,
+            "time": 3.46,
+            "text": "梦开始的地方 x 2",
+            "color": 8461291,
+            "t": null
+        },
+        {
+            "cid": 489,
+            "type": 1,
+            "time": 3.98,
+            "text": "终于 x 7",
+            "color": 15184407,
+            "t": null
+        },
+        {
+            "cid": 1230,
+            "type": 1,
+            "time": 3.52,
+            "text": "来了来了来了",
+            "color": 16749401,
+            "t": null
+        },
+        {
+            "cid": 475,
+            "type": 1,
+            "time": 11.7,
+            "text": "来啦 x 4",
+            "color": 10028373,
+            "t": null
+        },
+        {
+            "cid": 1361,
+            "type": 1,
+            "time": 3.84,
+            "text": "开启",
+            "color": 16608811,
+            "t": null
+        },
+        {
+            "cid": 524,
+            "type": 1,
+            "time": 4.09,
+            "text": "终于来了！",
+            "color": 1328419,
+            "t": null
+        },
+        {
+            "cid": 1060,
+            "type": 1,
+            "time": 4.1,
+            "text": "我来也",
+            "color": 13564960,
+            "t": null
+        },
+        {
+            "cid": 1210,
+            "type": 1,
+            "time": 4.16,
+            "text": "终于更了，开播大吉",
+            "color": 1053553,
+            "t": null
+        },
+        {
+            "cid": 800,
+            "type": 1,
+            "time": 4.31,
+            "text": "恭喜",
+            "color": 12239784,
+            "t": null
+        },
+        {
+            "cid": 602,
+            "type": 1,
+            "time": 4.33,
+            "text": "终于不用看终于不用看PV了！！！！！和熏栗子我爱你！！！",
+            "color": 12162050,
+            "t": null
+        },
+        {
+            "cid": 1402,
+            "type": 1,
+            "time": 4.34,
+            "text": "来了哈哈哈哈",
+            "color": 2929693,
+            "t": null
+        },
+        {
+            "cid": 262,
+            "type": 1,
+            "time": 4.36,
+            "text": "是我喜欢的  秒赤",
+            "color": 109449,
+            "t": null
+        },
+        {
+            "cid": 1236,
+            "type": 1,
+            "time": 4.36,
+            "text": "准时",
+            "color": 7071251,
+            "t": null
+        },
+        {
+            "cid": 651,
+            "type": 1,
+            "time": 16.5,
+            "text": "开播大吉！！ x 4",
+            "color": 9881539,
+            "t": null
+        },
+        {
+            "cid": 998,
+            "type": 1,
+            "time": 4.41,
+            "text": "25/8/6 x 2",
+            "color": 8779237,
+            "t": null
+        },
+        {
+            "cid": 932,
+            "type": 1,
+            "time": 12.76,
+            "text": "终于等到你 x 3",
+            "color": 4870906,
+            "t": null
+        },
+        {
+            "cid": 1025,
+            "type": 1,
+            "time": 4.47,
+            "text": "開播大吉",
+            "color": 5604966,
+            "t": null
+        },
+        {
+            "cid": 1316,
+            "type": 1,
+            "time": 4.52,
+            "text": "终于来啦",
+            "color": 12284556,
+            "t": null
+        },
+        {
+            "cid": 1360,
+            "type": 1,
+            "time": 4.54,
+            "text": "好诶！",
+            "color": 656856,
+            "t": null
+        },
+        {
+            "cid": 1353,
+            "type": 1,
+            "time": 4.58,
+            "text": "滴滴滴。",
+            "color": 14235195,
+            "t": null
+        },
+        {
+            "cid": 1304,
+            "type": 1,
+            "time": 4.6,
+            "text": "不是哥们，你终于更了",
+            "color": 6319603,
+            "t": null
+        },
+        {
+            "cid": 982,
+            "type": 1,
+            "time": 4.62,
+            "text": "7月份拖到8月…",
+            "color": 11648196,
+            "t": null
+        },
+        {
+            "cid": 1384,
+            "type": 1,
+            "time": 4.7,
+            "text": "霸占空屏",
+            "color": 13765300,
+            "t": null
+        },
+        {
+            "cid": 890,
+            "type": 1,
+            "time": 4.72,
+            "text": "你还知道开播",
+            "color": 11678488,
+            "t": null
+        },
+        {
+            "cid": 1389,
+            "type": 1,
+            "time": 4.73,
+            "text": "开播咯",
+            "color": 9638265,
+            "t": null
+        },
+        {
+            "cid": 1381,
+            "type": 1,
+            "time": 4.81,
+            "text": "开播啦",
+            "color": 9382921,
+            "t": null
+        },
+        {
+            "cid": 1138,
+            "type": 1,
+            "time": 4.82,
+            "text": "来了！！！",
+            "color": 2961396,
+            "t": null
+        },
+        {
+            "cid": 1112,
+            "type": 1,
+            "time": 4.93,
+            "text": "第一次这么近，哈哈哈",
+            "color": 13588506,
+            "t": null
+        },
+        {
+            "cid": 918,
+            "type": 1,
+            "time": 7.16,
+            "text": "来了！ x 4",
+            "color": 14039276,
+            "t": null
+        },
+        {
+            "cid": 1355,
+            "type": 1,
+            "time": 5.04,
+            "text": "来了来了来了来了来了！",
+            "color": 2439853,
+            "t": null
+        },
+        {
+            "cid": 1223,
+            "type": 1,
+            "time": 5.18,
+            "text": "更了！",
+            "color": 9098568,
+            "t": null
+        },
+        {
+            "cid": 1362,
+            "type": 1,
+            "time": 5.2,
+            "text": "前排提示:包好看的看就完事儿了",
+            "color": 10139052,
+            "t": null
+        },
+        {
+            "cid": 1308,
+            "type": 1,
+            "time": 5.29,
+            "text": "纯爱无敌",
+            "color": 4773777,
+            "t": null
+        },
+        {
+            "cid": 1201,
+            "type": 1,
+            "time": 5.3,
+            "text": "知道我等这一天等了多久嘛！！！（破音",
+            "color": 11444180,
+            "t": null
+        },
+        {
+            "cid": 1208,
+            "type": 1,
+            "time": 5.38,
+            "text": "留个印记",
+            "color": 3818252,
+            "t": null
+        },
+        {
+            "cid": 1259,
+            "type": 1,
+            "time": 5.46,
+            "text": "来辣来辣！",
+            "color": 14566644,
+            "t": null
+        },
+        {
+            "cid": 389,
+            "type": 1,
+            "time": 5.53,
+            "text": "我来！！！！！",
+            "color": 9532024,
+            "t": null
+        },
+        {
+            "cid": 429,
+            "type": 1,
+            "time": 5.61,
+            "text": "来了!!",
+            "color": 9229600,
+            "t": null
+        },
+        {
+            "cid": 1248,
+            "type": 1,
+            "time": 5.63,
+            "text": "终于！！！",
+            "color": 11800582,
+            "t": null
+        },
+        {
+            "cid": 1092,
+            "type": 1,
+            "time": 5.83,
+            "text": "我来了！ x 2",
+            "color": 14224110,
+            "t": null
+        },
+        {
+            "cid": 1124,
+            "type": 1,
+            "time": 5.73,
+            "text": "开播大吉！，！",
+            "color": 15263338,
+            "t": null
+        },
+        {
+            "cid": 1325,
+            "type": 1,
+            "time": 5.97,
+            "text": "等到啦哈哈哈哈",
+            "color": 2615249,
+            "t": null
+        },
+        {
+            "cid": 1214,
+            "type": 1,
+            "time": 6.07,
+            "text": "来喽来喽",
+            "color": 5982248,
+            "t": null
+        },
+        {
+            "cid": 255,
+            "type": 1,
+            "time": 6.19,
+            "text": "哇哦 x 2",
+            "color": 3221518,
+            "t": null
+        },
+        {
+            "cid": 1364,
+            "type": 1,
+            "time": 6.57,
+            "text": "也是来了",
+            "color": 14893735,
+            "t": null
+        },
+        {
+            "cid": 1305,
+            "type": 1,
+            "time": 6.67,
+            "text": "好耶好耶！！来支持啦！！！",
+            "color": 15740470,
+            "t": null
+        },
+        {
+            "cid": 1378,
+            "type": 1,
+            "time": 6.7,
+            "text": "你们好啊",
+            "color": 1739448,
+            "t": null
+        },
+        {
+            "cid": 1320,
+            "type": 1,
+            "time": 6.74,
+            "text": "啊啊啊啊 等到了",
+            "color": 6850828,
+            "t": null
+        },
+        {
+            "cid": 1170,
+            "type": 1,
+            "time": 6.8,
+            "text": "来咯来咯",
+            "color": 12117165,
+            "t": null
+        },
+        {
+            "cid": 155,
+            "type": 1,
+            "time": 6.87,
+            "text": "开播大吉 开播大吉！！！",
+            "color": 2316336,
+            "t": null
+        },
+        {
+            "cid": 495,
+            "type": 1,
+            "time": 33.28,
+            "text": "终于来了 x 7",
+            "color": 11675842,
+            "t": null
+        },
+        {
+            "cid": 629,
+            "type": 1,
+            "time": 7.12,
+            "text": "啊啊啊啊啊我来了！",
+            "color": 6598196,
+            "t": null
+        },
+        {
+            "cid": 772,
+            "type": 1,
+            "time": 7.13,
+            "text": "感动",
+            "color": 14641665,
+            "t": null
+        },
+        {
+            "cid": 1301,
+            "type": 1,
+            "time": 7.25,
+            "text": "来了啊",
+            "color": 16611536,
+            "t": null
+        },
+        {
+            "cid": 1330,
+            "type": 1,
+            "time": 7.3,
+            "text": "没人",
+            "color": 12092774,
+            "t": null
+        },
+        {
+            "cid": 1144,
+            "type": 1,
+            "time": 7.52,
+            "text": "藐视。",
+            "color": 5741937,
+            "t": null
+        },
+        {
+            "cid": 857,
+            "type": 1,
+            "time": 7.67,
+            "text": "终于！",
+            "color": 10657136,
+            "t": null
+        },
+        {
+            "cid": 1367,
+            "type": 1,
+            "time": 18.97,
+            "text": "第一个 x 2",
+            "color": 14925337,
+            "t": null
+        },
+        {
+            "cid": 383,
+            "type": 1,
+            "time": 7.72,
+            "text": "终于！！终于！！终于开播了啊！！",
+            "color": 6691996,
+            "t": null
+        },
+        {
+            "cid": 1346,
+            "type": 1,
+            "time": 7.89,
+            "text": "终于看到了",
+            "color": 13199861,
+            "t": null
+        },
+        {
+            "cid": 1142,
+            "type": 1,
+            "time": 7.9,
+            "text": "啊啊啊啊啊终于上了",
+            "color": 12568430,
+            "t": null
+        },
+        {
+            "cid": 1111,
+            "type": 1,
+            "time": 8.12,
+            "text": "我踏马来了",
+            "color": 695901,
+            "t": null
+        },
+        {
+            "cid": 1006,
+            "type": 1,
+            "time": 8.59,
+            "text": "我先来，甜甜甜",
+            "color": 133182,
+            "t": null
+        },
+        {
+            "cid": 917,
+            "type": 1,
+            "time": 8.63,
+            "text": "开播大吉！25。8。",
+            "color": 4198993,
+            "t": null
+        },
+        {
+            "cid": 1273,
+            "type": 1,
+            "time": 8.75,
+            "text": "蹲点成功",
+            "color": 8506056,
+            "t": null
+        },
+        {
+            "cid": 779,
+            "type": 1,
+            "time": 8.88,
+            "text": "开播秒吃",
+            "color": 9577496,
+            "t": null
+        },
+        {
+            "cid": 1195,
+            "type": 1,
+            "time": 8.92,
+            "text": "好好好",
+            "color": 12099816,
+            "t": null
+        },
+        {
+            "cid": 1363,
+            "type": 1,
+            "time": 9.04,
+            "text": "泪目了",
+            "color": 10115671,
+            "t": null
+        },
+        {
+            "cid": 820,
+            "type": 1,
+            "time": 9.72,
+            "text": "来了呜呜呜呜",
+            "color": 15264975,
+            "t": null
+        },
+        {
+            "cid": 76,
+            "type": 1,
+            "time": 9.94,
+            "text": "来了！！！！！！我是gyh！！！！",
+            "color": 3275019,
+            "t": null
+        },
+        {
+            "cid": 953,
+            "type": 1,
+            "time": 9.96,
+            "text": "我是第916个点赞的",
+            "color": 5977464,
+            "t": null
+        },
+        {
+            "cid": 1297,
+            "type": 1,
+            "time": 14.52,
+            "text": "有人吗 x 3",
+            "color": 15264965,
+            "t": null
+        },
+        {
+            "cid": 80,
+            "type": 1,
+            "time": 10.3,
+            "text": "终于开播啦！",
+            "color": 15646222,
+            "t": null
+        },
+        {
+            "cid": 1197,
+            "type": 1,
+            "time": 10.4,
+            "text": "开播大吉^v^",
+            "color": 4748963,
+            "t": null
+        },
+        {
+            "cid": 1312,
+            "type": 1,
+            "time": 10.46,
+            "text": "先登！！",
+            "color": 12102776,
+            "t": null
+        },
+        {
+            "cid": 395,
+            "type": 1,
+            "time": 10.49,
+            "text": "啊啊啊啊啊我来了",
+            "color": 12116463,
+            "t": null
+        },
+        {
+            "cid": 1326,
+            "type": 1,
+            "time": 10.49,
+            "text": "来了喵喵",
+            "color": 14530276,
+            "t": null
+        },
+        {
+            "cid": 1043,
+            "type": 1,
+            "time": 10.58,
+            "text": "甜甜的恋爱番我来了",
+            "color": 15601750,
+            "t": null
+        },
+        {
+            "cid": 1371,
+            "type": 1,
+            "time": 10.58,
+            "text": "第一个开饭的",
+            "color": 7837283,
+            "t": null
+        },
+        {
+            "cid": 704,
+            "type": 1,
+            "time": 10.68,
+            "text": "开播大吉爽爽爽。",
+            "color": 5179297,
+            "t": null
+        },
+        {
+            "cid": 1104,
+            "type": 1,
+            "time": 11.63,
+            "text": "开播大吉啊啊啊啊啊我来咯",
+            "color": 16593575,
+            "t": null
+        },
+        {
+            "cid": 459,
+            "type": 1,
+            "time": 11.8,
+            "text": "妙赤",
+            "color": 4858045,
+            "t": null
+        },
+        {
+            "cid": 1299,
+            "type": 1,
+            "time": 12.23,
+            "text": "哇去，终于开播了呀",
+            "color": 9308339,
+            "t": null
+        },
+        {
+            "cid": 1164,
+            "type": 1,
+            "time": 12.55,
+            "text": "第一下",
+            "color": 6187333,
+            "t": null
+        },
+        {
+            "cid": 304,
+            "type": 1,
+            "time": 12.59,
+            "text": "等了这么久！！",
+            "color": 10438741,
+            "t": null
+        },
+        {
+            "cid": 1047,
+            "type": 1,
+            "time": 12.8,
+            "text": "等半天了",
+            "color": 10312201,
+            "t": null
+        },
+        {
+            "cid": 1350,
+            "type": 1,
+            "time": 12.8,
+            "text": "宝贝宝贝妈咪来喽",
+            "color": 11814379,
+            "t": null
+        },
+        {
+            "cid": 1239,
+            "type": 1,
+            "time": 12.98,
+            "text": "开篇签到",
+            "color": 8760596,
+            "t": null
+        },
+        {
+            "cid": 743,
+            "type": 1,
+            "time": 13.11,
+            "text": "终于来了吗",
+            "color": 16155136,
+            "t": null
+        },
+        {
+            "cid": 1251,
+            "type": 1,
+            "time": 13.2,
+            "text": "我也是吃上细糠了。",
+            "color": 8559996,
+            "t": null
+        },
+        {
+            "cid": 1348,
+            "type": 1,
+            "time": 13.22,
+            "text": "等了你一个暑假了",
+            "color": 6361884,
+            "t": null
+        },
+        {
+            "cid": 234,
+            "type": 1,
+            "time": 13.83,
+            "text": "签到 x 2",
+            "color": 4191209,
+            "t": null
+        },
+        {
+            "cid": 1283,
+            "type": 1,
+            "time": 13.95,
+            "text": "占领空屏",
+            "color": 1954173,
+            "t": null
+        },
+        {
+            "cid": 1286,
+            "type": 1,
+            "time": 13.98,
+            "text": "哈哈哈哈终于",
+            "color": 4033841,
+            "t": null
+        },
+        {
+            "cid": 1289,
+            "type": 1,
+            "time": 14.27,
+            "text": "来了，来了，终于开播了，这么久才开播，我也是服了",
+            "color": 1540974,
+            "t": null
+        },
+        {
+            "cid": 751,
+            "type": 1,
+            "time": 14.9,
+            "text": "开播大吉呀",
+            "color": 1702645,
+            "t": null
+        },
+        {
+            "cid": 263,
+            "type": 1,
+            "time": 15.02,
+            "text": "开播了等了好久",
+            "color": 6695551,
+            "t": null
+        },
+        {
+            "cid": 1093,
+            "type": 1,
+            "time": 15.46,
+            "text": " 来了",
+            "color": 9840072,
+            "t": null
+        },
+        {
+            "cid": 1232,
+            "type": 1,
+            "time": 15.56,
+            "text": "等好久了，终于开播了",
+            "color": 14894162,
+            "t": null
+        },
+        {
+            "cid": 678,
+            "type": 1,
+            "time": 15.95,
+            "text": "好耶(✪▽✪)",
+            "color": 7420318,
+            "t": null
+        },
+        {
+            "cid": 1284,
+            "type": 1,
+            "time": 16.13,
+            "text": "没人！第一集！！薰花万岁！",
+            "color": 3832012,
+            "t": null
+        },
+        {
+            "cid": 870,
+            "type": 1,
+            "time": 16.22,
+            "text": "现在来了",
+            "color": 16628719,
+            "t": null
+        },
+        {
+            "cid": 1281,
+            "type": 1,
+            "time": 16.4,
+            "text": "终于等到你～～～～",
+            "color": 5985812,
+            "t": null
+        },
+        {
+            "cid": 1249,
+            "type": 1,
+            "time": 17.36,
+            "text": "哇4k",
+            "color": 12238656,
+            "t": null
+        },
+        {
+            "cid": 1266,
+            "type": 1,
+            "time": 17.49,
+            "text": "有人来吗",
+            "color": 15616068,
+            "t": null
+        },
+        {
+            "cid": 1035,
+            "type": 1,
+            "time": 18.01,
+            "text": "终于来了！！！！",
+            "color": 14227284,
+            "t": null
+        },
+        {
+            "cid": 1300,
+            "type": 1,
+            "time": 18.53,
+            "text": "独占空屏！！",
+            "color": 5565390,
+            "t": null
+        },
+        {
+            "cid": 1322,
+            "type": 1,
+            "time": 19.42,
+            "text": "太好力！",
+            "color": 3037834,
+            "t": null
+        },
+        {
+            "cid": 1391,
+            "type": 1,
+            "time": 20.04,
+            "text": "开心",
+            "color": 8331311,
+            "t": null
+        },
+        {
+            "cid": 1061,
+            "type": 1,
+            "time": 20.19,
+            "text": "开播大吉终于来了啊啊啊啊啊",
+            "color": 10535780,
+            "t": null
+        },
+        {
+            "cid": 1225,
+            "type": 1,
+            "time": 20.75,
+            "text": "准时到达",
+            "color": 16258220,
+            "t": null
+        },
+        {
+            "cid": 88,
+            "type": 1,
+            "time": 21.0,
+            "text": "终于舍得上了",
+            "color": 5935788,
+            "t": null
+        },
+        {
+            "cid": 1352,
+            "type": 1,
+            "time": 21.55,
+            "text": "好诶",
+            "color": 8941315,
+            "t": null
+        },
+        {
+            "cid": 1240,
+            "type": 1,
+            "time": 21.64,
+            "text": "开播大吉！ ",
+            "color": 16044574,
+            "t": null
+        },
+        {
+            "cid": 579,
+            "type": 1,
+            "time": 22.81,
+            "text": "开播大吉~",
+            "color": 4389157,
+            "t": null
+        },
+        {
+            "cid": 482,
+            "type": 1,
+            "time": 51.58,
+            "text": "开播了 x 2",
+            "color": 9269499,
+            "t": null
+        },
+        {
+            "cid": 966,
+            "type": 1,
+            "time": 23.56,
+            "text": "太棒了",
+            "color": 8550212,
+            "t": null
+        },
+        {
+            "cid": 342,
+            "type": 1,
+            "time": 23.74,
+            "text": "开播大吉。",
+            "color": 3959236,
+            "t": null
+        },
+        {
+            "cid": 1173,
+            "type": 1,
+            "time": 23.82,
+            "text": "占领空屏233333333",
+            "color": 5305036,
+            "t": null
+        },
+        {
+            "cid": 1270,
+            "type": 1,
+            "time": 23.84,
+            "text": "守在电脑前面就等着看",
+            "color": 11813917,
+            "t": null
+        },
+        {
+            "cid": 1167,
+            "type": 1,
+            "time": 23.94,
+            "text": "这已经是第几部动画的女角色叫薰了？",
+            "color": 1975220,
+            "t": null
+        },
+        {
+            "cid": 1122,
+            "type": 1,
+            "time": 24.95,
+            "text": "终于等到你。",
+            "color": 14678856,
+            "t": null
+        },
+        {
+            "cid": 875,
+            "type": 1,
+            "time": 25.42,
+            "text": "来啦！！",
+            "color": 15661367,
+            "t": null
+        },
+        {
+            "cid": 1180,
+            "type": 1,
+            "time": 25.58,
+            "text": "哇塞",
+            "color": 4279782,
+            "t": null
+        },
+        {
+            "cid": 1137,
+            "type": 1,
+            "time": 25.76,
+            "text": "火钳刘明！！！",
+            "color": 6055102,
+            "t": null
+        },
+        {
+            "cid": 705,
+            "type": 1,
+            "time": 26.75,
+            "text": "后排靠窗，王的故乡 x 4",
+            "color": 447327,
+            "t": null
+        },
+        {
+            "cid": 329,
+            "type": 1,
+            "time": 27.29,
+            "text": "耶O(∩_∩)O",
+            "color": 11389433,
+            "t": null
+        },
+        {
+            "cid": 284,
+            "type": 1,
+            "time": 29.56,
+            "text": "后排靠窗 x 3",
+            "color": 7009058,
+            "t": null
+        },
+        {
+            "cid": 1274,
+            "type": 1,
+            "time": 27.7,
+            "text": "开播大吉～",
+            "color": 11474070,
+            "t": null
+        },
+        {
+            "cid": 1002,
+            "type": 1,
+            "time": 30.74,
+            "text": "宿傩大人是你",
+            "color": 6119319,
+            "t": null
+        },
+        {
+            "cid": 611,
+            "type": 1,
+            "time": 33.01,
+            "text": "晚上好 x 2",
+            "color": 1096569,
+            "t": null
+        },
+        {
+            "cid": 295,
+            "type": 1,
+            "time": 30.99,
+            "text": "我好喜欢三白眼的眼睛",
+            "color": 318460,
+            "t": null
+        },
+        {
+            "cid": 1141,
+            "type": 1,
+            "time": 31.44,
+            "text": "哇金闪闪发型",
+            "color": 8369937,
+            "t": null
+        },
+        {
+            "cid": 876,
+            "type": 1,
+            "time": 31.98,
+            "text": "超级好看的！",
+            "color": 2442322,
+            "t": null
+        },
+        {
+            "cid": 729,
+            "type": 1,
+            "time": 32.12,
+            "text": "这部剧简直就是男帅女美好吧",
+            "color": 8907763,
+            "t": null
+        },
+        {
+            "cid": 1045,
+            "type": 1,
+            "time": 32.3,
+            "text": "后排靠窗（）",
+            "color": 5030630,
+            "t": null
+        },
+        {
+            "cid": 343,
+            "type": 1,
+            "time": 34.92,
+            "text": "后排靠窗  王的故乡",
+            "color": 12674269,
+            "t": null
+        },
+        {
+            "cid": 676,
+            "type": 1,
+            "time": 35.19,
+            "text": "后座靠窗，王的故乡",
+            "color": 10011286,
+            "t": null
+        },
+        {
+            "cid": 977,
+            "type": 1,
+            "time": 35.53,
+            "text": "终于舍得开播了",
+            "color": 245604,
+            "t": null
+        },
+        {
+            "cid": 969,
+            "type": 1,
+            "time": 35.63,
+            "text": "游戏直接挂机，只为看熏子一眼好吧",
+            "color": 2744816,
+            "t": null
+        },
+        {
+            "cid": 967,
+            "type": 1,
+            "time": 36.25,
+            "text": "终于上线了",
+            "color": 16173518,
+            "t": null
+        },
+        {
+            "cid": 1176,
+            "type": 1,
+            "time": 37.09,
+            "text": "怎么没人",
+            "color": 212511,
+            "t": null
+        },
+        {
+            "cid": 25,
+            "type": 1,
+            "time": 37.74,
+            "text": "后排靠窗王的故乡",
+            "color": 11556414,
+            "t": null
+        },
+        {
+            "cid": 1298,
+            "type": 1,
+            "time": 38.35,
+            "text": "╭(ᵔ_>ᵔ)╮",
+            "color": 11012779,
+            "t": null
+        },
+        {
+            "cid": 1148,
+            "type": 1,
+            "time": 39.2,
+            "text": "这是flag吗哈哈哈",
+            "color": 14529844,
+            "t": null
+        },
+        {
+            "cid": 1117,
+            "type": 1,
+            "time": 39.83,
+            "text": "你说永远无缘，那么就会有缘分了",
+            "color": 6102851,
+            "t": null
+        },
+        {
+            "cid": 1168,
+            "type": 1,
+            "time": 40.58,
+            "text": "呜呜呜",
+            "color": 11191314,
+            "t": null
+        },
+        {
+            "cid": 1161,
+            "type": 1,
+            "time": 43.78,
+            "text": "朕的弹幕大军呢？",
+            "color": 16508241,
+            "t": null
+        },
+        {
+            "cid": 83,
+            "type": 1,
+            "time": 44.03,
+            "text": "老规矩，先听一遍",
+            "color": 3884182,
+            "t": null
+        },
+        {
+            "cid": 1099,
+            "type": 1,
+            "time": 46.89,
+            "text": "老规矩，听一遍",
+            "color": 16476580,
+            "t": null
+        },
+        {
+            "cid": 1068,
+            "type": 1,
+            "time": 47.4,
+            "text": "依旧只听一遍",
+            "color": 11335599,
+            "t": null
+        },
+        {
+            "cid": 26,
+            "type": 1,
+            "time": 48.05,
+            "text": "老规矩op听一遍（doge",
+            "color": 1483028,
+            "t": null
+        },
+        {
+            "cid": 1086,
+            "type": 1,
+            "time": 48.09,
+            "text": "这个番的名字别说挺长的",
+            "color": 8254895,
+            "t": null
+        },
+        {
+            "cid": 707,
+            "type": 1,
+            "time": 48.41,
+            "text": "好萌啊啊啊",
+            "color": 10930896,
+            "t": null
+        },
+        {
+            "cid": 677,
+            "type": 1,
+            "time": 48.47,
+            "text": "难道这番的op真的只听一遍吗（doge）",
+            "color": 1298343,
+            "t": null
+        },
+        {
+            "cid": 1158,
+            "type": 1,
+            "time": 48.73,
+            "text": "来一遍",
+            "color": 11330204,
+            "t": null
+        },
+        {
+            "cid": 151,
+            "type": 1,
+            "time": 49.1,
+            "text": "男主造型指导：两面宿傩",
+            "color": 16277906,
+            "t": null
+        },
+        {
+            "cid": 1169,
+            "type": 1,
+            "time": 49.16,
+            "text": "有的",
+            "color": 194922,
+            "t": null
+        },
+        {
+            "cid": 1030,
+            "type": 1,
+            "time": 49.25,
+            "text": "1000+人！",
+            "color": 552910,
+            "t": null
+        },
+        {
+            "cid": 1157,
+            "type": 1,
+            "time": 49.45,
+            "text": "好听",
+            "color": 16488200,
+            "t": null
+        },
+        {
+            "cid": 1146,
+            "type": 1,
+            "time": 49.92,
+            "text": "80人出来吧",
+            "color": 3473376,
+            "t": null
+        },
+        {
+            "cid": 1032,
+            "type": 1,
+            "time": 50.43,
+            "text": "有的兄弟有的",
+            "color": 16525131,
+            "t": null
+        },
+        {
+            "cid": 1135,
+            "type": 1,
+            "time": 50.74,
+            "text": "没有",
+            "color": 9233449,
+            "t": null
+        },
+        {
+            "cid": 507,
+            "type": 1,
+            "time": 52.89,
+            "text": "给你一个让我听的机会",
+            "color": 15484095,
+            "t": null
+        },
+        {
+            "cid": 610,
+            "type": 1,
+            "time": 56.3,
+            "text": "终于盼到了",
+            "color": 1458128,
+            "t": null
+        },
+        {
+            "cid": 1174,
+            "type": 1,
+            "time": 57.83,
+            "text": "没人？",
+            "color": 90253,
+            "t": null
+        },
+        {
+            "cid": 673,
+            "type": 1,
+            "time": 59.84,
+            "text": "有人",
+            "color": 2193088,
+            "t": null
+        },
+        {
+            "cid": 1172,
+            "type": 1,
+            "time": 60.76,
+            "text": "op好好听",
+            "color": 15925843,
+            "t": null
+        },
+        {
+            "cid": 156,
+            "type": 1,
+            "time": 60.96,
+            "text": "终于来啦！",
+            "color": 5196292,
+            "t": null
+        },
+        {
+            "cid": 695,
+            "type": 1,
+            "time": 61.57,
+            "text": "老规矩，听一遍",
+            "color": 13438741,
+            "t": null
+        },
+        {
+            "cid": 682,
+            "type": 1,
+            "time": 62.42,
+            "text": "有的有的 x 2",
+            "color": 10276014,
+            "t": null
+        },
+        {
+            "cid": 861,
+            "type": 1,
+            "time": 62.5,
+            "text": "再来一遍",
+            "color": 2623159,
+            "t": null
+        },
+        {
+            "cid": 1034,
+            "type": 1,
+            "time": 65.94,
+            "text": "op好好听!!",
+            "color": 12967864,
+            "t": null
+        },
+        {
+            "cid": 1188,
+            "type": 1,
+            "time": 66.23,
+            "text": "我靠终于来了",
+            "color": 3394401,
+            "t": null
+        },
+        {
+            "cid": 866,
+            "type": 1,
+            "time": 76.48,
+            "text": "占领空屏 x 3",
+            "color": 8350344,
+            "t": null
+        },
+        {
+            "cid": 116,
+            "type": 1,
+            "time": 67.31,
+            "text": "就我觉得这男声很好听吗",
+            "color": 14821060,
+            "t": null
+        },
+        {
+            "cid": 750,
+            "type": 1,
+            "time": 67.94,
+            "text": "来了来了",
+            "color": 6159446,
+            "t": null
+        },
+        {
+            "cid": 1048,
+            "type": 1,
+            "time": 68.26,
+            "text": "不错，这画质爱了！",
+            "color": 16101178,
+            "t": null
+        },
+        {
+            "cid": 1115,
+            "type": 1,
+            "time": 68.4,
+            "text": "哈哈哈哈，占领空屏",
+            "color": 12458959,
+            "t": null
+        },
+        {
+            "cid": 664,
+            "type": 1,
+            "time": 80.05,
+            "text": "羡慕啊",
+            "color": 11727448,
+            "t": null
+        },
+        {
+            "cid": 82,
+            "type": 1,
+            "time": 83.75,
+            "text": "有人吗 x 2",
+            "color": 9820525,
+            "t": null
+        },
+        {
+            "cid": 1229,
+            "type": 1,
+            "time": 86.85,
+            "text": "没人吗？",
+            "color": 660500,
+            "t": null
+        },
+        {
+            "cid": 823,
+            "type": 1,
+            "time": 87.32,
+            "text": "有人",
+            "color": 13642182,
+            "t": null
+        },
+        {
+            "cid": 993,
+            "type": 1,
+            "time": 88.67,
+            "text": "又是一堆伞吗？我想到迷途之子呢",
+            "color": 2184240,
+            "t": null
+        },
+        {
+            "cid": 1036,
+            "type": 1,
+            "time": 88.91,
+            "text": "转音yyds",
+            "color": 9094952,
+            "t": null
+        },
+        {
+            "cid": 846,
+            "type": 1,
+            "time": 89.7,
+            "text": "包有的",
+            "color": 4849344,
+            "t": null
+        },
+        {
+            "cid": 549,
+            "type": 1,
+            "time": 93.48,
+            "text": "有的 x 2",
+            "color": 10999459,
+            "t": null
+        },
+        {
+            "cid": 1120,
+            "type": 1,
+            "time": 93.08,
+            "text": "有的兄弟",
+            "color": 10043795,
+            "t": null
+        },
+        {
+            "cid": 1069,
+            "type": 1,
+            "time": 94.94,
+            "text": "啊啊啊来啦",
+            "color": 1772493,
+            "t": null
+        },
+        {
+            "cid": 1159,
+            "type": 1,
+            "time": 96.85,
+            "text": "没人",
+            "color": 5949686,
+            "t": null
+        },
+        {
+            "cid": 1088,
+            "type": 1,
+            "time": 97.76,
+            "text": "开播大吉！！！",
+            "color": 8223494,
+            "t": null
+        },
+        {
+            "cid": 54,
+            "type": 1,
+            "time": 97.81,
+            "text": "男友视角",
+            "color": 3717432,
+            "t": null
+        },
+        {
+            "cid": 1129,
+            "type": 1,
+            "time": 98.44,
+            "text": "op好听",
+            "color": 14837356,
+            "t": null
+        },
+        {
+            "cid": 971,
+            "type": 1,
+            "time": 99.15,
+            "text": "来了",
+            "color": 8050150,
+            "t": null
+        },
+        {
+            "cid": 879,
+            "type": 1,
+            "time": 103.68,
+            "text": "开播大吉 x 2",
+            "color": 10159888,
+            "t": null
+        },
+        {
+            "cid": 621,
+            "type": 1,
+            "time": 100.13,
+            "text": "甜甜的",
+            "color": 7817933,
+            "t": null
+        },
+        {
+            "cid": 73,
+            "type": 1,
+            "time": 100.49,
+            "text": "话说这个糖果到底叫什么",
+            "color": 1560849,
+            "t": null
+        },
+        {
+            "cid": 788,
+            "type": 1,
+            "time": 103.8,
+            "text": "好像叫苹果糖",
+            "color": 3370774,
+            "t": null
+        },
+        {
+            "cid": 994,
+            "type": 1,
+            "time": 104.61,
+            "text": "开播大吉！",
+            "color": 13818637,
+            "t": null
+        },
+        {
+            "cid": 68,
+            "type": 1,
+            "time": 105.56,
+            "text": "我嘞个身高差",
+            "color": 14011263,
+            "t": null
+        },
+        {
+            "cid": 107,
+            "type": 1,
+            "time": 106.07,
+            "text": "苹果糖吧",
+            "color": 13362957,
+            "t": null
+        },
+        {
+            "cid": 832,
+            "type": 1,
+            "time": 109.79,
+            "text": "op好听捏",
+            "color": 7923081,
+            "t": null
+        },
+        {
+            "cid": 1090,
+            "type": 1,
+            "time": 110.08,
+            "text": "有有有",
+            "color": 10222353,
+            "t": null
+        },
+        {
+            "cid": 818,
+            "type": 1,
+            "time": 112.31,
+            "text": "有的兄弟有的",
+            "color": 16400825,
+            "t": null
+        },
+        {
+            "cid": 916,
+            "type": 1,
+            "time": 112.78,
+            "text": "凛太郎的跑姿好干练啊",
+            "color": 4809941,
+            "t": null
+        },
+        {
+            "cid": 1000,
+            "type": 1,
+            "time": 113.45,
+            "text": "1000+",
+            "color": 14381507,
+            "t": null
+        },
+        {
+            "cid": 895,
+            "type": 1,
+            "time": 119.07,
+            "text": "山口？好久没见这个姓氏的监督了",
+            "color": 13587393,
+            "t": null
+        },
+        {
+            "cid": 1074,
+            "type": 1,
+            "time": 119.55,
+            "text": "不是，你们怎么都跳着看？",
+            "color": 1190243,
+            "t": null
+        },
+        {
+            "cid": 1063,
+            "type": 1,
+            "time": 122.57,
+            "text": "都没人了",
+            "color": 14356650,
+            "t": null
+        },
+        {
+            "cid": 1080,
+            "type": 1,
+            "time": 125.17,
+            "text": "hhhh我卡点看到你们晚了",
+            "color": 6863717,
+            "t": null
+        },
+        {
+            "cid": 661,
+            "type": 1,
+            "time": 127.08,
+            "text": "都跳了吗",
+            "color": 9523520,
+            "t": null
+        },
+        {
+            "cid": 863,
+            "type": 1,
+            "time": 131.55,
+            "text": "开心看番吧！你的视线就是光！",
+            "color": 6705948,
+            "t": null
+        },
+        {
+            "cid": 28,
+            "type": 1,
+            "time": 132.59,
+            "text": "有人吗？",
+            "color": 898517,
+            "t": null
+        },
+        {
+            "cid": 1008,
+            "type": 1,
+            "time": 132.63,
+            "text": "占领空屏",
+            "color": 8839833,
+            "t": null
+        },
+        {
+            "cid": 805,
+            "type": 1,
+            "time": 133.54,
+            "text": "无他，为自动挡熟尔",
+            "color": 9516529,
+            "t": null
+        },
+        {
+            "cid": 580,
+            "type": 1,
+            "time": 134.01,
+            "text": "没有跳",
+            "color": 6005760,
+            "t": null
+        },
+        {
+            "cid": 1178,
+            "type": 1,
+            "time": 134.06,
+            "text": "祝在场的所有人都有女朋友(男朋友)",
+            "color": 14225154,
+            "t": null
+        },
+        {
+            "cid": 1163,
+            "type": 1,
+            "time": 134.1,
+            "text": "无他，唯自动档尔",
+            "color": 1877773,
+            "t": null
+        },
+        {
+            "cid": 912,
+            "type": 1,
+            "time": 134.29,
+            "text": "有的 x 5",
+            "color": 14846544,
+            "t": null
+        },
+        {
+            "cid": 797,
+            "type": 1,
+            "time": 134.46,
+            "text": "为什么跳过！都给我回去看op",
+            "color": 7234898,
+            "t": null
+        },
+        {
+            "cid": 332,
+            "type": 1,
+            "time": 134.73,
+            "text": "刚开播就来到这里。想必等了很久吧。",
+            "color": 3365895,
+            "t": null
+        },
+        {
+            "cid": 31,
+            "type": 1,
+            "time": 150.58,
+            "text": "开播大吉 x 6",
+            "color": 6643499,
+            "t": null
+        },
+        {
+            "cid": 1031,
+            "type": 1,
+            "time": 136.53,
+            "text": "承包空屏",
+            "color": 15149874,
+            "t": null
+        },
+        {
+            "cid": 1078,
+            "type": 1,
+            "time": 138.68,
+            "text": "539个人呢",
+            "color": 9017157,
+            "t": null
+        },
+        {
+            "cid": 901,
+            "type": 1,
+            "time": 140.05,
+            "text": "幻听：厄卡伦",
+            "color": 720210,
+            "t": null
+        },
+        {
+            "cid": 1134,
+            "type": 1,
+            "time": 141.04,
+            "text": "终于知道播了",
+            "color": 15698442,
+            "t": null
+        },
+        {
+            "cid": 715,
+            "type": 1,
+            "time": 141.57,
+            "text": "终于来了",
+            "color": 6729093,
+            "t": null
+        },
+        {
+            "cid": 1235,
+            "type": 1,
+            "time": 141.75,
+            "text": "hello有人吗",
+            "color": 5869184,
+            "t": null
+        },
+        {
+            "cid": 499,
+            "type": 1,
+            "time": 142.22,
+            "text": "2000+",
+            "color": 13457192,
+            "t": null
+        },
+        {
+            "cid": 1001,
+            "type": 1,
+            "time": 143.26,
+            "text": "1000＋",
+            "color": 13217557,
+            "t": null
+        },
+        {
+            "cid": 1226,
+            "type": 1,
+            "time": 143.33,
+            "text": "没人？",
+            "color": 8477434,
+            "t": null
+        },
+        {
+            "cid": 1165,
+            "type": 1,
+            "time": 144.18,
+            "text": "全员熟人？",
+            "color": 9909729,
+            "t": null
+        },
+        {
+            "cid": 77,
+            "type": 1,
+            "time": 145.4,
+            "text": "都在认真看番呢",
+            "color": 13029979,
+            "t": null
+        },
+        {
+            "cid": 1205,
+            "type": 1,
+            "time": 145.43,
+            "text": "第一个",
+            "color": 2692259,
+            "t": null
+        },
+        {
+            "cid": 1194,
+            "type": 1,
+            "time": 145.81,
+            "text": "终于",
+            "color": 3702855,
+            "t": null
+        },
+        {
+            "cid": 1119,
+            "type": 1,
+            "time": 147.36,
+            "text": "有有",
+            "color": 14042741,
+            "t": null
+        },
+        {
+            "cid": 1010,
+            "type": 1,
+            "time": 147.48,
+            "text": "没有",
+            "color": 7963924,
+            "t": null
+        },
+        {
+            "cid": 881,
+            "type": 1,
+            "time": 149.0,
+            "text": "小卡",
+            "color": 12607491,
+            "t": null
+        },
+        {
+            "cid": 542,
+            "type": 1,
+            "time": 150.35,
+            "text": "哇挺多人的欸",
+            "color": 2187340,
+            "t": null
+        },
+        {
+            "cid": 908,
+            "type": 1,
+            "time": 155.41,
+            "text": "长得像新门红丸",
+            "color": 7138819,
+            "t": null
+        },
+        {
+            "cid": 273,
+            "type": 1,
+            "time": 156.01,
+            "text": "长得太凶吧",
+            "color": 1000911,
+            "t": null
+        },
+        {
+            "cid": 1021,
+            "type": 1,
+            "time": 158.32,
+            "text": "承包牢朔",
+            "color": 398233,
+            "t": null
+        },
+        {
+            "cid": 845,
+            "type": 1,
+            "time": 158.81,
+            "text": "研磨的声优吗？！",
+            "color": 16591792,
+            "t": null
+        },
+        {
+            "cid": 991,
+            "type": 1,
+            "time": 160.11,
+            "text": "终于等到你，还好我没放弃",
+            "color": 7734986,
+            "t": null
+        },
+        {
+            "cid": 1198,
+            "type": 1,
+            "time": 160.8,
+            "text": "佐助:有点意思",
+            "color": 5528633,
+            "t": null
+        },
+        {
+            "cid": 285,
+            "type": 1,
+            "time": 165.69,
+            "text": "！！！！！！开播大吉",
+            "color": 9344786,
+            "t": null
+        },
+        {
+            "cid": 717,
+            "type": 1,
+            "time": 174.14,
+            "text": "有人吗",
+            "color": 6717225,
+            "t": null
+        },
+        {
+            "cid": 529,
+            "type": 1,
+            "time": 175.72,
+            "text": "我真的开弹幕了吗",
+            "color": 8229382,
+            "t": null
+        },
+        {
+            "cid": 338,
+            "type": 1,
+            "time": 178.37,
+            "text": "我来证明你开了弹幕",
+            "color": 8163790,
+            "t": null
+        },
+        {
+            "cid": 351,
+            "type": 1,
+            "time": 182.77,
+            "text": "高须龙儿是你吗",
+            "color": 9410655,
+            "t": null
+        },
+        {
+            "cid": 122,
+            "type": 1,
+            "time": 183.09,
+            "text": "男主能不吓人吗？长得像宿傩",
+            "color": 16070305,
+            "t": null
+        },
+        {
+            "cid": 1019,
+            "type": 1,
+            "time": 183.53,
+            "text": "男主：你好",
+            "color": 11948721,
+            "t": null
+        },
+        {
+            "cid": 1058,
+            "type": 1,
+            "time": 183.78,
+            "text": "好凶！",
+            "color": 12192951,
+            "t": null
+        },
+        {
+            "cid": 62,
+            "type": 1,
+            "time": 183.91,
+            "text": "男主：听说你找我",
+            "color": 6661108,
+            "t": null
+        },
+        {
+            "cid": 586,
+            "type": 1,
+            "time": 196.35,
+            "text": "哈哈哈哈哈哈哈哈 x 2",
+            "color": 5350277,
+            "t": null
+        },
+        {
+            "cid": 521,
+            "type": 1,
+            "time": 188.72,
+            "text": "哈哈哈哈哈哈哈哈哈哈哈 x 2",
+            "color": 1604511,
+            "t": null
+        },
+        {
+            "cid": 990,
+            "type": 1,
+            "time": 184.69,
+            "text": "他们俩：我不好",
+            "color": 6384429,
+            "t": null
+        },
+        {
+            "cid": 858,
+            "type": 1,
+            "time": 185.64,
+            "text": "笑死我了 x 2",
+            "color": 4962759,
+            "t": null
+        },
+        {
+            "cid": 714,
+            "type": 1,
+            "time": 186.0,
+            "text": "ksy在看扣1",
+            "color": 8802198,
+            "t": null
+        },
+        {
+            "cid": 496,
+            "type": 1,
+            "time": 187.32,
+            "text": "hahahah男主好凶",
+            "color": 9776250,
+            "t": null
+        },
+        {
+            "cid": 789,
+            "type": 1,
+            "time": 190.04,
+            "text": "男主人畜无害，但是长得有压迫感",
+            "color": 9035689,
+            "t": null
+        },
+        {
+            "cid": 995,
+            "type": 1,
+            "time": 190.87,
+            "text": "哈哈哈",
+            "color": 12090654,
+            "t": null
+        },
+        {
+            "cid": 949,
+            "type": 1,
+            "time": 191.62,
+            "text": "哈哈哈哈哈哈哈",
+            "color": 10557406,
+            "t": null
+        },
+        {
+            "cid": 622,
+            "type": 1,
+            "time": 191.71,
+            "text": "问：求这两人的心理阴影面积大小",
+            "color": 10445236,
+            "t": null
+        },
+        {
+            "cid": 84,
+            "type": 1,
+            "time": 193.74,
+            "text": "霸王引擎",
+            "color": 15768917,
+            "t": null
+        },
+        {
+            "cid": 1018,
+            "type": 1,
+            "time": 194.19,
+            "text": "哈哈哈哈，名场面",
+            "color": 14540952,
+            "t": null
+        },
+        {
+            "cid": 979,
+            "type": 1,
+            "time": 194.3,
+            "text": "鬼太郎吗",
+            "color": 7846331,
+            "t": null
+        },
+        {
+            "cid": 900,
+            "type": 1,
+            "time": 194.67,
+            "text": "好高啊",
+            "color": 13042965,
+            "t": null
+        },
+        {
+            "cid": 630,
+            "type": 1,
+            "time": 194.89,
+            "text": "哈哈哈哈哈哈救命好搞笑",
+            "color": 5878484,
+            "t": null
+        },
+        {
+            "cid": 24,
+            "type": 1,
+            "time": 194.98,
+            "text": "看吧孩子吓的 都开疾跑了",
+            "color": 40147,
+            "t": null
+        },
+        {
+            "cid": 885,
+            "type": 1,
+            "time": 195.99,
+            "text": "哈哈",
+            "color": 14669673,
+            "t": null
+        },
+        {
+            "cid": 370,
+            "type": 1,
+            "time": 199.55,
+            "text": "这身高2米多了吧为什么不去打篮球",
+            "color": 9608251,
+            "t": null
+        },
+        {
+            "cid": 477,
+            "type": 1,
+            "time": 201.52,
+            "text": "男主好帅哦，我吃这一卦",
+            "color": 7078229,
+            "t": null
+        },
+        {
+            "cid": 593,
+            "type": 1,
+            "time": 202.12,
+            "text": "宇佐美，可以进表情包了",
+            "color": 13178840,
+            "t": null
+        },
+        {
+            "cid": 827,
+            "type": 1,
+            "time": 202.37,
+            "text": "这几张脸，感觉似曾相识?",
+            "color": 2327311,
+            "t": null
+        },
+        {
+            "cid": 853,
+            "type": 1,
+            "time": 202.37,
+            "text": "宇佐美好可爱啊啊啊",
+            "color": 12158992,
+            "t": null
+        },
+        {
+            "cid": 852,
+            "type": 1,
+            "time": 203.28,
+            "text": "笑死我了假混混",
+            "color": 12713163,
+            "t": null
+        },
+        {
+            "cid": 576,
+            "type": 1,
+            "time": 204.31,
+            "text": "好可爱，萌化了，呜呜呜",
+            "color": 14575789,
+            "t": null
+        },
+        {
+            "cid": 219,
+            "type": 1,
+            "time": 206.02,
+            "text": "好喜欢这种冷脸男",
+            "color": 3529147,
+            "t": null
+        },
+        {
+            "cid": 327,
+            "type": 1,
+            "time": 207.25,
+            "text": "宇将军你好",
+            "color": 15281737,
+            "t": null
+        },
+        {
+            "cid": 939,
+            "type": 1,
+            "time": 207.66,
+            "text": "秒吃",
+            "color": 4734253,
+            "t": null
+        },
+        {
+            "cid": 745,
+            "type": 1,
+            "time": 209.68,
+            "text": "可爱捏",
+            "color": 13523316,
+            "t": null
+        },
+        {
+            "cid": 948,
+            "type": 1,
+            "time": 210.72,
+            "text": "其实武力值最高的了是这里面最矮的一个",
+            "color": 14483552,
+            "t": null
+        },
+        {
+            "cid": 815,
+            "type": 1,
+            "time": 213.88,
+            "text": "有人吗？",
+            "color": 8132185,
+            "t": null
+        },
+        {
+            "cid": 764,
+            "type": 1,
+            "time": 214.28,
+            "text": "出现了，没怎么见过的姓氏",
+            "color": 16011782,
+            "t": null
+        },
+        {
+            "cid": 837,
+            "type": 1,
+            "time": 215.76,
+            "text": "无人吗",
+            "color": 10779111,
+            "t": null
+        },
+        {
+            "cid": 334,
+            "type": 1,
+            "time": 218.58,
+            "text": "对不起宿傩大人",
+            "color": 1738428,
+            "t": null
+        },
+        {
+            "cid": 902,
+            "type": 1,
+            "time": 219.47,
+            "text": "朕的弹幕大军呢",
+            "color": 9912233,
+            "t": null
+        },
+        {
+            "cid": 1056,
+            "type": 1,
+            "time": 223.17,
+            "text": "第1个看的人是我太开心了",
+            "color": 9658444,
+            "t": null
+        },
+        {
+            "cid": 74,
+            "type": 1,
+            "time": 223.7,
+            "text": "我的妈呀前排呢嘻嘻",
+            "color": 12212090,
+            "t": null
+        },
+        {
+            "cid": 626,
+            "type": 1,
+            "time": 223.9,
+            "text": "经费充足",
+            "color": 1772793,
+            "t": null
+        },
+        {
+            "cid": 79,
+            "type": 1,
+            "time": 225.07,
+            "text": "有人吗",
+            "color": 9457577,
+            "t": null
+        },
+        {
+            "cid": 1044,
+            "type": 1,
+            "time": 229.3,
+            "text": "我去1000多人",
+            "color": 11838191,
+            "t": null
+        },
+        {
+            "cid": 964,
+            "type": 1,
+            "time": 229.37,
+            "text": "有的",
+            "color": 15911472,
+            "t": null
+        },
+        {
+            "cid": 502,
+            "type": 1,
+            "time": 230.94,
+            "text": "有的有的",
+            "color": 14046624,
+            "t": null
+        },
+        {
+            "cid": 655,
+            "type": 1,
+            "time": 232.69,
+            "text": "2000+出来！",
+            "color": 15668298,
+            "t": null
+        },
+        {
+            "cid": 146,
+            "type": 1,
+            "time": 232.9,
+            "text": "2000人正专心看呢",
+            "color": 8519943,
+            "t": null
+        },
+        {
+            "cid": 945,
+            "type": 1,
+            "time": 233.21,
+            "text": "终于开播啦",
+            "color": 13677630,
+            "t": null
+        },
+        {
+            "cid": 709,
+            "type": 1,
+            "time": 233.95,
+            "text": "现在2000+了",
+            "color": 10202610,
+            "t": null
+        },
+        {
+            "cid": 391,
+            "type": 1,
+            "time": 241.84,
+            "text": "空屏我占",
+            "color": 4037300,
+            "t": null
+        },
+        {
+            "cid": 892,
+            "type": 1,
+            "time": 247.65,
+            "text": "开播大吉",
+            "color": 15483069,
+            "t": null
+        },
+        {
+            "cid": 72,
+            "type": 1,
+            "time": 247.99,
+            "text": "吓出原画了哈哈 x 2",
+            "color": 4997625,
+            "t": null
+        },
+        {
+            "cid": 548,
+            "type": 1,
+            "time": 248.0,
+            "text": "直接被吓成原画了，男主实在过于霸气",
+            "color": 15575331,
+            "t": null
+        },
+        {
+            "cid": 550,
+            "type": 1,
+            "time": 248.1,
+            "text": "长得太吓人了吗2333",
+            "color": 3644644,
+            "t": null
+        },
+        {
+            "cid": 555,
+            "type": 1,
+            "time": 248.48,
+            "text": "2000个入快出来",
+            "color": 5841517,
+            "t": null
+        },
+        {
+            "cid": 1004,
+            "type": 1,
+            "time": 248.57,
+            "text": "直接吓出原话",
+            "color": 5299207,
+            "t": null
+        },
+        {
+            "cid": 536,
+            "type": 1,
+            "time": 248.59,
+            "text": "在男主面前，连失恋都不算事",
+            "color": 1699479,
+            "t": null
+        },
+        {
+            "cid": 978,
+            "type": 1,
+            "time": 248.89,
+            "text": "有点萌啊",
+            "color": 2064701,
+            "t": null
+        },
+        {
+            "cid": 781,
+            "type": 1,
+            "time": 251.3,
+            "text": "彩虹天团？",
+            "color": 11011272,
+            "t": null
+        },
+        {
+            "cid": 196,
+            "type": 1,
+            "time": 254.17,
+            "text": "不是男主有这么吓人吗？",
+            "color": 15235667,
+            "t": null
+        },
+        {
+            "cid": 174,
+            "type": 1,
+            "time": 254.57,
+            "text": "主要是太大一只了吧",
+            "color": 9688941,
+            "t": null
+        },
+        {
+            "cid": 755,
+            "type": 1,
+            "time": 259.7,
+            "text": "原来觉得可怜的点在这啊喂",
+            "color": 2832244,
+            "t": null
+        },
+        {
+            "cid": 613,
+            "type": 1,
+            "time": 259.85,
+            "text": "说真的男主真的挺帅的",
+            "color": 5361953,
+            "t": null
+        },
+        {
+            "cid": 296,
+            "type": 1,
+            "time": 260.0,
+            "text": "包有人的",
+            "color": 13250737,
+            "t": null
+        },
+        {
+            "cid": 393,
+            "type": 1,
+            "time": 261.68,
+            "text": "没人吗？",
+            "color": 12254256,
+            "t": null
+        },
+        {
+            "cid": 872,
+            "type": 1,
+            "time": 264.99,
+            "text": "是冷脸萌吗hhhhhh",
+            "color": 12428412,
+            "t": null
+        },
+        {
+            "cid": 1062,
+            "type": 1,
+            "time": 265.98,
+            "text": "来了来了",
+            "color": 15398081,
+            "t": null
+        },
+        {
+            "cid": 691,
+            "type": 1,
+            "time": 266.83,
+            "text": "千鸟高中到了",
+            "color": 7546139,
+            "t": null
+        },
+        {
+            "cid": 874,
+            "type": 1,
+            "time": 267.65,
+            "text": "笑死我了，混的人",
+            "color": 2928980,
+            "t": null
+        },
+        {
+            "cid": 57,
+            "type": 1,
+            "time": 271.61,
+            "text": "看到我讨厌的人时be like：",
+            "color": 3906929,
+            "t": null
+        },
+        {
+            "cid": 708,
+            "type": 1,
+            "time": 272.44,
+            "text": "秒开仙人",
+            "color": 3593381,
+            "t": null
+        },
+        {
+            "cid": 519,
+            "type": 1,
+            "time": 273.3,
+            "text": "这秒变脸，我是真做不到",
+            "color": 3384292,
+            "t": null
+        },
+        {
+            "cid": 591,
+            "type": 1,
+            "time": 273.68,
+            "text": "川剧变脸",
+            "color": 8886305,
+            "t": null
+        },
+        {
+            "cid": 5,
+            "type": 1,
+            "time": 274.7,
+            "text": "我上学看见老师belike",
+            "color": 10426466,
+            "t": null
+        },
+        {
+            "cid": 180,
+            "type": 1,
+            "time": 275.54,
+            "text": "666变脸不扣豆",
+            "color": 13965709,
+            "t": null
+        },
+        {
+            "cid": 478,
+            "type": 1,
+            "time": 275.58,
+            "text": "川剧变脸，哈哈",
+            "color": 13518761,
+            "t": null
+        },
+        {
+            "cid": 540,
+            "type": 1,
+            "time": 276.14,
+            "text": "这两已经算非常友善的了",
+            "color": 13117535,
+            "t": null
+        },
+        {
+            "cid": 23,
+            "type": 1,
+            "time": 276.47,
+            "text": "一秒战斗脸",
+            "color": 9816452,
+            "t": null
+        },
+        {
+            "cid": 855,
+            "type": 1,
+            "time": 276.91,
+            "text": "瞬间失去高光",
+            "color": 10657516,
+            "t": null
+        },
+        {
+            "cid": 807,
+            "type": 1,
+            "time": 279.13,
+            "text": "没有弹幕",
+            "color": 13944659,
+            "t": null
+        },
+        {
+            "cid": 940,
+            "type": 1,
+            "time": 279.83,
+            "text": "我来证明你开弹幕了",
+            "color": 12352123,
+            "t": null
+        },
+        {
+            "cid": 419,
+            "type": 1,
+            "time": 290.52,
+            "text": "占领空屏",
+            "color": 11430599,
+            "t": null
+        },
+        {
+            "cid": 494,
+            "type": 1,
+            "time": 291.84,
+            "text": "可怜的宇佐美",
+            "color": 2739673,
+            "t": null
+        },
+        {
+            "cid": 143,
+            "type": 1,
+            "time": 292.12,
+            "text": "她们在高傲什么啊",
+            "color": 13673935,
+            "t": null
+        },
+        {
+            "cid": 924,
+            "type": 1,
+            "time": 293.78,
+            "text": "啊？",
+            "color": 6591453,
+            "t": null
+        },
+        {
+            "cid": 96,
+            "type": 1,
+            "time": 294.07,
+            "text": "莫名其妙感觉",
+            "color": 15446588,
+            "t": null
+        },
+        {
+            "cid": 769,
+            "type": 1,
+            "time": 294.38,
+            "text": "这偏见也太大了吧。。",
+            "color": 12274425,
+            "t": null
+        },
+        {
+            "cid": 753,
+            "type": 1,
+            "time": 294.67,
+            "text": "不要啊",
+            "color": 13366768,
+            "t": null
+        },
+        {
+            "cid": 583,
+            "type": 1,
+            "time": 295.32,
+            "text": "什么意思？",
+            "color": 492694,
+            "t": null
+        },
+        {
+            "cid": 366,
+            "type": 1,
+            "time": 297.11,
+            "text": "这里就当做特别的世界观好了，不要带入现实了",
+            "color": 10815207,
+            "t": null
+        },
+        {
+            "cid": 380,
+            "type": 1,
+            "time": 297.36,
+            "text": "夸张了点吧",
+            "color": 1978110,
+            "t": null
+        },
+        {
+            "cid": 968,
+            "type": 1,
+            "time": 297.81,
+            "text": "人呢",
+            "color": 12802271,
+            "t": null
+        },
+        {
+            "cid": 164,
+            "type": 1,
+            "time": 297.93,
+            "text": "不至于吧。",
+            "color": 5109947,
+            "t": null
+        },
+        {
+            "cid": 907,
+            "type": 1,
+            "time": 298.76,
+            "text": "hh",
+            "color": 7749492,
+            "t": null
+        },
+        {
+            "cid": 567,
+            "type": 1,
+            "time": 299.37,
+            "text": "这都空屏多久了",
+            "color": 5321278,
+            "t": null
+        },
+        {
+            "cid": 962,
+            "type": 1,
+            "time": 299.79,
+            "text": "没人吗",
+            "color": 1005501,
+            "t": null
+        },
+        {
+            "cid": 435,
+            "type": 1,
+            "time": 301.48,
+            "text": "S级矿工十年都挖不出的神金（偏见）",
+            "color": 10641134,
+            "t": null
+        },
+        {
+            "cid": 531,
+            "type": 1,
+            "time": 302.41,
+            "text": "顶级过肺",
+            "color": 7405780,
+            "t": null
+        },
+        {
+            "cid": 675,
+            "type": 1,
+            "time": 302.79,
+            "text": "大家这么沉浸吗，都没人faqdanm",
+            "color": 11827869,
+            "t": null
+        },
+        {
+            "cid": 756,
+            "type": 1,
+            "time": 303.19,
+            "text": "这么说就有关系了",
+            "color": 4241623,
+            "t": null
+        },
+        {
+            "cid": 635,
+            "type": 1,
+            "time": 303.4,
+            "text": "大小姐学校？和铃之宫莉莉莎一个学校的？",
+            "color": 3613128,
+            "t": null
+        },
+        {
+            "cid": 472,
+            "type": 1,
+            "time": 306.68,
+            "text": "这两个学校能建在一起也是不容易",
+            "color": 13743975,
+            "t": null
+        },
+        {
+            "cid": 653,
+            "type": 1,
+            "time": 307.68,
+            "text": "大家这么沉静吗？都没人发弹幕",
+            "color": 6061178,
+            "t": null
+        },
+        {
+            "cid": 641,
+            "type": 1,
+            "time": 310.2,
+            "text": "这嘴开光了",
+            "color": 10373689,
+            "t": null
+        },
+        {
+            "cid": 316,
+            "type": 1,
+            "time": 311.54,
+            "text": "私立百花王学园",
+            "color": 7469699,
+            "t": null
+        },
+        {
+            "cid": 615,
+            "type": 1,
+            "time": 311.91,
+            "text": "一个千鸟，一个桔梗是吗，糟了都挺熟的",
+            "color": 13404689,
+            "t": null
+        },
+        {
+            "cid": 170,
+            "type": 1,
+            "time": 356.09,
+            "text": "占领空屏 x 2",
+            "color": 16522563,
+            "t": null
+        },
+        {
+            "cid": 191,
+            "type": 1,
+            "time": 321.38,
+            "text": "我要占领空屏",
+            "color": 4123937,
+            "t": null
+        },
+        {
+            "cid": 574,
+            "type": 1,
+            "time": 321.46,
+            "text": "月之森是吗",
+            "color": 15275370,
+            "t": null
+        },
+        {
+            "cid": 801,
+            "type": 1,
+            "time": 325.23,
+            "text": "qyx实名观看",
+            "color": 13119475,
+            "t": null
+        },
+        {
+            "cid": 601,
+            "type": 1,
+            "time": 330.47,
+            "text": "空屏我的",
+            "color": 12861405,
+            "t": null
+        },
+        {
+            "cid": 665,
+            "type": 1,
+            "time": 330.48,
+            "text": "朱丽叶？",
+            "color": 3758272,
+            "t": null
+        },
+        {
+            "cid": 426,
+            "type": 1,
+            "time": 335.43,
+            "text": "哈哈哈哈哈，以后在学校我也这么玩。",
+            "color": 9473627,
+            "t": null
+        },
+        {
+            "cid": 134,
+            "type": 1,
+            "time": 346.39,
+            "text": "好牛，，，不会晒不到太阳缺乏维生素d吧",
+            "color": 13962627,
+            "t": null
+        },
+        {
+            "cid": 203,
+            "type": 1,
+            "time": 346.74,
+            "text": "没人咩？",
+            "color": 8385866,
+            "t": null
+        },
+        {
+            "cid": 974,
+            "type": 1,
+            "time": 346.89,
+            "text": "哇哇",
+            "color": 9765440,
+            "t": null
+        },
+        {
+            "cid": 1012,
+            "type": 1,
+            "time": 347.33,
+            "text": "人呢",
+            "color": 4280009,
+            "t": null
+        },
+        {
+            "cid": 428,
+            "type": 1,
+            "time": 349.72,
+            "text": "不是有2000多个人吗？",
+            "color": 16633680,
+            "t": null
+        },
+        {
+            "cid": 596,
+            "type": 1,
+            "time": 351.65,
+            "text": "2000+的人发发弹幕啊",
+            "color": 15779015,
+            "t": null
+        },
+        {
+            "cid": 97,
+            "type": 1,
+            "time": 357.74,
+            "text": "现实生活中也确实会有这种看不起的情况",
+            "color": 4288797,
+            "t": null
+        },
+        {
+            "cid": 545,
+            "type": 1,
+            "time": 358.66,
+            "text": "爱博，卡拉ok一阔贼",
+            "color": 5684630,
+            "t": null
+        },
+        {
+            "cid": 215,
+            "type": 1,
+            "time": 359.25,
+            "text": "在认真看番",
+            "color": 3442449,
+            "t": null
+        },
+        {
+            "cid": 60,
+            "type": 1,
+            "time": 363.66,
+            "text": "经典卡拉ok",
+            "color": 8000448,
+            "t": null
+        },
+        {
+            "cid": 873,
+            "type": 1,
+            "time": 364.18,
+            "text": "萌！",
+            "color": 4461958,
+            "t": null
+        },
+        {
+            "cid": 757,
+            "type": 1,
+            "time": 366.73,
+            "text": "！！！",
+            "color": 4497657,
+            "t": null
+        },
+        {
+            "cid": 528,
+            "type": 1,
+            "time": 367.37,
+            "text": "不要论经典的话是拉面一阔贼",
+            "color": 10049644,
+            "t": null
+        },
+        {
+            "cid": 794,
+            "type": 1,
+            "time": 373.6,
+            "text": "开播大吉 x 2",
+            "color": 1475740,
+            "t": null
+        },
+        {
+            "cid": 787,
+            "type": 1,
+            "time": 376.44,
+            "text": "1000+ x 2",
+            "color": 7256253,
+            "t": null
+        },
+        {
+            "cid": 323,
+            "type": 1,
+            "time": 375.32,
+            "text": "2000+！",
+            "color": 7967284,
+            "t": null
+        },
+        {
+            "cid": 656,
+            "type": 1,
+            "time": 375.4,
+            "text": "2000+嗨！！！",
+            "color": 14377354,
+            "t": null
+        },
+        {
+            "cid": 441,
+            "type": 1,
+            "time": 417.27,
+            "text": "2000+ x 3",
+            "color": 14274911,
+            "t": null
+        },
+        {
+            "cid": 680,
+            "type": 1,
+            "time": 377.11,
+            "text": "2000+了",
+            "color": 7698760,
+            "t": null
+        },
+        {
+            "cid": 848,
+            "type": 1,
+            "time": 378.04,
+            "text": "弹幕好少",
+            "color": 10023557,
+            "t": null
+        },
+        {
+            "cid": 504,
+            "type": 1,
+            "time": 380.03,
+            "text": "你蛋糕店叫这个名字，我可不可以当场试吃啊",
+            "color": 10347983,
+            "t": null
+        },
+        {
+            "cid": 771,
+            "type": 1,
+            "time": 381.81,
+            "text": "过两天就多了",
+            "color": 8354210,
+            "t": null
+        },
+        {
+            "cid": 728,
+            "type": 1,
+            "time": 382.61,
+            "text": "毕竟才刚上线不久",
+            "color": 1621569,
+            "t": null
+        },
+        {
+            "cid": 239,
+            "type": 1,
+            "time": 383.96,
+            "text": "太棒了居然是蛋糕店男主，怀旧起来了",
+            "color": 11262187,
+            "t": null
+        },
+        {
+            "cid": 658,
+            "type": 1,
+            "time": 385.51,
+            "text": "正片开始",
+            "color": 4381955,
+            "t": null
+        },
+        {
+            "cid": 421,
+            "type": 1,
+            "time": 387.06,
+            "text": "来了来了，命运的邂逅",
+            "color": 10084015,
+            "t": null
+        },
+        {
+            "cid": 243,
+            "type": 1,
+            "time": 387.34,
+            "text": "想吃",
+            "color": 16384945,
+            "t": null
+        },
+        {
+            "cid": 376,
+            "type": 1,
+            "time": 387.61,
+            "text": "对哒对哒",
+            "color": 5672817,
+            "t": null
+        },
+        {
+            "cid": 561,
+            "type": 1,
+            "time": 388.17,
+            "text": "刷弹幕啊！！！！！！！！！我CODM手子在线观看！！！！！！！！！",
+            "color": 13778079,
+            "t": null
+        },
+        {
+            "cid": 723,
+            "type": 1,
+            "time": 391.48,
+            "text": "就爱磕纯爱",
+            "color": 14177721,
+            "t": null
+        },
+        {
+            "cid": 773,
+            "type": 1,
+            "time": 395.02,
+            "text": "2000＋了",
+            "color": 3971949,
+            "t": null
+        },
+        {
+            "cid": 22,
+            "type": 1,
+            "time": 396.42,
+            "text": "珍惜现在的男主吧，后面就要变成蛋糕人了",
+            "color": 15824160,
+            "t": null
+        },
+        {
+            "cid": 397,
+            "type": 1,
+            "time": 402.17,
+            "text": "盲猜女主 x 2",
+            "color": 15766397,
+            "t": null
+        },
+        {
+            "cid": 547,
+            "type": 1,
+            "time": 400.02,
+            "text": "两千人",
+            "color": 9578845,
+            "t": null
+        },
+        {
+            "cid": 793,
+            "type": 1,
+            "time": 401.89,
+            "text": "哈哈那我要期待了",
+            "color": 8029122,
+            "t": null
+        },
+        {
+            "cid": 734,
+            "type": 1,
+            "time": 403.37,
+            "text": "来力了",
+            "color": 6170466,
+            "t": null
+        },
+        {
+            "cid": 701,
+            "type": 1,
+            "time": 404.36,
+            "text": "我以为他会出到第5话",
+            "color": 1336002,
+            "t": null
+        },
+        {
+            "cid": 4,
+            "type": 1,
+            "time": 408.38,
+            "text": "家里开蛋糕店的男高，是你吗宫村伊澄（dog）",
+            "color": 13908390,
+            "t": null
+        },
+        {
+            "cid": 840,
+            "type": 1,
+            "time": 408.48,
+            "text": "加油，孩子",
+            "color": 15228900,
+            "t": null
+        },
+        {
+            "cid": 643,
+            "type": 1,
+            "time": 411.44,
+            "text": "好高啊男主",
+            "color": 2899985,
+            "t": null
+        },
+        {
+            "cid": 125,
+            "type": 1,
+            "time": 411.51,
+            "text": "确实有点像宫村",
+            "color": 10793239,
+            "t": null
+        },
+        {
+            "cid": 198,
+            "type": 1,
+            "time": 414.46,
+            "text": "男主大概190再高点",
+            "color": 2338844,
+            "t": null
+        },
+        {
+            "cid": 19,
+            "type": 1,
+            "time": 414.77,
+            "text": "宫村：好巧",
+            "color": 6351279,
+            "t": null
+        },
+        {
+            "cid": 124,
+            "type": 1,
+            "time": 414.82,
+            "text": "男主190的",
+            "color": 4751672,
+            "t": null
+        },
+        {
+            "cid": 201,
+            "type": 1,
+            "time": 415.01,
+            "text": "女主要来咯！！",
+            "color": 2229708,
+            "t": null
+        },
+        {
+            "cid": 566,
+            "type": 1,
+            "time": 418.37,
+            "text": "我也想吃qwq",
+            "color": 2377922,
+            "t": null
+        },
+        {
+            "cid": 762,
+            "type": 1,
+            "time": 420.26,
+            "text": "感觉蛋糕店和现在男主真的不搭哈哈哈",
+            "color": 9184832,
+            "t": null
+        },
+        {
+            "cid": 839,
+            "type": 1,
+            "time": 421.36,
+            "text": "反差萌呐",
+            "color": 9702952,
+            "t": null
+        },
+        {
+            "cid": 476,
+            "type": 1,
+            "time": 423.01,
+            "text": "好想吃www",
+            "color": 11729964,
+            "t": null
+        },
+        {
+            "cid": 10,
+            "type": 1,
+            "time": 427.63,
+            "text": "可爱的女主宝",
+            "color": 6401132,
+            "t": null
+        },
+        {
+            "cid": 742,
+            "type": 1,
+            "time": 428.05,
+            "text": "女主？",
+            "color": 11405524,
+            "t": null
+        },
+        {
+            "cid": 829,
+            "type": 1,
+            "time": 428.44,
+            "text": "可爱的女主，抱抱",
+            "color": 702296,
+            "t": null
+        },
+        {
+            "cid": 624,
+            "type": 1,
+            "time": 429.38,
+            "text": "哦哟熏子萌萌",
+            "color": 841545,
+            "t": null
+        },
+        {
+            "cid": 467,
+            "type": 1,
+            "time": 429.43,
+            "text": "女主萌呀…",
+            "color": 4869029,
+            "t": null
+        },
+        {
+            "cid": 889,
+            "type": 1,
+            "time": 429.84,
+            "text": "呀嘞呀嘞",
+            "color": 10196057,
+            "t": null
+        },
+        {
+            "cid": 640,
+            "type": 1,
+            "time": 429.98,
+            "text": "你的小可爱已上线",
+            "color": 643231,
+            "t": null
+        },
+        {
+            "cid": 690,
+            "type": 1,
+            "time": 442.68,
+            "text": "好萌！！！ x 2",
+            "color": 15793433,
+            "t": null
+        },
+        {
+            "cid": 913,
+            "type": 1,
+            "time": 430.74,
+            "text": "好萌啊",
+            "color": 8844195,
+            "t": null
+        },
+        {
+            "cid": 178,
+            "type": 1,
+            "time": 430.78,
+            "text": "栗子！！！！",
+            "color": 9614150,
+            "t": null
+        },
+        {
+            "cid": 248,
+            "type": 1,
+            "time": 431.52,
+            "text": "好可爱 x 6",
+            "color": 7261881,
+            "t": null
+        },
+        {
+            "cid": 790,
+            "type": 1,
+            "time": 431.52,
+            "text": "有点可爱",
+            "color": 9616885,
+            "t": null
+        },
+        {
+            "cid": 796,
+            "type": 1,
+            "time": 431.89,
+            "text": "占领女主！！！！！！！！！",
+            "color": 8650993,
+            "t": null
+        },
+        {
+            "cid": 468,
+            "type": 1,
+            "time": 431.93,
+            "text": "好萌 x 2",
+            "color": 12155965,
+            "t": null
+        },
+        {
+            "cid": 40,
+            "type": 1,
+            "time": 432.16,
+            "text": "这是谁家贪吃的小松鼠呀？",
+            "color": 1740897,
+            "t": null
+        },
+        {
+            "cid": 493,
+            "type": 1,
+            "time": 432.76,
+            "text": "！！！！！",
+            "color": 10458004,
+            "t": null
+        },
+        {
+            "cid": 813,
+            "type": 1,
+            "time": 432.78,
+            "text": "妹宝简直是小仓鼠⁄(⁄ ⁄ ⁄ω⁄ ⁄ ⁄)⁄",
+            "color": 12089216,
+            "t": null
+        },
+        {
+            "cid": 456,
+            "type": 1,
+            "time": 432.82,
+            "text": "吃蛋糕吃这么香，你是葛叶宏太的姐姐吗",
+            "color": 7928694,
+            "t": null
+        },
+        {
+            "cid": 66,
+            "type": 1,
+            "time": 432.84,
+            "text": "好可爱啊啊啊啊啊",
+            "color": 618043,
+            "t": null
+        },
+        {
+            "cid": 780,
+            "type": 1,
+            "time": 432.85,
+            "text": "好萌的女主啊啊啊啊啊啊啊！！！",
+            "color": 258769,
+            "t": null
+        },
+        {
+            "cid": 462,
+            "type": 1,
+            "time": 433.32,
+            "text": "好可爱啊啊啊啊",
+            "color": 6857067,
+            "t": null
+        },
+        {
+            "cid": 27,
+            "type": 1,
+            "time": 434.38,
+            "text": "卡姿兰大眼睛",
+            "color": 10845580,
+            "t": null
+        },
+        {
+            "cid": 163,
+            "type": 1,
+            "time": 434.45,
+            "text": "好可爱啊！！！！！！！！！",
+            "color": 1087706,
+            "t": null
+        },
+        {
+            "cid": 847,
+            "type": 1,
+            "time": 434.59,
+            "text": "好萌。。",
+            "color": 1851717,
+            "t": null
+        },
+        {
+            "cid": 71,
+            "type": 1,
+            "time": 434.72,
+            "text": "卡哇伊 x 3",
+            "color": 7492459,
+            "t": null
+        },
+        {
+            "cid": 700,
+            "type": 1,
+            "time": 434.79,
+            "text": "沃趣简直萌物！",
+            "color": 15824072,
+            "t": null
+        },
+        {
+            "cid": 445,
+            "type": 1,
+            "time": 435.42,
+            "text": "我去爱了",
+            "color": 12656857,
+            "t": null
+        },
+        {
+            "cid": 553,
+            "type": 1,
+            "time": 435.64,
+            "text": "好萌哇",
+            "color": 1013122,
+            "t": null
+        },
+        {
+            "cid": 647,
+            "type": 1,
+            "time": 435.67,
+            "text": "紫毛唉",
+            "color": 11486339,
+            "t": null
+        },
+        {
+            "cid": 672,
+            "type": 1,
+            "time": 435.99,
+            "text": "前方高萌",
+            "color": 10573830,
+            "t": null
+        },
+        {
+            "cid": 187,
+            "type": 1,
+            "time": 436.89,
+            "text": "好可爱！！！！！！！！！！！！！！！！！！！！！",
+            "color": 225444,
+            "t": null
+        },
+        {
+            "cid": 637,
+            "type": 1,
+            "time": 437.02,
+            "text": "萌鼠窝惹",
+            "color": 9711569,
+            "t": null
+        },
+        {
+            "cid": 765,
+            "type": 1,
+            "time": 437.02,
+            "text": "可爱捏",
+            "color": 13991938,
+            "t": null
+        },
+        {
+            "cid": 457,
+            "type": 1,
+            "time": 437.63,
+            "text": "超级可爱的薰子(⁄ ⁄•⁄ω⁄•⁄ ⁄)",
+            "color": 6442906,
+            "t": null
+        },
+        {
+            "cid": 812,
+            "type": 1,
+            "time": 437.79,
+            "text": "可爱腻",
+            "color": 11447934,
+            "t": null
+        },
+        {
+            "cid": 75,
+            "type": 1,
+            "time": 438.63,
+            "text": "好萌！",
+            "color": 13763379,
+            "t": null
+        },
+        {
+            "cid": 314,
+            "type": 1,
+            "time": 439.32,
+            "text": "好可爱啊啊啊",
+            "color": 12939290,
+            "t": null
+        },
+        {
+            "cid": 778,
+            "type": 1,
+            "time": 439.54,
+            "text": "逐渐红温",
+            "color": 9649721,
+            "t": null
+        },
+        {
+            "cid": 280,
+            "type": 1,
+            "time": 439.55,
+            "text": "你      好",
+            "color": 5660350,
+            "t": null
+        },
+        {
+            "cid": 69,
+            "type": 1,
+            "time": 439.59,
+            "text": "红温了(确信)",
+            "color": 9904894,
+            "t": null
+        },
+        {
+            "cid": 821,
+            "type": 1,
+            "time": 439.88,
+            "text": "好可爱！！被盯着就红温了~",
+            "color": 11802007,
+            "t": null
+        },
+        {
+            "cid": 150,
+            "type": 1,
+            "time": 440.29,
+            "text": "太萌了吧",
+            "color": 11956709,
+            "t": null
+        },
+        {
+            "cid": 373,
+            "type": 1,
+            "time": 440.77,
+            "text": "小松鼠被盯着红温了",
+            "color": 5204624,
+            "t": null
+        },
+        {
+            "cid": 706,
+            "type": 1,
+            "time": 440.78,
+            "text": "熏子啊啊啊，可爱",
+            "color": 12361786,
+            "t": null
+        },
+        {
+            "cid": 101,
+            "type": 1,
+            "time": 442.35,
+            "text": "蒸汽姬 x 2",
+            "color": 12737242,
+            "t": null
+        },
+        {
+            "cid": 516,
+            "type": 1,
+            "time": 441.5,
+            "text": "水开了",
+            "color": 8690716,
+            "t": null
+        },
+        {
+            "cid": 144,
+            "type": 1,
+            "time": 441.76,
+            "text": "可爱捏！！",
+            "color": 13274427,
+            "t": null
+        },
+        {
+            "cid": 590,
+            "type": 1,
+            "time": 442.04,
+            "text": "啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊",
+            "color": 9824898,
+            "t": null
+        },
+        {
+            "cid": 181,
+            "type": 1,
+            "time": 442.19,
+            "text": "萌鼠了 ꒦ິ^꒦ິ",
+            "color": 5410340,
+            "t": null
+        },
+        {
+            "cid": 758,
+            "type": 1,
+            "time": 442.45,
+            "text": "好可爱！！！简直是人间萌物！！！",
+            "color": 6041937,
+            "t": null
+        },
+        {
+            "cid": 236,
+            "type": 1,
+            "time": 442.55,
+            "text": "薰子觉得自己没有好好打扮被凛太郎看到了，所以超害羞",
+            "color": 11777813,
+            "t": null
+        },
+        {
+            "cid": 816,
+            "type": 1,
+            "time": 444.08,
+            "text": "蒸汽机",
+            "color": 13261638,
+            "t": null
+        },
+        {
+            "cid": 128,
+            "type": 1,
+            "time": 445.48,
+            "text": "可爱！！！！！！！！！",
+            "color": 8136678,
+            "t": null
+        },
+        {
+            "cid": 842,
+            "type": 1,
+            "time": 445.95,
+            "text": "超级可爱",
+            "color": 4109759,
+            "t": null
+        },
+        {
+            "cid": 190,
+            "type": 1,
+            "time": 446.23,
+            "text": "啊卡哇伊！！",
+            "color": 6920100,
+            "t": null
+        },
+        {
+            "cid": 865,
+            "type": 1,
+            "time": 446.49,
+            "text": "不是哥们",
+            "color": 16230236,
+            "t": null
+        },
+        {
+            "cid": 309,
+            "type": 1,
+            "time": 447.97,
+            "text": "萌萌萌！",
+            "color": 11473670,
+            "t": null
+        },
+        {
+            "cid": 159,
+            "type": 1,
+            "time": 448.89,
+            "text": "害羞是有原因的！不过要到后期才会揭晓",
+            "color": 7003538,
+            "t": null
+        },
+        {
+            "cid": 432,
+            "type": 1,
+            "time": 449.32,
+            "text": "要么被你迷住了，要么被你吓到了",
+            "color": 4687044,
+            "t": null
+        },
+        {
+            "cid": 145,
+            "type": 1,
+            "time": 449.87,
+            "text": "好可爱啊",
+            "color": 8568517,
+            "t": null
+        },
+        {
+            "cid": 508,
+            "type": 1,
+            "time": 451.67,
+            "text": "开播大吉",
+            "color": 16718426,
+            "t": null
+        },
+        {
+            "cid": 67,
+            "type": 1,
+            "time": 452.46,
+            "text": "先磕为敬",
+            "color": 5422834,
+            "t": null
+        },
+        {
+            "cid": 616,
+            "type": 1,
+            "time": 452.72,
+            "text": "咕～咕～",
+            "color": 12926376,
+            "t": null
+        },
+        {
+            "cid": 244,
+            "type": 1,
+            "time": 452.75,
+            "text": "之前看PV以为男主在这打工",
+            "color": 3508663,
+            "t": null
+        },
+        {
+            "cid": 694,
+            "type": 1,
+            "time": 458.01,
+            "text": "男主真的很吓人吗",
+            "color": 1178113,
+            "t": null
+        },
+        {
+            "cid": 416,
+            "type": 1,
+            "time": 461.39,
+            "text": "赶快问，还要不要加点",
+            "color": 9912107,
+            "t": null
+        },
+        {
+            "cid": 344,
+            "type": 1,
+            "time": 462.27,
+            "text": "薰子可爱滴捏",
+            "color": 1058765,
+            "t": null
+        },
+        {
+            "cid": 752,
+            "type": 1,
+            "time": 463.69,
+            "text": "2000+",
+            "color": 9898328,
+            "t": null
+        },
+        {
+            "cid": 871,
+            "type": 1,
+            "time": 464.26,
+            "text": "突然1000人",
+            "color": 8881982,
+            "t": null
+        },
+        {
+            "cid": 302,
+            "type": 1,
+            "time": 465.22,
+            "text": "这么小一只，你那么高大以后可要保护她哦",
+            "color": 8946416,
+            "t": null
+        },
+        {
+            "cid": 515,
+            "type": 1,
+            "time": 465.8,
+            "text": "反差萌",
+            "color": 4001381,
+            "t": null
+        },
+        {
+            "cid": 646,
+            "type": 1,
+            "time": 470.03,
+            "text": "2000+了兄弟们",
+            "color": 5470817,
+            "t": null
+        },
+        {
+            "cid": 674,
+            "type": 1,
+            "time": 470.21,
+            "text": "2000+了",
+            "color": 6570800,
+            "t": null
+        },
+        {
+            "cid": 490,
+            "type": 1,
+            "time": 470.24,
+            "text": "2000人",
+            "color": 2891480,
+            "t": null
+        },
+        {
+            "cid": 775,
+            "type": 1,
+            "time": 470.25,
+            "text": "卡哇伊！！！！！！1",
+            "color": 1414533,
+            "t": null
+        },
+        {
+            "cid": 406,
+            "type": 1,
+            "time": 470.62,
+            "text": "看样子是被吓跑了，快点付钱啊",
+            "color": 12959669,
+            "t": null
+        },
+        {
+            "cid": 522,
+            "type": 1,
+            "time": 472.02,
+            "text": "啊啊啊这身高差",
+            "color": 16520304,
+            "t": null
+        },
+        {
+            "cid": 438,
+            "type": 1,
+            "time": 477.52,
+            "text": "2000+啦 x 2",
+            "color": 4658409,
+            "t": null
+        },
+        {
+            "cid": 487,
+            "type": 1,
+            "time": 474.8,
+            "text": "钱付了吗？",
+            "color": 3545280,
+            "t": null
+        },
+        {
+            "cid": 722,
+            "type": 1,
+            "time": 475.21,
+            "text": "2000＋啦",
+            "color": 8346109,
+            "t": null
+        },
+        {
+            "cid": 384,
+            "type": 1,
+            "time": 476.39,
+            "text": "薰子，你付钱了没有啊",
+            "color": 3479255,
+            "t": null
+        },
+        {
+            "cid": 199,
+            "type": 1,
+            "time": 477.35,
+            "text": "666吃霸王餐是吧",
+            "color": 641382,
+            "t": null
+        },
+        {
+            "cid": 379,
+            "type": 1,
+            "time": 477.5,
+            "text": "哈哈哈哈哈哈哈",
+            "color": 6722571,
+            "t": null
+        },
+        {
+            "cid": 731,
+            "type": 1,
+            "time": 479.44,
+            "text": "你给路打油～",
+            "color": 16394139,
+            "t": null
+        },
+        {
+            "cid": 843,
+            "type": 1,
+            "time": 481.87,
+            "text": "女主超级可爱的喂",
+            "color": 5515897,
+            "t": null
+        },
+        {
+            "cid": 481,
+            "type": 1,
+            "time": 483.36,
+            "text": "2000+ x 3",
+            "color": 7003000,
+            "t": null
+        },
+        {
+            "cid": 786,
+            "type": 1,
+            "time": 484.51,
+            "text": "没人吗",
+            "color": 6640913,
+            "t": null
+        },
+        {
+            "cid": 447,
+            "type": 1,
+            "time": 485.71,
+            "text": "2000＋啦",
+            "color": 14390968,
+            "t": null
+        },
+        {
+            "cid": 367,
+            "type": 1,
+            "time": 486.51,
+            "text": "等等，有这个姓氏吗",
+            "color": 284938,
+            "t": null
+        },
+        {
+            "cid": 58,
+            "type": 1,
+            "time": 490.13,
+            "text": "好妈妈啊",
+            "color": 10451545,
+            "t": null
+        },
+        {
+            "cid": 512,
+            "type": 1,
+            "time": 491.16,
+            "text": "萌啊!",
+            "color": 11681929,
+            "t": null
+        },
+        {
+            "cid": 440,
+            "type": 1,
+            "time": 491.78,
+            "text": "《母亲的朋友》",
+            "color": 2455684,
+            "t": null
+        },
+        {
+            "cid": 363,
+            "type": 1,
+            "time": 492.03,
+            "text": "大家都在专心看所以没人发弹幕啊",
+            "color": 5299565,
+            "t": null
+        },
+        {
+            "cid": 1070,
+            "type": 1,
+            "time": 498.2,
+            "text": "有人吗",
+            "color": 16081407,
+            "t": null
+        },
+        {
+            "cid": 372,
+            "type": 1,
+            "time": 506.0,
+            "text": "有的有的 x 6",
+            "color": 1988698,
+            "t": null
+        },
+        {
+            "cid": 603,
+            "type": 1,
+            "time": 501.15,
+            "text": "有的有的兄弟 极致的可爱 小薰子 极致的恐怖 郎君",
+            "color": 8834076,
+            "t": null
+        },
+        {
+            "cid": 325,
+            "type": 1,
+            "time": 505.89,
+            "text": "有的兄弟有的 x 4",
+            "color": 12460488,
+            "t": null
+        },
+        {
+            "cid": 777,
+            "type": 1,
+            "time": 501.56,
+            "text": "有的兄弟，有的。",
+            "color": 7343074,
+            "t": null
+        },
+        {
+            "cid": 617,
+            "type": 1,
+            "time": 501.75,
+            "text": "有的有的兄弟",
+            "color": 1144581,
+            "t": null
+        },
+        {
+            "cid": 498,
+            "type": 1,
+            "time": 501.9,
+            "text": "有的 x 3",
+            "color": 11896915,
+            "t": null
+        },
+        {
+            "cid": 761,
+            "type": 1,
+            "time": 504.09,
+            "text": "有的兄弟 x 2",
+            "color": 11668819,
+            "t": null
+        },
+        {
+            "cid": 361,
+            "type": 1,
+            "time": 503.3,
+            "text": "有的兄弟有的，这样的一共有2000+",
+            "color": 15826833,
+            "t": null
+        },
+        {
+            "cid": 340,
+            "type": 1,
+            "time": 504.96,
+            "text": "你这话有点耐人寻味啊，客人非得是他吗，难不成你",
+            "color": 11339743,
+            "t": null
+        },
+        {
+            "cid": 654,
+            "type": 1,
+            "time": 505.06,
+            "text": "不用怕来不了的啦，以后就成家人了",
+            "color": 3134394,
+            "t": null
+        },
+        {
+            "cid": 833,
+            "type": 1,
+            "time": 505.22,
+            "text": "蹲着点看的看第一遍肯定没啥弹幕",
+            "color": 3906336,
+            "t": null
+        },
+        {
+            "cid": 64,
+            "type": 1,
+            "time": 505.25,
+            "text": "有的有的有的",
+            "color": 12455105,
+            "t": null
+        },
+        {
+            "cid": 798,
+            "type": 1,
+            "time": 508.36,
+            "text": "好甜啊",
+            "color": 2192280,
+            "t": null
+        },
+        {
+            "cid": 175,
+            "type": 1,
+            "time": 508.75,
+            "text": "有的有的兄弟有的",
+            "color": 6207418,
+            "t": null
+        },
+        {
+            "cid": 420,
+            "type": 1,
+            "time": 511.37,
+            "text": "好细节男主耳钉摘了",
+            "color": 6516921,
+            "t": null
+        },
+        {
+            "cid": 272,
+            "type": 1,
+            "time": 511.99,
+            "text": "妈妈开的蛋糕店可是牢牢抓住了和栗的胃呢",
+            "color": 8221544,
+            "t": null
+        },
+        {
+            "cid": 607,
+            "type": 1,
+            "time": 517.12,
+            "text": "你好 x 2",
+            "color": 6731670,
+            "t": null
+        },
+        {
+            "cid": 48,
+            "type": 1,
+            "time": 516.28,
+            "text": "经典情人眼里出西施",
+            "color": 15582273,
+            "t": null
+        },
+        {
+            "cid": 618,
+            "type": 1,
+            "time": 516.28,
+            "text": "什么事豆归咎到自己身上。",
+            "color": 2551062,
+            "t": null
+        },
+        {
+            "cid": 703,
+            "type": 1,
+            "time": 518.7,
+            "text": "2000＋了",
+            "color": 15018410,
+            "t": null
+        },
+        {
+            "cid": 222,
+            "type": 1,
+            "time": 518.73,
+            "text": "妈妈也是地狱里钻出来的亡灵吧",
+            "color": 15194648,
+            "t": null
+        },
+        {
+            "cid": 312,
+            "type": 1,
+            "time": 521.02,
+            "text": "指的是，罚学做蛋糕吗",
+            "color": 10696255,
+            "t": null
+        },
+        {
+            "cid": 767,
+            "type": 1,
+            "time": 521.37,
+            "text": "妈妈好搞笑",
+            "color": 8969154,
+            "t": null
+        },
+        {
+            "cid": 50,
+            "type": 1,
+            "time": 521.57,
+            "text": "秒开战斗脸",
+            "color": 5060379,
+            "t": null
+        },
+        {
+            "cid": 204,
+            "type": 1,
+            "time": 522.48,
+            "text": "妈妈也太燃了吧（物理上的）",
+            "color": 6148139,
+            "t": null
+        },
+        {
+            "cid": 802,
+            "type": 1,
+            "time": 522.67,
+            "text": "666变脸不扣豆",
+            "color": 289598,
+            "t": null
+        },
+        {
+            "cid": 537,
+            "type": 1,
+            "time": 525.45,
+            "text": "莫名其妙的燃",
+            "color": 303328,
+            "t": null
+        },
+        {
+            "cid": 51,
+            "type": 1,
+            "time": 534.82,
+            "text": "上一次看到带耳钉的男主还是在上次",
+            "color": 5141902,
+            "t": null
+        },
+        {
+            "cid": 744,
+            "type": 1,
+            "time": 536.29,
+            "text": "天使男主QAQ",
+            "color": 16591911,
+            "t": null
+        },
+        {
+            "cid": 740,
+            "type": 1,
+            "time": 562.08,
+            "text": "已经两千多人了",
+            "color": 14595232,
+            "t": null
+        },
+        {
+            "cid": 433,
+            "type": 1,
+            "time": 567.83,
+            "text": "可以的",
+            "color": 14850959,
+            "t": null
+        },
+        {
+            "cid": 544,
+            "type": 1,
+            "time": 568.86,
+            "text": "这世上真有这么好的基友吗？",
+            "color": 15119351,
+            "t": null
+        },
+        {
+            "cid": 407,
+            "type": 1,
+            "time": 572.5,
+            "text": "大家都好吗",
+            "color": 4969607,
+            "t": null
+        },
+        {
+            "cid": 165,
+            "type": 1,
+            "time": 574.02,
+            "text": "好基友一直有，就看你能不能遇到咯",
+            "color": 15056072,
+            "t": null
+        },
+        {
+            "cid": 619,
+            "type": 1,
+            "time": 574.88,
+            "text": "2000+",
+            "color": 15641514,
+            "t": null
+        },
+        {
+            "cid": 710,
+            "type": 1,
+            "time": 580.58,
+            "text": "男主的朋友也好好啊",
+            "color": 8397445,
+            "t": null
+        },
+        {
+            "cid": 732,
+            "type": 1,
+            "time": 582.84,
+            "text": "要来了",
+            "color": 10175592,
+            "t": null
+        },
+        {
+            "cid": 139,
+            "type": 1,
+            "time": 585.7,
+            "text": "和栗：我是来见你（bushi）我是来吃蛋糕的",
+            "color": 9265455,
+            "t": null
+        },
+        {
+            "cid": 730,
+            "type": 1,
+            "time": 589.99,
+            "text": "哦吼吼",
+            "color": 6146312,
+            "t": null
+        },
+        {
+            "cid": 228,
+            "type": 1,
+            "time": 592.66,
+            "text": "是不是没付钱？那就赶快把钱付了",
+            "color": 13178713,
+            "t": null
+        },
+        {
+            "cid": 132,
+            "type": 1,
+            "time": 593.71,
+            "text": "前方名场面哦",
+            "color": 2119968,
+            "t": null
+        },
+        {
+            "cid": 408,
+            "type": 1,
+            "time": 596.48,
+            "text": "有点意思啊",
+            "color": 1221704,
+            "t": null
+        },
+        {
+            "cid": 104,
+            "type": 1,
+            "time": 596.55,
+            "text": "一眼万年的回眸，非和栗莫属",
+            "color": 9171268,
+            "t": null
+        },
+        {
+            "cid": 269,
+            "type": 1,
+            "time": 596.87,
+            "text": "啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊太可爱了",
+            "color": 13778340,
+            "t": null
+        },
+        {
+            "cid": 480,
+            "type": 1,
+            "time": 597.0,
+            "text": "熏子可爱捏",
+            "color": 14476474,
+            "t": null
+        },
+        {
+            "cid": 698,
+            "type": 1,
+            "time": 597.87,
+            "text": "为啥没人发弹幕",
+            "color": 1126901,
+            "t": null
+        },
+        {
+            "cid": 20,
+            "type": 1,
+            "time": 598.73,
+            "text": "好美的回眸",
+            "color": 15853959,
+            "t": null
+        },
+        {
+            "cid": 268,
+            "type": 1,
+            "time": 600.27,
+            "text": "好萌啊……",
+            "color": 15279033,
+            "t": null
+        },
+        {
+            "cid": 659,
+            "type": 1,
+            "time": 602.37,
+            "text": "缘分开始了吗",
+            "color": 9925509,
+            "t": null
+        },
+        {
+            "cid": 362,
+            "type": 1,
+            "time": 602.41,
+            "text": "大家看的挺专注的呀 都没人发弹幕",
+            "color": 15134020,
+            "t": null
+        },
+        {
+            "cid": 404,
+            "type": 1,
+            "time": 602.42,
+            "text": "正片开始",
+            "color": 10733386,
+            "t": null
+        },
+        {
+            "cid": 182,
+            "type": 1,
+            "time": 602.57,
+            "text": "女主好好看啊",
+            "color": 16717641,
+            "t": null
+        },
+        {
+            "cid": 353,
+            "type": 1,
+            "time": 602.57,
+            "text": "好萌好萌啊",
+            "color": 15811298,
+            "t": null
+        },
+        {
+            "cid": 212,
+            "type": 1,
+            "time": 603.07,
+            "text": "因为这2000多人都在认真看",
+            "color": 13256226,
+            "t": null
+        },
+        {
+            "cid": 45,
+            "type": 1,
+            "time": 605.02,
+            "text": "扣你鸡哇",
+            "color": 3772956,
+            "t": null
+        },
+        {
+            "cid": 394,
+            "type": 1,
+            "time": 607.69,
+            "text": "男主这个角度看着怎么好呆呀？",
+            "color": 10835368,
+            "t": null
+        },
+        {
+            "cid": 592,
+            "type": 1,
+            "time": 608.63,
+            "text": "人呢",
+            "color": 9195638,
+            "t": null
+        },
+        {
+            "cid": 768,
+            "type": 1,
+            "time": 609.51,
+            "text": "两个人都好腼腆哈哈哈哈哈哈",
+            "color": 9944178,
+            "t": null
+        },
+        {
+            "cid": 479,
+            "type": 1,
+            "time": 612.32,
+            "text": "现在是2000人",
+            "color": 9377370,
+            "t": null
+        },
+        {
+            "cid": 689,
+            "type": 1,
+            "time": 615.17,
+            "text": "承包女主！！！！！！",
+            "color": 16756251,
+            "t": null
+        },
+        {
+            "cid": 52,
+            "type": 1,
+            "time": 616.57,
+            "text": "男主：这不是我家的店吗",
+            "color": 11291231,
+            "t": null
+        },
+        {
+            "cid": 188,
+            "type": 1,
+            "time": 616.91,
+            "text": "什么情况？是想抱之前被吓跑的歉吗",
+            "color": 708463,
+            "t": null
+        },
+        {
+            "cid": 430,
+            "type": 1,
+            "time": 617.37,
+            "text": "这身高差我先爱了!!!!",
+            "color": 9427440,
+            "t": null
+        },
+        {
+            "cid": 759,
+            "type": 1,
+            "time": 617.58,
+            "text": "女主呆呆的，好萌！",
+            "color": 10033503,
+            "t": null
+        },
+        {
+            "cid": 509,
+            "type": 1,
+            "time": 620.62,
+            "text": "欸？",
+            "color": 4380737,
+            "t": null
+        },
+        {
+            "cid": 514,
+            "type": 1,
+            "time": 622.39,
+            "text": "啊啊啊啊啊太可爱了",
+            "color": 12914643,
+            "t": null
+        },
+        {
+            "cid": 552,
+            "type": 1,
+            "time": 624.15,
+            "text": "已过半",
+            "color": 15017607,
+            "t": null
+        },
+        {
+            "cid": 491,
+            "type": 1,
+            "time": 624.74,
+            "text": "这个画面怎么有点像四谎",
+            "color": 1715181,
+            "t": null
+        },
+        {
+            "cid": 161,
+            "type": 1,
+            "time": 625.86,
+            "text": "好想把这个草莓的籽抠下来",
+            "color": 14912396,
+            "t": null
+        },
+        {
+            "cid": 424,
+            "type": 1,
+            "time": 627.99,
+            "text": "相亲吗",
+            "color": 13821328,
+            "t": null
+        },
+        {
+            "cid": 423,
+            "type": 1,
+            "time": 629.59,
+            "text": "想吃蛋糕",
+            "color": 11835135,
+            "t": null
+        },
+        {
+            "cid": 645,
+            "type": 1,
+            "time": 629.69,
+            "text": "请客吃自己家蛋糕嘛哈哈",
+            "color": 4859515,
+            "t": null
+        },
+        {
+            "cid": 486,
+            "type": 1,
+            "time": 632.12,
+            "text": "婚后生活",
+            "color": 10442771,
+            "t": null
+        },
+        {
+            "cid": 727,
+            "type": 1,
+            "time": 635.47,
+            "text": "官方吐槽hhhhhh",
+            "color": 9284016,
+            "t": null
+        },
+        {
+            "cid": 627,
+            "type": 1,
+            "time": 638.92,
+            "text": "自产自销哈哈哈哈",
+            "color": 11462026,
+            "t": null
+        },
+        {
+            "cid": 484,
+            "type": 1,
+            "time": 640.3,
+            "text": "哈哈哈哈哈哈哈两个小可爱",
+            "color": 1449041,
+            "t": null
+        },
+        {
+            "cid": 582,
+            "type": 1,
+            "time": 641.63,
+            "text": "如果我有一个蛋糕店",
+            "color": 15406044,
+            "t": null
+        },
+        {
+            "cid": 123,
+            "type": 1,
+            "time": 641.7,
+            "text": "前方高萌 x 2",
+            "color": 7037066,
+            "t": null
+        },
+        {
+            "cid": 267,
+            "type": 1,
+            "time": 643.32,
+            "text": "可爱捏 x 3",
+            "color": 3910817,
+            "t": null
+        },
+        {
+            "cid": 113,
+            "type": 1,
+            "time": 646.45,
+            "text": "用我家的蛋糕来请我的客，是你的心意，幽默",
+            "color": 15546901,
+            "t": null
+        },
+        {
+            "cid": 422,
+            "type": 1,
+            "time": 648.61,
+            "text": "萌萌",
+            "color": 11045085,
+            "t": null
+        },
+        {
+            "cid": 614,
+            "type": 1,
+            "time": 649.9,
+            "text": "玛德，萌死我了",
+            "color": 12757175,
+            "t": null
+        },
+        {
+            "cid": 247,
+            "type": 1,
+            "time": 650.57,
+            "text": "被请吃自家蛋糕嘛，hhhh",
+            "color": 695877,
+            "t": null
+        },
+        {
+            "cid": 666,
+            "type": 1,
+            "time": 651.04,
+            "text": "40厘米身高差233333",
+            "color": 13555346,
+            "t": null
+        },
+        {
+            "cid": 209,
+            "type": 1,
+            "time": 651.45,
+            "text": "太可爱了啊啊啊啊啊啊",
+            "color": 12422727,
+            "t": null
+        },
+        {
+            "cid": 287,
+            "type": 1,
+            "time": 651.64,
+            "text": "这也太萌了",
+            "color": 7473826,
+            "t": null
+        },
+        {
+            "cid": 65,
+            "type": 1,
+            "time": 651.9,
+            "text": "这一幕萌到我了",
+            "color": 11079290,
+            "t": null
+        },
+        {
+            "cid": 660,
+            "type": 1,
+            "time": 652.02,
+            "text": "原来这是嘴巴",
+            "color": 16576008,
+            "t": null
+        },
+        {
+            "cid": 294,
+            "type": 1,
+            "time": 654.01,
+            "text": "啊啊啊萌鼠我了",
+            "color": 10882611,
+            "t": null
+        },
+        {
+            "cid": 699,
+            "type": 1,
+            "time": 655.0,
+            "text": "萌！！！",
+            "color": 12054484,
+            "t": null
+        },
+        {
+            "cid": 473,
+            "type": 1,
+            "time": 655.12,
+            "text": "大馋丫头",
+            "color": 14703641,
+            "t": null
+        },
+        {
+            "cid": 639,
+            "type": 1,
+            "time": 655.69,
+            "text": "哈哈，想吃蛋糕",
+            "color": 16042372,
+            "t": null
+        },
+        {
+            "cid": 313,
+            "type": 1,
+            "time": 656.39,
+            "text": "爱吃蛋糕",
+            "color": 3869964,
+            "t": null
+        },
+        {
+            "cid": 608,
+            "type": 1,
+            "time": 657.25,
+            "text": "好可爱",
+            "color": 6698288,
+            "t": null
+        },
+        {
+            "cid": 177,
+            "type": 1,
+            "time": 657.36,
+            "text": "好可爱啊啊啊啊啊啊啊啊啊啊",
+            "color": 2233567,
+            "t": null
+        },
+        {
+            "cid": 349,
+            "type": 1,
+            "time": 657.62,
+            "text": "哈哈哈，好可爱",
+            "color": 10256662,
+            "t": null
+        },
+        {
+            "cid": 737,
+            "type": 1,
+            "time": 661.64,
+            "text": "小馋猫哈哈哈哈哈",
+            "color": 7861049,
+            "t": null
+        },
+        {
+            "cid": 587,
+            "type": 1,
+            "time": 661.65,
+            "text": "哈哈哈哈",
+            "color": 14470352,
+            "t": null
+        },
+        {
+            "cid": 681,
+            "type": 1,
+            "time": 662.28,
+            "text": "卡哇伊",
+            "color": 3279877,
+            "t": null
+        },
+        {
+            "cid": 94,
+            "type": 1,
+            "time": 662.29,
+            "text": "你快吃吧，要是有什么瞒着我消费者热线告我就麻烦了",
+            "color": 3290507,
+            "t": null
+        },
+        {
+            "cid": 135,
+            "type": 1,
+            "time": 665.41,
+            "text": "好可爱哈哈哈",
+            "color": 3408017,
+            "t": null
+        },
+        {
+            "cid": 657,
+            "type": 1,
+            "time": 665.77,
+            "text": "卡哇伊！！！！",
+            "color": 5910541,
+            "t": null
+        },
+        {
+            "cid": 63,
+            "type": 1,
+            "time": 665.9,
+            "text": "好温柔的语气。。。",
+            "color": 2711870,
+            "t": null
+        },
+        {
+            "cid": 43,
+            "type": 1,
+            "time": 666.98,
+            "text": "好可爱！！！！！！",
+            "color": 2217364,
+            "t": null
+        },
+        {
+            "cid": 320,
+            "type": 1,
+            "time": 669.31,
+            "text": "要不给我吃吧（流口水（doge）",
+            "color": 10210603,
+            "t": null
+        },
+        {
+            "cid": 195,
+            "type": 1,
+            "time": 671.65,
+            "text": "我要被女主萌死了。",
+            "color": 11168055,
+            "t": null
+        },
+        {
+            "cid": 242,
+            "type": 1,
+            "time": 675.42,
+            "text": "我也想吃蛋糕了",
+            "color": 11810266,
+            "t": null
+        },
+        {
+            "cid": 458,
+            "type": 1,
+            "time": 676.46,
+            "text": "左右脑互搏",
+            "color": 973338,
+            "t": null
+        },
+        {
+            "cid": 405,
+            "type": 1,
+            "time": 678.91,
+            "text": "小馋猫女主",
+            "color": 14846042,
+            "t": null
+        },
+        {
+            "cid": 357,
+            "type": 1,
+            "time": 679.15,
+            "text": "好萌好萌",
+            "color": 7130207,
+            "t": null
+        },
+        {
+            "cid": 410,
+            "type": 1,
+            "time": 679.88,
+            "text": "好可爱我不行了",
+            "color": 9429101,
+            "t": null
+        },
+        {
+            "cid": 21,
+            "type": 1,
+            "time": 684.31,
+            "text": "女主好可爱啊",
+            "color": 1338063,
+            "t": null
+        },
+        {
+            "cid": 679,
+            "type": 1,
+            "time": 685.79,
+            "text": "猫猫嘴",
+            "color": 8893491,
+            "t": null
+        },
+        {
+            "cid": 281,
+            "type": 1,
+            "time": 687.66,
+            "text": "萌萌萌萌萌萌！",
+            "color": 14162352,
+            "t": null
+        },
+        {
+            "cid": 354,
+            "type": 1,
+            "time": 687.66,
+            "text": "好像千鹤",
+            "color": 5816924,
+            "t": null
+        },
+        {
+            "cid": 469,
+            "type": 1,
+            "time": 688.25,
+            "text": "卡哇伊！",
+            "color": 15053003,
+            "t": null
+        },
+        {
+            "cid": 403,
+            "type": 1,
+            "time": 689.26,
+            "text": "像小仓鼠",
+            "color": 10679131,
+            "t": null
+        },
+        {
+            "cid": 688,
+            "type": 1,
+            "time": 693.98,
+            "text": "埴之冢光邦学长附体",
+            "color": 12281083,
+            "t": null
+        },
+        {
+            "cid": 625,
+            "type": 1,
+            "time": 695.39,
+            "text": "米斯达的草莓蛋糕2333",
+            "color": 11687626,
+            "t": null
+        },
+        {
+            "cid": 471,
+            "type": 1,
+            "time": 699.13,
+            "text": "真的好可爱啊！",
+            "color": 10564762,
+            "t": null
+        },
+        {
+            "cid": 378,
+            "type": 1,
+            "time": 704.1,
+            "text": "好可爱啊 x 2",
+            "color": 3495453,
+            "t": null
+        },
+        {
+            "cid": 377,
+            "type": 1,
+            "time": 704.87,
+            "text": "吃这么多都不胖吗？",
+            "color": 4799868,
+            "t": null
+        },
+        {
+            "cid": 612,
+            "type": 1,
+            "time": 705.35,
+            "text": "2000多人别躲了",
+            "color": 11798321,
+            "t": null
+        },
+        {
+            "cid": 381,
+            "type": 1,
+            "time": 710.31,
+            "text": "加一",
+            "color": 15285473,
+            "t": null
+        },
+        {
+            "cid": 497,
+            "type": 1,
+            "time": 710.33,
+            "text": "来了",
+            "color": 10887740,
+            "t": null
+        },
+        {
+            "cid": 402,
+            "type": 1,
+            "time": 713.53,
+            "text": "在的",
+            "color": 15517998,
+            "t": null
+        },
+        {
+            "cid": 414,
+            "type": 1,
+            "time": 717.06,
+            "text": "胃口大好啊",
+            "color": 8171210,
+            "t": null
+        },
+        {
+            "cid": 411,
+            "type": 1,
+            "time": 721.63,
+            "text": "WoW",
+            "color": 6230234,
+            "t": null
+        },
+        {
+            "cid": 571,
+            "type": 1,
+            "time": 729.42,
+            "text": "上来就叫名字了？",
+            "color": 350439,
+            "t": null
+        },
+        {
+            "cid": 18,
+            "type": 1,
+            "time": 731.47,
+            "text": "承太郎?",
+            "color": 2833692,
+            "t": null
+        },
+        {
+            "cid": 669,
+            "type": 1,
+            "time": 736.23,
+            "text": "oi x 2",
+            "color": 8122634,
+            "t": null
+        },
+        {
+            "cid": 642,
+            "type": 1,
+            "time": 734.18,
+            "text": "风太郎",
+            "color": 5758100,
+            "t": null
+        },
+        {
+            "cid": 2,
+            "type": 1,
+            "time": 735.59,
+            "text": "因为爱情~",
+            "color": 4441599,
+            "t": null
+        },
+        {
+            "cid": 41,
+            "type": 1,
+            "time": 736.26,
+            "text": "奉太郎",
+            "color": 7611382,
+            "t": null
+        },
+        {
+            "cid": 425,
+            "type": 1,
+            "time": 738.75,
+            "text": "要个长久饭票",
+            "color": 4933032,
+            "t": null
+        },
+        {
+            "cid": 100,
+            "type": 1,
+            "time": 739.24,
+            "text": "因为爱情",
+            "color": 1942517,
+            "t": null
+        },
+        {
+            "cid": 584,
+            "type": 1,
+            "time": 740.14,
+            "text": "承太郎的你们够了2333",
+            "color": 6665297,
+            "t": null
+        },
+        {
+            "cid": 572,
+            "type": 1,
+            "time": 742.48,
+            "text": "看起来",
+            "color": 6018309,
+            "t": null
+        },
+        {
+            "cid": 525,
+            "type": 1,
+            "time": 742.78,
+            "text": "有故事啊看来",
+            "color": 13984470,
+            "t": null
+        },
+        {
+            "cid": 442,
+            "type": 1,
+            "time": 743.68,
+            "text": "哦呼～",
+            "color": 9566640,
+            "t": null
+        },
+        {
+            "cid": 275,
+            "type": 1,
+            "time": 746.5,
+            "text": "暗恋doge",
+            "color": 6223535,
+            "t": null
+        },
+        {
+            "cid": 444,
+            "type": 1,
+            "time": 748.14,
+            "text": "蓄谋已久",
+            "color": 6799955,
+            "t": null
+        },
+        {
+            "cid": 598,
+            "type": 1,
+            "time": 748.21,
+            "text": "太可爱了",
+            "color": 13503595,
+            "t": null
+        },
+        {
+            "cid": 564,
+            "type": 1,
+            "time": 749.0,
+            "text": "女主是我的！！！！！卡哇伊！",
+            "color": 7300746,
+            "t": null
+        },
+        {
+            "cid": 149,
+            "type": 1,
+            "time": 749.04,
+            "text": "暗恋啊",
+            "color": 7642341,
+            "t": null
+        },
+        {
+            "cid": 106,
+            "type": 1,
+            "time": 749.92,
+            "text": "有目的",
+            "color": 2197383,
+            "t": null
+        },
+        {
+            "cid": 254,
+            "type": 1,
+            "time": 750.28,
+            "text": "草食",
+            "color": 7762639,
+            "t": null
+        },
+        {
+            "cid": 59,
+            "type": 1,
+            "time": 751.75,
+            "text": "你脸红个泡泡茶壶",
+            "color": 8671142,
+            "t": null
+        },
+        {
+            "cid": 560,
+            "type": 1,
+            "time": 755.02,
+            "text": "害羞",
+            "color": 7316992,
+            "t": null
+        },
+        {
+            "cid": 551,
+            "type": 1,
+            "time": 755.79,
+            "text": "人有点少阿",
+            "color": 1495236,
+            "t": null
+        },
+        {
+            "cid": 485,
+            "type": 1,
+            "time": 756.42,
+            "text": "薰子害羞可爱捏",
+            "color": 335980,
+            "t": null
+        },
+        {
+            "cid": 368,
+            "type": 1,
+            "time": 756.8,
+            "text": "啊啊啊啊啊啊",
+            "color": 9123881,
+            "t": null
+        },
+        {
+            "cid": 526,
+            "type": 1,
+            "time": 759.18,
+            "text": "空条承太郎",
+            "color": 16091033,
+            "t": null
+        },
+        {
+            "cid": 229,
+            "type": 1,
+            "time": 761.31,
+            "text": "萌死了。。。。",
+            "color": 6235372,
+            "t": null
+        },
+        {
+            "cid": 49,
+            "type": 1,
+            "time": 765.14,
+            "text": "蓄谋已久了",
+            "color": 9804792,
+            "t": null
+        },
+        {
+            "cid": 466,
+            "type": 1,
+            "time": 769.63,
+            "text": "攻略到男主就可以免费吃蛋糕了",
+            "color": 5996534,
+            "t": null
+        },
+        {
+            "cid": 55,
+            "type": 1,
+            "time": 770.01,
+            "text": "2000了",
+            "color": 3680525,
+            "t": null
+        },
+        {
+            "cid": 230,
+            "type": 1,
+            "time": 771.45,
+            "text": "纯爱战士硬声倒地",
+            "color": 9804903,
+            "t": null
+        },
+        {
+            "cid": 554,
+            "type": 1,
+            "time": 773.47,
+            "text": "老妈无语",
+            "color": 8581608,
+            "t": null
+        },
+        {
+            "cid": 532,
+            "type": 1,
+            "time": 773.97,
+            "text": "加油",
+            "color": 15628793,
+            "t": null
+        },
+        {
+            "cid": 13,
+            "type": 1,
+            "time": 776.61,
+            "text": "妈妈哈气了哈哈哈哈",
+            "color": 2288996,
+            "t": null
+        },
+        {
+            "cid": 595,
+            "type": 1,
+            "time": 780.96,
+            "text": "因为爱情",
+            "color": 847994,
+            "t": null
+        },
+        {
+            "cid": 33,
+            "type": 1,
+            "time": 782.28,
+            "text": "你脸红个泡泡茶壶呀",
+            "color": 6392934,
+            "t": null
+        },
+        {
+            "cid": 305,
+            "type": 1,
+            "time": 782.37,
+            "text": "啊啊啊啊好萌呀qwq",
+            "color": 10196034,
+            "t": null
+        },
+        {
+            "cid": 523,
+            "type": 1,
+            "time": 783.7,
+            "text": "承包女主!!!!!",
+            "color": 5163958,
+            "t": null
+        },
+        {
+            "cid": 359,
+            "type": 1,
+            "time": 815.31,
+            "text": "哈哈哈 x 2",
+            "color": 9493274,
+            "t": null
+        },
+        {
+            "cid": 884,
+            "type": 1,
+            "time": 785.01,
+            "text": "没有人呢",
+            "color": 6221436,
+            "t": null
+        },
+        {
+            "cid": 61,
+            "type": 1,
+            "time": 785.05,
+            "text": "萌啊啊啊啊",
+            "color": 2236088,
+            "t": null
+        },
+        {
+            "cid": 337,
+            "type": 1,
+            "time": 786.58,
+            "text": "化身土拨鼠",
+            "color": 13221903,
+            "t": null
+        },
+        {
+            "cid": 577,
+            "type": 1,
+            "time": 798.97,
+            "text": "有的兄弟有的 x 2",
+            "color": 7475785,
+            "t": null
+        },
+        {
+            "cid": 569,
+            "type": 1,
+            "time": 789.62,
+            "text": "好可爱的宝",
+            "color": 16522881,
+            "t": null
+        },
+        {
+            "cid": 231,
+            "type": 1,
+            "time": 790.37,
+            "text": "可爱ing   >3<",
+            "color": 1969639,
+            "t": null
+        },
+        {
+            "cid": 8,
+            "type": 1,
+            "time": 791.84,
+            "text": "dokidoki",
+            "color": 4352809,
+            "t": null
+        },
+        {
+            "cid": 326,
+            "type": 1,
+            "time": 792.25,
+            "text": "阿珍爱上了阿强 在一个星星的夜晚~",
+            "color": 15237970,
+            "t": null
+        },
+        {
+            "cid": 687,
+            "type": 1,
+            "time": 794.07,
+            "text": "你当那两千加是？",
+            "color": 2472794,
+            "t": null
+        },
+        {
+            "cid": 38,
+            "type": 1,
+            "time": 795.05,
+            "text": "Kirakira，dokidoki(香澄音)",
+            "color": 461781,
+            "t": null
+        },
+        {
+            "cid": 216,
+            "type": 1,
+            "time": 796.25,
+            "text": "kiyo",
+            "color": 3631165,
+            "t": null
+        },
+        {
+            "cid": 9,
+            "type": 1,
+            "time": 798.52,
+            "text": "是心动啊~",
+            "color": 10290359,
+            "t": null
+        },
+        {
+            "cid": 310,
+            "type": 1,
+            "time": 800.32,
+            "text": "糟糕眼神躲不掉～",
+            "color": 12610354,
+            "t": null
+        },
+        {
+            "cid": 47,
+            "type": 1,
+            "time": 802.65,
+            "text": "一见钟情？",
+            "color": 3445447,
+            "t": null
+        },
+        {
+            "cid": 375,
+            "type": 1,
+            "time": 806.03,
+            "text": "oi，兄弟你坠入爱河了",
+            "color": 7941932,
+            "t": null
+        },
+        {
+            "cid": 183,
+            "type": 1,
+            "time": 806.51,
+            "text": "男主很帅啊",
+            "color": 3824774,
+            "t": null
+        },
+        {
+            "cid": 500,
+            "type": 1,
+            "time": 806.91,
+            "text": "，难道？",
+            "color": 11336962,
+            "t": null
+        },
+        {
+            "cid": 224,
+            "type": 1,
+            "time": 807.05,
+            "text": "oi，oi，oi，难道说",
+            "color": 12137721,
+            "t": null
+        },
+        {
+            "cid": 241,
+            "type": 1,
+            "time": 807.63,
+            "text": "呦呦哟呦哟呦哟呦哟哦呦哟呦哦呦哟哦",
+            "color": 6821739,
+            "t": null
+        },
+        {
+            "cid": 245,
+            "type": 1,
+            "time": 807.81,
+            "text": "好伟大一张脸",
+            "color": 9215543,
+            "t": null
+        },
+        {
+            "cid": 390,
+            "type": 1,
+            "time": 808.46,
+            "text": "哟你脸红啦",
+            "color": 14184481,
+            "t": null
+        },
+        {
+            "cid": 46,
+            "type": 1,
+            "time": 809.66,
+            "text": "被女主治愈一整天",
+            "color": 11827052,
+            "t": null
+        },
+        {
+            "cid": 283,
+            "type": 1,
+            "time": 809.86,
+            "text": "哇偶脸红了",
+            "color": 3591093,
+            "t": null
+        },
+        {
+            "cid": 556,
+            "type": 1,
+            "time": 810.7,
+            "text": "女主好好看",
+            "color": 13735394,
+            "t": null
+        },
+        {
+            "cid": 103,
+            "type": 1,
+            "time": 811.4,
+            "text": "女主萌的没边",
+            "color": 1466572,
+            "t": null
+        },
+        {
+            "cid": 341,
+            "type": 1,
+            "time": 811.54,
+            "text": "马萨卡！",
+            "color": 15012858,
+            "t": null
+        },
+        {
+            "cid": 594,
+            "type": 1,
+            "time": 812.57,
+            "text": "脸红个泡泡茶壶",
+            "color": 3086034,
+            "t": null
+        },
+        {
+            "cid": 510,
+            "type": 1,
+            "time": 813.01,
+            "text": "我去哈哈哈哈哈哈",
+            "color": 12925614,
+            "t": null
+        },
+        {
+            "cid": 81,
+            "type": 1,
+            "time": 815.25,
+            "text": "哇嘎乃",
+            "color": 3833911,
+            "t": null
+        },
+        {
+            "cid": 570,
+            "type": 1,
+            "time": 817.49,
+            "text": "太可爱了",
+            "color": 11153134,
+            "t": null
+        },
+        {
+            "cid": 184,
+            "type": 1,
+            "time": 821.12,
+            "text": "两个人都好可爱",
+            "color": 10064980,
+            "t": null
+        },
+        {
+            "cid": 513,
+            "type": 1,
+            "time": 822.37,
+            "text": "赶紧活跃起来啊弹幕",
+            "color": 6402789,
+            "t": null
+        },
+        {
+            "cid": 301,
+            "type": 1,
+            "time": 825.79,
+            "text": "要走了，也不忘蛋糕",
+            "color": 11999807,
+            "t": null
+        },
+        {
+            "cid": 578,
+            "type": 1,
+            "time": 826.34,
+            "text": "可爱捏",
+            "color": 9306628,
+            "t": null
+        },
+        {
+            "cid": 308,
+            "type": 1,
+            "time": 826.8,
+            "text": "太纯了我靠",
+            "color": 8677141,
+            "t": null
+        },
+        {
+            "cid": 208,
+            "type": 1,
+            "time": 832.37,
+            "text": "两千多人在看",
+            "color": 10406444,
+            "t": null
+        },
+        {
+            "cid": 299,
+            "type": 1,
+            "time": 834.46,
+            "text": "马上就到男主魅力时刻了",
+            "color": 9095226,
+            "t": null
+        },
+        {
+            "cid": 321,
+            "type": 1,
+            "time": 838.7,
+            "text": "一惊一乍的",
+            "color": 2633726,
+            "t": null
+        },
+        {
+            "cid": 6,
+            "type": 1,
+            "time": 839.22,
+            "text": "蛋糕：mvp",
+            "color": 813746,
+            "t": null
+        },
+        {
+            "cid": 298,
+            "type": 1,
+            "time": 841.52,
+            "text": "Flag",
+            "color": 7067509,
+            "t": null
+        },
+        {
+            "cid": 317,
+            "type": 1,
+            "time": 855.83,
+            "text": "哈哈哈心动了吧",
+            "color": 5809268,
+            "t": null
+        },
+        {
+            "cid": 465,
+            "type": 1,
+            "time": 857.46,
+            "text": "天使女主QAQ",
+            "color": 4038549,
+            "t": null
+        },
+        {
+            "cid": 575,
+            "type": 1,
+            "time": 860.31,
+            "text": "好温柔啊！！！",
+            "color": 7189427,
+            "t": null
+        },
+        {
+            "cid": 7,
+            "type": 1,
+            "time": 860.6,
+            "text": "这个笑容由我守护！",
+            "color": 14799689,
+            "t": null
+        },
+        {
+            "cid": 559,
+            "type": 1,
+            "time": 862.19,
+            "text": "好温柔！！！",
+            "color": 11518789,
+            "t": null
+        },
+        {
+            "cid": 240,
+            "type": 1,
+            "time": 863.29,
+            "text": "亚撒西",
+            "color": 12062955,
+            "t": null
+        },
+        {
+            "cid": 16,
+            "type": 1,
+            "time": 864.88,
+            "text": "男主明明辣么帅",
+            "color": 7559111,
+            "t": null
+        },
+        {
+            "cid": 35,
+            "type": 1,
+            "time": 864.91,
+            "text": "啊啊啊啊啊啊啊要被萌鼠啦",
+            "color": 4293219,
+            "t": null
+        },
+        {
+            "cid": 350,
+            "type": 1,
+            "time": 865.67,
+            "text": "满分笑容出现了！！！",
+            "color": 14513292,
+            "t": null
+        },
+        {
+            "cid": 227,
+            "type": 1,
+            "time": 867.81,
+            "text": "相信是不需要理由的（",
+            "color": 6445787,
+            "t": null
+        },
+        {
+            "cid": 716,
+            "type": 1,
+            "time": 867.99,
+            "text": "熏子的眼睛很好看啊",
+            "color": 3883479,
+            "t": null
+        },
+        {
+            "cid": 261,
+            "type": 1,
+            "time": 870.43,
+            "text": "天使 T _ T",
+            "color": 12225373,
+            "t": null
+        },
+        {
+            "cid": 271,
+            "type": 1,
+            "time": 873.38,
+            "text": "科幻了",
+            "color": 9979187,
+            "t": null
+        },
+        {
+            "cid": 278,
+            "type": 1,
+            "time": 873.73,
+            "text": "补兑",
+            "color": 9893445,
+            "t": null
+        },
+        {
+            "cid": 565,
+            "type": 1,
+            "time": 874.79,
+            "text": "要出事了吗",
+            "color": 538672,
+            "t": null
+        },
+        {
+            "cid": 193,
+            "type": 1,
+            "time": 876.89,
+            "text": "要出事",
+            "color": 5125355,
+            "t": null
+        },
+        {
+            "cid": 158,
+            "type": 1,
+            "time": 877.42,
+            "text": "这个坏笑",
+            "color": 4929670,
+            "t": null
+        },
+        {
+            "cid": 297,
+            "type": 1,
+            "time": 884.08,
+            "text": "是的吧",
+            "color": 8918481,
+            "t": null
+        },
+        {
+            "cid": 427,
+            "type": 1,
+            "time": 889.18,
+            "text": "少年，你坠入爱河啦23333",
+            "color": 6195478,
+            "t": null
+        },
+        {
+            "cid": 264,
+            "type": 1,
+            "time": 899.77,
+            "text": "补药以貌取人啊！！！！！",
+            "color": 3105924,
+            "t": null
+        },
+        {
+            "cid": 102,
+            "type": 1,
+            "time": 912.32,
+            "text": "宫村嘛",
+            "color": 15407729,
+            "t": null
+        },
+        {
+            "cid": 3,
+            "type": 1,
+            "time": 912.78,
+            "text": "所以薰子就是凛太郎的小太阳！",
+            "color": 12538491,
+            "t": null
+        },
+        {
+            "cid": 225,
+            "type": 1,
+            "time": 917.43,
+            "text": "孩子，以后千万别去借贷",
+            "color": 5101621,
+            "t": null
+        },
+        {
+            "cid": 185,
+            "type": 1,
+            "time": 923.82,
+            "text": "爆头",
+            "color": 966898,
+            "t": null
+        },
+        {
+            "cid": 211,
+            "type": 1,
+            "time": 925.5,
+            "text": "番名也是讲究的",
+            "color": 6938213,
+            "t": null
+        },
+        {
+            "cid": 108,
+            "type": 1,
+            "time": 925.84,
+            "text": "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈",
+            "color": 2337875,
+            "t": null
+        },
+        {
+            "cid": 455,
+            "type": 1,
+            "time": 928.34,
+            "text": "补豪",
+            "color": 8914561,
+            "t": null
+        },
+        {
+            "cid": 29,
+            "type": 1,
+            "time": 929.81,
+            "text": "我嘞个",
+            "color": 15062174,
+            "t": null
+        },
+        {
+            "cid": 331,
+            "type": 1,
+            "time": 930.5,
+            "text": "危                                   危",
+            "color": 3247015,
+            "t": null
+        },
+        {
+            "cid": 439,
+            "type": 1,
+            "time": 932.51,
+            "text": "怎么又是这两个人？见不见啊",
+            "color": 7782075,
+            "t": null
+        },
+        {
+            "cid": 632,
+            "type": 1,
+            "time": 932.89,
+            "text": "这两老壁灯",
+            "color": 2638912,
+            "t": null
+        },
+        {
+            "cid": 392,
+            "type": 1,
+            "time": 933.04,
+            "text": "我就知道会有这么一出",
+            "color": 12476099,
+            "t": null
+        },
+        {
+            "cid": 527,
+            "type": 1,
+            "time": 934.85,
+            "text": "男主快来啊",
+            "color": 2973890,
+            "t": null
+        },
+        {
+            "cid": 409,
+            "type": 1,
+            "time": 935.23,
+            "text": "混蛋",
+            "color": 9005235,
+            "t": null
+        },
+        {
+            "cid": 130,
+            "type": 1,
+            "time": 937.5,
+            "text": "供开",
+            "color": 4900895,
+            "t": null
+        },
+        {
+            "cid": 573,
+            "type": 1,
+            "time": 938.43,
+            "text": "啊啊啊啊啊",
+            "color": 8164850,
+            "t": null
+        },
+        {
+            "cid": 319,
+            "type": 1,
+            "time": 939.1,
+            "text": "要来了",
+            "color": 1709380,
+            "t": null
+        },
+        {
+            "cid": 206,
+            "type": 1,
+            "time": 939.86,
+            "text": "不！！！m",
+            "color": 5273272,
+            "t": null
+        },
+        {
+            "cid": 322,
+            "type": 1,
+            "time": 940.33,
+            "text": "跟《俺物语》一样的剧情",
+            "color": 13847937,
+            "t": null
+        },
+        {
+            "cid": 388,
+            "type": 1,
+            "time": 940.92,
+            "text": "CS混混！！！！",
+            "color": 5387761,
+            "t": null
+        },
+        {
+            "cid": 121,
+            "type": 1,
+            "time": 942.45,
+            "text": "补药啊",
+            "color": 606556,
+            "t": null
+        },
+        {
+            "cid": 36,
+            "type": 1,
+            "time": 943.27,
+            "text": "放心好吧",
+            "color": 6621362,
+            "t": null
+        },
+        {
+            "cid": 436,
+            "type": 1,
+            "time": 948.49,
+            "text": "必须打压!",
+            "color": 11204026,
+            "t": null
+        },
+        {
+            "cid": 417,
+            "type": 1,
+            "time": 957.26,
+            "text": "不许动小和栗啊喂",
+            "color": 11205857,
+            "t": null
+        },
+        {
+            "cid": 37,
+            "type": 1,
+            "time": 981.65,
+            "text": "你确定说的不是自己？",
+            "color": 5021714,
+            "t": null
+        },
+        {
+            "cid": 345,
+            "type": 1,
+            "time": 988.0,
+            "text": "好家伙，原来是招黑了",
+            "color": 9889302,
+            "t": null
+        },
+        {
+            "cid": 348,
+            "type": 1,
+            "time": 1005.01,
+            "text": "CS啊",
+            "color": 2079686,
+            "t": null
+        },
+        {
+            "cid": 217,
+            "type": 1,
+            "time": 1016.51,
+            "text": "这个颤音转的好贴",
+            "color": 9281588,
+            "t": null
+        },
+        {
+            "cid": 141,
+            "type": 1,
+            "time": 1021.23,
+            "text": "哇塞薰子好棒呀",
+            "color": 13352070,
+            "t": null
+        },
+        {
+            "cid": 12,
+            "type": 1,
+            "time": 1023.7,
+            "text": "女主带的可是净化",
+            "color": 12843618,
+            "t": null
+        },
+        {
+            "cid": 449,
+            "type": 1,
+            "time": 1024.06,
+            "text": "好善良",
+            "color": 13921211,
+            "t": null
+        },
+        {
+            "cid": 450,
+            "type": 1,
+            "time": 1025.36,
+            "text": "不救干嘛",
+            "color": 12925888,
+            "t": null
+        },
+        {
+            "cid": 56,
+            "type": 1,
+            "time": 1025.46,
+            "text": "干他们，受不了了",
+            "color": 12786047,
+            "t": null
+        },
+        {
+            "cid": 277,
+            "type": 1,
+            "time": 1027.27,
+            "text": "啊啊啊小蛋糕",
+            "color": 14704032,
+            "t": null
+        },
+        {
+            "cid": 339,
+            "type": 1,
+            "time": 1032.62,
+            "text": "天使女主QAQ",
+            "color": 9581090,
+            "t": null
+        },
+        {
+            "cid": 237,
+            "type": 1,
+            "time": 1034.64,
+            "text": "好勇敢的女主",
+            "color": 9650088,
+            "t": null
+        },
+        {
+            "cid": 335,
+            "type": 1,
+            "time": 1042.62,
+            "text": "好小一只呀",
+            "color": 16773010,
+            "t": null
+        },
+        {
+            "cid": 15,
+            "type": 1,
+            "time": 1049.61,
+            "text": "好坚定！",
+            "color": 8046306,
+            "t": null
+        },
+        {
+            "cid": 464,
+            "type": 1,
+            "time": 1053.53,
+            "text": "快救她！！！",
+            "color": 8278612,
+            "t": null
+        },
+        {
+            "cid": 336,
+            "type": 1,
+            "time": 1053.94,
+            "text": "“我不高兴”",
+            "color": 11313885,
+            "t": null
+        },
+        {
+            "cid": 265,
+            "type": 1,
+            "time": 1065.43,
+            "text": "我靠用那么大劲儿动手打女生。。。。。",
+            "color": 6651313,
+            "t": null
+        },
+        {
+            "cid": 300,
+            "type": 1,
+            "time": 1065.45,
+            "text": "前方高帅",
+            "color": 13584777,
+            "t": null
+        },
+        {
+            "cid": 306,
+            "type": 1,
+            "time": 1078.98,
+            "text": "英雄救美",
+            "color": 13949655,
+            "t": null
+        },
+        {
+            "cid": 293,
+            "type": 1,
+            "time": 1083.51,
+            "text": "帅得像黄昏",
+            "color": 16736760,
+            "t": null
+        },
+        {
+            "cid": 70,
+            "type": 1,
+            "time": 1087.46,
+            "text": "我空屏！！！！！！",
+            "color": 9497786,
+            "t": null
+        },
+        {
+            "cid": 30,
+            "type": 1,
+            "time": 1089.72,
+            "text": "哎哟，凛太郎是躺赢狗，蛋糕拿了mvp！",
+            "color": 9119494,
+            "t": null
+        },
+        {
+            "cid": 152,
+            "type": 1,
+            "time": 1091.13,
+            "text": "呵呵，欺软怕硬",
+            "color": 11335898,
+            "t": null
+        },
+        {
+            "cid": 17,
+            "type": 1,
+            "time": 1091.59,
+            "text": "这不打一顿",
+            "color": 12944659,
+            "t": null
+        },
+        {
+            "cid": 233,
+            "type": 1,
+            "time": 1092.01,
+            "text": "好帅",
+            "color": 6862095,
+            "t": null
+        },
+        {
+            "cid": 324,
+            "type": 1,
+            "time": 1092.41,
+            "text": "不准空",
+            "color": 294321,
+            "t": null
+        },
+        {
+            "cid": 249,
+            "type": 1,
+            "time": 1094.88,
+            "text": "不可以用手接住拳头吗？",
+            "color": 4617270,
+            "t": null
+        },
+        {
+            "cid": 453,
+            "type": 1,
+            "time": 1096.21,
+            "text": "牙白怎么弄跑了",
+            "color": 9931535,
+            "t": null
+        },
+        {
+            "cid": 289,
+            "type": 1,
+            "time": 1096.58,
+            "text": "该打",
+            "color": 11410806,
+            "t": null
+        },
+        {
+            "cid": 39,
+            "type": 1,
+            "time": 1099.6,
+            "text": "我去妹宝和大狗狗啊啊啊啊啊啊",
+            "color": 13171434,
+            "t": null
+        },
+        {
+            "cid": 32,
+            "type": 1,
+            "time": 1100.13,
+            "text": "薰凛99",
+            "color": 13400669,
+            "t": null
+        },
+        {
+            "cid": 686,
+            "type": 1,
+            "time": 1104.26,
+            "text": "前排哈哈哈哈哈",
+            "color": 14053385,
+            "t": null
+        },
+        {
+            "cid": 543,
+            "type": 1,
+            "time": 1105.3,
+            "text": "看到男主怕了，哈哈哈",
+            "color": 12733402,
+            "t": null
+        },
+        {
+            "cid": 279,
+            "type": 1,
+            "time": 1106.31,
+            "text": "幻想",
+            "color": 13191448,
+            "t": null
+        },
+        {
+            "cid": 200,
+            "type": 1,
+            "time": 1106.62,
+            "text": "狗妹崛起吧。。",
+            "color": 11101369,
+            "t": null
+        },
+        {
+            "cid": 437,
+            "type": 1,
+            "time": 1107.79,
+            "text": "好可爱啊女主",
+            "color": 12912089,
+            "t": null
+        },
+        {
+            "cid": 399,
+            "type": 1,
+            "time": 1112.41,
+            "text": "不理解",
+            "color": 16122177,
+            "t": null
+        },
+        {
+            "cid": 154,
+            "type": 1,
+            "time": 1119.48,
+            "text": "食物特写",
+            "color": 7178164,
+            "t": null
+        },
+        {
+            "cid": 588,
+            "type": 1,
+            "time": 1123.51,
+            "text": "开播2000 x 2",
+            "color": 9236002,
+            "t": null
+        },
+        {
+            "cid": 274,
+            "type": 1,
+            "time": 1125.13,
+            "text": "天使女主QAQ",
+            "color": 12502119,
+            "t": null
+        },
+        {
+            "cid": 276,
+            "type": 1,
+            "time": 1127.24,
+            "text": "开播大吉",
+            "color": 378378,
+            "t": null
+        },
+        {
+            "cid": 98,
+            "type": 1,
+            "time": 1128.1,
+            "text": "有人吗",
+            "color": 7564595,
+            "t": null
+        },
+        {
+            "cid": 138,
+            "type": 1,
+            "time": 1128.39,
+            "text": "还可以",
+            "color": 380062,
+            "t": null
+        },
+        {
+            "cid": 492,
+            "type": 1,
+            "time": 1131.93,
+            "text": "好磕",
+            "color": 11317080,
+            "t": null
+        },
+        {
+            "cid": 849,
+            "type": 1,
+            "time": 1134.71,
+            "text": "有人看到这了吗？",
+            "color": 11476991,
+            "t": null
+        },
+        {
+            "cid": 226,
+            "type": 1,
+            "time": 1139.21,
+            "text": "有的有的 x 2",
+            "color": 1159256,
+            "t": null
+        },
+        {
+            "cid": 253,
+            "type": 1,
+            "time": 1138.25,
+            "text": "我不行了 好纯",
+            "color": 13812334,
+            "t": null
+        },
+        {
+            "cid": 461,
+            "type": 1,
+            "time": 1138.34,
+            "text": "有的 x 2",
+            "color": 7075655,
+            "t": null
+        },
+        {
+            "cid": 683,
+            "type": 1,
+            "time": 1139.2,
+            "text": "作品完全为幻想服务反而让人觉得扯淡",
+            "color": 699045,
+            "t": null
+        },
+        {
+            "cid": 517,
+            "type": 1,
+            "time": 1139.29,
+            "text": "有的兄弟，有的。",
+            "color": 11603570,
+            "t": null
+        },
+        {
+            "cid": 207,
+            "type": 1,
+            "time": 1140.15,
+            "text": "+1",
+            "color": 6252760,
+            "t": null
+        },
+        {
+            "cid": 147,
+            "type": 1,
+            "time": 1144.25,
+            "text": "有的 x 2",
+            "color": 12687369,
+            "t": null
+        },
+        {
+            "cid": 506,
+            "type": 1,
+            "time": 1141.13,
+            "text": "有有有",
+            "color": 4537075,
+            "t": null
+        },
+        {
+            "cid": 250,
+            "type": 1,
+            "time": 1141.24,
+            "text": "有的兄弟",
+            "color": 842182,
+            "t": null
+        },
+        {
+            "cid": 118,
+            "type": 1,
+            "time": 1141.25,
+            "text": "包的",
+            "color": 10616339,
+            "t": null
+        },
+        {
+            "cid": 11,
+            "type": 1,
+            "time": 1142.71,
+            "text": "甜死我了甜死我了甜死我了",
+            "color": 12914544,
+            "t": null
+        },
+        {
+            "cid": 126,
+            "type": 1,
+            "time": 1144.03,
+            "text": "现在3000+了",
+            "color": 5399234,
+            "t": null
+        },
+        {
+            "cid": 105,
+            "type": 1,
+            "time": 1145.65,
+            "text": "有的有的",
+            "color": 8318631,
+            "t": null
+        },
+        {
+            "cid": 220,
+            "type": 1,
+            "time": 1148.91,
+            "text": "纯爱无敌",
+            "color": 11680838,
+            "t": null
+        },
+        {
+            "cid": 538,
+            "type": 1,
+            "time": 1152.63,
+            "text": "鬼故事进度条",
+            "color": 10198625,
+            "t": null
+        },
+        {
+            "cid": 413,
+            "type": 1,
+            "time": 1158.18,
+            "text": "没事还有一集",
+            "color": 2533868,
+            "t": null
+        },
+        {
+            "cid": 356,
+            "type": 1,
+            "time": 1173.85,
+            "text": "。？",
+            "color": 3115068,
+            "t": null
+        },
+        {
+            "cid": 257,
+            "type": 1,
+            "time": 1174.57,
+            "text": "太甜了",
+            "color": 12042395,
+            "t": null
+        },
+        {
+            "cid": 14,
+            "type": 1,
+            "time": 1180.0,
+            "text": "她真好看",
+            "color": 13272276,
+            "t": null
+        },
+        {
+            "cid": 109,
+            "type": 1,
+            "time": 1186.82,
+            "text": "2000+了",
+            "color": 15549021,
+            "t": null
+        },
+        {
+            "cid": 117,
+            "type": 1,
+            "time": 1188.34,
+            "text": "俺不中嘞",
+            "color": 3860,
+            "t": null
+        },
+        {
+            "cid": 223,
+            "type": 1,
+            "time": 1190.23,
+            "text": "不儿哥们你头发梳下来也这么帅啊",
+            "color": 7335247,
+            "t": null
+        },
+        {
+            "cid": 474,
+            "type": 1,
+            "time": 1197.3,
+            "text": "这么甜的一幕我要占领空屏！！",
+            "color": 610,
+            "t": null
+        },
+        {
+            "cid": 214,
+            "type": 1,
+            "time": 1201.33,
+            "text": "不行~",
+            "color": 14595969,
+            "t": null
+        },
+        {
+            "cid": 205,
+            "type": 1,
+            "time": 1202.09,
+            "text": "小馋猫",
+            "color": 13910363,
+            "t": null
+        },
+        {
+            "cid": 120,
+            "type": 1,
+            "time": 1202.33,
+            "text": "不准空屏！！！ x 2",
+            "color": 14715961,
+            "t": null
+        },
+        {
+            "cid": 386,
+            "type": 1,
+            "time": 1202.93,
+            "text": "占领失败",
+            "color": 9150248,
+            "t": null
+        },
+        {
+            "cid": 136,
+            "type": 1,
+            "time": 1203.45,
+            "text": "这个设定好像龙与虎哦哈哈哈",
+            "color": 9690433,
+            "t": null
+        },
+        {
+            "cid": 44,
+            "type": 1,
+            "time": 1206.92,
+            "text": "像宿傩",
+            "color": 15785110,
+            "t": null
+        },
+        {
+            "cid": 142,
+            "type": 1,
+            "time": 1210.03,
+            "text": "好萌好萌",
+            "color": 14443095,
+            "t": null
+        },
+        {
+            "cid": 330,
+            "type": 1,
+            "time": 1211.39,
+            "text": "我也觉的但不要ky了",
+            "color": 5074403,
+            "t": null
+        },
+        {
+            "cid": 131,
+            "type": 1,
+            "time": 1211.77,
+            "text": "卡死了",
+            "color": 3370019,
+            "t": null
+        },
+        {
+            "cid": 186,
+            "type": 1,
+            "time": 1215.88,
+            "text": "这身高差",
+            "color": 9304671,
+            "t": null
+        },
+        {
+            "cid": 114,
+            "type": 1,
+            "time": 1232.09,
+            "text": "蛋糕：？",
+            "color": 3676650,
+            "t": null
+        },
+        {
+            "cid": 192,
+            "type": 1,
+            "time": 1233.87,
+            "text": "蛋糕呢？",
+            "color": 9753784,
+            "t": null
+        },
+        {
+            "cid": 173,
+            "type": 1,
+            "time": 1237.69,
+            "text": "男主像宿傩",
+            "color": 16444706,
+            "t": null
+        },
+        {
+            "cid": 347,
+            "type": 1,
+            "time": 1237.87,
+            "text": "前方名场面预警",
+            "color": 13133626,
+            "t": null
+        },
+        {
+            "cid": 140,
+            "type": 1,
+            "time": 1242.03,
+            "text": "承包女主！！！！！",
+            "color": 14795642,
+            "t": null
+        },
+        {
+            "cid": 360,
+            "type": 1,
+            "time": 1243.42,
+            "text": "名场面啊啊啊啊",
+            "color": 7327192,
+            "t": null
+        },
+        {
+            "cid": 311,
+            "type": 1,
+            "time": 1245.61,
+            "text": "我的地方了",
+            "color": 10795601,
+            "t": null
+        },
+        {
+            "cid": 315,
+            "type": 1,
+            "time": 1249.94,
+            "text": "99。。",
+            "color": 2697045,
+            "t": null
+        },
+        {
+            "cid": 137,
+            "type": 1,
+            "time": 1250.48,
+            "text": "空屏是我的",
+            "color": 4355456,
+            "t": null
+        },
+        {
+            "cid": 148,
+            "type": 1,
+            "time": 1250.48,
+            "text": "空评是",
+            "color": 4602148,
+            "t": null
+        },
+        {
+            "cid": 385,
+            "type": 1,
+            "time": 1264.55,
+            "text": "这是联动了吗？",
+            "color": 495733,
+            "t": null
+        },
+        {
+            "cid": 256,
+            "type": 1,
+            "time": 1268.69,
+            "text": "小野寺",
+            "color": 1916409,
+            "t": null
+        },
+        {
+            "cid": 119,
+            "type": 1,
+            "time": 1275.7,
+            "text": "承包女主",
+            "color": 115768,
+            "t": null
+        },
+        {
+            "cid": 232,
+            "type": 1,
+            "time": 1290.25,
+            "text": "好番当赏",
+            "color": 3099124,
+            "t": null
+        },
+        {
+            "cid": 179,
+            "type": 1,
+            "time": 1297.88,
+            "text": "有人吗？",
+            "color": 1427754,
+            "t": null
+        },
+        {
+            "cid": 115,
+            "type": 1,
+            "time": 1301.06,
+            "text": "99。。。",
+            "color": 8980515,
+            "t": null
+        },
+        {
+            "cid": 42,
+            "type": 1,
+            "time": 1307.35,
+            "text": "少年，你坠入爱河啦",
+            "color": 16396818,
+            "t": null
+        },
+        {
+            "cid": 176,
+            "type": 1,
+            "time": 1310.85,
+            "text": "来了？",
+            "color": 4720736,
+            "t": null
+        },
+        {
+            "cid": 763,
+            "type": 1,
+            "time": 1319.89,
+            "text": "现在还没人 就承包啦",
+            "color": 2191416,
+            "t": null
+        },
+        {
+            "cid": 167,
+            "type": 1,
+            "time": 1320.54,
+            "text": "啊？",
+            "color": 6300090,
+            "t": null
+        },
+        {
+            "cid": 160,
+            "type": 1,
+            "time": 1323.21,
+            "text": "哇哇",
+            "color": 4083465,
+            "t": null
+        },
+        {
+            "cid": 633,
+            "type": 1,
+            "time": 1324.59,
+            "text": "前方高能！",
+            "color": 7726634,
+            "t": null
+        },
+        {
+            "cid": 501,
+            "type": 1,
+            "time": 1324.64,
+            "text": "两脸懵壁",
+            "color": 12458269,
+            "t": null
+        },
+        {
+            "cid": 418,
+            "type": 1,
+            "time": 1327.15,
+            "text": "可以可以 x 2",
+            "color": 2094112,
+            "t": null
+        },
+        {
+            "cid": 292,
+            "type": 1,
+            "time": 1327.86,
+            "text": "哈哈哈哈哈哈哈哈男主你怎么这么纯爱",
+            "color": 14240997,
+            "t": null
+        },
+        {
+            "cid": 210,
+            "type": 1,
+            "time": 1330.41,
+            "text": "！！！",
+            "color": 8453249,
+            "t": null
+        },
+        {
+            "cid": 218,
+            "type": 1,
+            "time": 1400.02,
+            "text": "薰子好美！！",
+            "color": 1880378,
+            "t": null
+        },
+        {
+            "cid": 333,
+            "type": 1,
+            "time": 1407.51,
+            "text": "好美",
+            "color": 4037447,
+            "t": null
+        },
+        {
+            "cid": 286,
+            "type": 1,
+            "time": 1439.62,
+            "text": "如此好看的番，小生尝尝咸淡！好甜！！！！",
+            "color": 11153456,
+            "t": null
         }
-    ],
-    "html_content": "\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa current\" onclick=\"sw_p(this)\" href='/_player_x_/https://play.xluuss.com/play/NbWkMGob/index.m3u8' target=\"p-frame\">XL</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://v.gsuus.com/play/5eVgLEoa/index.m3u8' target=\"p-frame\">GS</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://hd.ijycnd.com/play/BeXmNJVa/index.m3u8' target=\"p-frame\">JY</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://hn.bfvvs.com/play/PdR2Ezwd/index.m3u8' target=\"p-frame\">HN</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://vip.ffzy-plays.com/20251005/46074_e14dc01a/index.m3u8' target=\"p-frame\">FF</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://ukzy.ukubf3.com/20251005/zNQh4eDX/index.m3u8' target=\"p-frame\">UK</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://bfikuncdn.com/20251004/wq88CG5A/index.m3u8' target=\"p-frame\">IK</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://v.cdnlz22.com/20251005/23629_7c49912f/index.m3u8' target=\"p-frame\">LZ</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://v.cdnlz22.com/20251005/23629_7c49912f/index.m3u8' target=\"p-frame\">LZ</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://v10.qrssuv.com/wjv10/202510/05/8Kd2amsdNV82/video/index.m3u8' target=\"p-frame\">WJ</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://cdn.wlcdn88.com:777/57ee61b6/index.m3u8' target=\"p-frame\">WL</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://vod12.wgslsw.com/20251007/8Kd2amsdNV82/index.m3u8' target=\"p-frame\">YH</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://bf.jisuziyuanbf.com/play/QeZqPLgd/index.m3u8' target=\"p-frame\">JS</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://v14.yuglf.com/202510/05/WpDN9TrCtn22/video/index.m3u8' target=\"p-frame\">SN</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<li class=\"ep-col mb-2\">\n\t\t\t\t\t\t\t\t<a class=\"swa \" onclick=\"sw_p(this)\" href='/_player_x_/https://play.modujx11.com/20251005/Pan6D0It/index.m3u8' target=\"p-frame\">MD</a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t"
+    ]
 }

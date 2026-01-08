@@ -176,6 +176,10 @@
         "no_comments": "暫無評論",
         "no_episode_name": "暫無劇集名稱",
         "episode_not_exist": "該集不存在",
-        "playback_error": "無法獲取播放位址,換條路線試試"
+        "playback_error": "無法獲取播放位址,換條路線試試",
+        "danmaku_not_exist": "該集暫無弹幕",
+        "danmaku_loaded": "彈幕加載陳工",
+        "danmaku_load_error": "彈幕加載失敗",
+        "danmaku_selection": "彈幕選擇"
     }
 }

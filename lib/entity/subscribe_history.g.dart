@@ -8,8 +8,8 @@ part of 'subscribe_history.dart';
 
 SubscribeHistory _$SubscribeHistoryFromJson(Map<String, dynamic> json) =>
     SubscribeHistory(
-      id: json['id'] as String?,
       subId: (json['subId'] as num).toInt(),
+      id: json['id'] as String?,
       title: json['title'] as String,
       airDate: json['airDate'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -19,8 +19,8 @@ SubscribeHistory _$SubscribeHistoryFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$SubscribeHistoryToJson(SubscribeHistory instance) =>
     <String, dynamic>{
-      'subId': instance.subId,
       'id': instance.id,
+      'subId': instance.subId,
       'title': instance.title,
       'imgUrl': instance.imgUrl,
       'airDate': instance.airDate,

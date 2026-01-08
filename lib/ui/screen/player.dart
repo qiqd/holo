@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
+import 'package:holo/entity/danmu_item.dart';
 import 'package:holo/entity/episode.dart';
+import 'package:holo/entity/logvar_episode.dart';
 import 'package:holo/entity/media.dart';
 
 import 'package:holo/entity/playback_history.dart';
@@ -55,7 +57,11 @@ class _PlayerScreenState extends State<PlayerScreen>
   int historyPosition = 0;
   String? playUrl;
   bool _isActive = true;
-
+  //TODO 2026-01-08 22:46:42,当默认的弹幕匹配不正确时,需要手动选择弹幕
+  List<LogvarEpisode>? _danmakuList;
+  LogvarEpisode? _bestMatch;
+  Danmu? _dammaku;
+  bool _isDanmakuLoading = false;
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
@@ -91,7 +97,10 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  void _fetchViewInfo({int position = 0}) async {
+  void _fetchViewInfo({
+    int position = 0,
+    Function(String e)? onComplete,
+  }) async {
     msg = "";
     isloading = true;
     try {
@@ -109,6 +118,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           (e) => setState(() {
             log("fetchView error: $e");
             msg = "player.playback_error".tr();
+            onComplete?.call(msg);
           }),
         );
         playUrl = newUrl;
@@ -128,6 +138,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       log("fetchView error: $e");
       setState(() {
         msg = "player.playback_error".tr();
+        onComplete?.call(msg);
       });
     } finally {
       isloading = false;
@@ -152,6 +163,12 @@ class _PlayerScreenState extends State<PlayerScreen>
       episodeIndex = index;
     });
     _fetchViewInfo();
+    _loadDanmaku(
+      isFirstLoad: true,
+      onComplete: (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e)));
+      },
+    );
   }
 
   void _loadHistory() async {
@@ -182,6 +199,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     final maxScore = rs.keys.reduce((a, b) => a.compareTo(b) > 0 ? a : b);
     final subjectId = rs[maxScore];
     subject = newSubject.data?.firstWhere((s) => s.id == subjectId);
+    _loadDanmaku();
     final res = await Api.bangumi.fethcEpisodeSync(
       subjectId!,
       (e) => setState(() {
@@ -241,6 +259,67 @@ class _PlayerScreenState extends State<PlayerScreen>
         log("savePlaybackHistory error: $e");
       },
     );
+  }
+
+  void _loadDanmaku({
+    bool isFirstLoad = true,
+    Function(String e)? onComplete,
+  }) async {
+    if (_isDanmakuLoading) {
+      return;
+    }
+    setState(() {
+      _isDanmakuLoading = true;
+    });
+    if (isFirstLoad) {
+      var data = await Api.logvar.fetchEpisodeFromLogvar(
+        subject?.nameCn ?? "",
+        (e) => setState(() {
+          _isDanmakuLoading = false;
+          onComplete?.call(e.toString());
+        }),
+      );
+      setState(() {
+        _danmakuList = data;
+      });
+      double score = 0;
+
+      for (var element in data) {
+        var temp = JaroWinklerSimilarity.apply(
+          element.animeTitle,
+          subject?.nameCn ?? "",
+        );
+        if (temp > score) {
+          score = temp;
+          setState(() {
+            _bestMatch = element;
+          });
+        }
+      }
+      if (_bestMatch == null) {
+        setState(() {
+          onComplete?.call("player.danmaku_not_exist".tr());
+        });
+        return;
+      }
+    }
+
+    final danmu = await Api.logvar.fetchDammakuSync(
+      _bestMatch!.episodes![episodeIndex].episodeId!,
+      (e) {
+        setState(() {
+          _isDanmakuLoading = false;
+          onComplete?.call("player.danmaku_load_error".tr());
+        });
+      },
+    );
+    if (mounted) {
+      setState(() {
+        _isDanmakuLoading = false;
+        _dammaku = danmu;
+        onComplete?.call("player.danmaku_loaded".tr());
+      });
+    }
   }
 
   @override
@@ -364,6 +443,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                             controller: _controller!,
                             isFullScreen: _isFullScreen,
                             currentEpisodeIndex: episodeIndex,
+                            dammaku: _dammaku,
                             episodeList:
                                 _episode?.data?.map((e) => e.name!).toList() ??
                                 [],
@@ -419,6 +499,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                               isloading: isloading,
                               controller: _controller!,
                               isFullScreen: _isFullScreen,
+                              dammaku: _dammaku,
                               onError: (error) => setState(() {
                                 msg = error.toString();
                               }),
@@ -471,33 +552,40 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 ],
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(right: 20),
-                              child: PopupMenuButton(
-                                child: TextButton.icon(
-                                  onPressed: null,
-                                  label: Text('player.route_selection'.tr()),
-                                ),
-                                itemBuilder: (context) => [
-                                  ...List.generate(
-                                    _detail?.lines?.length ?? 1,
-                                    (index) => PopupMenuItem(
-                                      value: index,
-                                      child: Text(
-                                        'player.route_number'.tr(
-                                          args: [(index + 1).toString()],
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        if (index == lineIndex || isloading) {
-                                          return;
-                                        }
-                                        _onLineSelected(index);
-                                      },
-                                    ),
-                                  ),
-                                ],
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "player.danmaku_selection".tr(),
+                                style: TextStyle(color: Colors.grey),
                               ),
+                            ),
+                            PopupMenuButton(
+                              child: TextButton.icon(
+                                onPressed: null,
+                                label: Text(
+                                  'player.route_selection'.tr(),
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                              itemBuilder: (context) => [
+                                ...List.generate(
+                                  _detail?.lines?.length ?? 1,
+                                  (index) => PopupMenuItem(
+                                    value: index,
+                                    child: Text(
+                                      'player.route_number'.tr(
+                                        args: [(index + 1).toString()],
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      if (index == lineIndex || isloading) {
+                                        return;
+                                      }
+                                      _onLineSelected(index);
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

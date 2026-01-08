@@ -329,7 +329,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
           ),
         ),
         actions: [
-          TextButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context),
             child: Text('setting.data_management.clear_dialog_confirm'.tr()),
           ),
@@ -354,11 +354,11 @@ class _SetttingScreenState extends State<SetttingScreen> {
               : 'setting.data_management.clear_dialog_content_subscribe'.tr(),
         ),
         actions: [
-          TextButton(
+          OutlinedButton(
             onPressed: () => Navigator.pop(context),
             child: Text('setting.data_management.clear_dialog_cancel'.tr()),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () {
               Navigator.pop(context);
               if (isPlayback) {
@@ -388,11 +388,11 @@ class _SetttingScreenState extends State<SetttingScreen> {
           title: Text('setting.data_management.clear_dialog_title'.tr()),
           content: Text('setting.data_management.cache_dialog_content'.tr()),
           actions: [
-            TextButton(
+            OutlinedButton(
               onPressed: () => Navigator.pop(context),
               child: Text('setting.data_management.clear_dialog_cancel'.tr()),
             ),
-            TextButton(
+            FilledButton(
               onPressed: () {
                 // 清除缓存逻辑
                 // Navigator.pop(context);
@@ -528,11 +528,11 @@ class _SetttingScreenState extends State<SetttingScreen> {
           },
         ),
         actions: [
-          TextButton(
+          OutlinedButton(
             onPressed: () => Navigator.pop(context),
             child: Text('setting.appearance.theme_dialog_cancel'.tr()),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () {
               MyApp.themeNotifier.value = currentTheme!;
               LocalStore.setString('theme_mode', currentTheme.toString());
@@ -553,11 +553,11 @@ class _SetttingScreenState extends State<SetttingScreen> {
         title: Text('setting.account.signout_dialog_title'.tr()),
         content: Text('setting.account.signout_dialog_content'.tr()),
         actions: [
-          TextButton(
+          OutlinedButton(
             onPressed: () => Navigator.pop(context),
             child: Text('setting.account.signout_dialog_cancel'.tr()),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () {
               setState(() {
                 _email = null;
