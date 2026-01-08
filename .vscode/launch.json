@@ -9,7 +9,7 @@
       "request": "launch",
       "type": "dart",
       "env": {
-        "DAMMaku_SERVER_URL": "https://qijiuhome.dpdns.org"
+        "DAMMaku_SERVER_URL": "https://example.org"
       }
     },
     {
