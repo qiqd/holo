@@ -1,14 +1,10 @@
 import 'dart:developer';
-import 'dart:io';
-
 import 'package:holo/entity/danmu_item.dart';
 import 'package:holo/entity/logvar_episode.dart';
 import 'package:holo/util/http_util.dart';
 
 class Logvar {
-  static final baseUrl =
-      Platform.environment['DAMMaku_SERVER_URL'] ??
-      'https://qijiuhome.dpdns.org';
+  static final baseUrl = String.fromEnvironment("DAMMAKU_SERVER_URL");
 
   Future<List<LogvarEpisode>> fetchEpisodeFromLogvar(
     String keyword,
