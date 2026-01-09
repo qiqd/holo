@@ -1,25 +1,46 @@
 # Holo
 
-一个使用 Flutter 构建的开源动漫流媒体应用，支持 Android、iOS 平台。
+一个使用 Flutter 构建的开源看番 APP，支持 Android、iOS 平台。
 
 ## 功能特性
 
-- 📺 **动漫流媒体播放**：轻松观看您喜爱的动漫
+- 📺 **动漫播放**：轻松观看您喜爱的动漫
 - 📅 **更新日历**：随时了解最新动漫更新
 - 🔍 **搜索功能**：快速高效地查找动漫
 - 💾 **观看历史**：跟踪您的观看进度
-- 🔔 **订阅通知**：新剧集更新时收到通知
+- 💬 **弹幕功能**：支持实时弹幕互动体验
+- 🌍 **多语言支持**：支持多种语言的国际化界面
 - 🌐 **多平台支持**：覆盖 Android、iOS
 
-## 技术栈
+## App Screenshots
 
-- **框架**：Flutter
-- **路由管理**：GoRouter
-- **网络请求**：Dio
-- **JSON 序列化**：json_annotation
-- **视频播放**：video_player
-- **本地存储**：shared_preferences
-- **弹幕支持**：canvas_danmaku
+<div align="center">
+  <img src="screenshot/home.png" alt="Home Screen" width="30%"/>
+  <img src="screenshot/detail.png" alt="Detail Screen" width="30%"/>
+  <img src="screenshot/player1.png" alt="Player Screen" width="30%"/>
+</div>
+
+<div align="center">
+  <img src="screenshot/player2.png" alt="Player Screen with Danmaku" width="30%"/>
+  <img src="screenshot/weekly.png" alt="Weekly Schedule" width="30%"/>
+  <img src="screenshot/setting.png" alt="Settings" width="30%"/>
+</div>
+
+<div align="center">
+  <img src="screenshot/Subscribe.png" alt="Subscribe Page" width="30%"/>
+</div>
+## 特别感谢
+
+- **弹幕提供**：[canvas_danmaku](https://github.com/huangxd-/danmu_api)
+- **番剧源信息**： [bangumi/api](https://github.com/bangumi/api)
+
+## 环境配置
+
+本项目使用 `flutter_dotenv` 管理环境变量。请在项目根目录创建 `.env` 文件并配置以下变量：
+
+```
+DAMMAKU_SERVER_URL=your_danmaku_server_url
+```
 
 ## 项目结构
 
