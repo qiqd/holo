@@ -274,10 +274,14 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (isFirstLoad) {
       var data = await Api.logvar.fetchEpisodeFromLogvar(
         subject?.nameCn ?? "",
-        (e) => setState(() {
-          _isDanmakuLoading = false;
-          onComplete?.call(e.toString());
-        }),
+        (e) {
+          if (mounted) {
+            setState(() {
+              _isDanmakuLoading = false;
+              onComplete?.call(e.toString());
+            });
+          }
+        },
       );
       setState(() {
         _danmakuList = data;
@@ -307,10 +311,12 @@ class _PlayerScreenState extends State<PlayerScreen>
     final danmu = await Api.logvar.fetchDammakuSync(
       _bestMatch!.episodes![episodeIndex].episodeId!,
       (e) {
-        setState(() {
-          _isDanmakuLoading = false;
-          onComplete?.call("player.danmaku_load_error".tr());
-        });
+        if (mounted) {
+          setState(() {
+            _isDanmakuLoading = false;
+            onComplete?.call("player.danmaku_load_error".tr());
+          });
+        }
       },
     );
     if (mounted) {
@@ -320,6 +326,16 @@ class _PlayerScreenState extends State<PlayerScreen>
         onComplete?.call("player.danmaku_loaded".tr());
       });
     }
+  }
+
+  void _onDanmakuSourceChange(LogvarEpisode e) {
+    if (e.animeId == _bestMatch?.animeId) {
+      return;
+    }
+    setState(() {
+      _bestMatch = e;
+    });
+    _loadDanmaku(isFirstLoad: false);
   }
 
   @override
@@ -553,7 +569,55 @@ class _PlayerScreenState extends State<PlayerScreen>
                               ),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  barrierLabel: "fff",
+                                  builder: (context) {
+                                    return Column(
+                                      spacing: 8,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 8),
+                                          child: Text(
+                                            'player.choose_danmaku_sheet_text'
+                                                .tr(),
+                                          ),
+                                        ),
+                                        ...List.generate(
+                                          _danmakuList?.length ?? 0,
+                                          (index) => Column(
+                                            children: [
+                                              ListTile(
+                                                selected:
+                                                    _bestMatch?.animeId ==
+                                                    _danmakuList?[index]
+                                                        .animeId,
+                                                title: Text(
+                                                  _danmakuList?[index]
+                                                          .animeTitle ??
+                                                      '',
+                                                ),
+                                                subtitle: Text(
+                                                  _danmakuList?[index]
+                                                          .animeTitle ??
+                                                      '',
+                                                ),
+                                                onTap: () {
+                                                  _onDanmakuSourceChange(
+                                                    _danmakuList![index],
+                                                  );
+                                                },
+                                              ),
+                                              Divider(),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                               child: Text(
                                 "player.danmaku_selection".tr(),
                                 style: TextStyle(color: Colors.grey),
@@ -573,9 +637,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                   (index) => PopupMenuItem(
                                     value: index,
                                     child: Text(
-                                      'player.route_number'.tr(
-                                        args: [(index + 1).toString()],
-                                      ),
+                                      '${'player.route_number'.tr(args: [(index + 1).toString()])}•',
                                     ),
                                     onTap: () {
                                       if (index == lineIndex || isloading) {
@@ -615,31 +677,30 @@ class _PlayerScreenState extends State<PlayerScreen>
                                               mainAxisSpacing: 5,
                                               crossAxisSpacing: 5,
                                             ),
-                                        itemBuilder: (context, index) =>
-                                            ListTile(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              selected: episodeIndex == index,
-                                              onTap: () {
-                                                if (episodeIndex == index ||
-                                                    isloading) {
-                                                  return;
-                                                }
-                                                _onEpisodeSelected(index);
-                                              },
-                                              subtitle: Text(
-                                                maxLines: 4,
-                                                overflow: TextOverflow.ellipsis,
-                                                _episode?.data?[index].nameCn ??
-                                                    "player.no_episode_name"
-                                                        .tr(),
-                                              ),
-                                              title: Text(
-                                                (index + 1).toString(),
-                                              ),
+                                        itemBuilder: (context, index) => ListTile(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
                                             ),
+                                          ),
+                                          selected: episodeIndex == index,
+                                          onTap: () {
+                                            if (episodeIndex == index ||
+                                                isloading) {
+                                              return;
+                                            }
+                                            _onEpisodeSelected(index);
+                                          },
+                                          subtitle: Text(
+                                            maxLines: 4,
+                                            overflow: TextOverflow.ellipsis,
+                                            _episode?.data?[index].nameCn ??
+                                                "player.no_episode_name".tr(),
+                                          ),
+                                          title: Text(
+                                            '${index + 1}${episodeIndex == index ? "•" : ""}',
+                                          ),
+                                        ),
                                       ),
                                       onVisibilityChanged: (info) {
                                         if (info.visibleFraction > 0) {

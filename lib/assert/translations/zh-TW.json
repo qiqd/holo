@@ -71,7 +71,8 @@
             "license_content": "AGPL-3.0 license",
             "metadata_title": "動畫元資訊",
             "metadata_content": "Bangumi 番組計劃",
-            "libraries_title": "第三方函式庫"
+            "libraries_title": "第三方函式庫",
+            "danmaku_title": "彈幕庫"
         },
         "language": {
             "change": "切換語言"
@@ -180,6 +181,7 @@
         "danmaku_not_exist": "該集暫無弹幕",
         "danmaku_loaded": "彈幕加載陳工",
         "danmaku_load_error": "彈幕加載失敗",
-        "danmaku_selection": "彈幕選擇"
+        "danmaku_selection": "彈幕選擇",
+        "choose_danmaku_sheet_text": "若弹幕不正确,請手動選擇弹幕"
     }
 }

@@ -71,7 +71,8 @@
             "license_content": "AGPL-3.0 license",
             "metadata_title": "アニメーションメタデータ",
             "metadata_content": "Bangumi バンジグループ",
-            "libraries_title": "サードパーティライブラリ"
+            "libraries_title": "サードパーティライブラリ",
+            "danmaku_title": "弾幕ライブラリ"
         },
         "language": {
             "change": "言語切替"
@@ -180,6 +181,7 @@
         "danmaku_not_exist": "この話は弹幕を提供していません",
         "danmaku_loaded": "弹幕ロード完了",
         "danmaku_load_error": "弹幕ロード失敗",
-        "danmaku_selection": "弹幕選択"
+        "danmaku_selection": "弹幕選択",
+        "choose_danmaku_sheet_text": "弹幕が正しくない場合は、手動で選択してください"
     }
 }

@@ -288,6 +288,11 @@ class _SetttingScreenState extends State<SetttingScreen> {
               ),
               Text('Bangumi 番组计划'),
               Text(
+                'setting.app_info.danmaku_title'.tr(),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text('LogVar 弹幕'),
+              Text(
                 'setting.app_info.libraries_title'.tr(),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),

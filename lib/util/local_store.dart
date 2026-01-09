@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:canvas_danmaku/models/danmaku_option.dart';
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -219,6 +220,36 @@ class LocalStore {
   static void saveSearchHistory(List<String> history) {
     if (_prefs == null) return;
     _prefs!.setStringList("${_key}_search", history);
+  }
+
+  static DanmakuOption getDanmakuOption() {
+    if (_prefs == null) return DanmakuOption();
+    var danmakuOptionStr = _prefs!.getString("${_key}_danmaku_option") ?? "";
+    if (danmakuOptionStr.isEmpty) return DanmakuOption();
+    var map = json.decode(danmakuOptionStr) as Map<String, dynamic>;
+    return DanmakuOption(
+      opacity: map["opacity"] as double,
+      area: map["area"] as double,
+      fontSize: map["fontSize"] as double,
+      hideTop: map["hideTop"] as bool,
+      hideBottom: map["hideBottom"] as bool,
+      hideScroll: map["hideScroll"] as bool,
+      massiveMode: map["massiveMode"] as bool,
+    );
+  }
+
+  static void saveDanmakuOption(DanmakuOption option) {
+    if (_prefs == null) return;
+    final map = {
+      "opacity": option.opacity,
+      "area": option.area,
+      "fontSize": option.fontSize,
+      "hideTop": option.hideTop,
+      "hideBottom": option.hideBottom,
+      "hideScroll": option.hideScroll,
+      "massiveMode": option.massiveMode,
+    };
+    _prefs!.setString("${_key}_danmaku_option", json.encode(map));
   }
 
   static bool getBool(String key, {bool defaultValue = false}) {

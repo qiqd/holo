@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 import 'package:holo/entity/danmu_item.dart';
 import 'package:holo/ui/component/loading_msg.dart';
+import 'package:holo/util/local_store.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:video_player/video_player.dart';
@@ -82,7 +83,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   double _displayArea = 1.0;
   double _opacity = 1.0;
   double _danmakuFontsize = 16.0;
-  final double _danmakuFontweight = 4.0;
+  int _danmakuFontweight = 4;
   Timer? _timer;
   Timer? _videoControlsTimer;
   Timer? _videoTimer;
@@ -301,9 +302,31 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
+  void _loadDanmuSetting() {
+    var option = LocalStore.getDanmakuOption();
+    _danmuController?.updateOption(option);
+    if (mounted) {
+      setState(() {
+        _hideTopDanmaku = option.hideTop;
+        _hideBottomDanmaku = option.hideBottom;
+        _hideScrollDanmaku = option.hideScroll;
+        _massiveDanmakuMode = option.massiveMode;
+        _displayArea = option.area;
+        _danmakuFontsize = option.fontSize;
+        _danmakuFontweight = option.fontWeight;
+        _opacity = option.opacity;
+      });
+    }
+  }
+
+  void _saveDanmuSetting() {
+    LocalStore.saveDanmakuOption(_danmuController?.option ?? DanmakuOption());
+  }
+
   @override
   void initState() {
     _addListener();
+    _loadDanmuSetting();
     _initTimerForDanmu();
     VolumeController.instance.showSystemUI = false;
     _brightnessController = ScreenBrightness.instance;
@@ -321,8 +344,18 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   }
 
   @override
+  void didUpdateWidget(covariant CapVideoPlayer oldWidget) {
+    if (oldWidget.dammaku != widget.dammaku) {
+      _danmakuItems.clear();
+      _fillDanmaku();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void didChangeDependencies() {
     _showVideoControlsTimer();
+    _loadDanmuSetting();
     super.didChangeDependencies();
   }
 
@@ -335,12 +368,12 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
           //播放器层
           VideoPlayer(_player),
           // 弹幕层
-          if (widget.dammaku != null)
+          if (widget.dammaku != null && _isShowDanmaku)
             DanmakuScreen<double>(
               createdController: (e) {
                 _danmuController = e;
               },
-              option: DanmakuOption(),
+              option: LocalStore.getDanmakuOption(),
             ),
           // 加载中或缓冲中
           if (isBuffering || widget.isloading) LoadingOrShowMsg(msg: null),
@@ -356,49 +389,62 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
 
           Column(
             children: [
+              //视频控制层-头部
               IgnorePointer(
                 ignoring: !showVideoControls,
                 child: AnimatedOpacity(
                   opacity: showVideoControls && !isLock ? 1.0 : 0.0,
                   duration: Duration(milliseconds: 300),
-                  child: Row(
-                    children: [
-                      // 返回
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () {
-                          _showVideoControlsTimer();
-                          widget.onBackPressed?.call();
-                        },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.5),
+                          Colors.transparent,
+                        ],
                       ),
-                      // 标题
-                      Expanded(
-                        child: Text(
-                          title,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleLarge?.copyWith(color: Colors.white),
-                        ),
-                      ),
-                      if (_isFullScreen)
+                    ),
+                    child: Row(
+                      children: [
+                        // 返回
                         IconButton(
+                          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                           onPressed: () {
-                            setState(() {
-                              _showSetting = !_showSetting;
-                            });
                             _showVideoControlsTimer();
+                            widget.onBackPressed?.call();
                           },
-                          icon: Icon(
-                            Icons.settings_rounded,
-                            color: Colors.white,
+                        ),
+                        // 标题
+                        Expanded(
+                          child: Text(
+                            title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(color: Colors.white),
                           ),
                         ),
-                    ],
+                        if (_isFullScreen)
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _showSetting = !_showSetting;
+                              });
+                              _showVideoControlsTimer();
+                            },
+                            icon: Icon(
+                              Icons.settings_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
+              //视频控制层-中间
               Expanded(
                 child: SizedBox(
                   child: SimpleGestureDetector(
@@ -467,220 +513,242 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                   ),
                 ),
               ),
+              //视频控制层-底部
               IgnorePointer(
                 ignoring: !showVideoControls,
                 child: AnimatedOpacity(
                   opacity: showVideoControls && !isLock ? 1.0 : 0.0,
                   curve: Curves.easeInOut,
                   duration: Duration(milliseconds: 100),
-                  child: Column(
-                    children: [
-                      // 进度条
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Slider(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 30,
-                                vertical: 0,
-                              ),
-                              secondaryTrackValue: getBufferedEnd(),
-                              value: widget.controller.value.position.inSeconds
-                                  .toDouble(),
-                              max: widget.controller.value.duration.inSeconds
-                                  .toDouble(),
-                              onChangeEnd: (value) {
-                                _showVideoControlsTimer();
-                                setState(() {
-                                  widget.controller.seekTo(
-                                    Duration(seconds: value.toInt()),
-                                  );
-                                  widget.controller.play();
-                                });
-                              },
-                              onChanged: (value) {},
-                            ),
-                          ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.5),
                         ],
                       ),
-                      // 播放按钮
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              _showVideoControlsTimer();
-                              if (widget.controller.value.isPlaying) {
-                                widget.controller.pause();
-                              } else {
-                                widget.controller.play();
-                              }
-                              widget.onPlayOrPause?.call(
-                                widget.controller.value.isPlaying,
-                              );
-                              setState(() {});
-                            },
-                            icon: Icon(
-                              widget.controller.value.isPlaying
-                                  ? Icons.pause_rounded
-                                  : Icons.play_arrow_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                          // 下一集
-                          IconButton(
-                            onPressed: () {
-                              _showVideoControlsTimer();
-                              widget.onNextTab?.call();
-                            },
-                            icon: Icon(
-                              Icons.skip_next_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                          //进度
-                          TextButton(
-                            onPressed: null,
-                            child: Text(
-                              "${widget.controller.value.position.inMinutes}:${widget.controller.value.position.inSeconds.remainder(60)}/${widget.controller.value.duration.inMinutes}:${widget.controller.value.duration.inSeconds.remainder(60)}",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-
-                          //剧集列表
-                          if (_isFullScreen) ...[
-                            Badge(
-                              backgroundColor: Colors.transparent,
-                              textColor: Colors.white,
-                              offset: Offset(0, 5),
-                              label: Text("${widget.currentEpisodeIndex + 1} "),
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    showEpisodeList = !showEpisodeList;
-                                    _episodeListScrollController.animateTo(
-                                      widget.currentEpisodeIndex * 50,
-                                      duration: Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
-                                    );
-                                  });
-                                  _showVideoControlsTimer();
-                                },
-                                icon: Icon(
-                                  Icons.format_list_bulleted_rounded,
-                                  color: Colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        // 进度条
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Slider(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30,
+                                  vertical: 0,
                                 ),
+                                secondaryTrackValue: getBufferedEnd(),
+                                value: widget
+                                    .controller
+                                    .value
+                                    .position
+                                    .inSeconds
+                                    .toDouble(),
+                                max:
+                                    widget.controller.value.duration.inSeconds
+                                        .toDouble() +
+                                    4,
+                                onChangeEnd: (value) {
+                                  _showVideoControlsTimer();
+                                  setState(() {
+                                    widget.controller.seekTo(
+                                      Duration(seconds: value.toInt()),
+                                    );
+                                    widget.controller.play();
+                                  });
+                                },
+                                onChanged: (value) {},
                               ),
                             ),
                           ],
-                          //弹幕
-                          IconButton(
-                            splashColor: Colors.transparent,
-                            color: Colors.white,
-                            onPressed: () {
-                              setState(() {
-                                _isShowDanmaku = !_isShowDanmaku;
-                                _danmuController?.updateOption(
-                                  DanmakuOption(
-                                    hideTop: !_isShowDanmaku,
-                                    hideBottom: !_isShowDanmaku,
-                                    hideScroll: !_isShowDanmaku,
-                                    hideSpecial: !_isShowDanmaku,
-                                  ),
+                        ),
+                        // 播放按钮
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                _showVideoControlsTimer();
+                                if (widget.controller.value.isPlaying) {
+                                  widget.controller.pause();
+                                } else {
+                                  widget.controller.play();
+                                }
+                                widget.onPlayOrPause?.call(
+                                  widget.controller.value.isPlaying,
                                 );
-                              });
-                              _showVideoControlsTimer();
-                            },
-                            icon: Text(
-                              '弹',
-                              style: TextStyle(
+                                setState(() {});
+                              },
+                              icon: Icon(
+                                widget.controller.value.isPlaying
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
                                 color: Colors.white,
-                                decoration: _isShowDanmaku
-                                    ? TextDecoration.none
-                                    : TextDecoration.lineThrough,
-                                decorationStyle: TextDecorationStyle.wavy,
                               ),
                             ),
-                          ),
+                            // 下一集
+                            IconButton(
+                              onPressed: () {
+                                _showVideoControlsTimer();
+                                widget.onNextTab?.call();
+                              },
+                              icon: Icon(
+                                Icons.skip_next_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
+                            //进度
+                            SizedBox(
+                              width: 110,
+                              child: TextButton(
+                                onPressed: null,
+                                child: Text(
+                                  "${widget.controller.value.position.inMinutes}:${widget.controller.value.position.inSeconds.remainder(60)}/${widget.controller.value.duration.inMinutes}:${widget.controller.value.duration.inSeconds.remainder(60)}",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
 
-                          // 播放速度
-                          if (_isFullScreen)
-                            Padding(
-                              padding: EdgeInsets.only(left: 10),
-                              child: PopupMenuButton(
-                                child: Badge(
-                                  textColor: Colors.white,
-                                  offset: Offset(8, -5),
-                                  backgroundColor: Colors.transparent,
-                                  label: Text(
-                                    widget.controller.value.playbackSpeed
-                                        .toString(),
-                                  ),
-                                  child: Icon(
-                                    Icons.speed_rounded,
+                            //剧集列表
+                            if (_isFullScreen) ...[
+                              Badge(
+                                backgroundColor: Colors.transparent,
+                                textColor: Colors.white,
+                                offset: Offset(0, 5),
+                                label: Text(
+                                  "${widget.currentEpisodeIndex + 1} ",
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      showEpisodeList = !showEpisodeList;
+                                      _episodeListScrollController.animateTo(
+                                        widget.currentEpisodeIndex * 50,
+                                        duration: Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    });
+                                    _showVideoControlsTimer();
+                                  },
+                                  icon: Icon(
+                                    Icons.format_list_bulleted_rounded,
                                     color: Colors.white,
                                   ),
                                 ),
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: 2.0,
-                                    child: Text('2.0x'),
-                                    onTap: () =>
-                                        widget.controller.setPlaybackSpeed(2.0),
+                              ),
+
+                              // 播放速度
+                              Padding(
+                                padding: EdgeInsets.only(left: 10),
+                                child: PopupMenuButton(
+                                  child: Badge(
+                                    textColor: Colors.white,
+                                    offset: Offset(8, -5),
+                                    backgroundColor: Colors.transparent,
+                                    label: Text(
+                                      widget.controller.value.playbackSpeed
+                                          .toString(),
+                                    ),
+                                    child: Icon(
+                                      Icons.speed_rounded,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                  PopupMenuItem(
-                                    value: 1.5,
-                                    child: Text('1.5x'),
-                                    onTap: () =>
-                                        widget.controller.setPlaybackSpeed(1.5),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 1.25,
-                                    child: Text('1.25x'),
-                                    onTap: () => widget.controller
-                                        .setPlaybackSpeed(1.25),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 1.0,
-                                    child: Text('1.0x'),
-                                    onTap: () =>
-                                        widget.controller.setPlaybackSpeed(1.0),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 0.75,
-                                    child: Text('0.75x'),
-                                    onTap: () => widget.controller
-                                        .setPlaybackSpeed(0.75),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 0.5,
-                                    child: Text('0.5x'),
-                                    onTap: () =>
-                                        widget.controller.setPlaybackSpeed(0.5),
-                                  ),
-                                ],
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem(
+                                      value: 2.0,
+                                      child: Text('2.0x'),
+                                      onTap: () => widget.controller
+                                          .setPlaybackSpeed(2.0),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1.5,
+                                      child: Text('1.5x'),
+                                      onTap: () => widget.controller
+                                          .setPlaybackSpeed(1.5),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1.25,
+                                      child: Text('1.25x'),
+                                      onTap: () => widget.controller
+                                          .setPlaybackSpeed(1.25),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1.0,
+                                      child: Text('1.0x'),
+                                      onTap: () => widget.controller
+                                          .setPlaybackSpeed(1.0),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 0.75,
+                                      child: Text('0.75x'),
+                                      onTap: () => widget.controller
+                                          .setPlaybackSpeed(0.75),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 0.5,
+                                      child: Text('0.5x'),
+                                      onTap: () => widget.controller
+                                          .setPlaybackSpeed(0.5),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+
+                            //弹幕
+                            Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: IconButton(
+                                splashColor: Colors.transparent,
+                                color: Colors.white,
+                                onPressed: () {
+                                  setState(() {
+                                    _isShowDanmaku = !_isShowDanmaku;
+                                  });
+                                  _showVideoControlsTimer();
+                                },
+                                icon: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Text(
+                                      '弹',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    if (!_isShowDanmaku)
+                                      Icon(
+                                        Icons.block_rounded,
+                                        color: Colors.white,
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
-
-                          Spacer(),
-                          // 全屏
-                          IconButton(
-                            onPressed: () {
-                              _showVideoControlsTimer();
-                              setState(() {
-                                _isFullScreen = !_isFullScreen;
-                              });
-                              widget.onFullScreenChanged?.call(_isFullScreen);
-                            },
-                            icon: Icon(
-                              _isFullScreen
-                                  ? Icons.fullscreen_exit_rounded
-                                  : Icons.fullscreen_rounded,
-                              color: Colors.white,
+                            Spacer(),
+                            // 全屏
+                            IconButton(
+                              onPressed: () {
+                                _showVideoControlsTimer();
+                                setState(() {
+                                  _isFullScreen = !_isFullScreen;
+                                });
+                                widget.onFullScreenChanged?.call(_isFullScreen);
+                              },
+                              icon: Icon(
+                                _isFullScreen
+                                    ? Icons.fullscreen_exit_rounded
+                                    : Icons.fullscreen_rounded,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -713,7 +781,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             opacity: showVideoControls && widget.isFullScreen ? 1 : 0,
             duration: Duration(milliseconds: 100),
             child: Padding(
-              padding: EdgeInsets.only(top: 40),
+              padding: EdgeInsets.only(top: 30),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Text(
@@ -774,6 +842,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                   massiveMode: _massiveDanmakuMode,
                 ),
               );
+              _saveDanmuSetting();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -876,7 +945,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       title: Text('弹幕字号'),
                       subtitle: Row(
                         children: [
-                          Text('${(_danmakuFontsize).round()}sp'),
+                          Text('${(_danmakuFontsize).round()}'),
                           Expanded(
                             child: Slider(
                               min: 10.0,

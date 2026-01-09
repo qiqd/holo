@@ -71,7 +71,8 @@
             "license_content": "AGPL-3.0 license",
             "metadata_title": "番剧元信息",
             "metadata_content": "Bangumi 番组计划",
-            "libraries_title": "第三方库"
+            "libraries_title": "第三方库",
+            "danmaku_title": "弹幕库"
         },
         "language": {
             "change": "切换语言"
@@ -180,6 +181,7 @@
         "danmaku_not_exist": "该集暂无弹幕",
         "danmaku_loaded": "弹幕加载完成",
         "danmaku_load_error": "弹幕加载失败",
-        "danmaku_selection": "弹幕选择"
+        "danmaku_selection": "弹幕选择",
+        "choose_danmaku_sheet_text": "若弹幕不正确,请手动选择弹幕"
     }
 }
