@@ -329,6 +329,7 @@ class _SetttingScreenState extends State<SetttingScreen> {
               const Text('• visibility_detector - BSD License'),
               const Text('• easy_localization - MIT License'),
               const Text('• shimmer - BSD-3-Clause License'),
+              const Text('• flutter_dotenv - MIT License'),
               const SizedBox(height: 8),
             ],
           ),

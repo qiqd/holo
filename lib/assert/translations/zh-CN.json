@@ -170,7 +170,7 @@
         "air_date_key": "放送开始"
     },
     "player": {
-        "comments": "评论",
+        "summary": "简介",
         "episodes": "选集",
         "route_selection": "路线选择",
         "route_number": "路线{}",
@@ -182,6 +182,7 @@
         "danmaku_loaded": "弹幕加载完成",
         "danmaku_load_error": "弹幕加载失败",
         "danmaku_selection": "弹幕选择",
-        "choose_danmaku_sheet_text": "若弹幕不正确,请手动选择弹幕"
+        "choose_danmaku_sheet_text": "若弹幕不正确,请手动选择弹幕",
+        "no_danmaku_sheet_text": "暂无弹幕"
     }
 }

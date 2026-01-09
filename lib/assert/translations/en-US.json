@@ -170,7 +170,7 @@
         "air_date_key": "Air Date"
     },
     "player": {
-        "comments": "Comments",
+        "summary": "Summary",
         "episodes": "Episodes",
         "route_selection": "Route Selection",
         "route_number": "Route {}",
@@ -182,6 +182,7 @@
         "danmaku_loaded": "Danmaku loaded",
         "danmaku_load_error": "Danmaku load failed",
         "danmaku_selection": "Danmaku selection",
-        "choose_danmaku_sheet_text": "If the danmaku is not correct, please choose manually"
+        "choose_danmaku_sheet_text": "If the danmaku is not correct, please choose manually",
+        "no_danmaku_sheet_text": "No danmaku"
     }
 }

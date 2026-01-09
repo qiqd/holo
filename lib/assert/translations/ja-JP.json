@@ -170,7 +170,7 @@
         "air_date_key": "放送開始"
     },
     "player": {
-        "comments": "コメント",
+        "summary": "概要",
         "episodes": "エピソード",
         "route_selection": "ルート選択",
         "route_number": "ルート{}",
@@ -182,6 +182,7 @@
         "danmaku_loaded": "弹幕ロード完了",
         "danmaku_load_error": "弹幕ロード失敗",
         "danmaku_selection": "弹幕選択",
-        "choose_danmaku_sheet_text": "弹幕が正しくない場合は、手動で選択してください"
+        "choose_danmaku_sheet_text": "弹幕が正しくない場合は、手動で選択してください",
+        "no_danmaku_sheet_text": "暫無弹幕"
     }
 }

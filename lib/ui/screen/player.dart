@@ -15,6 +15,7 @@ import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
+import 'package:holo/ui/component/meida_card.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/cap_video_player.dart';
@@ -57,7 +58,6 @@ class _PlayerScreenState extends State<PlayerScreen>
   int historyPosition = 0;
   String? playUrl;
   bool _isActive = true;
-  //TODO 2026-01-08 22:46:42,当默认的弹幕匹配不正确时,需要手动选择弹幕
   List<LogvarEpisode>? _danmakuList;
   LogvarEpisode? _bestMatch;
   Danmu? _dammaku;
@@ -113,6 +113,14 @@ class _PlayerScreenState extends State<PlayerScreen>
           0,
           _detail!.lines![lineIndex].episodes!.length - 1,
         );
+        _loadDanmaku(
+          isFirstLoad: true,
+          onComplete: (e) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(e)));
+          },
+        );
         final newUrl = await source.fetchView(
           _detail!.lines![lineIndex].episodes![episodeIndex],
           (e) => setState(() {
@@ -163,12 +171,6 @@ class _PlayerScreenState extends State<PlayerScreen>
       episodeIndex = index;
     });
     _fetchViewInfo();
-    _loadDanmaku(
-      isFirstLoad: true,
-      onComplete: (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e)));
-      },
-    );
   }
 
   void _loadHistory() async {
@@ -199,7 +201,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     final maxScore = rs.keys.reduce((a, b) => a.compareTo(b) > 0 ? a : b);
     final subjectId = rs[maxScore];
     subject = newSubject.data?.firstWhere((s) => s.id == subjectId);
-    _loadDanmaku();
+
     final res = await Api.bangumi.fethcEpisodeSync(
       subjectId!,
       (e) => setState(() {
@@ -390,6 +392,111 @@ class _PlayerScreenState extends State<PlayerScreen>
     return super.didRequestAppExit();
   }
 
+  Widget _buildDetailSkeleton() {
+    return Column(
+      spacing: 10,
+      children: [
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Column(
+            children: [
+              Container(
+                height: 250,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 80,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[800],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: 16,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[800],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              width: double.infinity * 0.6,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[800],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity * 0.4,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity * 0.3,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildShimmerSkeleton() {
     return GridView.builder(
       padding: EdgeInsets.all(10),
@@ -400,13 +507,13 @@ class _PlayerScreenState extends State<PlayerScreen>
         crossAxisSpacing: 5,
       ),
       itemBuilder: (context, index) => Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
+        baseColor: Colors.grey[500]!,
+        highlightColor: Colors.grey[300]!,
         child: ListTile(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
+            baseColor: Colors.grey[500]!,
+            highlightColor: Colors.grey[300]!,
             child: Container(
               height: 16,
               width: double.infinity,
@@ -417,8 +524,8 @@ class _PlayerScreenState extends State<PlayerScreen>
             ),
           ),
           subtitle: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
+            baseColor: Colors.grey[500]!,
+            highlightColor: Colors.grey[300]!,
             child: Container(
               height: 14,
               width: double.infinity * 0.8,
@@ -563,7 +670,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 padding: EdgeInsets.all(0),
                                 controller: _tabController,
                                 tabs: [
-                                  Tab(text: "player.comments".tr()),
+                                  Tab(text: "player.summary".tr()),
                                   Tab(text: "player.episodes".tr()),
                                 ],
                               ),
@@ -584,6 +691,14 @@ class _PlayerScreenState extends State<PlayerScreen>
                                                 .tr(),
                                           ),
                                         ),
+                                        if (_danmakuList == null ||
+                                            _danmakuList!.isEmpty)
+                                          Center(
+                                            child: Text(
+                                              'player.no_danmaku_sheet_text'
+                                                  .tr(),
+                                            ),
+                                          ),
                                         ...List.generate(
                                           _danmakuList?.length ?? 0,
                                           (index) => Column(
@@ -656,9 +771,95 @@ class _PlayerScreenState extends State<PlayerScreen>
                           child: TabBarView(
                             controller: _tabController,
                             children: [
-                              SizedBox(
-                                child: Center(
-                                  child: Text("player.no_comments".tr()),
+                              Container(
+                                padding: EdgeInsets.all(12),
+                                child: SingleChildScrollView(
+                                  child: subject == null
+                                      ? _buildDetailSkeleton()
+                                      : Column(
+                                          spacing: 6,
+                                          children: [
+                                            MeidaCard(
+                                              id: subject!.id!,
+                                              imageUrl: subject!.images?.large!,
+
+                                              nameCn:
+                                                  subject!.nameCn ??
+                                                  subject!.name ??
+                                                  '',
+                                              genre: subject!.metaTags?.join(
+                                                '/',
+                                              ),
+                                              episode: subject!.eps ?? 0,
+                                              rating: subject!.rating?.score,
+                                              height: 180,
+                                              airDate: subject!.infobox
+                                                  ?.firstWhere(
+                                                    (element) =>
+                                                        element.key?.contains(
+                                                          "detail.air_date_key"
+                                                              .tr(),
+                                                        ) ??
+                                                        false,
+                                                    orElse: () => InfoBox(),
+                                                  )
+                                                  .value,
+                                            ),
+                                            Container(
+                                              width: double.infinity,
+
+                                              padding: EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceContainerHighest,
+
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Text(
+                                                "${_danmakuList?.length ?? 0}个弹幕源,共计${_dammaku?.comments?.length ?? 0}条弹幕",
+
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
+                                              ),
+                                            ),
+                                            ListTile(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              tileColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainerHighest,
+                                              title: Text(
+                                                "数据源",
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
+                                              ),
+                                              subtitle: Text(
+                                                source.getName(),
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.titleMedium,
+                                              ),
+                                              leading: Image.network(
+                                                width: 50,
+                                                source.getLogoUrl(),
+                                                errorBuilder:
+                                                    (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) {
+                                                      return Icon(Icons.error);
+                                                    },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                 ),
                               ),
                               msg.isNotEmpty

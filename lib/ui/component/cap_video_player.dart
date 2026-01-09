@@ -345,7 +345,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
 
   @override
   void didUpdateWidget(covariant CapVideoPlayer oldWidget) {
-    if (oldWidget.dammaku != widget.dammaku) {
+    if (oldWidget.currentEpisodeIndex != widget.currentEpisodeIndex) {
       _danmakuItems.clear();
       _fillDanmaku();
     }
@@ -601,9 +601,9 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                 color: Colors.white,
                               ),
                             ),
+
                             //进度
                             SizedBox(
-                              width: 110,
                               child: TextButton(
                                 onPressed: null,
                                 child: Text(
@@ -612,7 +612,31 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                 ),
                               ),
                             ),
-
+                            //弹幕
+                            IconButton(
+                              splashColor: Colors.transparent,
+                              color: Colors.white,
+                              onPressed: () {
+                                setState(() {
+                                  _isShowDanmaku = !_isShowDanmaku;
+                                });
+                                _showVideoControlsTimer();
+                              },
+                              icon: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Text(
+                                    '弹',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  if (!_isShowDanmaku)
+                                    Icon(
+                                      Icons.block_rounded,
+                                      color: Colors.white,
+                                    ),
+                                ],
+                              ),
+                            ),
                             //剧集列表
                             if (_isFullScreen) ...[
                               Badge(
@@ -640,23 +664,20 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   ),
                                 ),
                               ),
-
+                              SizedBox(width: 14),
                               // 播放速度
-                              Padding(
-                                padding: EdgeInsets.only(left: 10),
+                              Badge(
+                                textColor: Colors.white,
+                                offset: Offset(8, -5),
+                                backgroundColor: Colors.transparent,
+                                label: Text(
+                                  widget.controller.value.playbackSpeed
+                                      .toString(),
+                                ),
                                 child: PopupMenuButton(
-                                  child: Badge(
-                                    textColor: Colors.white,
-                                    offset: Offset(8, -5),
-                                    backgroundColor: Colors.transparent,
-                                    label: Text(
-                                      widget.controller.value.playbackSpeed
-                                          .toString(),
-                                    ),
-                                    child: Icon(
-                                      Icons.speed_rounded,
-                                      color: Colors.white,
-                                    ),
+                                  child: Icon(
+                                    Icons.speed_rounded,
+                                    color: Colors.white,
                                   ),
                                   itemBuilder: (context) => [
                                     PopupMenuItem(
@@ -700,34 +721,6 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                               ),
                             ],
 
-                            //弹幕
-                            Padding(
-                              padding: EdgeInsets.only(left: 10),
-                              child: IconButton(
-                                splashColor: Colors.transparent,
-                                color: Colors.white,
-                                onPressed: () {
-                                  setState(() {
-                                    _isShowDanmaku = !_isShowDanmaku;
-                                  });
-                                  _showVideoControlsTimer();
-                                },
-                                icon: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Text(
-                                      '弹',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    if (!_isShowDanmaku)
-                                      Icon(
-                                        Icons.block_rounded,
-                                        color: Colors.white,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
                             Spacer(),
                             // 全屏
                             IconButton(
