@@ -29,6 +29,7 @@
 <div align="center">
   <img src="screenshot/Subscribe.png" alt="Subscribe Page" width="30%"/>
 </div>
+
 ## 特别感谢
 
 - **弹幕提供**：[canvas_danmaku](https://github.com/huangxd-/danmu_api)
