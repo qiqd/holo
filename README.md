@@ -31,6 +31,7 @@ An open-source anime streaming application built with Flutter, supporting Androi
 <div align="center">
   <img src="screenshot/Subscribe.png" alt="Subscribe Page" width="30%"/>
 </div>
+
 ## Acknowledgments for System Functions
 
 - **Danmaku API Library**: [canvas_danmaku](https://github.com/huangxd-/danmu_api)
