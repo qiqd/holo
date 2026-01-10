@@ -47,7 +47,6 @@ flutter:
   assets:
     - lib/images/launcher.png
     - lib/assert/translations/
-    - .env
 
 package_rename_config:
   android:
