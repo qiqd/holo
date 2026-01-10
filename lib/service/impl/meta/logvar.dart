@@ -1,12 +1,10 @@
 import 'dart:developer';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:holo/entity/danmu_item.dart';
 import 'package:holo/entity/logvar_episode.dart';
 import 'package:holo/util/http_util.dart';
 
 class Logvar {
-  static final baseUrl = dotenv.env["DAMMAKU_SERVER_URL"] ?? "";
-
+  static const String baseUrl = String.fromEnvironment("DAMMAKU_SERVER_URL");
   Future<List<LogvarEpisode>> fetchEpisodeFromLogvar(
     String keyword,
     Function(String) exception,
