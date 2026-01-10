@@ -17,7 +17,7 @@ jobs:
   build-android:
     name: Build Android APKs
     runs-on: ubuntu-latest
-    environment: danmu_url
+    environment: product
     steps:
       - uses: actions/checkout@v4
 
@@ -47,7 +47,7 @@ jobs:
   build-ios:
     name: Build iOS IPA
     runs-on: macos-latest
-    environment: danmu_url
+    environment: product
     steps:
       - uses: actions/checkout@v4
 
