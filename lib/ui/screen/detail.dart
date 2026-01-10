@@ -539,7 +539,7 @@ class _DetailScreenState extends State<DetailScreen>
               height: 250,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(124, 158, 158, 158),
+                color: Colors.white38,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -557,7 +557,7 @@ class _DetailScreenState extends State<DetailScreen>
                     width: 80,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(124, 158, 158, 158),
+                      color: Colors.white38,
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
@@ -580,7 +580,7 @@ class _DetailScreenState extends State<DetailScreen>
                       width: double.infinity,
                       height: 20,
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(124, 158, 158, 158),
+                        color: Colors.white38,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),

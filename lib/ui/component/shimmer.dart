@@ -16,7 +16,7 @@ Widget buildShimmerSkeleton() {
         highlightColor: Colors.grey[100]!,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.grey[800]!,
+            color: Colors.white38,
             borderRadius: BorderRadius.circular(8),
           ),
         ),

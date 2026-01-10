@@ -62,6 +62,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   LogvarEpisode? _bestMatch;
   Danmu? _dammaku;
   bool _isDanmakuLoading = false;
+
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
@@ -280,7 +281,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           if (mounted) {
             setState(() {
               _isDanmakuLoading = false;
-              onComplete?.call(e.toString());
+              //onComplete?.call(e.toString());
             });
           }
         },
@@ -392,7 +393,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     return super.didRequestAppExit();
   }
 
-  Widget _buildDetailSkeleton() {
+  Widget _buildFadeSummarySection() {
     return Column(
       spacing: 10,
       children: [
@@ -402,60 +403,29 @@ class _PlayerScreenState extends State<PlayerScreen>
           child: Column(
             children: [
               Container(
-                height: 250,
+                height: 180,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey[800],
+                  color: Colors.white38,
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
               const SizedBox(height: 16),
               Container(
-                height: 80,
+                height: 30,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey[800],
+                  color: Colors.white38,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[800],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity * 0.6,
-                              height: 14,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[800],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 ),
               ),
@@ -464,7 +434,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[800],
+                  color: Colors.white38,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
@@ -474,7 +444,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                       width: double.infinity * 0.4,
                       height: 16,
                       decoration: BoxDecoration(
-                        color: Colors.grey[800],
+                        color: Colors.white38,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -483,7 +453,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                       width: double.infinity * 0.3,
                       height: 14,
                       decoration: BoxDecoration(
-                        color: Colors.grey[800],
+                        color: Colors.white38,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -497,7 +467,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  Widget _buildShimmerSkeleton() {
+  Widget _buildFadeEpisodeSection() {
     return GridView.builder(
       padding: EdgeInsets.all(10),
       itemCount: 12,
@@ -507,30 +477,30 @@ class _PlayerScreenState extends State<PlayerScreen>
         crossAxisSpacing: 5,
       ),
       itemBuilder: (context, index) => Shimmer.fromColors(
-        baseColor: Colors.grey[500]!,
-        highlightColor: Colors.grey[300]!,
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
         child: ListTile(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: Shimmer.fromColors(
-            baseColor: Colors.grey[500]!,
-            highlightColor: Colors.grey[300]!,
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
             child: Container(
               height: 16,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.grey[800]!,
+                color: Colors.white38,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
           ),
           subtitle: Shimmer.fromColors(
-            baseColor: Colors.grey[500]!,
-            highlightColor: Colors.grey[300]!,
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
             child: Container(
               height: 14,
               width: double.infinity * 0.8,
               decoration: BoxDecoration(
-                color: Colors.grey[800]!,
+                color: Colors.white38,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -682,52 +652,62 @@ class _PlayerScreenState extends State<PlayerScreen>
                                   barrierLabel: "fff",
                                   builder: (context) {
                                     return Column(
-                                      spacing: 8,
                                       children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 8),
-                                          child: Text(
-                                            'player.choose_danmaku_sheet_text'
-                                                .tr(),
-                                          ),
-                                        ),
-                                        if (_danmakuList == null ||
-                                            _danmakuList!.isEmpty)
-                                          Expanded(
-                                            child: Center(
-                                              child: Text(
-                                                'player.no_danmaku_sheet_text'
-                                                    .tr(),
-                                              ),
+                                        Container(
+                                          padding: EdgeInsets.all(10),
+                                          child: Center(
+                                            child: Text(
+                                              'player.choose_danmaku_sheet_text'
+                                                  .tr(),
                                             ),
                                           ),
-                                        ...List.generate(
-                                          _danmakuList?.length ?? 0,
-                                          (index) => Column(
-                                            children: [
-                                              ListTile(
-                                                selected:
-                                                    _bestMatch?.animeId ==
-                                                    _danmakuList?[index]
-                                                        .animeId,
-                                                title: Text(
-                                                  _danmakuList?[index]
-                                                          .animeTitle ??
-                                                      '',
-                                                ),
-                                                subtitle: Text(
-                                                  _danmakuList?[index]
-                                                          .animeTitle ??
-                                                      '',
-                                                ),
-                                                onTap: () {
-                                                  _onDanmakuSourceChange(
-                                                    _danmakuList![index],
-                                                  );
-                                                },
-                                              ),
-                                              Divider(),
-                                            ],
+                                        ),
+                                        Expanded(
+                                          child: StatefulBuilder(
+                                            builder: (context, setState) =>
+                                                (_danmakuList == null ||
+                                                    _danmakuList!.isEmpty)
+                                                ? Center(
+                                                    child: Text(
+                                                      'player.no_danmaku_sheet_text'
+                                                          .tr(),
+                                                    ),
+                                                  )
+                                                : ListView.separated(
+                                                    itemCount:
+                                                        _danmakuList?.length ??
+                                                        0,
+                                                    separatorBuilder:
+                                                        (context, index) =>
+                                                            Divider(height: 1),
+                                                    itemBuilder: (context, index) {
+                                                      return ListTile(
+                                                        selected:
+                                                            _bestMatch
+                                                                ?.animeId ==
+                                                            _danmakuList?[index]
+                                                                .animeId,
+                                                        title: Text(
+                                                          _danmakuList?[index]
+                                                                  .animeTitle ??
+                                                              '',
+                                                        ),
+                                                        subtitle: Text(
+                                                          _danmakuList?[index]
+                                                                  .animeTitle ??
+                                                              '',
+                                                        ),
+                                                        onTap: () {
+                                                          _onDanmakuSourceChange(
+                                                            _danmakuList![index],
+                                                          );
+                                                          Navigator.pop(
+                                                            context,
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                  ),
                                           ),
                                         ),
                                       ],
@@ -778,7 +758,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 padding: EdgeInsets.all(12),
                                 child: SingleChildScrollView(
                                   child: subject == null
-                                      ? _buildDetailSkeleton()
+                                      ? _buildFadeSummarySection()
                                       : Column(
                                           spacing: 6,
                                           children: [
@@ -884,7 +864,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                               msg.isNotEmpty
                                   ? LoadingOrShowMsg(msg: msg)
                                   : _episode == null
-                                  ? _buildShimmerSkeleton()
+                                  ? _buildFadeEpisodeSection()
                                   : VisibilityDetector(
                                       key: Key("player_episodes"),
                                       child: GridView.builder(
