@@ -222,12 +222,14 @@ class LocalStore {
     _prefs!.setStringList("${_key}_search", history);
   }
 
-  static DanmakuOption getDanmakuOption() {
-    if (_prefs == null) return DanmakuOption();
+  static Map<String, dynamic>? getDanmakuOption() {
+    if (_prefs == null) return null;
     var danmakuOptionStr = _prefs!.getString("${_key}_danmaku_option") ?? "";
-    if (danmakuOptionStr.isEmpty) return DanmakuOption();
+    if (danmakuOptionStr.isEmpty) {
+      return {"option": DanmakuOption(), "filter": ""};
+    }
     var map = json.decode(danmakuOptionStr) as Map<String, dynamic>;
-    return DanmakuOption(
+    final option = DanmakuOption(
       opacity: map["opacity"] as double,
       area: map["area"] as double,
       fontSize: map["fontSize"] as double,
@@ -236,9 +238,10 @@ class LocalStore {
       hideScroll: map["hideScroll"] as bool,
       massiveMode: map["massiveMode"] as bool,
     );
+    return {"option": option, "filter": map["filter"] as String};
   }
 
-  static void saveDanmakuOption(DanmakuOption option) {
+  static void saveDanmakuOption(DanmakuOption option, {String filter = ""}) {
     if (_prefs == null) return;
     final map = {
       "opacity": option.opacity,
@@ -248,6 +251,7 @@ class LocalStore {
       "hideBottom": option.hideBottom,
       "hideScroll": option.hideScroll,
       "massiveMode": option.massiveMode,
+      "filter": filter,
     };
     _prefs!.setString("${_key}_danmaku_option", json.encode(map));
   }

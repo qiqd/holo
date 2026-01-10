@@ -5,7 +5,20 @@
             "brightness": "亮度",
             "volume": "音量",
             "foreground": "前進",
-            "background": "後退"
+            "background": "後退",
+            "danmaku_filter_keywords": "彈幕篩選關鍵字",
+            "danmaku_filter_hint": "輸入關鍵字，多個關鍵字用逗號隔開",
+            "danmaku_offset_adjustment": "彈幕偏移量調整",
+            "danmaku_offset_tooltip": "彈幕偏移量用於調整彈幕顯示的時間，正值使彈幕提前出現，負值使彈幕延遲出現",
+            "current_offset": "當前偏移量: {}",
+            "hide_top_danmaku": "隱藏頂部彈幕",
+            "hide_bottom_danmaku": "隱藏底部彈幕",
+            "hide_scroll_danmaku": "隱藏滾動彈幕",
+            "massive_danmaku_mode": "海量彈幕模式",
+            "massive_danmaku_subtitle": "彈幕軌道占滿時進行疊加",
+            "danmaku_opacity": "彈幕透明度",
+            "display_area": "顯示區域",
+            "danmaku_font_size": "彈幕字號"
         },
         "media_card": {
             "score": "匹配度",
@@ -183,6 +196,8 @@
         "danmaku_load_error": "彈幕加載失敗",
         "danmaku_selection": "彈幕選擇",
         "choose_danmaku_sheet_text": "若弹幕不正确,請手動選擇弹幕",
-        "no_danmaku_sheet_text": "暫無弹幕"
+        "no_danmaku_sheet_text": "暫無弹幕",
+        "danmaku_statistics": "{}個彈幕源，共計{}條彈幕",
+        "datasource": "數據源"
     }
 }

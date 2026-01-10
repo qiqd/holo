@@ -84,6 +84,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   double _opacity = 1.0;
   double _danmakuFontsize = 16.0;
   int _danmakuFontweight = 4;
+  String _filter = "";
+  int _danmakuOffset = 0;
   Timer? _timer;
   Timer? _videoControlsTimer;
   Timer? _videoTimer;
@@ -294,7 +296,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
       var position = _player.value.position.inSeconds;
       _danmakuItems
           .where((item) {
-            return item.extra?.toInt() == position;
+            return item.extra?.toInt() == (position + _danmakuOffset);
           })
           .forEach((item) {
             _danmuController?.addDanmaku(item);
@@ -304,23 +306,41 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
 
   void _loadDanmuSetting() {
     var option = LocalStore.getDanmakuOption();
-    _danmuController?.updateOption(option);
+    if (option == null) return;
+    final setting = option["option"] as DanmakuOption;
+
+    _danmuController?.updateOption(setting);
     if (mounted) {
       setState(() {
-        _hideTopDanmaku = option.hideTop;
-        _hideBottomDanmaku = option.hideBottom;
-        _hideScrollDanmaku = option.hideScroll;
-        _massiveDanmakuMode = option.massiveMode;
-        _displayArea = option.area;
-        _danmakuFontsize = option.fontSize;
-        _danmakuFontweight = option.fontWeight;
-        _opacity = option.opacity;
+        _hideTopDanmaku = setting.hideTop;
+        _hideBottomDanmaku = setting.hideBottom;
+        _hideScrollDanmaku = setting.hideScroll;
+        _massiveDanmakuMode = setting.massiveMode;
+        _displayArea = setting.area;
+        _danmakuFontsize = setting.fontSize;
+        _danmakuFontweight = setting.fontWeight;
+        _opacity = setting.opacity;
+        _filter = option["filter"] as String;
       });
     }
   }
 
   void _saveDanmuSetting() {
-    LocalStore.saveDanmakuOption(_danmuController?.option ?? DanmakuOption());
+    _filterDanmakuItems();
+    LocalStore.saveDanmakuOption(
+      _danmuController?.option ?? DanmakuOption(),
+      filter: _filter,
+    );
+  }
+
+  void _filterDanmakuItems() {
+    if (_filter.isEmpty) {
+      return;
+    }
+    var filters = _filter.split(",");
+    _danmakuItems.removeWhere((item) {
+      return filters.any((filter) => item.text.contains(filter.trim()) == true);
+    });
   }
 
   @override
@@ -373,7 +393,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
               createdController: (e) {
                 _danmuController = e;
               },
-              option: LocalStore.getDanmakuOption(),
+              option: LocalStore.getDanmakuOption()?["option"] as DanmakuOption,
             ),
           // 加载中或缓冲中
           if (isBuffering || widget.isloading) LoadingOrShowMsg(msg: null),
@@ -814,7 +834,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
               ),
             ),
           ),
-          // 设置
+          // 弹幕设置
           AnimatedPositioned(
             top: 0,
             right: _showSetting ? 0 : -300,
@@ -848,8 +868,77 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            _filter = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: context.tr(
+                            'component.cap_video_player.danmaku_filter_keywords',
+                          ),
+                          hintStyle: TextStyle(fontSize: 10),
+                          hintText: context.tr(
+                            'component.cap_video_player.danmaku_filter_hint',
+                          ),
+                        ),
+                      ),
+                    ),
+
                     ListTile(
-                      title: Text('隐藏顶部弹幕'),
+                      title: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            context.tr(
+                              'component.cap_video_player.danmaku_offset_adjustment',
+                            ),
+                          ),
+                          Tooltip(
+                            message: context.tr(
+                              'component.cap_video_player.danmaku_offset_tooltip',
+                            ),
+                            child: Icon(
+                              Icons.help_outline,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      subtitle: Text(
+                        context.tr(
+                          'component.cap_video_player.current_offset',
+                          args: [_danmakuOffset.toString()],
+                        ),
+                      ),
+
+                      leading: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _danmakuOffset--;
+                          });
+                        },
+                        icon: Icon(Icons.exposure_neg_1),
+                      ),
+                      trailing: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _danmakuOffset++;
+                          });
+                        },
+                        icon: Icon(Icons.exposure_plus_1),
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.hide_top_danmaku',
+                        ),
+                      ),
                       trailing: Switch(
                         value: _hideTopDanmaku,
                         onChanged: (value) {
@@ -860,7 +949,11 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       ),
                     ),
                     ListTile(
-                      title: Text('隐藏底部弹幕'),
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.hide_bottom_danmaku',
+                        ),
+                      ),
                       trailing: Switch(
                         value: _hideBottomDanmaku,
                         onChanged: (value) {
@@ -871,7 +964,11 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       ),
                     ),
                     ListTile(
-                      title: Text('隐藏滚动弹幕'),
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.hide_scroll_danmaku',
+                        ),
+                      ),
                       trailing: Switch(
                         value: _hideScrollDanmaku,
                         onChanged: (value) {
@@ -882,8 +979,16 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       ),
                     ),
                     ListTile(
-                      title: Text('海量弹幕模式'),
-                      subtitle: Text("弹幕轨道占满时进行叠加"),
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.massive_danmaku_mode',
+                        ),
+                      ),
+                      subtitle: Text(
+                        context.tr(
+                          'component.cap_video_player.massive_danmaku_subtitle',
+                        ),
+                      ),
                       trailing: Switch(
                         value: _massiveDanmakuMode,
                         onChanged: (value) {
@@ -894,7 +999,11 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       ),
                     ),
                     ListTile(
-                      title: Text('弹幕透明度'),
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.danmaku_opacity',
+                        ),
+                      ),
                       leading: null,
                       subtitle: Row(
                         children: [
@@ -915,7 +1024,9 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       ),
                     ),
                     ListTile(
-                      title: Text('显示区域'),
+                      title: Text(
+                        context.tr('component.cap_video_player.display_area'),
+                      ),
                       subtitle: Row(
                         children: [
                           Text('${(_displayArea * 100).round()}%'),
@@ -935,7 +1046,11 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       ),
                     ),
                     ListTile(
-                      title: Text('弹幕字号'),
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.danmaku_font_size',
+                        ),
+                      ),
                       subtitle: Row(
                         children: [
                           Text('${(_danmakuFontsize).round()}'),

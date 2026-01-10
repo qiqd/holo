@@ -5,7 +5,20 @@
             "brightness": "Brightness",
             "volume": "Volume",
             "foreground": "Forward",
-            "background": "Backward"
+            "background": "Backward",
+            "danmaku_filter_keywords": "Danmaku Filter Keywords",
+            "danmaku_filter_hint": "Enter keywords, separate multiple keywords with commas",
+            "danmaku_offset_adjustment": "Danmaku Offset Adjustment",
+            "danmaku_offset_tooltip": "Danmaku offset is used to adjust the timing of danmaku display. Positive values cause danmaku to appear earlier, negative values cause danmaku to appear later",
+            "current_offset": "Current offset: {}",
+            "hide_top_danmaku": "Hide Top Danmaku",
+            "hide_bottom_danmaku": "Hide Bottom Danmaku",
+            "hide_scroll_danmaku": "Hide Scrolling Danmaku",
+            "massive_danmaku_mode": "Massive Danmaku Mode",
+            "massive_danmaku_subtitle": "Stack when danmaku tracks are full",
+            "danmaku_opacity": "Danmaku Opacity",
+            "display_area": "Display Area",
+            "danmaku_font_size": "Danmaku Font Size"
         },
         "media_card": {
             "score": "Match",
@@ -183,6 +196,8 @@
         "danmaku_load_error": "Danmaku load failed",
         "danmaku_selection": "Danmaku selection",
         "choose_danmaku_sheet_text": "If the danmaku is not correct, please choose manually",
-        "no_danmaku_sheet_text": "No danmaku"
+        "no_danmaku_sheet_text": "No danmaku",
+        "danmaku_statistics": "{} danmaku sources, total {} comments",
+        "datasource": "Data Source"
     }
 }

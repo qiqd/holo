@@ -693,10 +693,12 @@ class _PlayerScreenState extends State<PlayerScreen>
                                         ),
                                         if (_danmakuList == null ||
                                             _danmakuList!.isEmpty)
-                                          Center(
-                                            child: Text(
-                                              'player.no_danmaku_sheet_text'
-                                                  .tr(),
+                                          Expanded(
+                                            child: Center(
+                                              child: Text(
+                                                'player.no_danmaku_sheet_text'
+                                                    .tr(),
+                                              ),
                                             ),
                                           ),
                                         ...List.generate(
@@ -738,6 +740,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ),
+                            // 路线选择
                             PopupMenuButton(
                               child: TextButton.icon(
                                 onPressed: null,
@@ -752,7 +755,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                   (index) => PopupMenuItem(
                                     value: index,
                                     child: Text(
-                                      '${'player.route_number'.tr(args: [(index + 1).toString()])}•',
+                                      '${'player.route_number'.tr(args: [(index + 1).toString()])}${index == lineIndex ? '•' : ''}',
                                     ),
                                     onTap: () {
                                       if (index == lineIndex || isloading) {
@@ -818,8 +821,23 @@ class _PlayerScreenState extends State<PlayerScreen>
                                                     BorderRadius.circular(12),
                                               ),
                                               child: Text(
-                                                "${_danmakuList?.length ?? 0}个弹幕源,共计${_dammaku?.comments?.length ?? 0}条弹幕",
-
+                                                context.tr(
+                                                  'player.danmaku_statistics',
+                                                  args: [
+                                                    (_danmakuList?.length ?? 0)
+                                                        .toString(),
+                                                    (_dammaku
+                                                                ?.comments
+                                                                ?.length ??
+                                                            0)
+                                                        .toString(),
+                                                    (_dammaku
+                                                                ?.comments
+                                                                ?.length ??
+                                                            0)
+                                                        .toString(),
+                                                  ],
+                                                ),
                                                 style: Theme.of(
                                                   context,
                                                 ).textTheme.bodyMedium,
@@ -834,7 +852,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                                   .colorScheme
                                                   .surfaceContainerHighest,
                                               title: Text(
-                                                "数据源",
+                                                "player.datasource".tr(),
                                                 style: Theme.of(
                                                   context,
                                                 ).textTheme.bodyMedium,
@@ -862,6 +880,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                         ),
                                 ),
                               ),
+                              // 剧集列表
                               msg.isNotEmpty
                                   ? LoadingOrShowMsg(msg: msg)
                                   : _episode == null

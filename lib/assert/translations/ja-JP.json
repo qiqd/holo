@@ -5,7 +5,20 @@
             "brightness": "明るさ",
             "volume": "音量",
             "foreground": "早送り",
-            "background": "巻戻し"
+            "background": "巻戻し",
+            "danmaku_filter_keywords": "弾幕フィルターキーワード",
+            "danmaku_filter_hint": "キーワードを入力してください。複数のキーワードはカンマで区切ってください",
+            "danmaku_offset_adjustment": "弾幕オフセット調整",
+            "danmaku_offset_tooltip": "弾幕オフセットは弾幕表示のタイミングを調整するために使用されます。正の値は弾幕の出現を早め、負の値は弾幕の出現を遅らせます。",
+            "current_offset": "現在のオフセット: {}",
+            "hide_top_danmaku": "上部弾幕を非表示",
+            "hide_bottom_danmaku": "下部弾幕を非表示",
+            "hide_scroll_danmaku": "スクロール弾幕を非表示",
+            "massive_danmaku_mode": "大量弾幕モード",
+            "massive_danmaku_subtitle": "弾幕レーンがいっぱいになったら重ねて表示",
+            "danmaku_opacity": "弾幕の透明度",
+            "display_area": "表示領域",
+            "danmaku_font_size": "弾幕フォントサイズ"
         },
         "media_card": {
             "score": "一致度",
@@ -183,6 +196,8 @@
         "danmaku_load_error": "弹幕ロード失敗",
         "danmaku_selection": "弹幕選択",
         "choose_danmaku_sheet_text": "弹幕が正しくない場合は、手動で選択してください",
-        "no_danmaku_sheet_text": "暫無弹幕"
+        "no_danmaku_sheet_text": "暫無弹幕",
+        "danmaku_statistics": "{}つの弾幕ソース、合計{}件のコメント",
+        "datasource": "データソース"
     }
 }
