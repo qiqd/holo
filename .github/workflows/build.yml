@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Android APKs for all architectures
         run: |
-          flutter build apk --${{ github.event.inputs.build_type }} --split-per-abi --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{danmu_url.DAMMAKU_SERVER_URL}}
+          flutter build apk --${{ github.event.inputs.build_type }} --split-per-abi --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{github.env.DAMMAKU_SERVER_URL}}
 
       - name: List built APKs
         run: ls -la build/app/outputs/flutter-apk/
@@ -60,7 +60,7 @@ jobs:
 
       - name: Build iOS IPA
         run: |
-          flutter build ios --${{ github.event.inputs.build_type }} --no-codesign --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{danmu_url.DAMMAKU_SERVER_URL}}
+          flutter build ios --${{ github.event.inputs.build_type }} --no-codesign --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{github.env.DAMMAKU_SERVER_URL}}
           mkdir -p build/ios/ipa
           cd build/ios
           zip -r ipa/Runner.ipa Release-iphoneos/Runner.app
