@@ -35,13 +35,6 @@
 - **弹幕提供**：[canvas_danmaku](https://github.com/huangxd-/danmu_api)
 - **番剧源信息**： [bangumi/api](https://github.com/bangumi/api)
 
-## 环境配置
-
-本项目使用 `flutter_dotenv` 管理环境变量。请在项目根目录创建 `.env` 文件并配置以下变量：
-
-```
-DAMMAKU_SERVER_URL=your_danmaku_server_url
-```
 
 ## 项目结构
 

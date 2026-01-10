@@ -52,13 +52,7 @@ lib/
 └── main.dart        # Application entry point
 ```
 
-## Environment Configuration
 
-This project uses `flutter_dotenv` to manage environment variables. Create a `.env` file in the project root directory and configure the following variables:
-
-```
-DAMMAKU_SERVER_URL=your_danmaku_server_url
-```
 
 ## Getting Started
 
