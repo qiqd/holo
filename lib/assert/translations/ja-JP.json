@@ -57,6 +57,7 @@
     },
     "setting": {
         "title": "設定",
+        "app_description": "追番アプリHolo！",
         "section": {
             "account_status": "アカウント状態",
             "app_info": "アプリ情報",

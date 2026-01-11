@@ -15,7 +15,7 @@ import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/ui/component/meida_card.dart';
+import 'package:holo/ui/component/media_card.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/cap_video_player.dart';
@@ -47,6 +47,7 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  late Data subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
   int episodeIndex = 0;
@@ -54,7 +55,6 @@ class _PlayerScreenState extends State<PlayerScreen>
   Episode? _episode;
   Detail? _detail;
   bool isloading = false;
-  Data? subject;
   int historyPosition = 0;
   String? playUrl;
   bool _isActive = true;
@@ -186,25 +186,8 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _fetchEpisode() async {
-    final newSubject = await Api.bangumi.fetchSearchSync(nameCn, (e) {
-      log("fetchSearchSync error: $e");
-      setState(() {
-        msg = e.toString();
-      });
-    });
-    var data = newSubject!.data ?? [];
-    data = data.where((s) => s.nameCn != null).toList();
-    final name2IdMap = {for (final item in data) item.nameCn!: item.id!};
-    final rs = {
-      for (final item in name2IdMap.entries)
-        JaroWinklerSimilarity.apply(nameCn, item.key): item.value,
-    };
-    final maxScore = rs.keys.reduce((a, b) => a.compareTo(b) > 0 ? a : b);
-    final subjectId = rs[maxScore];
-    subject = newSubject.data?.firstWhere((s) => s.id == subjectId);
-
     final res = await Api.bangumi.fethcEpisodeSync(
-      subjectId!,
+      widget.subject.id!,
       (e) => setState(() {
         log("fetchEpisode error: $e");
         msg = e.toString();
@@ -235,8 +218,11 @@ class _PlayerScreenState extends State<PlayerScreen>
     LocalStore.addPlaybackHistory(history);
   }
 
-  void _toggleFullScreen() async {
-    if (_isFullScreen) {
+  void _toggleFullScreen(bool isFullScreen) async {
+    setState(() {
+      _isFullScreen = isFullScreen;
+    });
+    if (isFullScreen) {
       await SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
@@ -275,17 +261,16 @@ class _PlayerScreenState extends State<PlayerScreen>
       _isDanmakuLoading = true;
     });
     if (isFirstLoad) {
-      var data = await Api.logvar.fetchEpisodeFromLogvar(
-        subject?.nameCn ?? "",
-        (e) {
-          if (mounted) {
-            setState(() {
-              _isDanmakuLoading = false;
-              //onComplete?.call(e.toString());
-            });
-          }
-        },
-      );
+      var data = await Api.logvar.fetchEpisodeFromLogvar(subject.nameCn ?? "", (
+        e,
+      ) {
+        if (mounted) {
+          setState(() {
+            _isDanmakuLoading = false;
+            //onComplete?.call(e.toString());
+          });
+        }
+      });
       setState(() {
         _danmakuList = data;
       });
@@ -294,7 +279,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       for (var element in data) {
         var temp = JaroWinklerSimilarity.apply(
           element.animeTitle,
-          subject?.nameCn ?? "",
+          subject.nameCn ?? "",
         );
         if (temp > score) {
           score = temp;
@@ -513,6 +498,8 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+
       backgroundColor: _isFullScreen ? Colors.black : null,
       body: SafeArea(
         child: _isFullScreen
@@ -521,8 +508,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                   canPop: false,
                   onPopInvokedWithResult: (didPop, result) {
                     setState(() {
-                      _isFullScreen = false;
-                      _toggleFullScreen();
+                      _toggleFullScreen(false);
                     });
                   },
                   child: AspectRatio(
@@ -562,14 +548,12 @@ class _PlayerScreenState extends State<PlayerScreen>
                             },
                             onFullScreenChanged: (isFullScreen) {
                               setState(() {
-                                _isFullScreen = isFullScreen;
-                                _toggleFullScreen();
+                                _toggleFullScreen(isFullScreen);
                               });
                             },
                             onBackPressed: () {
                               setState(() {
-                                _isFullScreen = false;
-                                _toggleFullScreen();
+                                _toggleFullScreen(false);
                               });
                             },
                           )
@@ -613,8 +597,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                               },
                               onFullScreenChanged: (isFullScreen) {
                                 setState(() {
-                                  _isFullScreen = isFullScreen;
-                                  _toggleFullScreen();
+                                  _toggleFullScreen(isFullScreen);
                                 });
                               },
                               onBackPressed: () {
@@ -757,107 +740,91 @@ class _PlayerScreenState extends State<PlayerScreen>
                               Container(
                                 padding: EdgeInsets.all(12),
                                 child: SingleChildScrollView(
-                                  child: subject == null
-                                      ? _buildFadeSummarySection()
-                                      : Column(
-                                          spacing: 6,
-                                          children: [
-                                            MeidaCard(
-                                              id: subject!.id!,
-                                              imageUrl: subject!.images?.large!,
-
-                                              nameCn:
-                                                  subject!.nameCn ??
-                                                  subject!.name ??
-                                                  '',
-                                              genre: subject!.metaTags?.join(
-                                                '/',
-                                              ),
-                                              episode: subject!.eps ?? 0,
-                                              rating: subject!.rating?.score,
-                                              height: 180,
-                                              airDate: subject!.infobox
-                                                  ?.firstWhere(
-                                                    (element) =>
-                                                        element.key?.contains(
-                                                          "detail.air_date_key"
-                                                              .tr(),
-                                                        ) ??
-                                                        false,
-                                                    orElse: () => InfoBox(),
-                                                  )
-                                                  .value,
-                                            ),
-                                            Container(
-                                              width: double.infinity,
-
-                                              padding: EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .surfaceContainerHighest,
-
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: Text(
-                                                context.tr(
-                                                  'player.danmaku_statistics',
-                                                  args: [
-                                                    (_danmakuList?.length ?? 0)
-                                                        .toString(),
-                                                    (_dammaku
-                                                                ?.comments
-                                                                ?.length ??
-                                                            0)
-                                                        .toString(),
-                                                    (_dammaku
-                                                                ?.comments
-                                                                ?.length ??
-                                                            0)
-                                                        .toString(),
-                                                  ],
-                                                ),
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.bodyMedium,
-                                              ),
-                                            ),
-                                            ListTile(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              tileColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .surfaceContainerHighest,
-                                              title: Text(
-                                                "player.datasource".tr(),
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.bodyMedium,
-                                              ),
-                                              subtitle: Text(
-                                                source.getName(),
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.titleMedium,
-                                              ),
-                                              leading: Image.network(
-                                                width: 50,
-                                                source.getLogoUrl(),
-                                                errorBuilder:
-                                                    (
-                                                      context,
-                                                      error,
-                                                      stackTrace,
-                                                    ) {
-                                                      return Icon(Icons.error);
-                                                    },
-                                              ),
-                                            ),
-                                          ],
+                                  child: Column(
+                                    spacing: 6,
+                                    children: [
+                                      MediaCard(
+                                        id: "player_${subject.id!}",
+                                        imageUrl: subject.images?.large!,
+                                        nameCn:
+                                            subject.nameCn ??
+                                            subject.name ??
+                                            '',
+                                        genre: subject.metaTags?.join('/'),
+                                        episode: subject.eps ?? 0,
+                                        rating: subject.rating?.score,
+                                        height: 180,
+                                        airDate: subject.infobox
+                                            ?.firstWhere(
+                                              (element) =>
+                                                  element.key?.contains(
+                                                    "detail.air_date_key".tr(),
+                                                  ) ??
+                                                  false,
+                                              orElse: () => InfoBox(),
+                                            )
+                                            .value,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        padding: EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.surfaceContainerHighest,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
+                                        child: Text(
+                                          context.tr(
+                                            'player.danmaku_statistics',
+                                            args: [
+                                              (_danmakuList?.length ?? 0)
+                                                  .toString(),
+                                              (_dammaku?.comments?.length ?? 0)
+                                                  .toString(),
+                                              (_dammaku?.comments?.length ?? 0)
+                                                  .toString(),
+                                            ],
+                                          ),
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                        ),
+                                      ),
+                                      ListTile(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        tileColor: Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainerHighest,
+                                        title: Text(
+                                          "player.datasource".tr(),
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                        ),
+                                        subtitle: Text(
+                                          source.getName(),
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleMedium,
+                                        ),
+                                        leading: Image.network(
+                                          width: 50,
+                                          source.getLogoUrl(),
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Icon(Icons.error);
+                                              },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               // 剧集列表

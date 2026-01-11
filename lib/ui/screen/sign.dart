@@ -154,7 +154,7 @@ class _SignScreenState extends State<SignScreen> {
                           children: [
                             Center(
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
+                                borderRadius: BorderRadius.circular(18),
                                 child: Image.asset(
                                   'lib/images/launcher.png',
                                   width: 100,

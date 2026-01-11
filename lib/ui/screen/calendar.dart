@@ -71,7 +71,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         itemBuilder: (context, itemIndex) {
                           final item = _calendar[index].items;
                           return MediaGrid(
-                            id: item![itemIndex].id ?? 0,
+                            id: "calendar_${item![itemIndex].id ?? 0}",
                             rating:
                                 item[itemIndex].rating?.score?.toDouble() ?? 0,
                             imageUrl: item[itemIndex].images?.large ?? '',
@@ -87,6 +87,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                                     item[itemIndex].nameCn ??
                                     item[itemIndex].name ??
                                     "",
+                                'cover': item[itemIndex].images?.large ?? '',
+                                'from': "calendar",
                               },
                             ),
                           );

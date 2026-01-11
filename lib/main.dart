@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject.dart' show Data;
 import 'package:holo/service/api.dart';
+import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/sign.dart';
 import 'package:holo/util/local_store.dart';
@@ -22,6 +23,7 @@ import 'package:holo/ui/screen/subscribe.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStore.init();
+  await Bangumi.initDio();
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(
@@ -94,6 +96,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           return DetailScreen(
             id: map['id'] as int,
             keyword: map['keyword'] as String,
+            cover: map['cover'] as String,
+            from: map['from'] as String,
           );
         },
       ),

@@ -871,6 +871,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                     Padding(
                       padding: EdgeInsets.all(10),
                       child: TextField(
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.done,
                         onChanged: (value) {
                           setState(() {
                             _filter = value;

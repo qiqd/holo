@@ -57,6 +57,7 @@
     },
     "setting": {
         "title": "Settings",
+        "app_description": "An open source anime tracking app!",
         "section": {
             "account_status": "Account Status",
             "app_info": "App Information",

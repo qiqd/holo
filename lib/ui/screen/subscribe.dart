@@ -8,7 +8,7 @@ import 'package:holo/entity/subscribe_history.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
-import 'package:holo/ui/component/meida_card.dart';
+import 'package:holo/ui/component/media_card.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class SubscribeScreen extends StatefulWidget {
@@ -195,7 +195,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                               final item = subscribe[index];
                               return MediaGrid(
                                 showRating: false,
-                                id: item.subId,
+                                id: "subscribe_${item.subId}",
                                 imageUrl: item.imgUrl,
                                 title: item.title,
                                 showDeleteIcon: _deleteModeIds.contains(
@@ -209,6 +209,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                                   extra: {
                                     "id": item.subId,
                                     "keyword": item.title,
+                                    "cover": item.imgUrl,
+                                    "from": "subscribe",
                                   },
                                 ),
                               );
@@ -233,11 +235,11 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                             itemCount: playback.length,
                             itemBuilder: (context, index) {
                               final item = playback[index];
-                              return MeidaCard(
+                              return MediaCard(
                                 height: 190,
                                 lastViewAt: item.lastPlaybackAt,
                                 historyEpisode: item.episodeIndex,
-                                id: item.subId,
+                                id: "subscribe.history_${item.subId}",
                                 imageUrl: item.imgUrl,
                                 nameCn: item.title,
                                 showDeleteIcon: _deleteModeIds.contains(
@@ -251,6 +253,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                                   extra: {
                                     "id": item.subId,
                                     "keyword": item.title,
+                                    "cover": item.imgUrl,
+                                    "from": "subscribe.history",
                                   },
                                 ),
                               );

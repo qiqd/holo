@@ -57,6 +57,7 @@
     },
     "setting": {
         "title": "設定",
+        "app_description": "一個基於Flutter構建的追番APP！",
         "section": {
             "account_status": "帳戶狀態",
             "app_info": "應用程式資訊",

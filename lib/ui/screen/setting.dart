@@ -92,12 +92,34 @@ class _SetttingScreenState extends State<SetttingScreen> {
           ),
           // 应用信息部分
           _buildSectionHeader('setting.section.app_info'.tr()),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: Text('setting.app_info.about'.tr()),
-            subtitle: Text('v$_version'),
-            onTap: () => _showAboutDialog(),
+          AboutListTile(
+            icon: const Icon(Icons.info_outline),
+            applicationName: 'Holo',
+            applicationVersion: 'v$_version',
+            applicationIcon: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: Image.asset('lib/images/launcher.png', width: 100),
+            ),
+            applicationLegalese: 'AGPL-3.0 license',
+            aboutBoxChildren: [
+              const SizedBox(height: 8),
+              Text('setting.app_description'.tr()),
+              const SizedBox(height: 8),
+              Text(
+                'setting.app_info.metadata_title'.tr(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const Text('Bangumi 番组计划'),
+              const SizedBox(height: 8),
+              Text(
+                'setting.app_info.danmaku_title'.tr(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const Text('LogVar 弹幕'),
+              const SizedBox(height: 8),
+            ],
           ),
+
           // 切换语言部分
           _buildSectionHeader('setting.section.language'.tr()),
           ListTile(
@@ -474,59 +496,41 @@ class _SetttingScreenState extends State<SetttingScreen> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ListTile(
-                  leading: Radio<ThemeMode>(
-                    value: ThemeMode.system,
-                    groupValue: currentTheme,
-                    onChanged: (value) {
-                      setState(() {
-                        currentTheme = value;
-                      });
-                    },
-                  ),
+                RadioListTile<ThemeMode>(
                   title: Text('setting.appearance.theme_mode_system'.tr()),
-                  onTap: () {
-                    setState(() {
-                      currentTheme = ThemeMode.system;
-                    });
-                  },
-                ),
-                ListTile(
-                  leading: Radio<ThemeMode>(
-                    value: ThemeMode.light,
-                    groupValue: currentTheme,
-                    onChanged: (value) {
+                  value: ThemeMode.system,
+                  groupValue: currentTheme,
+                  onChanged: (ThemeMode? value) {
+                    if (value != null) {
                       setState(() {
                         currentTheme = value;
                       });
-                    },
-                  ),
-                  title: Text('setting.appearance.theme_mode_light'.tr()),
-                  onTap: () {
-                    setState(() {
-                      currentTheme = ThemeMode.light;
-                    });
+                    }
                   },
                 ),
-                ListTile(
-                  leading: Radio<ThemeMode>(
-                    value: ThemeMode.dark,
-                    groupValue: currentTheme,
-                    onChanged: (value) {
-                      setState(() {
-                        currentTheme = value;
-                      });
-                    },
-                  ),
+
+                RadioListTile<ThemeMode>(
                   title: Text('setting.appearance.theme_mode_dark'.tr()),
-                  onTap: () {
-                    setState(() {
-                      LocalStore.setString(
-                        'theme_mode',
-                        currentTheme.toString(),
-                      );
-                      MyApp.themeNotifier.value = currentTheme!;
-                    });
+                  value: ThemeMode.dark,
+                  groupValue: currentTheme,
+                  onChanged: (ThemeMode? value) {
+                    if (value != null) {
+                      setState(() {
+                        currentTheme = value;
+                      });
+                    }
+                  },
+                ),
+                RadioListTile<ThemeMode>(
+                  title: Text('setting.appearance.theme_mode_light'.tr()),
+                  value: ThemeMode.light,
+                  groupValue: currentTheme,
+                  onChanged: (ThemeMode? value) {
+                    if (value != null) {
+                      setState(() {
+                        currentTheme = value;
+                      });
+                    }
                   },
                 ),
               ],

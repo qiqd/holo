@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,15 +15,22 @@ import 'package:holo/service/source_service.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
-import 'package:holo/ui/component/meida_card.dart';
+import 'package:holo/ui/component/media_card.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;
   final String keyword;
-
-  const DetailScreen({super.key, required this.id, required this.keyword});
+  final String cover;
+  final String from;
+  const DetailScreen({
+    super.key,
+    required this.id,
+    required this.keyword,
+    required this.cover,
+    required this.from,
+  });
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -195,8 +203,8 @@ class _DetailScreenState extends State<DetailScreen>
   @override
   void dispose() {
     _storeLocalHistory();
-    tabController.dispose();
     subTabController.dispose();
+    tabController.dispose();
     super.dispose();
   }
 
@@ -316,9 +324,8 @@ class _DetailScreenState extends State<DetailScreen>
                                                     final m = item[index];
                                                     return Column(
                                                       children: [
-                                                        MeidaCard(
-                                                          id: 0,
-
+                                                        MediaCard(
+                                                          id: " ${Random().nextInt(10000)}_${m.id!}",
                                                           score: m.score ?? 0,
                                                           imageUrl: m.coverUrl!,
                                                           nameCn:
@@ -372,9 +379,9 @@ class _DetailScreenState extends State<DetailScreen>
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 children: [
-                  MeidaCard(
-                    id: data!.id!,
-                    imageUrl: data!.images?.large!,
+                  MediaCard(
+                    id: "${widget.from}_${data!.id!}",
+                    imageUrl: widget.cover,
                     nameCn: data!.nameCn!,
                     name: data!.name!,
                     genre: data!.metaTags?.join('/'),
@@ -532,17 +539,17 @@ class _DetailScreenState extends State<DetailScreen>
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         children: [
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              height: 250,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
+          MediaCard(
+            id: "${widget.from}_${widget.id}",
+
+            imageUrl: widget.cover,
+            nameCn: "----------",
+            name: "---------",
+            genre: "---------",
+            airDate: "---------",
+            height: 250,
+            rating: 0.0,
+            showShimmer: true,
           ),
           const SizedBox(height: 16),
           SizedBox(

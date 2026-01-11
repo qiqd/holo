@@ -193,7 +193,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         itemBuilder: (context, index) {
                           final item = _recommended!.data![index];
                           return MediaGrid(
-                            id: item.id!,
+                            id: "search_${item.id!}",
                             imageUrl: item.images?.medium,
                             title: item.nameCn!.isEmpty
                                 ? item.name ?? ""
@@ -205,6 +205,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                 extra: {
                                   'id': item.id!,
                                   'keyword': item.nameCn ?? item.name ?? "",
+                                  'cover': item.images?.large ?? '',
+                                  'from': "search",
                                 },
                               );
                             },

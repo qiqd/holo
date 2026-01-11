@@ -36,13 +36,9 @@ class HttpUtil {
     return dio;
   }
 
-  static Dio createDioWithUserAgent() {
+  static Future<Dio> createDioWithUserAgent() async {
     final dio = Dio();
-    var packageInfo = '1.0.0';
-    PackageInfo.fromPlatform().then((value) {
-      packageInfo = value.version;
-    });
-    // 基础配置
+    var packageInfo = await PackageInfo.fromPlatform();
     dio.options
       ..headers = {
         'User-Agent':
@@ -52,7 +48,6 @@ class HttpUtil {
       ..connectTimeout = const Duration(seconds: 20)
       ..receiveTimeout = const Duration(seconds: 20)
       ..sendTimeout = const Duration(seconds: 20);
-
     return dio;
   }
 

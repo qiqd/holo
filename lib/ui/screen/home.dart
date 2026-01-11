@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final item = _recommended!.data![index];
                         return MediaGrid(
-                          id: item.id!,
+                          id: "home_${item.id!}",
                           imageUrl: item.images?.medium,
                           title: item.nameCn!.isEmpty
                               ? item.name ?? ""
@@ -120,6 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               extra: {
                                 'id': item.id!,
                                 'keyword': item.nameCn ?? item.name ?? "",
+                                'cover': item.images?.large ?? "",
+                                'from': "home",
                               },
                             );
                           },

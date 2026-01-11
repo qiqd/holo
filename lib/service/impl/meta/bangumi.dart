@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:holo/entity/calendar.dart';
 import 'package:holo/entity/character.dart';
 import 'package:holo/entity/episode.dart' hide EpisodeData;
@@ -18,15 +19,17 @@ class Bangumi implements MetaService {
 
   @override
   String get logoUrl => "https://bangumi.tv/img/logo_riff.png";
+  static Dio? _dio;
+  static Future<void> initDio() async {
+    _dio = await HttpUtil.createDioWithUserAgent();
+  }
 
   @override
   Future<List<Calendar>> fetchCalendarSync(
     void Function(Exception) exception,
   ) async {
     try {
-      final response = await HttpUtil.createDioWithUserAgent().get(
-        "$baseUrl/calendar",
-      );
+      final response = await _dio!.get("$baseUrl/calendar");
       if (response.data != null) {
         var data = response.data as List<dynamic>;
         return data.map((e) => Calendar.fromJson(e)).toList();
@@ -44,7 +47,7 @@ class Bangumi implements MetaService {
     void Function(Exception) exception,
   ) async {
     try {
-      final response = await HttpUtil.createDioWithUserAgent().get(
+      final response = await _dio!.get(
         "$baseUrl/v0/subjects/$subjectId/characters",
       );
       if (response.data != null) {
@@ -64,7 +67,7 @@ class Bangumi implements MetaService {
     void Function(Exception) exception,
   ) async {
     try {
-      final response = await HttpUtil.createDioWithUserAgent().get(
+      final response = await _dio!.get(
         "$baseUrl/v0/subjects/$subjectId/persons",
       );
       if (response.data != null) {
@@ -93,7 +96,7 @@ class Bangumi implements MetaService {
       "year": DateTime.now().year,
     });
     try {
-      final response = await HttpUtil.createDioWithUserAgent().get(
+      final response = await _dio!.get(
         "$baseUrl/v0/subjects",
         queryParameters: Map.from(param),
       );
@@ -112,9 +115,8 @@ class Bangumi implements MetaService {
     String keyword,
     void Function(dynamic) exception,
   ) async {
-    var dio = HttpUtil.createDioWithUserAgent();
     try {
-      final response = await dio.post(
+      final response = await _dio!.post(
         "$baseUrl/v0/search/subjects",
         data: {
           "keyword": keyword,
@@ -141,7 +143,7 @@ class Bangumi implements MetaService {
     void Function(Exception) exception,
   ) async {
     try {
-      final response = await HttpUtil.createDioWithUserAgent().get(
+      final response = await _dio!.get(
         "$baseUrl/v0/subjects/$subjectId/subjects",
       );
       if (response.data != null) {
@@ -161,9 +163,7 @@ class Bangumi implements MetaService {
     void Function(Exception) exception,
   ) async {
     try {
-      final response = await HttpUtil.createDioWithUserAgent().get(
-        "$baseUrl/v0/subjects/$subjectId",
-      );
+      final response = await _dio!.get("$baseUrl/v0/subjects/$subjectId");
       if (response.data != null) {
         return Data.fromJson(response.data);
       }
@@ -180,7 +180,7 @@ class Bangumi implements MetaService {
     void Function(Exception) exception,
   ) async {
     try {
-      final response = await HttpUtil.createDioWithUserAgent().get(
+      final response = await _dio!.get(
         "$baseUrl/v0/episodes",
         queryParameters: {"subject_id": subjectId},
       );

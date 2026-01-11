@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class MediaGrid extends StatelessWidget {
-  final int id;
+  final String id;
   final String? imageUrl;
   final String? title;
   final double? rating;
@@ -11,6 +11,7 @@ class MediaGrid extends StatelessWidget {
   final bool showRating;
   final String? airDate;
   final bool showDeleteIcon;
+
   final Function(int)? onDelete;
   final Function(bool)? onLongPress;
 
@@ -24,6 +25,7 @@ class MediaGrid extends StatelessWidget {
     this.airDate,
     this.onTap,
     this.showDeleteIcon = false,
+
     this.onDelete,
     this.onLongPress,
   });
@@ -41,18 +43,22 @@ class MediaGrid extends StatelessWidget {
               Expanded(
                 child: Stack(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                        memCacheHeight: 1000,
-                        memCacheWidth: 800,
-                        imageUrl: imageUrl!,
-                        placeholder: (context, url) =>
-                            Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                    Hero(
+                      tag: id,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: CachedNetworkImage(
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          memCacheHeight: 1000,
+                          memCacheWidth: 800,
+                          imageUrl: imageUrl!,
+                          placeholder: (context, url) =>
+                              Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
                       ),
                     ),
 
@@ -131,7 +137,8 @@ class MediaGrid extends StatelessWidget {
           top: showDeleteIcon ? 8 : -30,
           right: 8,
           child: GestureDetector(
-            onTap: () => onDelete?.call(id), // 调用删除回调
+            onTap: () =>
+                onDelete?.call(int.parse(id.split('_').last)), // 调用删除回调
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
