@@ -102,7 +102,7 @@ class _SearchScreenState extends State<SearchScreen> {
             setState(() {});
           },
           maxLines: 1,
-          autofocus: true,
+          autofocus: _controller.value.text.isEmpty,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             prefixIcon: Icon(Icons.search_rounded),

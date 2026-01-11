@@ -1,10 +1,10 @@
 name: holo
 
-description: "a open source project for holo"
+description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.5+1
+version: 1.1.6+1
 
 environment:
   sdk: ^3.10.3
