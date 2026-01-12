@@ -13,7 +13,7 @@ class Character {
   final List<Actor>? actors;
   final int? type;
   final int? id;
-
+  final String? summary;
   const Character({
     this.images,
     this.name,
@@ -21,6 +21,7 @@ class Character {
     this.actors,
     this.type,
     this.id,
+    this.summary,
   });
 
   factory Character.fromJson(Map<String, dynamic> json) =>

@@ -86,7 +86,8 @@
             "metadata_title": "Anime Metadata",
             "metadata_content": "Bangumi Database",
             "libraries_title": "Third-party Libraries",
-            "danmaku_title": "Danmaku Libraries"
+            "danmaku_title": "Danmaku Provided",
+            "anime_image_search": "Anime Image Search"
         },
         "language": {
             "change": "Change Language"
@@ -200,5 +201,17 @@
         "no_danmaku_sheet_text": "No danmaku",
         "danmaku_statistics": "{} danmaku sources, total {} comments",
         "datasource": "Data Source"
+    },
+    "image_search": {
+        "image_search_error": "No anime found related to the image",
+        "subject_search_error": "Subject search error",
+        "title": "Search anime by image",
+        "picker_title": "Select image",
+        "no_image": "No image",
+        "no_search_result": "No search results",
+        "search": "Search",
+        "reset": "Reset",
+        "no_character": "No character",
+        "no_work": "No work"
     }
 }

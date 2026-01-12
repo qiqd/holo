@@ -79,6 +79,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                                 item[itemIndex].nameCn ??
                                 item[itemIndex].name ??
                                 '',
+
+                            airDate: item[itemIndex].airDate ?? "1999-9-9",
                             onTap: () => context.push(
                               '/detail',
                               extra: {

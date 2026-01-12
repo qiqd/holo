@@ -86,7 +86,8 @@
             "metadata_title": "アニメーションメタデータ",
             "metadata_content": "Bangumi バンジグループ",
             "libraries_title": "サードパーティライブラリ",
-            "danmaku_title": "弾幕ライブラリ"
+            "danmaku_title": "弾幕対応",
+            "anime_image_search": "画像検索"
         },
         "language": {
             "change": "言語切替"
@@ -200,5 +201,17 @@
         "no_danmaku_sheet_text": "暫無弹幕",
         "danmaku_statistics": "{}つの弾幕ソース、合計{}件のコメント",
         "datasource": "データソース"
+    },
+    "image_search": {
+        "image_search_error": "画像検索で番組を見つけられませんでした",
+        "subject_search_error": "番組検索エラー",
+        "title": "画像検索",
+        "no_image": "暫無画像",
+        "picker_title": "画像を選択",
+        "no_search_result": "暫無検索結果",
+        "search": "検索",
+        "reset": "リセット",
+        "no_character": "暫無人物",
+        "no_work": "暫無作品"
     }
 }

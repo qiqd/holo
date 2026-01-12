@@ -22,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _loading = false;
   int _page = 1;
   String? _msg;
+
   void _fetchRecommended({int page = 1, bool isLoadMore = false}) async {
     setState(() {
       _loading = true;
@@ -58,25 +59,37 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         animateColor: true,
-        title: TextField(
-          readOnly: true,
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.search_rounded),
-            contentPadding: EdgeInsets.all(0),
-            hintText: context.tr("home.hint_text"),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(18),
-              borderSide: BorderSide(color: Colors.grey.shade400),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(18),
-              borderSide: BorderSide(color: Colors.grey.shade400),
-            ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.image_search_rounded),
+            onPressed: () {
+              context.push('/image_search');
+            },
           ),
-          onTap: () {
-            context.push('/search');
-          },
+        ],
+        title: Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: TextField(
+            readOnly: true,
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.search_rounded),
+              contentPadding: EdgeInsets.all(0),
+              hintText: context.tr("home.hint_text"),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+            ),
+            onTap: () {
+              context.push('/search');
+            },
+          ),
         ),
       ),
       body: Column(

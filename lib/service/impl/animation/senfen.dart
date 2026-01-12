@@ -73,7 +73,12 @@ class Senfen implements SourceService {
                   ?.attributes["href"] ??
               "";
           var infoBox = item.querySelector("div.module-item-pic img");
-          var cover = infoBox?.attributes["data-original"];
+          var cover =
+              getBaseUrl() +
+              (infoBox?.attributes["data-original"] ?? "").replaceFirst(
+                "/",
+                '',
+              );
           var title = infoBox?.attributes["alt"];
           var status = item
               .querySelector("div.module-info-item-content")

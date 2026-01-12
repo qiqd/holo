@@ -3,6 +3,7 @@ import 'package:holo/service/impl/animation/girugiru.dart';
 import 'package:holo/service/impl/animation/mengdao.dart';
 import 'package:holo/service/impl/animation/mwcy.dart';
 import 'package:holo/service/impl/animation/senfen.dart';
+import 'package:holo/service/impl/meta/anime_trace.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/impl/meta/logvar.dart';
 import 'package:holo/service/source_service.dart';
@@ -12,6 +13,8 @@ import 'package:holo/util/http_util.dart';
 class Api {
   static Bangumi bangumi = Bangumi();
   static Logvar logvar = Logvar();
+  static AnimeTrace animeTrace = AnimeTrace();
+
   static final List<SourceService> _sources = [
     AAfun(),
     Senfen(),

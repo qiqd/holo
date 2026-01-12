@@ -102,21 +102,40 @@ class _SetttingScreenState extends State<SetttingScreen> {
             ),
             applicationLegalese: 'AGPL-3.0 license',
             aboutBoxChildren: [
-              const SizedBox(height: 8),
               Text('setting.app_description'.tr()),
-              const SizedBox(height: 8),
+              //番剧元数据
               Text(
                 'setting.app_info.metadata_title'.tr(),
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              const Text('Bangumi 番组计划'),
-              const SizedBox(height: 8),
+              InkWell(
+                child: const Text('Bangumi 番组计划'),
+                onTap: () {
+                  launchUrl(Uri.parse('https://bangumi.tv'));
+                },
+              ),
+              //弹幕提供
               Text(
                 'setting.app_info.danmaku_title'.tr(),
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              const Text('LogVar 弹幕'),
-              const SizedBox(height: 8),
+              InkWell(
+                child: const Text('LogVar 弹幕'),
+                onTap: () {
+                  launchUrl(Uri.parse('https://danmuapi.vercel.app'));
+                },
+              ),
+              //番剧图片搜索
+              Text(
+                'setting.app_info.anime_image_search'.tr(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              InkWell(
+                child: const Text('AnimeTrace'),
+                onTap: () {
+                  launchUrl(Uri.parse('https://ai.animedb.cn'));
+                },
+              ),
             ],
           ),
 

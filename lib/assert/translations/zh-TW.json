@@ -86,7 +86,8 @@
             "metadata_title": "動畫元資訊",
             "metadata_content": "Bangumi 番組計劃",
             "libraries_title": "第三方函式庫",
-            "danmaku_title": "彈幕庫"
+            "danmaku_title": "彈幕提供",
+            "anime_image_search": "圖片搜索"
         },
         "language": {
             "change": "切換語言"
@@ -200,5 +201,17 @@
         "no_danmaku_sheet_text": "暫無弹幕",
         "danmaku_statistics": "{}個彈幕源，共計{}條彈幕",
         "datasource": "數據源"
+    },
+    "image_search": {
+        "image_search_error": "沒有搜索到相關番剧",
+        "subject_search_error": "番剧搜索出錯",
+        "title": "以圖搜番",
+        "picker_title": "選擇圖片",
+        "no_image": "暫無圖片",
+        "no_search_result": "暫無搜尋結果",
+        "search": "搜尋",
+        "reset": "重置",
+        "no_character": "暫無人物",
+        "no_work": "暫無作品"
     }
 }

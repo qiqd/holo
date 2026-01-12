@@ -40,8 +40,8 @@ class _DetailScreenState extends State<DetailScreen>
     with TickerProviderStateMixin {
   late String keyword = widget.keyword;
   Data? data;
-  List<Person>? person;
-  List<Character>? character;
+  List<Person> person = [];
+  List<Character> character = [];
   List<SubjectRelation>? relation;
   Map<SourceService, List<Media>> source2Media = {};
   List<SourceService> sourceService = [];
@@ -415,16 +415,27 @@ class _DetailScreenState extends State<DetailScreen>
                           child: TabBarView(
                             controller: tabController,
                             children: [
-                              SingleChildScrollView(
-                                child: Text(
-                                  data?.summary ?? "detail.no_summary".tr(),
-                                ),
-                              ),
-                              person != null
+                              // 简介板块
+                              data?.summary != null && data!.summary!.isNotEmpty
+                                  ? SingleChildScrollView(
+                                      padding: EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        data?.summary == null ||
+                                                data!.summary!.isEmpty
+                                            ? "detail.no_summary".tr()
+                                            : data!.summary!,
+                                      ),
+                                    )
+                                  : Center(
+                                      child: Text("detail.no_summary".tr()),
+                                    ),
+
+                              //人物板块
+                              person.isNotEmpty
                                   ? ListView.builder(
-                                      itemCount: person?.length ?? 0,
+                                      itemCount: person.length ?? 0,
                                       itemBuilder: (context, index) {
-                                        final p = person![index];
+                                        final p = person[index];
                                         return ListTile(
                                           leading: p.images != null
                                               ? Image.network(
@@ -455,11 +466,12 @@ class _DetailScreenState extends State<DetailScreen>
                                         "detail.no_character_data".tr(),
                                       ),
                                     ),
-                              character != null
+                              //角色板块
+                              character.isNotEmpty
                                   ? ListView.builder(
-                                      itemCount: character?.length ?? 0,
+                                      itemCount: character.length ?? 0,
                                       itemBuilder: (context, index) {
-                                        final c = character![index];
+                                        final c = character[index];
                                         return ListTile(
                                           leading: c.images != null
                                               ? Image.network(
@@ -481,6 +493,7 @@ class _DetailScreenState extends State<DetailScreen>
                                             c.name ?? "detail.unknown".tr(),
                                           ),
                                           subtitle: Text(c.relation ?? ''),
+                                          onTap: () => _showCharacterDetail(c),
                                         );
                                       },
                                     )
@@ -598,6 +611,71 @@ class _DetailScreenState extends State<DetailScreen>
           ),
         ],
       ),
+    );
+  }
+
+  void _showCharacterDetail(Character character) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.all(12),
+
+          child: Row(
+            spacing: 4,
+            children: [
+              Flexible(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    width: double.infinity,
+                    height: double.infinity,
+                    character.images?.large ?? '',
+                    fit: BoxFit.fitHeight,
+                    loadingBuilder: (context, child, loadingProgress) =>
+                        loadingProgress == null
+                        ? child
+                        : const Center(child: CircularProgressIndicator()),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Center(child: Icon(size: 70, Icons.error)),
+                  ),
+                ),
+              ),
+
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        character.name ?? "detail.unknown".tr(),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        'CV: ${character.actors?.map((e) => e.name).join('·') ?? ''}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      Text(
+                        character.relation ?? '',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+
+                      Text(
+                        character.summary ?? '',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

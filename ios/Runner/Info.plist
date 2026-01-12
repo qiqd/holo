@@ -52,5 +52,9 @@
 		<string>nb</string>
 		<string>zh</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要访问相册以选择图片</string>
+	<key>NSCameraUsageDescription</key>
+	<string>需要访问相机以拍摄照片</string>
 </dict>
 </plist>

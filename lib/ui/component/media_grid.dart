@@ -50,7 +50,7 @@ class MediaGrid extends StatelessWidget {
                         child: CachedNetworkImage(
                           width: double.infinity,
                           height: double.infinity,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fitHeight,
                           memCacheHeight: 1000,
                           memCacheWidth: 800,
                           imageUrl: imageUrl!,
@@ -94,34 +94,36 @@ class MediaGrid extends StatelessWidget {
                           ),
                         ),
                       ),
-                    // if (airDate != null)
-                    //   Positioned(
-                    //     left: 4,
-                    //     bottom: 4,
-                    //     child: Container(
-                    //       padding: const EdgeInsets.symmetric(
-                    //         horizontal: 6,
-                    //         vertical: 2,
-                    //       ),
-                    //       decoration: BoxDecoration(
-                    //         color: Colors.black54,
-                    //         borderRadius: BorderRadius.circular(12),
-                    //       ),
-                    //       child: Text(
-                    //         airDate!,
-                    //         style: const TextStyle(
-                    //           color: Colors.white,
-                    //           fontSize: 12,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
+                    if (airDate != null)
+                      Positioned(
+                        right: 4,
+                        bottom: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            airDate!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
               SizedBox(
                 child: Text(
-                  title ?? context.tr("component.title"),
+                  title == null || title!.isEmpty
+                      ? context.tr("component.title")
+                      : title!,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 14),

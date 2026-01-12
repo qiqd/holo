@@ -7,6 +7,7 @@ import 'package:holo/entity/subject.dart' show Data;
 import 'package:holo/service/api.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/source_service.dart';
+import 'package:holo/ui/screen/image_search.dart';
 import 'package:holo/ui/screen/sign.dart';
 import 'package:holo/util/local_store.dart';
 
@@ -125,6 +126,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         path: '/sign',
         builder: (context, state) {
           return SignScreen();
+        },
+      ),
+
+      GoRoute(
+        path: '/image_search',
+        builder: (context, state) {
+          return ImageSearchScreen();
         },
       ),
     ],

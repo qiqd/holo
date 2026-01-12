@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -74,7 +72,8 @@ class MediaCard extends StatelessWidget {
                         memCacheWidth: 2000,
                         width: double.infinity,
                         height: double.infinity,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.fitHeight,
+
                         errorWidget: (context, url, error) => const SizedBox(
                           height: double.infinity,
                           width: double.infinity,
@@ -112,7 +111,9 @@ class MediaCard extends StatelessWidget {
                                   ),
                                 )
                               : Text(
-                                  nameCn,
+                                  nameCn.isEmpty
+                                      ? context.tr("component.title")
+                                      : nameCn,
                                   style: Theme.of(
                                     context,
                                   ).textTheme.titleMedium,

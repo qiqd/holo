@@ -173,6 +173,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
+                  //订阅部分
                   subscribe.isEmpty
                       ? LoadingOrShowMsg(
                           msg: tr("subscribe.refresh_btn_subs"),
@@ -220,6 +221,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                             await _fetchSubscribeHistoryFromServer();
                           },
                         ),
+                  //播放历史部分
                   playback.isEmpty
                       ? LoadingOrShowMsg(
                           msg: tr("subscribe.refresh_btn_view"),
