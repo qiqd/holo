@@ -64,7 +64,18 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       return;
     }
     final response = await _picker.pickImage(source: ImageSource.gallery);
+
     if (response == null) {
+      return;
+    }
+    final file = File(response.path);
+    final fileSize = await file.length();
+    const maxSize = 2 * 1024 * 1024;
+
+    if ((fileSize > maxSize) && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(tr('image_search.image_size_tip'))),
+      );
       return;
     }
     setState(() {
@@ -134,6 +145,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
               opacity: _image != null ? 1 : 0,
               duration: Duration(milliseconds: 300),
               child: Card(
+                margin: EdgeInsets.all(0),
                 child: Padding(
                   padding: EdgeInsets.all(4),
                   child: Row(

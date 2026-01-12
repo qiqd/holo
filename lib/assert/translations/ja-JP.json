@@ -212,6 +212,7 @@
         "search": "検索",
         "reset": "リセット",
         "no_character": "暫無人物",
-        "no_work": "暫無作品"
+        "no_work": "暫無作品",
+        "image_size_tip": "画像サイズは2MB以下にしてください"
     }
 }

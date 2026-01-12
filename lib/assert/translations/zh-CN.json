@@ -212,6 +212,7 @@
         "search": "搜索",
         "reset": "重置",
         "no_character": "暂无人物",
-        "no_work": "暂无作品"
+        "no_work": "暂无作品",
+        "image_size_tip": "图片大小不能超过2MB"
     }
 }

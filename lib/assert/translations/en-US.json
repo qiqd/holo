@@ -212,6 +212,7 @@
         "search": "Search",
         "reset": "Reset",
         "no_character": "No character",
-        "no_work": "No work"
+        "no_work": "No work",
+        "image_size_tip": "Image size must be less than 2MB"
     }
 }
