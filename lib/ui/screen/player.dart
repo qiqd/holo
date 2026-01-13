@@ -499,18 +499,21 @@ class _PlayerScreenState extends State<PlayerScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-
       backgroundColor: _isFullScreen ? Colors.black : null,
       body: SafeArea(
-        child: _isFullScreen
-            ? Center(
-                child: PopScope(
-                  canPop: false,
-                  onPopInvokedWithResult: (didPop, result) {
-                    setState(() {
-                      _toggleFullScreen(false);
-                    });
-                  },
+        child: Center(
+          child: PopScope(
+            canPop: !_isFullScreen,
+            onPopInvokedWithResult: (didPop, result) {
+              setState(() {
+                _toggleFullScreen(false);
+              });
+            },
+            child: Column(
+              children: [
+                //视频播放器
+                Flexible(
+                  flex: 1,
                   child: AspectRatio(
                     aspectRatio: _controller == null
                         ? 16 / 9
@@ -552,9 +555,13 @@ class _PlayerScreenState extends State<PlayerScreen>
                               });
                             },
                             onBackPressed: () {
-                              setState(() {
-                                _toggleFullScreen(false);
-                              });
+                              if (_isFullScreen) {
+                                setState(() {
+                                  _toggleFullScreen(false);
+                                });
+                              } else {
+                                context.pop();
+                              }
                             },
                           )
                         : LoadingOrShowMsg(
@@ -563,54 +570,10 @@ class _PlayerScreenState extends State<PlayerScreen>
                           ),
                   ),
                 ),
-              )
-            : Column(
-                children: [
-                  SizedBox(
-                    height: 220,
-                    child: AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: _controller != null && !isloading
-                          ? CapVideoPlayer(
-                              title: widget.nameCn,
-                              isloading: isloading,
-                              controller: _controller!,
-                              isFullScreen: _isFullScreen,
-                              dammaku: _dammaku,
-                              onError: (error) => setState(() {
-                                msg = error.toString();
-                              }),
-                              onNextTab: () {
-                                if (isloading ||
-                                    episodeIndex + 1 >
-                                        _detail!
-                                                .lines![lineIndex]
-                                                .episodes!
-                                                .length -
-                                            1) {
-                                  return;
-                                }
-                                setState(() {
-                                  ++episodeIndex;
-                                });
-                                _fetchViewInfo();
-                              },
-                              onFullScreenChanged: (isFullScreen) {
-                                setState(() {
-                                  _toggleFullScreen(isFullScreen);
-                                });
-                              },
-                              onBackPressed: () {
-                                context.pop();
-                              },
-                            )
-                          : LoadingOrShowMsg(
-                              msg: msg,
-                              backgroundColor: Colors.black,
-                            ),
-                    ),
-                  ),
-                  Expanded(
+                //剧集列表
+                if (!_isFullScreen)
+                  Flexible(
+                    flex: 2,
                     child: Column(
                       children: [
                         Row(
@@ -732,7 +695,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                             ),
                           ],
                         ),
-
                         Flexible(
                           child: TabBarView(
                             controller: _tabController,
@@ -765,7 +727,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                                             )
                                             .value,
                                       ),
-                                      Container(
+                                      AnimatedContainer(
+                                        duration: Duration(milliseconds: 300),
+                                        height: _danmakuList != null ? 38 : 0,
                                         width: double.infinity,
                                         padding: EdgeInsets.all(8),
                                         decoration: BoxDecoration(
@@ -776,21 +740,25 @@ class _PlayerScreenState extends State<PlayerScreen>
                                             12,
                                           ),
                                         ),
-                                        child: Text(
-                                          context.tr(
-                                            'player.danmaku_statistics',
-                                            args: [
-                                              (_danmakuList?.length ?? 0)
-                                                  .toString(),
-                                              (_dammaku?.comments?.length ?? 0)
-                                                  .toString(),
-                                              (_dammaku?.comments?.length ?? 0)
-                                                  .toString(),
-                                            ],
+                                        child: Center(
+                                          child: Text(
+                                            context.tr(
+                                              'player.danmaku_statistics',
+                                              args: [
+                                                (_danmakuList?.length ?? 0)
+                                                    .toString(),
+                                                (_dammaku?.comments?.length ??
+                                                        0)
+                                                    .toString(),
+                                                (_dammaku?.comments?.length ??
+                                                        0)
+                                                    .toString(),
+                                              ],
+                                            ),
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium,
                                           ),
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium,
                                         ),
                                       ),
                                       ListTile(
@@ -887,8 +855,10 @@ class _PlayerScreenState extends State<PlayerScreen>
                       ],
                     ),
                   ),
-                ],
-              ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

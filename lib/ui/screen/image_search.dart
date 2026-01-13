@@ -141,8 +141,9 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                 ),
               ],
             ),
-            AnimatedOpacity(
-              opacity: _image != null ? 1 : 0,
+            AnimatedContainer(
+              height: _image != null ? 150 : 0,
+              constraints: BoxConstraints(maxHeight: 200),
               duration: Duration(milliseconds: 300),
               child: Card(
                 margin: EdgeInsets.all(0),
@@ -151,19 +152,16 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                   child: Row(
                     children: [
                       Flexible(
-                        child: Container(
-                          constraints: BoxConstraints(maxHeight: 200),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(
-                              File(_image?.path ?? ''),
-                              fit: BoxFit.fitHeight,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Center(
-                                  child: Icon(Icons.error_outline_rounded),
-                                );
-                              },
-                            ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            File(_image?.path ?? ''),
+                            fit: BoxFit.fitHeight,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Icon(Icons.error_outline_rounded),
+                              );
+                            },
                           ),
                         ),
                       ),

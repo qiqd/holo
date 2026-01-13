@@ -55,7 +55,6 @@ class CapVideoPlayer extends StatefulWidget {
 }
 
 class _CapVideoPlayerState extends State<CapVideoPlayer> {
-  late bool _isFullScreen = widget.isFullScreen;
   late final String title = widget.title ?? context.tr("component.title");
   late final VideoPlayerController _player = widget.controller;
   late final ScreenBrightness _brightnessController;
@@ -369,6 +368,10 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
       _danmakuItems.clear();
       _fillDanmaku();
     }
+    if (oldWidget.dammaku != widget.dammaku) {
+      _danmakuItems.clear();
+      _fillDanmaku();
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -446,7 +449,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                 ?.copyWith(color: Colors.white),
                           ),
                         ),
-                        if (_isFullScreen)
+                        if (widget.isFullScreen)
                           IconButton(
                             onPressed: () {
                               setState(() {
@@ -658,7 +661,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                               ),
                             ),
                             //剧集列表
-                            if (_isFullScreen) ...[
+                            if (widget.isFullScreen) ...[
                               Badge(
                                 backgroundColor: Colors.transparent,
                                 textColor: Colors.white,
@@ -746,13 +749,12 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                             IconButton(
                               onPressed: () {
                                 _showVideoControlsTimer();
-                                setState(() {
-                                  _isFullScreen = !_isFullScreen;
-                                });
-                                widget.onFullScreenChanged?.call(_isFullScreen);
+                                widget.onFullScreenChanged?.call(
+                                  !widget.isFullScreen,
+                                );
                               },
                               icon: Icon(
-                                _isFullScreen
+                                widget.isFullScreen
                                     ? Icons.fullscreen_exit_rounded
                                     : Icons.fullscreen_rounded,
                                 color: Colors.white,
