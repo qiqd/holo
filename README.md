@@ -1,3 +1,7 @@
+<div align="right">
+  [<a href="README.md">English</a>] | [<a href="README_zh.md">简体中文</a>]
+</div>
+
 # Holo
 
 An open-source anime streaming application built with Flutter, supporting Android and iOS platforms.
@@ -8,11 +12,10 @@ An open-source anime streaming application built with Flutter, supporting Androi
 - 📅 **Calendar**: Stay updated with the latest anime releases
 - 🔍 **Search**: Find anime quickly and efficiently
 - 💾 **History**: Keep track of your watching progress
-- 🔔 **Subscribe**: Get notified when new episodes are available
 - 💬 **Danmaku Support**: Real-time interactive bullet chat experience
 - 🌍 **Multi-language Support**: Internationalized interface supporting multiple languages
-- 🔄 **Loading Optimization**: Shimmer effects to optimize loading experience
-- **Multi-platform**: Supports Android and iOS
+- 🌐 **Multi-platform**: Supports Android and iOS
+- 🖼️ **Image Search**: Search for anime by uploading images
 
 ## App Screenshots
 
@@ -51,8 +54,6 @@ lib/
 ├── util/            # Utility classes
 └── main.dart        # Application entry point
 ```
-
-
 
 ## Getting Started
 
