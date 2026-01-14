@@ -518,13 +518,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                 Flexible(
                   flex: 1,
                   // fit: FlexFit.tight,
-                  child: Container(
-                    color: Colors.black,
-                    width:
-                        _controller?.value.aspectRatio != 16 / 9 &&
-                            !_isFullScreen
-                        ? double.infinity
-                        : null,
+                  child: Centrt(
                     child: AspectRatio(
                       aspectRatio: _controller == null
                           ? 16 / 9
