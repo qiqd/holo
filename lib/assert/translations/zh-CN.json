@@ -194,6 +194,7 @@
         "episode_not_exist": "该集不存在",
         "playback_error": "无法获取播放地址,换条路线试试",
         "danmaku_not_exist": "该集暂无弹幕",
+        "danmaku_loading": "弹幕加载中",
         "danmaku_loaded": "弹幕加载完成",
         "danmaku_load_error": "弹幕加载失败",
         "danmaku_selection": "弹幕选择",

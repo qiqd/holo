@@ -257,6 +257,9 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (_isDanmakuLoading) {
       return;
     }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("player.danmaku_loading".tr())));
     setState(() {
       _isDanmakuLoading = true;
     });
@@ -514,60 +517,69 @@ class _PlayerScreenState extends State<PlayerScreen>
                 //视频播放器
                 Flexible(
                   flex: 1,
-                  child: AspectRatio(
-                    aspectRatio: _controller == null
-                        ? 16 / 9
-                        : _controller!.value.aspectRatio,
-                    child: _controller != null && !isloading
-                        ? CapVideoPlayer(
-                            title: widget.nameCn,
-                            isloading: isloading,
-                            controller: _controller!,
-                            isFullScreen: _isFullScreen,
-                            currentEpisodeIndex: episodeIndex,
-                            dammaku: _dammaku,
-                            episodeList:
-                                _episode?.data?.map((e) => e.name!).toList() ??
-                                [],
-                            onError: (error) => setState(() {
-                              msg = error.toString();
-                            }),
-                            onEpisodeSelected: (index) =>
-                                _onEpisodeSelected(index),
-                            onNextTab: () {
-                              if (isloading ||
-                                  episodeIndex + 1 >
-                                      _detail!
-                                              .lines![lineIndex]
-                                              .episodes!
-                                              .length -
-                                          1) {
-                                return;
-                              }
-                              setState(() {
-                                ++episodeIndex;
-                              });
-                              _fetchViewInfo();
-                            },
-                            onFullScreenChanged: (isFullScreen) {
-                              setState(() {
-                                _toggleFullScreen(isFullScreen);
-                              });
-                            },
-                            onBackPressed: () {
-                              if (_isFullScreen) {
-                                setState(() {
-                                  _toggleFullScreen(false);
-                                });
-                              } else {
-                                context.pop();
-                              }
-                            },
-                          )
-                        : LoadingOrShowMsg(
-                            msg: msg,
-                            backgroundColor: Colors.black,
-                          ),
+                  // fit: FlexFit.tight,
+                  child: Container(
+                    width: double.infinity,
+                    color: Colors.black,
+                    child: Center(
+                      child: AspectRatio(
+                        aspectRatio: _controller == null
+                            ? 16 / 9
+                            : _controller!.value.aspectRatio,
+                        child: _controller != null && !isloading
+                            ? CapVideoPlayer(
+                                title: widget.nameCn,
+                                isloading: isloading,
+                                controller: _controller!,
+                                isFullScreen: _isFullScreen,
+                                currentEpisodeIndex: episodeIndex,
+                                dammaku: _dammaku,
+                                episodeList:
+                                    _episode?.data
+                                        ?.map((e) => e.name!)
+                                        .toList() ??
+                                    [],
+                                onError: (error) => setState(() {
+                                  msg = error.toString();
+                                }),
+                                onEpisodeSelected: (index) =>
+                                    _onEpisodeSelected(index),
+                                onNextTab: () {
+                                  if (isloading ||
+                                      episodeIndex + 1 >
+                                          _detail!
+                                                  .lines![lineIndex]
+                                                  .episodes!
+                                                  .length -
+                                              1) {
+                                    return;
+                                  }
+                                  setState(() {
+                                    ++episodeIndex;
+                                  });
+                                  _fetchViewInfo();
+                                },
+                                onFullScreenChanged: (isFullScreen) {
+                                  setState(() {
+                                    _toggleFullScreen(isFullScreen);
+                                  });
+                                },
+                                onBackPressed: () {
+                                  if (_isFullScreen) {
+                                    setState(() {
+                                      _toggleFullScreen(false);
+                                    });
+                                  } else {
+                                    context.pop();
+                                  }
+                                },
+                              )
+                            : LoadingOrShowMsg(
+                                msg: msg,
+                                backgroundColor: Colors.black,
+                              ),
+                      ),
+                    ),
                   ),
                 ),
                 //剧集列表
@@ -699,6 +711,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                           child: TabBarView(
                             controller: _tabController,
                             children: [
+                              //简介
                               Container(
                                 padding: EdgeInsets.all(12),
                                 child: SingleChildScrollView(
@@ -729,7 +742,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                       ),
                                       AnimatedContainer(
                                         duration: Duration(milliseconds: 300),
-                                        height: _danmakuList != null ? 38 : 0,
+                                        height: _dammaku != null ? 38 : 0,
                                         width: double.infinity,
                                         padding: EdgeInsets.all(8),
                                         decoration: BoxDecoration(

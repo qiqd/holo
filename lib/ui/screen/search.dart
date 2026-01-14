@@ -48,6 +48,12 @@ class _SearchScreenState extends State<SearchScreen> {
     _searchHistory = LocalStore.getSearchHistory();
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _showDeleteDialog() {
     showDialog(
       context: context,
@@ -103,7 +109,6 @@ class _SearchScreenState extends State<SearchScreen> {
             setState(() {});
           },
           maxLines: 1,
-          autofocus: _controller.value.text.isEmpty,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             prefixIcon: Icon(Icons.search_rounded),
@@ -132,17 +137,14 @@ class _SearchScreenState extends State<SearchScreen> {
               child: SizedBox(
                 child: _recommended == null
                     ? SingleChildScrollView(
-                        padding: EdgeInsets.all(16),
+                        padding: EdgeInsets.all(12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 12),
-                              child: Text(
-                                "search.search_history".tr(),
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                              ),
+                            Text(
+                              "search.search_history".tr(),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             Row(
                               children: [
@@ -153,10 +155,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                       return Chip(
                                         label: InkWell(
                                           child: Text(historyItem),
-                                          onTap: () => _fetchSearch(
-                                            historyItem,
-                                            context,
-                                          ),
+                                          onTap: () {
+                                            _controller.text = historyItem;
+                                            _fetchSearch(historyItem, context);
+                                          },
                                         ),
                                         avatar: Icon(Icons.history, size: 18),
                                         backgroundColor: Theme.of(context)
@@ -200,6 +202,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ? item.name ?? ""
                                 : item.nameCn,
                             rating: item.rating?.score,
+                            airDate: item.date,
                             onTap: () {
                               context.push(
                                 '/detail',

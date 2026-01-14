@@ -195,6 +195,7 @@
         "playback_error": "再生アドレスを取得できません。他のルートをお試しください",
         "danmaku_not_exist": "この話は弹幕を提供していません",
         "danmaku_loaded": "弹幕ロード完了",
+        "danmaku_loading": "弹幕ロード中",
         "danmaku_load_error": "弹幕ロード失敗",
         "danmaku_selection": "弹幕選択",
         "choose_danmaku_sheet_text": "弹幕が正しくない場合は、手動で選択してください",

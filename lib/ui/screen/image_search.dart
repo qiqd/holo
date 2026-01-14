@@ -101,7 +101,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 12),
         child: Column(
-          spacing: 6,
+          // spacing: 6,
           children: [
             if (_isLoading) LinearProgressIndicator(),
             Row(
@@ -141,6 +141,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                 ),
               ],
             ),
+            // 显示选中的图片
             AnimatedContainer(
               height: _image != null ? 150 : 0,
               constraints: BoxConstraints(maxHeight: 200),
@@ -194,11 +195,13 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                 ),
               ),
             ),
+            // 显示搜索结果
             Expanded(
               child: _subject == null
                   ? Center(child: Text(tr('image_search.no_work')))
                   : ListView.separated(
                       itemCount: _subject?.data?.length ?? 0,
+                      padding: EdgeInsets.symmetric(vertical: 6),
                       separatorBuilder: (context, index) => SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         var data = _subject?.data;

@@ -48,6 +48,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       body: Column(
         children: [
           TabBar(
+            labelPadding: EdgeInsets.zero,
             controller: _tabController,
             tabs: List.generate(7, (index) => Tab(text: _weekdays[index])),
           ),

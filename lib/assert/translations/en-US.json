@@ -195,6 +195,7 @@
         "playback_error": "Unable to get playback address, try another route",
         "danmaku_not_exist": "This episode does not provide danmaku",
         "danmaku_loaded": "Danmaku loaded",
+        "danmaku_loading": "Danmaku loading",
         "danmaku_load_error": "Danmaku load failed",
         "danmaku_selection": "Danmaku selection",
         "choose_danmaku_sheet_text": "If the danmaku is not correct, please choose manually",
