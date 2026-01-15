@@ -595,7 +595,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 ],
                               ),
                             ),
-                            TextButton(
+                            IconButton(
                               onPressed: () {
                                 showModalBottomSheet(
                                   context: context,
@@ -665,19 +665,16 @@ class _PlayerScreenState extends State<PlayerScreen>
                                   },
                                 );
                               },
-                              child: Text(
-                                "player.danmaku_selection".tr(),
-                                style: TextStyle(color: Colors.grey),
+                              icon: Icon(
+                                Icons.subtitles_rounded,
+                                color: Colors.grey,
                               ),
                             ),
                             // 路线选择
                             PopupMenuButton(
-                              child: TextButton.icon(
+                              child: IconButton(
                                 onPressed: null,
-                                label: Text(
-                                  'player.route_selection'.tr(),
-                                  style: TextStyle(color: Colors.grey),
-                                ),
+                                icon: Icon(Icons.source_rounded),
                               ),
                               itemBuilder: (context) => [
                                 ...List.generate(
