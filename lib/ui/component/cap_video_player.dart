@@ -82,7 +82,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   double _displayArea = 1.0;
   double _opacity = 1.0;
   double _danmakuFontsize = 16.0;
-  int _danmakuFontweight = 4;
+  //int _danmakuFontweight = 4;
   String _filter = "";
   int _danmakuOffset = 0;
   Timer? _timer;
@@ -317,7 +317,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
         _massiveDanmakuMode = setting.massiveMode;
         _displayArea = setting.area;
         _danmakuFontsize = setting.fontSize;
-        _danmakuFontweight = setting.fontWeight;
+        // _danmakuFontweight = setting.fontWeight;
         _opacity = setting.opacity;
         _filter = option["filter"] as String;
       });
@@ -673,8 +673,9 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   onPressed: () {
                                     setState(() {
                                       showEpisodeList = !showEpisodeList;
+                                      // _episodeListScrollController.jumpTo(value)
                                       _episodeListScrollController.animateTo(
-                                        widget.currentEpisodeIndex * 50,
+                                        widget.currentEpisodeIndex * 60,
                                         duration: Duration(milliseconds: 300),
                                         curve: Curves.easeInOut,
                                       );

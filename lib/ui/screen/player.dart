@@ -849,9 +849,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                                       onVisibilityChanged: (info) {
                                         if (info.visibleFraction > 0) {
                                           episodeListScrollController.animateTo(
-                                            episodeIndex * 1.0,
+                                            episodeIndex * 30.0,
                                             duration: Duration(
-                                              milliseconds: 300,
+                                              milliseconds: 100,
                                             ),
                                             curve: Curves.easeInOut,
                                           );
