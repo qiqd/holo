@@ -518,64 +518,60 @@ class _PlayerScreenState extends State<PlayerScreen>
                 Flexible(
                   flex: 1,
                   // fit: FlexFit.tight,
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: _controller == null
-                          ? 16 / 9
-                          : _controller!.value.aspectRatio,
-                      child: _controller != null && !isloading
-                          ? CapVideoPlayer(
-                              title: widget.nameCn,
-                              isloading: isloading,
-                              controller: _controller!,
-                              isFullScreen: _isFullScreen,
-                              currentEpisodeIndex: episodeIndex,
-                              dammaku: _dammaku,
-                              episodeList:
-                                  _episode?.data
-                                      ?.map((e) => e.name!)
-                                      .toList() ??
-                                  [],
-                              onError: (error) => setState(() {
-                                msg = error.toString();
-                              }),
-                              onEpisodeSelected: (index) =>
-                                  _onEpisodeSelected(index),
-                              onNextTab: () {
-                                if (isloading ||
-                                    episodeIndex + 1 >
-                                        _detail!
-                                                .lines![lineIndex]
-                                                .episodes!
-                                                .length -
-                                            1) {
-                                  return;
-                                }
+                  child: AspectRatio(
+                    aspectRatio: _controller == null
+                        ? 16 / 9
+                        : _controller!.value.aspectRatio,
+                    child: _controller != null && !isloading
+                        ? CapVideoPlayer(
+                            title: widget.nameCn,
+                            isloading: isloading,
+                            controller: _controller!,
+                            isFullScreen: _isFullScreen,
+                            currentEpisodeIndex: episodeIndex,
+                            dammaku: _dammaku,
+                            episodeList:
+                                _episode?.data?.map((e) => e.name!).toList() ??
+                                [],
+                            onError: (error) => setState(() {
+                              msg = error.toString();
+                            }),
+                            onEpisodeSelected: (index) =>
+                                _onEpisodeSelected(index),
+                            onNextTab: () {
+                              if (isloading ||
+                                  episodeIndex + 1 >
+                                      _detail!
+                                              .lines![lineIndex]
+                                              .episodes!
+                                              .length -
+                                          1) {
+                                return;
+                              }
+                              setState(() {
+                                ++episodeIndex;
+                              });
+                              _fetchViewInfo();
+                            },
+                            onFullScreenChanged: (isFullScreen) {
+                              setState(() {
+                                _toggleFullScreen(isFullScreen);
+                              });
+                            },
+                            onBackPressed: () {
+                              if (_isFullScreen) {
                                 setState(() {
-                                  ++episodeIndex;
+                                  _toggleFullScreen(false);
                                 });
-                                _fetchViewInfo();
-                              },
-                              onFullScreenChanged: (isFullScreen) {
-                                setState(() {
-                                  _toggleFullScreen(isFullScreen);
-                                });
-                              },
-                              onBackPressed: () {
-                                if (_isFullScreen) {
-                                  setState(() {
-                                    _toggleFullScreen(false);
-                                  });
-                                } else {
-                                  context.pop();
-                                }
-                              },
-                            )
-                          : LoadingOrShowMsg(
-                              msg: msg,
-                              backgroundColor: Colors.black,
-                            ),
-                    ),
+                              } else {
+                                context.pop();
+                              }
+                            },
+                          )
+                        : LoadingOrShowMsg(
+                            msg: msg,
+                            backgroundColor: Colors.black,
+                          ),
                   ),
                 ),
                 //剧集列表
