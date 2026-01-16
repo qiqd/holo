@@ -1,13 +1,15 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
 import 'package:holo/main.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -23,9 +25,11 @@ class _SetttingScreenState extends State<SetttingScreen> {
   String _version = '';
   String? _email;
   String? _token;
+
   @override
   void initState() {
     super.initState();
+
     _loadVersion();
   }
 
@@ -442,13 +446,8 @@ class _SetttingScreenState extends State<SetttingScreen> {
             FilledButton(
               onPressed: () {
                 // 清除缓存逻辑
-                // Navigator.pop(context);
                 DefaultCacheManager().emptyCache();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('setting.data_management.cache_success'.tr()),
-                  ),
-                );
+                Navigator.pop(context);
               },
               child: Text('setting.data_management.clear_dialog_confirm'.tr()),
             ),

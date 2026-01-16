@@ -24,7 +24,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:video_player/video_player.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 class PlayerScreen extends StatefulWidget {
   final String mediaId;
@@ -53,6 +52,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   late Data subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
+
   int episodeIndex = 0;
   int lineIndex = 0;
   Episode? _episode;
@@ -259,11 +259,9 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (_isDanmakuLoading) {
       return;
     }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("player.danmaku_loading".tr())));
     setState(() {
       _isDanmakuLoading = true;
+      // _danmuMsg = "player.danmaku_loading".tr();
     });
     if (isFirstLoad) {
       var data = await Api.logvar.fetchEpisodeFromLogvar(subject.nameCn ?? "", (
@@ -520,13 +518,13 @@ class _PlayerScreenState extends State<PlayerScreen>
             child: Column(
               children: [
                 //视频播放器
-                Flexible(
-                  flex: 1,
-                  // fit: FlexFit.tight,
-                  child: AspectRatio(
-                    aspectRatio: _controller == null
-                        ? 16 / 9
-                        : _controller!.value.aspectRatio,
+                Container(
+                  color: Colors.black,
+                  height: _isFullScreen
+                      ? MediaQuery.of(context).size.height
+                      : 230,
+                  width: double.infinity,
+                  child: Center(
                     child: _controller != null && !isloading
                         ? CapVideoPlayer(
                             title: widget.nameCn,
@@ -582,7 +580,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                 //剧集列表
                 if (!_isFullScreen)
                   Flexible(
-                    flex: 2,
+                    flex: 1,
                     child: Column(
                       children: [
                         Row(

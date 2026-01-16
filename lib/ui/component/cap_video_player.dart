@@ -387,7 +387,12 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
       child: Stack(
         children: [
           //播放器层
-          VideoPlayer(_player),
+          Center(
+            child: AspectRatio(
+              aspectRatio: _player.value.aspectRatio,
+              child: VideoPlayer(_player),
+            ),
+          ),
           // 弹幕层
           if (widget.dammaku != null && _isShowDanmaku)
             DanmakuScreen<double>(
