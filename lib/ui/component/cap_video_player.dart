@@ -375,6 +375,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
 
   @override
   void didChangeDependencies() {
+    _showSetting = false;
+    showEpisodeList = false;
     _showVideoControlsTimer();
     _loadDanmuSetting();
     super.didChangeDependencies();
@@ -439,6 +441,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                           onPressed: () {
                             _showVideoControlsTimer();
+                            _showSetting = false;
+                            showEpisodeList = false;
                             widget.onBackPressed?.call();
                           },
                         ),
@@ -747,6 +751,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                             IconButton(
                               onPressed: () {
                                 _showVideoControlsTimer();
+                                _showSetting = false;
+                                showEpisodeList = false;
                                 widget.onFullScreenChanged?.call(
                                   !widget.isFullScreen,
                                 );
@@ -872,7 +878,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       padding: EdgeInsets.all(10),
                       child: TextField(
                         keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.done,
+                        textInputAction: TextInputAction.none,
                         onChanged: (value) {
                           setState(() {
                             _filter = value;

@@ -518,69 +518,73 @@ class _PlayerScreenState extends State<PlayerScreen>
             child: Column(
               children: [
                 //视频播放器
-                Container(
-                  color: Colors.black,
-                  height: _isFullScreen
-                      ? MediaQuery.of(context).size.height
-                      : 230,
-                  width: double.infinity,
-                  child: Center(
-                    child: _controller != null && !isloading
-                        ? CapVideoPlayer(
-                            title: widget.nameCn,
-                            isloading: isloading,
-                            controller: _controller!,
-                            isFullScreen: _isFullScreen,
-                            currentEpisodeIndex: episodeIndex,
-                            dammaku: _dammaku,
-                            episodeList:
-                                _episode?.data?.map((e) => e.name!).toList() ??
-                                [],
-                            onError: (error) => setState(() {
-                              msg = error.toString();
-                            }),
-                            onEpisodeSelected: (index) =>
-                                _onEpisodeSelected(index),
-                            onNextTab: () {
-                              if (isloading ||
-                                  episodeIndex + 1 >
-                                      _detail!
-                                              .lines![lineIndex]
-                                              .episodes!
-                                              .length -
-                                          1) {
-                                return;
-                              }
-                              setState(() {
-                                ++episodeIndex;
-                              });
-                              _fetchViewInfo();
-                            },
-                            onFullScreenChanged: (isFullScreen) {
-                              setState(() {
-                                _toggleFullScreen(isFullScreen);
-                              });
-                            },
-                            onBackPressed: () {
-                              if (_isFullScreen) {
+                Flexible(
+                  flex: 1,
+                  fit: FlexFit.tight,
+                  child: Container(
+                    color: Colors.black,
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: Center(
+                      child: _controller != null && !isloading
+                          ? CapVideoPlayer(
+                              title: widget.nameCn,
+                              isloading: isloading,
+                              controller: _controller!,
+                              isFullScreen: _isFullScreen,
+                              currentEpisodeIndex: episodeIndex,
+                              dammaku: _dammaku,
+                              episodeList:
+                                  _episode?.data
+                                      ?.map((e) => e.name!)
+                                      .toList() ??
+                                  [],
+                              onError: (error) => setState(() {
+                                msg = error.toString();
+                              }),
+                              onEpisodeSelected: (index) =>
+                                  _onEpisodeSelected(index),
+                              onNextTab: () {
+                                if (isloading ||
+                                    episodeIndex + 1 >
+                                        _detail!
+                                                .lines![lineIndex]
+                                                .episodes!
+                                                .length -
+                                            1) {
+                                  return;
+                                }
                                 setState(() {
-                                  _toggleFullScreen(false);
+                                  ++episodeIndex;
                                 });
-                              } else {
-                                context.pop();
-                              }
-                            },
-                          )
-                        : LoadingOrShowMsg(
-                            msg: msg,
-                            backgroundColor: Colors.black,
-                          ),
+                                _fetchViewInfo();
+                              },
+                              onFullScreenChanged: (isFullScreen) {
+                                setState(() {
+                                  _toggleFullScreen(isFullScreen);
+                                });
+                              },
+                              onBackPressed: () {
+                                if (_isFullScreen) {
+                                  setState(() {
+                                    _toggleFullScreen(false);
+                                  });
+                                } else {
+                                  context.pop();
+                                }
+                              },
+                            )
+                          : LoadingOrShowMsg(
+                              msg: msg,
+                              backgroundColor: Colors.black,
+                            ),
+                    ),
                   ),
                 ),
                 //剧集列表
                 if (!_isFullScreen)
                   Flexible(
-                    flex: 1,
+                    flex: 2,
                     child: Column(
                       children: [
                         Row(
