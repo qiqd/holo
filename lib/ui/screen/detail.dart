@@ -433,7 +433,7 @@ class _DetailScreenState extends State<DetailScreen>
                               //人物板块
                               person.isNotEmpty
                                   ? ListView.builder(
-                                      itemCount: person.length ?? 0,
+                                      itemCount: person.length,
                                       itemBuilder: (context, index) {
                                         final p = person[index];
                                         return ListTile(
@@ -469,7 +469,7 @@ class _DetailScreenState extends State<DetailScreen>
                               //角色板块
                               character.isNotEmpty
                                   ? ListView.builder(
-                                      itemCount: character.length ?? 0,
+                                      itemCount: character.length,
                                       itemBuilder: (context, index) {
                                         final c = character[index];
                                         return ListTile(
