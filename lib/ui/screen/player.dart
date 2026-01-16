@@ -46,7 +46,10 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with
+        SingleTickerProviderStateMixin,
+        WidgetsBindingObserver,
+        AutomaticKeepAliveClientMixin {
   late Data subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
@@ -71,7 +74,6 @@ class _PlayerScreenState extends State<PlayerScreen>
     vsync: this,
     length: 2,
   );
-  final ScrollController episodeListScrollController = ScrollController();
   Future<void> _fetchMediaEpisode() async {
     isloading = true;
     try {
@@ -270,7 +272,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         if (mounted) {
           setState(() {
             _isDanmakuLoading = false;
-            //onComplete?.call(e.toString());
+            onComplete?.call(e.toString());
           });
         }
       });
@@ -499,7 +501,10 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   @override
+  bool get wantKeepAlive => true;
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: _isFullScreen ? Colors.black : null,
@@ -596,6 +601,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                               ),
                             ),
                             IconButton(
+                              tooltip: "player.danmaku_selection".tr(),
                               onPressed: () {
                                 showModalBottomSheet(
                                   context: context,
@@ -672,6 +678,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                             ),
                             // 路线选择
                             PopupMenuButton(
+                              tooltip: 'player.route_selection'.tr(),
+                              borderRadius: BorderRadius.circular(50),
                               child: IconButton(
                                 onPressed: null,
                                 icon: Icon(Icons.source_rounded),
@@ -802,54 +810,40 @@ class _PlayerScreenState extends State<PlayerScreen>
                                   ? LoadingOrShowMsg(msg: msg)
                                   : _episode == null
                                   ? _buildFadeEpisodeSection()
-                                  : VisibilityDetector(
-                                      key: Key("player_episodes"),
-                                      child: GridView.builder(
-                                        controller: episodeListScrollController,
-                                        padding: EdgeInsets.all(10),
-                                        itemCount: _episode?.data?.length ?? 0,
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 3,
-                                              mainAxisSpacing: 5,
-                                              crossAxisSpacing: 5,
-                                            ),
-                                        itemBuilder: (context, index) => ListTile(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
+                                  : GridView.builder(
+                                      key: PageStorageKey("player_episodes"),
+                                      padding: EdgeInsets.all(10),
+                                      itemCount: _episode?.data?.length ?? 0,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 3,
+                                            mainAxisSpacing: 5,
+                                            crossAxisSpacing: 5,
                                           ),
-                                          selected: episodeIndex == index,
-                                          onTap: () {
-                                            if (episodeIndex == index ||
-                                                isloading) {
-                                              return;
-                                            }
-                                            _onEpisodeSelected(index);
-                                          },
-                                          subtitle: Text(
-                                            maxLines: 4,
-                                            overflow: TextOverflow.ellipsis,
-                                            _episode?.data?[index].nameCn ??
-                                                "player.no_episode_name".tr(),
-                                          ),
-                                          title: Text(
-                                            '${index + 1}${episodeIndex == index ? "•" : ""}',
+                                      itemBuilder: (context, index) => ListTile(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
                                           ),
                                         ),
+                                        selected: episodeIndex == index,
+                                        onTap: () {
+                                          if (episodeIndex == index ||
+                                              isloading) {
+                                            return;
+                                          }
+                                          _onEpisodeSelected(index);
+                                        },
+                                        subtitle: Text(
+                                          maxLines: 4,
+                                          overflow: TextOverflow.ellipsis,
+                                          _episode?.data?[index].nameCn ??
+                                              "player.no_episode_name".tr(),
+                                        ),
+                                        title: Text(
+                                          '${index + 1}${episodeIndex == index ? "•" : ""}',
+                                        ),
                                       ),
-                                      onVisibilityChanged: (info) {
-                                        if (info.visibleFraction > 0) {
-                                          episodeListScrollController.animateTo(
-                                            episodeIndex * 30.0,
-                                            duration: Duration(
-                                              milliseconds: 100,
-                                            ),
-                                            curve: Curves.easeInOut,
-                                          );
-                                        }
-                                      },
                                     ),
                             ],
                           ),

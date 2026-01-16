@@ -151,6 +151,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                 child: Padding(
                   padding: EdgeInsets.all(4),
                   child: Row(
+                    spacing: 6,
                     children: [
                       Flexible(
                         child: ClipRRect(
@@ -167,27 +168,35 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                         ),
                       ),
                       Flexible(
-                        child: Column(
-                          children: [
-                            ListTile(
-                              leading: Icon(Icons.person_outline_rounded),
-                              title: Text(
-                                _searchResult?.first['character'] ??
-                                    tr('image_search.no_character'),
-                                style: Theme.of(context).textTheme.titleMedium,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ListTile(
+                                leading: Icon(Icons.person_outline_rounded),
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  _searchResult?.first['character'] ??
+                                      tr('image_search.no_character'),
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                ),
                               ),
-                            ),
-                            ListTile(
-                              trailing: null,
-                              leading: Icon(Icons.video_label_rounded),
-                              title: Text(
-                                _searchResult?.first['work'] ??
-                                    tr('image_search.no_work'),
-                                maxLines: 5,
-                                style: Theme.of(context).textTheme.titleMedium,
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+
+                                leading: Icon(Icons.video_label_rounded),
+                                title: Text(
+                                  _searchResult?.first['work'] ??
+                                      tr('image_search.no_work'),
+                                  maxLines: 5,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

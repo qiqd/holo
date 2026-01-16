@@ -90,7 +90,6 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   Timer? _videoTimer;
   Timer? _danmuTimer;
   final List<DanmakuContentItem<double>> _danmakuItems = [];
-  final ScrollController _episodeListScrollController = ScrollController();
   void _showVideoControlsTimer() {
     // log("showVideoControlsTimer");
     _videoControlsTimer?.cancel();
@@ -358,7 +357,6 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     _timer?.cancel();
     _videoTimer?.cancel();
     _videoControlsTimer?.cancel();
-    _episodeListScrollController.dispose();
     super.dispose();
   }
 
@@ -673,12 +671,6 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   onPressed: () {
                                     setState(() {
                                       showEpisodeList = !showEpisodeList;
-                                      // _episodeListScrollController.jumpTo(value)
-                                      _episodeListScrollController.animateTo(
-                                        widget.currentEpisodeIndex * 60,
-                                        duration: Duration(milliseconds: 300),
-                                        curve: Curves.easeInOut,
-                                      );
                                     });
                                     _showVideoControlsTimer();
                                   },
@@ -817,7 +809,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             child: Container(
               color: Colors.white,
               child: ListView.builder(
-                controller: _episodeListScrollController,
+                key: PageStorageKey("player_episodes_list"),
                 itemCount: widget.episodeList.length,
                 itemBuilder: (context, index) {
                   return ListTile(

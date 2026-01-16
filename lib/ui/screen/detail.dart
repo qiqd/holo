@@ -284,6 +284,9 @@ class _DetailScreenState extends State<DetailScreen>
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
                                 hintText: "detail.search_hint".tr(),
+                                hintStyle: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall,
                               ),
                               onSubmitted: (value) async {
                                 setState(() {
@@ -403,6 +406,7 @@ class _DetailScreenState extends State<DetailScreen>
                     child: Column(
                       children: [
                         TabBar(
+                          labelPadding: EdgeInsets.zero,
                           controller: tabController,
                           tabs: [
                             Tab(text: "detail.tabs.summary".tr()),
