@@ -80,18 +80,27 @@ class _DetailScreenState extends State<DetailScreen>
       source2Media[source] = res;
     });
     await Future.wait(future);
-    for (var value in source2Media.values) {
+    // Media? target;
+    double tempScore = 0;
+    for (var entity in source2Media.entries) {
+      var value = entity.value;
       for (var m in value) {
-        m.score = JaroWinklerSimilarity.apply(widget.keyword, m.title!);
+        double s = JaroWinklerSimilarity.apply(widget.keyword, m.title!);
+        if (s > tempScore) {
+          tempScore = s;
+          //target = m;
+          defaultMedia = m;
+          defaultSource = entity.key;
+        }
       }
     }
-    for (var value in source2Media.values) {
-      value.sort((a, b) => b.score!.compareTo(a.score!));
-    }
-    if (source2Media.values.isNotEmpty &&
-        source2Media.values.first.isNotEmpty) {
-      defaultMedia = source2Media.values.first.first;
-    }
+    // for (var value in source2Media.values) {
+    //   value.sort((a, b) => b.score!.compareTo(a.score!));
+    // }
+    // if (source2Media.values.isNotEmpty &&
+    //     source2Media.values.first.isNotEmpty) {
+    //   defaultMedia = source2Media.values.first.first;
+    // }
     final keys = source2Media.keys.toList();
     keys.sort((a, b) => b.delay.compareTo(a.delay));
     defaultSource = keys.first;
@@ -224,7 +233,7 @@ class _DetailScreenState extends State<DetailScreen>
       //浮动播放按钮
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (defaultMedia == null || defaultSource == null) {
+          if (defaultMedia == null || defaultSource == null || isLoading) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("detail.no_source_found".tr())),
             );
@@ -241,7 +250,9 @@ class _DetailScreenState extends State<DetailScreen>
             },
           );
         },
-        child: const Icon(Icons.play_arrow_rounded),
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : const Icon(Icons.play_arrow_rounded),
       ),
       appBar: AppBar(
         leading: IconButton(
