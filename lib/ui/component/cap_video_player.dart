@@ -375,8 +375,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
 
   @override
   void didChangeDependencies() {
-    _showSetting = false;
-    showEpisodeList = false;
+    // _showSetting = false;
+    // showEpisodeList = false;
     _showVideoControlsTimer();
     _loadDanmuSetting();
     super.didChangeDependencies();
@@ -813,7 +813,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
           // 剧集列表
           AnimatedPositioned(
             top: 0,
-            right: showEpisodeList ? 0 : -200,
+            right: showEpisodeList && widget.isFullScreen ? 0 : -200,
             width: 200,
             height: MediaQuery.of(context).size.height,
             duration: const Duration(milliseconds: 300),
@@ -843,7 +843,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
           // 弹幕设置
           AnimatedPositioned(
             top: 0,
-            right: _showSetting ? 0 : -300,
+            right: _showSetting && widget.isFullScreen ? 0 : -300,
             width: 300,
             height: MediaQuery.of(context).size.height,
             curve: Curves.easeInOut,
