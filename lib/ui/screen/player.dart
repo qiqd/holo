@@ -157,6 +157,9 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _onLineSelected(int index) {
+    if (index == lineIndex) {
+      return;
+    }
     setState(() {
       lineIndex = index;
     });
@@ -170,6 +173,9 @@ class _PlayerScreenState extends State<PlayerScreen>
           SnackBar(content: Text("player.episode_not_exist".tr())),
         );
       });
+      return;
+    }
+    if (index == episodeIndex) {
       return;
     }
     setState(() {
@@ -755,24 +761,31 @@ class _PlayerScreenState extends State<PlayerScreen>
                                           ),
                                         ),
                                         child: Center(
-                                          child: Text(
-                                            context.tr(
-                                              'player.danmaku_statistics',
-                                              args: [
-                                                (_danmakuList?.length ?? 0)
-                                                    .toString(),
-                                                (_dammaku?.comments?.length ??
-                                                        0)
-                                                    .toString(),
-                                                (_dammaku?.comments?.length ??
-                                                        0)
-                                                    .toString(),
-                                              ],
-                                            ),
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodyMedium,
-                                          ),
+                                          child: _isDanmakuLoading
+                                              ? LinearProgressIndicator()
+                                              : Text(
+                                                  context.tr(
+                                                    'player.danmaku_statistics',
+                                                    args: [
+                                                      (_danmakuList?.length ??
+                                                              0)
+                                                          .toString(),
+                                                      (_dammaku
+                                                                  ?.comments
+                                                                  ?.length ??
+                                                              0)
+                                                          .toString(),
+                                                      (_dammaku
+                                                                  ?.comments
+                                                                  ?.length ??
+                                                              0)
+                                                          .toString(),
+                                                    ],
+                                                  ),
+                                                  style: Theme.of(
+                                                    context,
+                                                  ).textTheme.bodyMedium,
+                                                ),
                                         ),
                                       ),
                                       ListTile(

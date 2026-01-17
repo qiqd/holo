@@ -93,6 +93,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   double _currentBrightness = 0;
   bool _showVolume = false;
   bool _showBrightness = false;
+  bool _showDragOffset = false;
   final List<DanmakuContentItem<double>> _danmakuItems = [];
   void _showVideoControlsTimer() {
     // log("showVideoControlsTimer");
@@ -138,7 +139,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     return maxEnd.inSeconds.toDouble();
   }
 
-  void _startOrRestartTimer() {
+  void _updateShowVolumeOrBrightnessTimer() {
     _timer?.cancel();
     _timer = Timer(Duration(seconds: 5), () {
       setState(() {
@@ -148,16 +149,13 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
-  void _startOrRestartVideoTimer() {
-    setState(() {
-      showMsg = true;
-    });
+  void _updateShowDragOffsetTimer() {
     _videoTimer?.cancel();
     _videoTimer = Timer(Duration(milliseconds: 500), () {
       _player.seekTo(Duration(seconds: videoPosition.toInt() + dragOffset));
       setState(() {
+        _showDragOffset = false;
         dragOffset = 0;
-        showMsg = false;
       });
     });
   }
@@ -167,7 +165,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
       return;
     }
     _showBrightness = true;
-    _startOrRestartTimer();
+    _showVolume = false;
+    _updateShowVolumeOrBrightnessTimer();
     final current = await _brightnessController.application;
     double newBrightness = current;
     if (direction == SwipeDirection.up) {
@@ -192,7 +191,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
       return;
     }
     _showVolume = true;
-    _startOrRestartTimer();
+    _showBrightness = false;
+    _updateShowVolumeOrBrightnessTimer();
     final current = widget.controller.value.volume;
     double newVolume = current;
     if (direction == SwipeDirection.up) {
@@ -215,18 +215,16 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     if (isLock) {
       return;
     }
-    _startOrRestartVideoTimer();
-
-    if (direction == SwipeDirection.left) {
-      dragOffset -= 1;
-    } else if (direction == SwipeDirection.right) {
-      dragOffset += 1;
-    }
-
+    _updateShowDragOffsetTimer();
     setState(() {
-      msgText = dragOffset < 0
-          ? "${context.tr("component.cap_video_player.background")}${dragOffset.abs()}s"
-          : "${context.tr("component.cap_video_player.foreground")}${dragOffset.abs()}s";
+      _showBrightness = false;
+      _showVolume = false;
+      _showDragOffset = true;
+      if (direction == SwipeDirection.left) {
+        dragOffset -= 1;
+      } else if (direction == SwipeDirection.right) {
+        dragOffset += 1;
+      }
     });
   }
 
@@ -410,30 +408,68 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             ),
           // 加载中或缓冲中
           if (isBuffering || widget.isloading) LoadingOrShowMsg(msg: null),
-          //亮度或者音量显示
+          //亮度或者音量或者拖拽进度显示
           AnimatedOpacity(
-            curve: (_showVolume || _showBrightness)
+            curve: (_showVolume || _showBrightness || _showDragOffset)
                 ? Curves.decelerate
                 : Curves.easeOutQuart,
-            opacity: (_showVolume || _showBrightness) ? 1.0 : 0.0,
+            opacity: (_showVolume || _showBrightness || _showDragOffset)
+                ? 1.0
+                : 0.0,
             duration: Duration(milliseconds: 300),
             child: Align(
               alignment: Alignment.center,
               child: _showVolume
-                  ? Icon(
-                      _currentVolume > 60
-                          ? Icons.volume_up_rounded
-                          : _currentBrightness > 30
-                          ? Icons.volume_down_rounded
-                          : Icons.volume_mute_rounded,
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _currentVolume > 66
+                              ? Icons.volume_up_rounded
+                              : _currentVolume > 33
+                              ? Icons.volume_down_rounded
+                              : Icons.volume_mute_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          "${(_currentVolume).toInt()}%",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
                     )
-                  : Icon(
-                      _currentBrightness > 60
-                          ? Icons.brightness_high_rounded
-                          : _currentBrightness > 30
-                          ? Icons.brightness_medium_rounded
-                          : Icons.brightness_low_rounded,
-                    ),
+                  : _showBrightness
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _currentBrightness > 66
+                              ? Icons.brightness_high_rounded
+                              : _currentBrightness > 33
+                              ? Icons.brightness_medium_rounded
+                              : Icons.brightness_low_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          "${(_currentBrightness).toInt()}%",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    )
+                  : _showDragOffset
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (dragOffset < 0)
+                          Icon(Icons.fast_rewind_rounded, color: Colors.white),
+                        Text(
+                          "${(dragOffset.abs()).toInt()}s",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        if (dragOffset > 0)
+                          Icon(Icons.fast_forward_rounded, color: Colors.white),
+                      ],
+                    )
+                  : SizedBox(),
             ),
           ),
 
