@@ -121,7 +121,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           onComplete: (e) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(e)));
+            ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
           },
         );
         final newUrl = await source.fetchView(
@@ -166,7 +166,9 @@ class _PlayerScreenState extends State<PlayerScreen>
   void _onEpisodeSelected(int index) {
     if (index >= _detail!.lines![lineIndex].episodes!.length) {
       setState(() {
-        msg = "player.episode_not_exist".tr();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("player.episode_not_exist".tr())),
+        );
       });
       return;
     }

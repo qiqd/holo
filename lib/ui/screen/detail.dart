@@ -86,6 +86,7 @@ class _DetailScreenState extends State<DetailScreen>
       var value = entity.value;
       for (var m in value) {
         double s = JaroWinklerSimilarity.apply(widget.keyword, m.title!);
+        m.score = s;
         if (s > tempScore) {
           tempScore = s;
           //target = m;
@@ -94,16 +95,16 @@ class _DetailScreenState extends State<DetailScreen>
         }
       }
     }
-    // for (var value in source2Media.values) {
-    //   value.sort((a, b) => b.score!.compareTo(a.score!));
-    // }
+    for (var value in source2Media.values) {
+      value.sort((a, b) => b.score!.compareTo(a.score!));
+    }
     // if (source2Media.values.isNotEmpty &&
     //     source2Media.values.first.isNotEmpty) {
     //   defaultMedia = source2Media.values.first.first;
     // }
     final keys = source2Media.keys.toList();
     keys.sort((a, b) => b.delay.compareTo(a.delay));
-    defaultSource = keys.first;
+    //defaultSource = keys.first;
     if (mounted) {
       setState(() {
         sourceService = keys;
@@ -250,9 +251,17 @@ class _DetailScreenState extends State<DetailScreen>
             },
           );
         },
-        child: isLoading
-            ? const CircularProgressIndicator()
-            : const Icon(Icons.play_arrow_rounded),
+        child: AnimatedSwitcher(
+          duration: Duration(milliseconds: 500),
+          child: isLoading
+              ? const CircularProgressIndicator(
+                  key: ValueKey("detail_floating_loading"),
+                )
+              : const Icon(
+                  Icons.play_arrow_rounded,
+                  key: ValueKey("detail_floating_icon"),
+                ),
+        ),
       ),
       appBar: AppBar(
         leading: IconButton(
@@ -387,178 +396,184 @@ class _DetailScreenState extends State<DetailScreen>
           ),
         ],
       ),
-      body: data == null
-          ? _buildShimmerSkeleton()
-          : Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                children: [
-                  MediaCard(
-                    id: "${widget.from}_${data!.id!}",
-                    imageUrl: widget.cover,
-                    nameCn: data!.nameCn!,
-                    name: data!.name!,
-                    genre: data!.metaTags?.join('/'),
-                    episode: data!.eps ?? 0,
-                    rating: data!.rating?.score,
-                    height: 250,
-                    airDate: data!.infobox
-                        ?.firstWhere(
-                          (element) =>
-                              element.key?.contains(
-                                "detail.air_date_key".tr(),
-                              ) ??
-                              false,
-                          orElse: () => InfoBox(),
-                        )
-                        .value,
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        TabBar(
-                          labelPadding: EdgeInsets.zero,
-                          controller: tabController,
-                          tabs: [
-                            Tab(text: "detail.tabs.summary".tr()),
-                            Tab(text: "detail.tabs.characters".tr()),
-                            Tab(text: "detail.tabs.relations".tr()),
-                            Tab(text: "detail.tabs.related_works".tr()),
-                          ],
-                        ),
-                        Expanded(
-                          child: TabBarView(
+      body: SafeArea(
+        child: data == null
+            ? _buildShimmerSkeleton()
+            : Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  children: [
+                    MediaCard(
+                      id: "${widget.from}_${data!.id!}",
+                      imageUrl: widget.cover,
+                      nameCn: data!.nameCn!,
+                      name: data!.name!,
+                      genre: data!.metaTags?.join('/'),
+                      episode: data!.eps ?? 0,
+                      rating: data!.rating?.score,
+                      height: 250,
+                      airDate: data!.infobox
+                          ?.firstWhere(
+                            (element) =>
+                                element.key?.contains(
+                                  "detail.air_date_key".tr(),
+                                ) ??
+                                false,
+                            orElse: () => InfoBox(),
+                          )
+                          .value,
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          TabBar(
+                            labelPadding: EdgeInsets.zero,
                             controller: tabController,
-                            children: [
-                              // 简介板块
-                              data?.summary != null && data!.summary!.isNotEmpty
-                                  ? SingleChildScrollView(
-                                      padding: EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        data?.summary == null ||
-                                                data!.summary!.isEmpty
-                                            ? "detail.no_summary".tr()
-                                            : data!.summary!,
-                                      ),
-                                    )
-                                  : Center(
-                                      child: Text("detail.no_summary".tr()),
-                                    ),
-
-                              //人物板块
-                              person.isNotEmpty
-                                  ? ListView.builder(
-                                      itemCount: person.length,
-                                      itemBuilder: (context, index) {
-                                        final p = person[index];
-                                        return ListTile(
-                                          leading: p.images != null
-                                              ? Image.network(
-                                                  p.images!.medium!,
-                                                  // width: 70,
-                                                  // height: 70,
-                                                  fit: BoxFit.fill,
-                                                  errorBuilder:
-                                                      (
-                                                        context,
-                                                        error,
-                                                        stackTrace,
-                                                      ) => const Icon(
-                                                        size: 70,
-                                                        Icons.error,
-                                                      ),
-                                                )
-                                              : const Icon(Icons.person),
-                                          title: Text(
-                                            p.name ?? "detail.unknown".tr(),
-                                          ),
-                                          subtitle: Text(p.relation ?? ''),
-                                        );
-                                      },
-                                    )
-                                  : Center(
-                                      child: Text(
-                                        "detail.no_character_data".tr(),
-                                      ),
-                                    ),
-                              //角色板块
-                              character.isNotEmpty
-                                  ? ListView.builder(
-                                      itemCount: character.length,
-                                      itemBuilder: (context, index) {
-                                        final c = character[index];
-                                        return ListTile(
-                                          leading: c.images != null
-                                              ? Image.network(
-                                                  fit: BoxFit.fill,
-                                                  c.images!.medium!,
-                                                  // color: Colors.limeAccent,
-                                                  errorBuilder:
-                                                      (
-                                                        context,
-                                                        error,
-                                                        stackTrace,
-                                                      ) => const Icon(
-                                                        size: 70,
-                                                        Icons.error,
-                                                      ),
-                                                )
-                                              : const Icon(Icons.person),
-                                          title: Text(
-                                            c.name ?? "detail.unknown".tr(),
-                                          ),
-                                          subtitle: Text(c.relation ?? ''),
-                                          onTap: () => _showCharacterDetail(c),
-                                        );
-                                      },
-                                    )
-                                  : Center(
-                                      child: Text(
-                                        "detail.no_relation_data".tr(),
-                                      ),
-                                    ),
-                              relation != null
-                                  ? ListView.builder(
-                                      itemCount: relation?.length ?? 0,
-                                      itemBuilder: (context, index) {
-                                        final r = relation![index];
-                                        return ListTile(
-                                          leading: r.images != null
-                                              ? Image.network(
-                                                  r.images!.medium!,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder:
-                                                      (
-                                                        context,
-                                                        error,
-                                                        stackTrace,
-                                                      ) => const Icon(
-                                                        size: 70,
-                                                        Icons.error,
-                                                      ),
-                                                )
-                                              : const Icon(Icons.person),
-                                          title: Text(
-                                            r.nameCn ?? "detail.unknown".tr(),
-                                          ),
-                                          subtitle: Text(r.relation ?? ''),
-                                        );
-                                      },
-                                    )
-                                  : Center(
-                                      child: Text(
-                                        "detail.no_related_works_data".tr(),
-                                      ),
-                                    ),
+                            tabs: [
+                              Tab(text: "detail.tabs.summary".tr()),
+                              Tab(text: "detail.tabs.characters".tr()),
+                              Tab(text: "detail.tabs.relations".tr()),
+                              Tab(text: "detail.tabs.related_works".tr()),
                             ],
                           ),
-                        ),
-                      ],
+                          Expanded(
+                            child: TabBarView(
+                              controller: tabController,
+                              children: [
+                                // 简介板块
+                                data?.summary != null &&
+                                        data!.summary!.isNotEmpty
+                                    ? SingleChildScrollView(
+                                        padding: EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          data?.summary == null ||
+                                                  data!.summary!.isEmpty
+                                              ? "detail.no_summary".tr()
+                                              : data!.summary!,
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Text("detail.no_summary".tr()),
+                                      ),
+
+                                //人物板块
+                                person.isNotEmpty
+                                    ? ListView.builder(
+                                        itemCount: person.length,
+                                        itemBuilder: (context, index) {
+                                          final p = person[index];
+                                          return ListTile(
+                                            leading: p.images != null
+                                                ? Image.network(
+                                                    p.images!.medium!,
+                                                    // width: 70,
+                                                    // height: 70,
+                                                    fit: BoxFit.fill,
+                                                    errorBuilder:
+                                                        (
+                                                          context,
+                                                          error,
+                                                          stackTrace,
+                                                        ) => const Icon(
+                                                          size: 70,
+                                                          Icons.error,
+                                                        ),
+                                                  )
+                                                : const Icon(Icons.person),
+                                            title: Text(
+                                              p.name ?? "detail.unknown".tr(),
+                                            ),
+                                            subtitle: Text(p.relation ?? ''),
+                                          );
+                                        },
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          "detail.no_character_data".tr(),
+                                        ),
+                                      ),
+                                //角色板块
+                                character.isNotEmpty
+                                    ? ListView.builder(
+                                        itemCount: character.length,
+                                        itemBuilder: (context, index) {
+                                          final c = character[index];
+                                          return ListTile(
+                                            leading: c.images != null
+                                                ? Image.network(
+                                                    fit: BoxFit.fill,
+                                                    c.images!.medium!,
+                                                    // color: Colors.limeAccent,
+                                                    errorBuilder:
+                                                        (
+                                                          context,
+                                                          error,
+                                                          stackTrace,
+                                                        ) => const Icon(
+                                                          size: 70,
+                                                          Icons.error,
+                                                        ),
+                                                  )
+                                                : const Icon(Icons.person),
+                                            title: Text(
+                                              c.name ?? "detail.unknown".tr(),
+                                            ),
+                                            subtitle: Text(c.relation ?? ''),
+                                            onTap: () => _showCharacterDetail(
+                                              c,
+                                              context,
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          "detail.no_relation_data".tr(),
+                                        ),
+                                      ),
+                                relation != null
+                                    ? ListView.builder(
+                                        itemCount: relation?.length ?? 0,
+                                        itemBuilder: (context, index) {
+                                          final r = relation![index];
+                                          return ListTile(
+                                            leading: r.images != null
+                                                ? Image.network(
+                                                    r.images!.medium!,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder:
+                                                        (
+                                                          context,
+                                                          error,
+                                                          stackTrace,
+                                                        ) => const Icon(
+                                                          size: 70,
+                                                          Icons.error,
+                                                        ),
+                                                  )
+                                                : const Icon(Icons.person),
+                                            title: Text(
+                                              r.nameCn ?? "detail.unknown".tr(),
+                                            ),
+                                            subtitle: Text(r.relation ?? ''),
+                                          );
+                                        },
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          "detail.no_related_works_data".tr(),
+                                        ),
+                                      ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 
@@ -629,9 +644,10 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  void _showCharacterDetail(Character character) {
+  void _showCharacterDetail(Character character, BuildContext context) {
     showModalBottomSheet(
       context: context,
+      useSafeArea: true,
       builder: (context) {
         return Container(
           width: double.infinity,

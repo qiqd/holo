@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,14 +17,11 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController = TabController(
-    vsync: this,
-    length: 7,
-  );
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  late TabController _tabController = TabController(vsync: this, length: 7);
   List<Calendar> _calendar = [];
   String? _msg;
-  final List<String> _weekdays = tr("calendar.week").split(',');
+  List<String> _weekdays = tr("calendar.week").split(',');
   void _fetchCalendar() async {
     final calendar = await Api.bangumi.fetchCalendarSync(
       (e) => setState(() {
@@ -35,10 +34,27 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   @override
+  void didChangeLocales(List<Locale>? locales) {
+    super.didChangeLocales(locales);
+    setState(() {
+      _weekdays = "calendar.week".tr().split(',');
+      _tabController = TabController(vsync: this, length: 7);
+    });
+  }
+
+  @override
   void initState() {
     _fetchCalendar();
+    WidgetsBinding.instance.addObserver(this);
     _tabController.animateTo(DateTime.now().weekday - 1);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

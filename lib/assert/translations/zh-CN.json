@@ -191,7 +191,7 @@
         "route_number": "路线{}",
         "no_comments": "暂无评论",
         "no_episode_name": "暂无剧集名称",
-        "episode_not_exist": "该集不存在",
+        "episode_not_exist": "该集暂未更新",
         "playback_error": "无法获取播放地址,换条路线试试",
         "danmaku_not_exist": "该集暂无弹幕",
         "danmaku_loading": "弹幕加载中",

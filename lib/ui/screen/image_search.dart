@@ -114,30 +114,32 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                   },
                   child: Text(tr('image_search.picker_title')),
                 ),
-
-                AnimatedContainer(
-                  width: (_image != null && !_isLoading) ? 100 : 0,
+                AnimatedSize(
                   duration: Duration(milliseconds: 300),
-                  child: FilledButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.red),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _image = null;
-                        _searchResult = null;
-                        _subject = null;
-                      });
-                    },
-                    child: Text(
-                      tr('image_search.reset'),
-                      style: TextStyle(
-                        color: (_image != null && !_isLoading)
-                            ? Colors.white
-                            : Colors.transparent,
-                      ),
-                    ),
-                  ),
+                  child: (_image != null && !_isLoading)
+                      ? FilledButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.red,
+                            ),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _image = null;
+                              _searchResult = null;
+                              _subject = null;
+                            });
+                          },
+                          child: Text(
+                            tr('image_search.reset'),
+                            style: TextStyle(
+                              color: (_image != null && !_isLoading)
+                                  ? Colors.white
+                                  : Colors.transparent,
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
                 ),
               ],
             ),
@@ -153,7 +155,10 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                   child: Row(
                     spacing: 6,
                     children: [
-                      Flexible(
+                      Container(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width / 2,
+                        ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.file(
@@ -167,32 +172,49 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                           ),
                         ),
                       ),
-                      Flexible(
+                      Expanded(
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
                               ListTile(
                                 leading: Icon(Icons.person_outline_rounded),
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(
-                                  _searchResult?.first['character'] ??
-                                      tr('image_search.no_character'),
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
+                                title: Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: AnimatedSwitcher(
+                                    duration: Duration(milliseconds: 300),
+                                    child: Text(
+                                      _searchResult?.first['character'] ??
+                                          tr('image_search.no_character'),
+                                      key: ValueKey<String>(
+                                        _searchResult?.first['character'] ??
+                                            tr('image_search.no_character'),
+                                      ),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium,
+                                    ),
+                                  ),
                                 ),
                               ),
                               ListTile(
-                                contentPadding: EdgeInsets.zero,
-
                                 leading: Icon(Icons.video_label_rounded),
-                                title: Text(
-                                  _searchResult?.first['work'] ??
-                                      tr('image_search.no_work'),
-                                  maxLines: 5,
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
+                                title: Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: AnimatedSwitcher(
+                                    duration: Duration(milliseconds: 300),
+                                    child: Text(
+                                      _searchResult?.first['work'] ??
+                                          tr('image_search.no_work'),
+                                      maxLines: 5,
+                                      key: ValueKey<String>(
+                                        _searchResult?.first['work'] ??
+                                            tr('image_search.no_work'),
+                                      ),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],

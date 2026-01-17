@@ -191,7 +191,7 @@
         "route_number": "Route {}",
         "no_comments": "No comments",
         "no_episode_name": "No episode name",
-        "episode_not_exist": "Episode does not exist",
+        "episode_not_exist": "Episode is not updated yet",
         "playback_error": "Unable to get playback address, try another route",
         "danmaku_not_exist": "This episode does not provide danmaku",
         "danmaku_loaded": "Danmaku loaded",

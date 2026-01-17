@@ -89,6 +89,10 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   Timer? _videoControlsTimer;
   Timer? _videoTimer;
   Timer? _danmuTimer;
+  double _currentVolume = 0;
+  double _currentBrightness = 0;
+  bool _showVolume = false;
+  bool _showBrightness = false;
   final List<DanmakuContentItem<double>> _danmakuItems = [];
   void _showVideoControlsTimer() {
     // log("showVideoControlsTimer");
@@ -138,7 +142,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     _timer?.cancel();
     _timer = Timer(Duration(seconds: 5), () {
       setState(() {
-        showMsg = false;
+        _showBrightness = false;
+        _showVolume = false;
       });
     });
   }
@@ -157,11 +162,11 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
-  void _decreaseBrightnessBy1Percent(SwipeDirection direction) async {
+  void _changeBrightnessBy1Percent(SwipeDirection direction) async {
     if (isLock) {
       return;
     }
-    showMsg = true;
+    _showBrightness = true;
     _startOrRestartTimer();
     final current = await _brightnessController.application;
     double newBrightness = current;
@@ -177,16 +182,16 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     );
     setState(() {
       showMsg = true;
-      msgText =
-          ' ${context.tr("component.cap_video_player.brightness")}: ${(newBrightness * 100).toStringAsFixed(0)}%';
+      // msgText =     ' ${context.tr("component.cap_video_player.brightness")}: ${(newBrightness * 100).toStringAsFixed(0)}%';
+      _currentBrightness = newBrightness * 100;
     });
   }
 
-  void _decreaseVolumeBy1Percent(SwipeDirection direction) async {
+  void _changeVolumeBy1Percent(SwipeDirection direction) async {
     if (isLock) {
       return;
     }
-    showMsg = true;
+    _showVolume = true;
     _startOrRestartTimer();
     final current = widget.controller.value.volume;
     double newVolume = current;
@@ -200,8 +205,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     widget.controller.setVolume(newVolume);
     setState(() {
       showMsg = true;
-      msgText =
-          '${context.tr("component.cap_video_player.volume")}: ${(newVolume * 100).toStringAsFixed(0)}%';
+      // msgText ='${context.tr("component.cap_video_player.volume")}: ${(newVolume * 100).toStringAsFixed(0)}%';
+      _currentVolume = newVolume * 100;
     });
   }
 
@@ -405,13 +410,30 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             ),
           // 加载中或缓冲中
           if (isBuffering || widget.isloading) LoadingOrShowMsg(msg: null),
+          //亮度或者音量显示
           AnimatedOpacity(
-            curve: showMsg ? Curves.decelerate : Curves.easeOutQuart,
-            opacity: showMsg ? 1.0 : 0.0,
+            curve: (_showVolume || _showBrightness)
+                ? Curves.decelerate
+                : Curves.easeOutQuart,
+            opacity: (_showVolume || _showBrightness) ? 1.0 : 0.0,
             duration: Duration(milliseconds: 300),
             child: Align(
               alignment: Alignment.center,
-              child: Text(msgText, style: TextStyle(color: Colors.white)),
+              child: _showVolume
+                  ? Icon(
+                      _currentVolume > 60
+                          ? Icons.volume_up_rounded
+                          : _currentBrightness > 30
+                          ? Icons.volume_down_rounded
+                          : Icons.volume_mute_rounded,
+                    )
+                  : Icon(
+                      _currentBrightness > 60
+                          ? Icons.brightness_high_rounded
+                          : _currentBrightness > 30
+                          ? Icons.brightness_medium_rounded
+                          : Icons.brightness_low_rounded,
+                    ),
             ),
           ),
 
@@ -512,7 +534,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   direction == SwipeDirection.right) {
                                 return;
                               }
-                              _decreaseBrightnessBy1Percent(direction);
+                              _changeBrightnessBy1Percent(direction);
                             },
 
                             child: Container(color: Colors.transparent),
@@ -532,7 +554,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   direction == SwipeDirection.right) {
                                 return;
                               }
-                              _decreaseVolumeBy1Percent(direction);
+                              _changeVolumeBy1Percent(direction);
                             },
 
                             child: Container(color: Colors.transparent),

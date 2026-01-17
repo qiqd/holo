@@ -191,7 +191,7 @@
         "route_number": "路線{}",
         "no_comments": "暫無評論",
         "no_episode_name": "暫無劇集名稱",
-        "episode_not_exist": "該集不存在",
+        "episode_not_exist": "該集暫未更新",
         "playback_error": "無法獲取播放位址,換條路線試試",
         "danmaku_not_exist": "該集暫無弹幕",
         "danmaku_loading": "彈幕加載中",

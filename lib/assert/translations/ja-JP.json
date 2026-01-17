@@ -191,7 +191,7 @@
         "route_number": "ルート{}",
         "no_comments": "コメントなし",
         "no_episode_name": "エピソード名なし",
-        "episode_not_exist": "この話は存在しません",
+        "episode_not_exist": "この話はまだ更新されていません",
         "playback_error": "再生アドレスを取得できません。他のルートをお試しください",
         "danmaku_not_exist": "この話は弹幕を提供していません",
         "danmaku_loaded": "弹幕ロード完了",

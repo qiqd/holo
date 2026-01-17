@@ -1,8 +1,8 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
@@ -21,16 +21,29 @@ class SetttingScreen extends StatefulWidget {
   State<SetttingScreen> createState() => _SetttingScreenState();
 }
 
-class _SetttingScreenState extends State<SetttingScreen> {
+class _SetttingScreenState extends State<SetttingScreen>
+    with WidgetsBindingObserver {
   String _version = '';
   String? _email;
   String? _token;
 
   @override
+  void activate() {
+    log("active");
+    super.activate();
+  }
+
+  @override
   void initState() {
     super.initState();
-
+    WidgetsBinding.instance.addObserver(this);
     _loadVersion();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> _loadVersion() async {
@@ -53,23 +66,17 @@ class _SetttingScreenState extends State<SetttingScreen> {
             child: ListTile(
               leading: const Icon(Icons.account_circle_rounded),
               title: AnimatedSwitcher(
-                duration: Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
+                key: const ValueKey('account_animated_switcher_key'),
+                duration: const Duration(milliseconds: 300),
                 child: Container(
+                  key: const ValueKey('account_status_container'),
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    _email != null && _token != null
-                        ? _email!
-                        : 'setting.account.logged_out'.tr(),
-                    key: ValueKey<String>(
-                      _email != null && _token != null
-                          ? _email!
-                          : 'setting.account.logged_out'.tr(),
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
+                  child: (_email != null && _token != null)
+                      ? Text(_email!, key: const ValueKey<String>('logged_in'))
+                      : Text(
+                          'setting.account.logged_out'.tr(),
+                          key: const ValueKey<String>('logged_out'),
+                        ),
                 ),
               ),
               onTap: () {
@@ -148,42 +155,22 @@ class _SetttingScreenState extends State<SetttingScreen> {
           ListTile(
             leading: const Icon(Icons.language),
             title: Text('setting.language.change'.tr()),
+            // subtitle: Text('setting.language.change_description'.tr()),
             trailing: PopupMenuButton(
+              child: Icon(Icons.menu_rounded),
+              onSelected: (value) {
+                context.setLocale(
+                  Locale(value.split('-')[0], value.split('-')[1]),
+                );
+                setState(() {});
+                log('Selected language: $value');
+              },
               itemBuilder: (content) {
                 return [
-                  PopupMenuItem(
-                    value: 'zh-CN',
-                    child: Text('中文简体'),
-                    onTap: () {
-                      context.setLocale(Locale('zh', 'CN'));
-                      setState(() {});
-                    },
-                  ),
-                  PopupMenuItem(
-                    value: 'zh-TW',
-                    child: Text('中文繁體'),
-                    onTap: () {
-                      context.setLocale(Locale('zh', 'TW'));
-                      setState(() {});
-                    },
-                  ),
-                  PopupMenuItem(
-                    value: 'en-US',
-                    child: Text('English'),
-                    onTap: () {
-                      context.setLocale(Locale('en', 'US'));
-                      setState(() {});
-                    },
-                  ),
-
-                  PopupMenuItem(
-                    value: 'ja-JP',
-                    child: Text('日本語'),
-                    onTap: () {
-                      context.setLocale(Locale('ja', 'JP'));
-                      setState(() {});
-                    },
-                  ),
+                  PopupMenuItem(value: 'zh-CN', child: Text('中文简体')),
+                  PopupMenuItem(value: 'zh-TW', child: Text('中文繁體')),
+                  PopupMenuItem(value: 'en-US', child: Text('English')),
+                  PopupMenuItem(value: 'ja-JP', child: Text('日本語')),
                 ];
               },
             ),
