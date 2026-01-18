@@ -865,11 +865,20 @@ class _PlayerScreenState extends State<PlayerScreen>
                                         title: Row(
                                           children: [
                                             Text('${index + 1}'),
+                                            SizedBox(width: 10),
                                             if (episodeIndex == index)
-                                              LottieBuilder.asset(
-                                                "lib/assert/lottie/playing.json",
-                                                repeat: true,
-                                                width: 40,
+                                              ColorFiltered(
+                                                colorFilter: ColorFilter.mode(
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                                  BlendMode.srcATop,
+                                                ),
+                                                child: LottieBuilder.asset(
+                                                  "lib/assert/lottie/playing.json",
+                                                  repeat: true,
+                                                  width: 40,
+                                                ),
                                               ),
                                           ],
                                         ),

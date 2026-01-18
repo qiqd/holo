@@ -872,8 +872,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
           // 剧集列表
           AnimatedPositioned(
             top: 0,
-            right: showEpisodeList && widget.isFullScreen ? 0 : -200,
-            width: 200,
+            right: showEpisodeList && widget.isFullScreen ? 0 : -300,
+            width: 300,
             height: MediaQuery.of(context).size.height,
             duration: const Duration(milliseconds: 300),
             child: Container(
@@ -894,11 +894,15 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                     ),
                     title: Text(widget.episodeList[index]),
                     trailing: widget.currentEpisodeIndex == index
-                        ? LottieBuilder.asset(
-                            "lib/assert/lottie/playing2.json",
-                            repeat: true,
-                            height: 200,
-                            width: 200,
+                        ? ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.primary,
+                              BlendMode.srcATop,
+                            ),
+                            child: LottieBuilder.asset(
+                              "lib/assert/lottie/playing2.json",
+                              repeat: true,
+                            ),
                           )
                         : null,
                     onTap: () => widget.onEpisodeSelected?.call(index),
