@@ -35,6 +35,7 @@ dependencies:
   shimmer: ^3.0.0
   image_picker: ^1.2.1
   webview_flutter: ^4.13.1
+  lottie: ^3.3.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -49,6 +50,7 @@ flutter:
   assets:
     - lib/images/launcher.png
     - lib/assert/translations/
+    - lib/assert/lottie/
 
 package_rename_config:
   android:

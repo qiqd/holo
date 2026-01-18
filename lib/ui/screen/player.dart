@@ -21,6 +21,8 @@ import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/cap_video_player.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:lottie/lottie.dart';
+
 import 'package:shimmer/shimmer.dart';
 
 import 'package:video_player/video_player.dart';
@@ -110,6 +112,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       if (_detail != null) {
         await _controller?.pause();
         await _controller?.dispose();
+
         _controller = null;
         lineIndex = lineIndex.clamp(0, _detail!.lines!.length - 1);
         episodeIndex = episodeIndex.clamp(
@@ -137,6 +140,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           Uri.parse(newUrl ?? ""),
         );
         await newController.initialize();
+
         if (mounted) {
           setState(() {
             _controller = newController;
@@ -377,6 +381,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   void dispose() {
     _controller?.dispose();
     _storeLocalHistory();
+
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     super.dispose();
@@ -857,8 +862,16 @@ class _PlayerScreenState extends State<PlayerScreen>
                                           _episode?.data?[index].nameCn ??
                                               "player.no_episode_name".tr(),
                                         ),
-                                        title: Text(
-                                          '${index + 1}${episodeIndex == index ? "•" : ""}',
+                                        title: Row(
+                                          children: [
+                                            Text('${index + 1}'),
+                                            if (episodeIndex == index)
+                                              LottieBuilder.asset(
+                                                "lib/assert/lottie/playing.json",
+                                                repeat: true,
+                                                width: 40,
+                                              ),
+                                          ],
                                         ),
                                       ),
                                     ),

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:holo/entity/danmu_item.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/util/local_store.dart';
+import 'package:lottie/lottie.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:video_player/video_player.dart';
@@ -892,6 +893,14 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       ),
                     ),
                     title: Text(widget.episodeList[index]),
+                    trailing: widget.currentEpisodeIndex == index
+                        ? LottieBuilder.asset(
+                            "lib/assert/lottie/playing2.json",
+                            repeat: true,
+                            height: 200,
+                            width: 200,
+                          )
+                        : null,
                     onTap: () => widget.onEpisodeSelected?.call(index),
                   );
                 },
