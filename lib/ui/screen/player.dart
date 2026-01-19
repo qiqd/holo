@@ -542,6 +542,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                       child: _controller != null && !isloading
                           ? CapVideoPlayer(
                               title: widget.nameCn,
+                              subTitle: _episode?.data?[episodeIndex].nameCn,
                               isloading: isloading,
                               controller: _controller!,
                               isFullScreen: _isFullScreen,
@@ -704,8 +705,30 @@ class _PlayerScreenState extends State<PlayerScreen>
                                   _detail?.lines?.length ?? 1,
                                   (index) => PopupMenuItem(
                                     value: index,
-                                    child: Text(
-                                      '${'player.route_number'.tr(args: [(index + 1).toString()])}${index == lineIndex ? '•' : ''}',
+                                    child: Row(
+                                      spacing: 10,
+                                      children: [
+                                        Text(
+                                          'player.route_number'.tr(
+                                            args: [(index + 1).toString()],
+                                          ),
+                                        ),
+
+                                        if (index == lineIndex)
+                                          ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.primary,
+                                              BlendMode.srcATop,
+                                            ),
+                                            child: LottieBuilder.asset(
+                                              "lib/assert/lottie/playing.json",
+                                              repeat: true,
+                                              width: 40,
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                     onTap: () {
                                       if (index == lineIndex || isloading) {

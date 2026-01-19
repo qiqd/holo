@@ -22,6 +22,7 @@ class CapVideoPlayer extends StatefulWidget {
   final VideoPlayerController controller;
   final bool isloading;
   final String? title;
+  final String? subTitle;
   final bool isFullScreen;
   final List<String> episodeList;
   final int currentEpisodeIndex;
@@ -40,6 +41,7 @@ class CapVideoPlayer extends StatefulWidget {
     this.isFullScreen = false,
     this.currentEpisodeIndex = 0,
     this.title,
+    this.subTitle,
     this.episodeList = const [],
     this.dammaku,
     this.onFullScreenChanged,
@@ -389,7 +391,10 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: Theme.of(context).copyWith(brightness: Brightness.light),
+      data: ThemeData(
+        brightness: Brightness.light,
+        colorSchemeSeed: Theme.of(context).colorScheme.primary,
+      ),
       child: Stack(
         children: [
           //播放器层
@@ -493,42 +498,47 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                         ],
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        // 返回
-                        IconButton(
-                          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                          onPressed: () {
-                            _showVideoControlsTimer();
-                            _showSetting = false;
-                            showEpisodeList = false;
-                            widget.onBackPressed?.call();
-                          },
-                        ),
-                        // 标题
-                        Expanded(
-                          child: Text(
-                            title,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(color: Colors.white),
-                          ),
-                        ),
-                        if (widget.isFullScreen)
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _showSetting = !_showSetting;
-                              });
-                              _showVideoControlsTimer();
-                            },
-                            icon: Icon(
-                              Icons.settings_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                      ],
+                    child: ListTile(
+                      horizontalTitleGap: 0,
+                      titleAlignment: ListTileTitleAlignment.center,
+                      leading: IconButton(
+                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                        onPressed: () {
+                          _showVideoControlsTimer();
+                          _showSetting = false;
+                          showEpisodeList = false;
+                          widget.onBackPressed?.call();
+                        },
+                      ),
+                      title: Text(
+                        title,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleLarge?.copyWith(color: Colors.white),
+                      ),
+                      subtitle:
+                          widget.subTitle != null && widget.subTitle!.isNotEmpty
+                          ? Text(
+                              widget.subTitle!,
+                              style: TextStyle(color: Colors.white),
+                            )
+                          : null,
+                      trailing: widget.isFullScreen
+                          ? IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _showSetting = !_showSetting;
+                                });
+                                _showVideoControlsTimer();
+                              },
+                              icon: Icon(
+                                Icons.settings_rounded,
+                                color: Colors.white,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                 ),
@@ -692,8 +702,14 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                             ),
 
                             //进度
-                            SizedBox(
+                            Container(
+                              constraints: BoxConstraints(minWidth: 100),
                               child: TextButton(
+                                style: ButtonStyle(
+                                  padding: WidgetStatePropertyAll(
+                                    EdgeInsets.symmetric(horizontal: 0),
+                                  ),
+                                ),
                                 onPressed: null,
                                 child: Text(
                                   "${widget.controller.value.position.inMinutes}:${widget.controller.value.position.inSeconds.remainder(60)}/${widget.controller.value.duration.inMinutes}:${widget.controller.value.duration.inSeconds.remainder(60)}",
@@ -752,7 +768,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                               // 播放速度
                               Badge(
                                 textColor: Colors.white,
-                                offset: Offset(8, -5),
+                                offset: Offset(9, -7),
                                 backgroundColor: Colors.transparent,
                                 label: Text(
                                   widget.controller.value.playbackSpeed
@@ -859,7 +875,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             opacity: showVideoControls && widget.isFullScreen ? 1 : 0,
             duration: Duration(milliseconds: 100),
             child: Padding(
-              padding: EdgeInsets.only(top: 30),
+              padding: EdgeInsets.only(top: 36),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Text(
@@ -902,6 +918,9 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                             child: LottieBuilder.asset(
                               "lib/assert/lottie/playing2.json",
                               repeat: true,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
                             ),
                           )
                         : null,
