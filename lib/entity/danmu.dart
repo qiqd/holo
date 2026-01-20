@@ -1,20 +1,19 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'dammaku.g.dart';
+part 'danmu.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Danmu {
   int? count;
   List<DanmuItem>? comments;
   Danmu({this.count, this.comments});
 
-  factory Danmu.fromJson(Map<String, dynamic> json) =>
-      _$DammakuResponseFromJson(json);
+  factory Danmu.fromJson(Map<String, dynamic> json) => _$DanmuFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DammakuResponseToJson(this);
+  Map<String, dynamic> toJson() => _$DanmuToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class DanmuItem {
   int? cid;
 
@@ -34,7 +33,7 @@ class DanmuItem {
   DanmuItem({this.cid, this.type, this.time, this.text, this.color, this.t});
 
   factory DanmuItem.fromJson(Map<String, dynamic> json) =>
-      _$DammakuFromJson(json);
+      _$DanmuItemFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DammakuToJson(this);
+  Map<String, dynamic> toJson() => _$DanmuItemToJson(this);
 }

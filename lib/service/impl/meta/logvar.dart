@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:holo/entity/danmu_item.dart';
+import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/logvar_episode.dart';
 import 'package:holo/util/http_util.dart';
 

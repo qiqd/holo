@@ -8,6 +8,8 @@ import 'package:holo/service/api.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/image_search.dart';
+import 'package:holo/ui/screen/rule_edit.dart';
+import 'package:holo/ui/screen/rule_manager.dart';
 import 'package:holo/ui/screen/sign.dart';
 import 'package:holo/util/local_store.dart';
 
@@ -133,6 +135,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         path: '/image_search',
         builder: (context, state) {
           return ImageSearchScreen();
+        },
+      ),
+      GoRoute(
+        path: '/rule_edit',
+        builder: (context, state) {
+          return RuleEditScreen();
+        },
+      ),
+      GoRoute(
+        path: '/rule_manager',
+        builder: (context, state) {
+          return RuleManager();
         },
       ),
     ],

@@ -1,22 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'danmu_item.dart';
+part of 'danmu.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Danmu _$DammakuResponseFromJson(Map<String, dynamic> json) => Danmu(
+Danmu _$DanmuFromJson(Map<String, dynamic> json) => Danmu(
   count: (json['count'] as num?)?.toInt(),
   comments: (json['comments'] as List<dynamic>?)
       ?.map((e) => DanmuItem.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
-Map<String, dynamic> _$DammakuResponseToJson(Danmu instance) =>
-    <String, dynamic>{'count': instance.count, 'comments': instance.comments};
+Map<String, dynamic> _$DanmuToJson(Danmu instance) => <String, dynamic>{
+  'count': instance.count,
+  'comments': instance.comments?.map((e) => e.toJson()).toList(),
+};
 
-DanmuItem _$DammakuFromJson(Map<String, dynamic> json) => DanmuItem(
+DanmuItem _$DanmuItemFromJson(Map<String, dynamic> json) => DanmuItem(
   cid: (json['cid'] as num?)?.toInt(),
   type: (json['type'] as num?)?.toInt(),
   time: (json['time'] as num?)?.toDouble(),
@@ -25,7 +27,7 @@ DanmuItem _$DammakuFromJson(Map<String, dynamic> json) => DanmuItem(
   t: (json['t'] as num?)?.toDouble(),
 );
 
-Map<String, dynamic> _$DammakuToJson(DanmuItem instance) => <String, dynamic>{
+Map<String, dynamic> _$DanmuItemToJson(DanmuItem instance) => <String, dynamic>{
   'cid': instance.cid,
   'type': instance.type,
   'time': instance.time,

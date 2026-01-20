@@ -9,7 +9,7 @@ import 'package:canvas_danmaku/models/danmaku_option.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import 'package:holo/entity/danmu_item.dart';
+import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:lottie/lottie.dart';

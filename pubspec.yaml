@@ -39,8 +39,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  json_serializable: ^6.7.1
-  build_runner: ^2.4.7 #flutter pub run build_runner build
+  json_serializable: ^6.11.4
+  build_runner: ^2.4.7 # dart run build_runner build --delete-conflicting-outputs --build-filter=lib/entity/**
   package_rename: ^1.10.1
   flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0

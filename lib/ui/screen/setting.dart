@@ -247,6 +247,13 @@ class _SetttingScreenState extends State<SetttingScreen>
             ),
             onTap: () => _clearCache(),
           ),
+          // 规则管理部分
+          ListTile(
+            leading: const Icon(Icons.rule_rounded),
+            title: Text('规则管理'),
+            subtitle: Text('规则编辑与管理'),
+            onTap: () => context.push('/rule_manager'),
+          ),
 
           // 外观设置部分
           _buildSectionHeader('setting.section.appearance'.tr()),

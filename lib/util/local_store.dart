@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:canvas_danmaku/models/danmaku_option.dart';
 import 'package:holo/entity/playback_history.dart';
+import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -254,6 +255,21 @@ class LocalStore {
       "filter": filter,
     };
     _prefs!.setString("${_key}_danmaku_option", json.encode(map));
+  }
+
+  static List<Rule> getRules() {
+    if (_prefs == null) return [];
+    var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
+    return rulesStr
+        .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
+        .toList();
+  }
+
+  static void saveRule(Rule rule) {
+    if (_prefs == null) return;
+    var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
+    rulesStr.add(json.encode(rule.toJson()));
+    _prefs!.setStringList("${_key}_rules", rulesStr);
   }
 
   static bool getBool(String key, {bool defaultValue = false}) {

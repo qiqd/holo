@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:html/parser.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebviewUtil {
@@ -37,6 +38,36 @@ class WebviewUtil {
     return result;
   }
 
+  /// 检测HTML文档中是否包含iframe或video标签，且它们的src属性包含http链接
+  static bool hasValidMediaElements(String htmlContent) {
+    try {
+      var doc = parse(htmlContent);
+      var iframes = doc.querySelectorAll('iframe');
+      var videos = doc.querySelectorAll('video');
+
+      // 检查iframe标签
+      for (var iframe in iframes) {
+        String? src = iframe.attributes['src'];
+        if (src != null && src.contains('http')) {
+          return true;
+        }
+      }
+
+      // 检查video标签
+      for (var video in videos) {
+        String? src = video.attributes['src'];
+        if (src != null && src.contains('http')) {
+          return true;
+        }
+      }
+
+      return false;
+    } catch (e) {
+      log('解析HTML错误: ${e.toString()}');
+      return false;
+    }
+  }
+
   static Future<String> fetchHtml(
     String url, {
     Duration timeout = const Duration(seconds: 10),
@@ -56,8 +87,38 @@ class WebviewUtil {
                   .runJavaScriptReturningResult(
                     'document.documentElement.outerHTML',
                   );
-              String htmlContent = html.toString();
 
+              String htmlContent = html.toString();
+              if (containsUnicode(htmlContent)) {
+                htmlContent = unescapeUnicodeString(htmlContent);
+              }
+              int count = 0;
+              // 等待直到HTML内容中包含有效媒体元素或超时结束
+              while (!hasValidMediaElements(htmlContent) &&
+                  !completer.isCompleted) {
+                count++;
+                log('HTML内容中不包含有效媒体元素，继续等待...');
+
+                htmlContent =
+                    (await _webViewController.runJavaScriptReturningResult(
+                      'document.documentElement.outerHTML',
+                    )).toString();
+                if (containsUnicode(htmlContent)) {
+                  htmlContent = unescapeUnicodeString(htmlContent);
+                }
+                await Future.delayed(Duration(seconds: 1));
+                if (count == 50) {
+                  log('html content:$htmlContent');
+                }
+              }
+              htmlContent =
+                  (await _webViewController.runJavaScriptReturningResult(
+                    'document.documentElement.outerHTML',
+                  )).toString();
+              if (containsUnicode(htmlContent)) {
+                htmlContent = unescapeUnicodeString(htmlContent);
+              }
+              //log('final html content:$htmlContent');
               if (!completer.isCompleted) {
                 completer.complete(htmlContent);
               }
@@ -75,13 +136,13 @@ class WebviewUtil {
           onWebResourceError: (WebResourceError error) {
             log('error code ${error.errorCode}');
             log('WebView加载错误: ${error.description}');
-            String errorMsg = 'WebView资源错误: ${error.description}';
-            if (onError != null) {
-              onError(errorMsg);
-            }
-            if (!completer.isCompleted) {
-              completer.completeError(errorMsg);
-            }
+            // String errorMsg = 'WebView资源错误: ${error.description}';
+            // if (onError != null) {
+            //   onError(errorMsg);
+            // }
+            // if (!completer.isCompleted) {
+            //   completer.completeError(errorMsg);
+            // }
           },
         ),
       );
@@ -89,7 +150,7 @@ class WebviewUtil {
       await _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
 
       await _webViewController.loadRequest(
-        Uri.parse(url),
+        Uri.parse("https://$url"),
         headers: headers ?? {},
       );
 

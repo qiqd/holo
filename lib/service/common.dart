@@ -10,25 +10,27 @@ class Common extends SourceService {
   final Rule rule;
   Common({
     this.rule = const Rule(
-      name: "厂长影视",
-      baseUrl: 'https://www.czzymovie.com',
-      logoUrl:
-          'https://cf.hbcn.fun/wp-content/uploads/2021/08/19dc1c424e7c33-e1695868187732.png',
-      searchUrl: 'https://www.yinghuadongman.com.cn/u/?wd={keyword}',
-      itemImgSelector: 'img',
-      itemTitleSelector: 'h2',
+      name: "樱花动漫",
+      baseUrl: 'www.yinghuadongman.com.cn',
+      logoUrl: 'www.yinghuadongman.com.cn/template/y/static/images/logo.jpg',
+      searchUrl: 'www.yinghuadongman.com.cn/u/?wd={keyword}',
+      fullSearchUrl: false,
+      searchSelector: 'article.u-movie',
+      itemImgSelector: 'div.list-poster img',
+      itemTitleSelector: 'a',
       itemIdSelector: 'a',
       itemImgFromSrc: false,
-      detailUrl: 'https://www.yinghuadongman.com.cn{mediaId}',
-      lineSelector: 'div.paly_list_btn',
+      detailUrl: 'www.yinghuadongman.com.cn{mediaId}',
+      fullDetailUrl: false,
+      lineSelector: 'div.vlink',
       episodeSelector: 'a',
-      playerUrl: '',
-      searchSelector: 'article.u-movie',
-
-      playerVideoSelector: 'iframe.viframe',
+      playerUrl: 'www.yinghuadongman.com.cn{episodeId}',
+      fullPlayerUrl: false,
+      playerVideoSelector: 'td#playleft>iframe',
       videoUrlSubsChar: '=',
     ),
   });
+  factory Common.build(Rule rule) => Common(rule: rule);
   @override
   String getBaseUrl() {
     return rule.baseUrl;
@@ -54,10 +56,13 @@ class Common extends SourceService {
   ) async {
     try {
       final htmlStr = await WebviewUtil.fetchHtml(
-        rule.detailUrl.replaceAll('{mediaId}', mediaId),
+        rule.fullDetailUrl
+            ? rule.detailUrl
+            : rule.detailUrl.replaceAll('{mediaId}', mediaId),
         timeout: const Duration(seconds: 60),
         onError: exceptionHandler,
       );
+      //log("detail-htmlStr:$htmlStr");
       var doc = parse(htmlStr);
       var lines = doc.querySelectorAll(rule.lineSelector).map((line) {
         final episode = line.querySelectorAll(rule.episodeSelector);
@@ -83,7 +88,9 @@ class Common extends SourceService {
   }) async {
     try {
       final htmlStr = await WebviewUtil.fetchHtml(
-        rule.searchUrl.replaceAll('{keyword}', keyword),
+        rule.fullSearchUrl
+            ? rule.searchUrl
+            : rule.searchUrl.replaceAll('{keyword}', keyword),
         timeout: timeout,
         onError: exceptionHandler,
       );
@@ -104,6 +111,12 @@ class Common extends SourceService {
                       ? 'src'
                       : 'data-original'] ??
                   '',
+
+              type:
+                  (rule.itemGenreSelector != null &&
+                      rule.itemGenreSelector!.isNotEmpty)
+                  ? e.querySelector(rule.itemGenreSelector!)?.text
+                  : null,
             ),
           )
           .toList();
@@ -120,15 +133,35 @@ class Common extends SourceService {
   ) async {
     try {
       final htmlStr = await WebviewUtil.fetchHtml(
-        episodeId,
-        timeout: const Duration(seconds: 60),
+        rule.fullPlayerUrl
+            ? rule.playerUrl
+            : rule.playerUrl.replaceAll('{episodeId}', episodeId),
+        timeout: Duration(seconds: rule.timeout),
         onError: exceptionHandler,
       );
-      log("htmlStr:$htmlStr");
+      // log("htmlStr:$htmlStr");
       var doc = parse(htmlStr);
+      if (rule.embedVideoSelector != null &&
+          rule.embedVideoSelector!.isNotEmpty) {
+        var embedSelectors = rule.embedVideoSelector!.split(',');
+        for (var selector in embedSelectors) {
+          var tempUrl = doc.querySelector(selector)?.attributes['src'] ?? '';
+          var tempHtmlStr = await WebviewUtil.fetchHtml(
+            tempUrl,
+            timeout: Duration(seconds: rule.timeout),
+          );
+          doc = parse(tempHtmlStr);
+          log('embed selector:$selector, tempUrl:$tempUrl');
+          //  log('embed tempHtmlStr:$tempHtmlStr');
+        }
+      }
+
       var videoUrl =
           doc.querySelector(rule.playerVideoSelector)?.attributes['src'] ?? '';
-      if (rule.videoUrlSubsChar != null) {
+      if (videoUrl.isEmpty) {
+        videoUrl = doc.querySelector(rule.playerVideoSelector)?.text ?? '';
+      }
+      if (rule.videoUrlSubsChar != null && rule.videoUrlSubsChar!.isNotEmpty) {
         videoUrl = videoUrl.split(rule.videoUrlSubsChar!).last;
       }
       return videoUrl;

@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:holo/service/impl/animation/common.dart';
-import 'package:holo/service/source_service.dart';
+import 'package:holo/entity/rule.dart';
+import 'package:holo/service/common.dart';
 
 void main() {
   runApp(const SeviceCommonTest());
@@ -17,7 +17,32 @@ class SeviceCommonTest extends StatefulWidget {
 }
 
 class _SeviceCommonTestState extends State<SeviceCommonTest> {
-  final Common _sourceService = Common();
+  final Common _sourceService = Common.build(
+    const Rule(
+      name: "樱花动漫2",
+      baseUrl: 'https://www.czzymovie.com',
+      logoUrl:
+          'https://tv.yinghuadongman.info/upload/mxprocms/20260114-1/f765273ee1a2bd224227ca581fdf22f8.jpg',
+      searchUrl:
+          'https://tv.yinghuadongman.info/search_-------------.html?wd={keyword}',
+      fullSearchUrl: false,
+      searchSelector: 'div.module-card-item.module-item',
+      itemImgSelector: 'div.module-item-pic img',
+      itemImgFromSrc: false,
+      itemTitleSelector: 'div.module-card-item-title a',
+      itemIdSelector: 'div.module-card-item-title a',
+      itemGenreSelector: 'div.module-info-item-content',
+      detailUrl: 'https://tv.yinghuadongman.info{mediaId}',
+      fullDetailUrl: false,
+      lineSelector: 'div#panel1',
+      episodeSelector: 'a',
+      playerUrl: 'https://tv.yinghuadongman.info{episodeId}',
+      fullPlayerUrl: false,
+      embedVideoSelector: 'td#playleft>iframe',
+      timeout: 20,
+      playerVideoSelector: 'video#lelevideo',
+    ),
+  );
   String _keyword = '';
   String _mediaId = '';
   String _episodeId = '';
@@ -37,9 +62,15 @@ class _SeviceCommonTestState extends State<SeviceCommonTest> {
 
   void _player() async {
     final res = await _sourceService.fetchView(_episodeId, (e) {
-      log(e.toString());
+      log('fetchView error:$e');
     });
-    log(res.toString());
+    log('fetchView res:$res');
+  }
+
+  @override
+  void initState() {
+    // log(_sourceService);
+    super.initState();
   }
 
   @override
@@ -47,6 +78,7 @@ class _SeviceCommonTestState extends State<SeviceCommonTest> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(title: const Text('SeviceCommonTest')),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
