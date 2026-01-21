@@ -10,6 +10,7 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   name: json['name'] as String,
   logoUrl: json['logoUrl'] as String,
   searchUrl: json['searchUrl'] as String,
+  version: json['version'] as String,
   fullSearchUrl: json['fullSearchUrl'] as bool,
   detailUrl: json['detailUrl'] as String,
   playerUrl: json['playerUrl'] as String,
@@ -28,6 +29,10 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   embedVideoSelector: json['embedVideoSelector'] as String?,
   itemGenreSelector: json['itemGenreSelector'] as String?,
   videoUrlSubsChar: json['videoUrlSubsChar'] as String?,
+  updateAt: DateTime.parse(json['updateAt'] as String? ?? '2012-02-27'),
+  isEnabled: json['isEnabled'] as bool? ?? true,
+  videoElementAttribute: json['videoElementAttribute'] as String?,
+  waitForMediaElement: json['waitForMediaElement'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
@@ -35,6 +40,7 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'baseUrl': instance.baseUrl,
   'logoUrl': instance.logoUrl,
   'searchUrl': instance.searchUrl,
+  'version': instance.version,
   'fullSearchUrl': instance.fullSearchUrl,
   'timeout': instance.timeout,
   'searchSelector': instance.searchSelector,
@@ -52,4 +58,8 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'playerVideoSelector': instance.playerVideoSelector,
   'embedVideoSelector': instance.embedVideoSelector,
   'videoUrlSubsChar': instance.videoUrlSubsChar,
+  'updateAt': instance.updateAt.toIso8601String(),
+  'isEnabled': instance.isEnabled,
+  'videoElementAttribute': instance.videoElementAttribute,
+  'waitForMediaElement': instance.waitForMediaElement,
 };

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/subject.dart' show Data;
 import 'package:holo/service/api.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
@@ -10,6 +11,7 @@ import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/image_search.dart';
 import 'package:holo/ui/screen/rule_edit.dart';
 import 'package:holo/ui/screen/rule_manager.dart';
+import 'package:holo/ui/screen/rule_repository.dart';
 import 'package:holo/ui/screen/sign.dart';
 import 'package:holo/util/local_store.dart';
 
@@ -25,9 +27,10 @@ import 'package:holo/ui/screen/subscribe.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   await LocalStore.init();
   await Bangumi.initDio();
-  await EasyLocalization.ensureInitialized();
+  Api.initSources();
   runApp(
     EasyLocalization(
       supportedLocales: [
@@ -36,7 +39,7 @@ void main() async {
         Locale('zh', 'TW'),
         Locale('ja', 'JP'),
       ],
-      path: 'lib/assert/translations',
+      path: 'lib/assets/translations',
       fallbackLocale: Locale('zh', 'CN'),
       child: MyApp(),
     ),
@@ -140,13 +143,29 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       GoRoute(
         path: '/rule_edit',
         builder: (context, state) {
-          return RuleEditScreen();
+          final map = state.extra as Map<String, dynamic>?;
+          return RuleEditScreen(
+            rule: map?['rule'] as Rule?,
+            isEditMode: map?['isEditMode'] as bool? ?? false,
+          );
         },
       ),
       GoRoute(
         path: '/rule_manager',
         builder: (context, state) {
           return RuleManager();
+        },
+      ),
+      GoRoute(
+        path: '/rule_manager',
+        builder: (context, state) {
+          return RuleManager();
+        },
+      ),
+      GoRoute(
+        path: '/rule_repository',
+        builder: (context, state) {
+          return RuleRepository();
         },
       ),
     ],
@@ -177,8 +196,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
 
+    WidgetsBinding.instance.addObserver(this);
     MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
       (element) => element.toString() == LocalStore.getString('theme_mode'),
       orElse: () => ThemeMode.system,
@@ -240,25 +259,25 @@ class ScaffoldWithNavBar extends StatelessWidget {
     // var currentPath = router.routerDelegate.currentConfiguration.uri.toString();
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
+        showSelectedLabels: true,
         selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),
-            label: 'Home',
+            label: 'home.title'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month_rounded),
-            label: 'Calendar',
+            label: 'calendar.title'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.subscriptions_rounded),
-            label: 'Subscribe',
+            label: 'subscribe.title'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings_rounded),
-            label: 'Setting',
+            label: 'setting.title'.tr(),
           ),
         ],
         currentIndex: navigationShell.currentIndex,

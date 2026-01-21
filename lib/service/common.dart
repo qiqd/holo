@@ -8,28 +8,9 @@ import 'package:html/parser.dart';
 
 class Common extends SourceService {
   final Rule rule;
-  Common({
-    this.rule = const Rule(
-      name: "樱花动漫",
-      baseUrl: 'www.yinghuadongman.com.cn',
-      logoUrl: 'www.yinghuadongman.com.cn/template/y/static/images/logo.jpg',
-      searchUrl: 'www.yinghuadongman.com.cn/u/?wd={keyword}',
-      fullSearchUrl: false,
-      searchSelector: 'article.u-movie',
-      itemImgSelector: 'div.list-poster img',
-      itemTitleSelector: 'a',
-      itemIdSelector: 'a',
-      itemImgFromSrc: false,
-      detailUrl: 'www.yinghuadongman.com.cn{mediaId}',
-      fullDetailUrl: false,
-      lineSelector: 'div.vlink',
-      episodeSelector: 'a',
-      playerUrl: 'www.yinghuadongman.com.cn{episodeId}',
-      fullPlayerUrl: false,
-      playerVideoSelector: 'td#playleft>iframe',
-      videoUrlSubsChar: '=',
-    ),
-  });
+  final RegExp reg = RegExp(r'\{[^}]*\}');
+  final WebviewUtil webviewUtil = WebviewUtil();
+  Common({required this.rule});
   factory Common.build(Rule rule) => Common(rule: rule);
   @override
   String getBaseUrl() {
@@ -55,11 +36,9 @@ class Common extends SourceService {
     Function(String) exceptionHandler,
   ) async {
     try {
-      final htmlStr = await WebviewUtil.fetchHtml(
-        rule.fullDetailUrl
-            ? rule.detailUrl
-            : rule.detailUrl.replaceAll('{mediaId}', mediaId),
-        timeout: const Duration(seconds: 60),
+      final htmlStr = await webviewUtil.fetchHtml(
+        rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId),
+        timeout: Duration(seconds: rule.timeout),
         onError: exceptionHandler,
       );
       //log("detail-htmlStr:$htmlStr");
@@ -87,11 +66,9 @@ class Common extends SourceService {
     timeout = const Duration(seconds: 60),
   }) async {
     try {
-      final htmlStr = await WebviewUtil.fetchHtml(
-        rule.fullSearchUrl
-            ? rule.searchUrl
-            : rule.searchUrl.replaceAll('{keyword}', keyword),
-        timeout: timeout,
+      final htmlStr = await webviewUtil.fetchHtml(
+        rule.baseUrl + rule.searchUrl.replaceAll(reg, keyword),
+        timeout: Duration(seconds: rule.timeout),
         onError: exceptionHandler,
       );
       // log("htmlStr:$htmlStr");
@@ -132,11 +109,11 @@ class Common extends SourceService {
     Function(String) exceptionHandler,
   ) async {
     try {
-      final htmlStr = await WebviewUtil.fetchHtml(
-        rule.fullPlayerUrl
-            ? rule.playerUrl
-            : rule.playerUrl.replaceAll('{episodeId}', episodeId),
+      final htmlStr = await webviewUtil.fetchHtml(
+        rule.baseUrl + rule.playerUrl.replaceAll(reg, episodeId),
         timeout: Duration(seconds: rule.timeout),
+        isPlayerPage: true,
+        waitForMediaElement: rule.waitForMediaElement,
         onError: exceptionHandler,
       );
       // log("htmlStr:$htmlStr");
@@ -146,24 +123,33 @@ class Common extends SourceService {
         var embedSelectors = rule.embedVideoSelector!.split(',');
         for (var selector in embedSelectors) {
           var tempUrl = doc.querySelector(selector)?.attributes['src'] ?? '';
-          var tempHtmlStr = await WebviewUtil.fetchHtml(
+          var tempHtmlStr = await webviewUtil.fetchHtml(
             tempUrl,
+            isPlayerPage: true,
+            waitForMediaElement: rule.waitForMediaElement,
             timeout: Duration(seconds: rule.timeout),
           );
           doc = parse(tempHtmlStr);
-          log('embed selector:$selector, tempUrl:$tempUrl');
+          log(
+            'embed selector==${DateTime.now().millisecond}==}:$selector, tempUrl:$tempUrl',
+          );
           //  log('embed tempHtmlStr:$tempHtmlStr');
         }
       }
 
       var videoUrl =
-          doc.querySelector(rule.playerVideoSelector)?.attributes['src'] ?? '';
+          doc
+              .querySelector(rule.playerVideoSelector)
+              ?.attributes[rule.videoElementAttribute ?? 'src'] ??
+          '';
+      // 如果videoUrl为空，尝试从playerVideoSelector中获取文本内容
       if (videoUrl.isEmpty) {
         videoUrl = doc.querySelector(rule.playerVideoSelector)?.text ?? '';
       }
       if (rule.videoUrlSubsChar != null && rule.videoUrlSubsChar!.isNotEmpty) {
         videoUrl = videoUrl.split(rule.videoUrlSubsChar!).last;
       }
+      log('fetch_view_videoUrl==${DateTime.now().millisecond}==}:$videoUrl');
       return videoUrl;
     } catch (e) {
       exceptionHandler(e.toString());

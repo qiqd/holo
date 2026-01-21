@@ -47,3 +47,4 @@ app.*.map.json
 # Flutter test folder
 /test/
 .vscode/launch.json
+website.md

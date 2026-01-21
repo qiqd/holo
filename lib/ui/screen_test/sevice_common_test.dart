@@ -17,8 +17,8 @@ class SeviceCommonTest extends StatefulWidget {
 }
 
 class _SeviceCommonTestState extends State<SeviceCommonTest> {
-  final Common _sourceService = Common.build(
-    const Rule(
+  late final Common _sourceService = Common.build(
+    Rule(
       name: "樱花动漫2",
       baseUrl: 'https://www.czzymovie.com',
       logoUrl:
@@ -39,8 +39,10 @@ class _SeviceCommonTestState extends State<SeviceCommonTest> {
       playerUrl: 'https://tv.yinghuadongman.info{episodeId}',
       fullPlayerUrl: false,
       embedVideoSelector: 'td#playleft>iframe',
-      timeout: 20,
+      timeout: 30,
       playerVideoSelector: 'video#lelevideo',
+      waitForMediaElement: true,
+      updateAt: DateTime.now(),
     ),
   );
   String _keyword = '';
@@ -69,7 +71,6 @@ class _SeviceCommonTestState extends State<SeviceCommonTest> {
 
   @override
   void initState() {
-    // log(_sourceService);
     super.initState();
   }
 

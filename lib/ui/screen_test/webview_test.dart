@@ -32,6 +32,7 @@ class WebviewTest extends StatefulWidget {
 class _WebviewTestState extends State<WebviewTest> {
   final TextEditingController _urlController = TextEditingController();
   final WebViewController _webViewController = WebViewController();
+  final WebviewUtil _webviewUtil = WebviewUtil();
   bool _isLoading = false;
   String _currentUrl = '';
   Timer? _timer;
@@ -45,7 +46,7 @@ class _WebviewTestState extends State<WebviewTest> {
           .then((value) {
             String htmlContent = value.toString();
             log(
-              'htmlContent:${WebviewUtil.unescapeUnicodeString(htmlContent)}',
+              'htmlContent:${_webviewUtil.unescapeUnicodeString(htmlContent)}',
             );
           });
     });
@@ -64,11 +65,11 @@ class _WebviewTestState extends State<WebviewTest> {
             setState(() {
               _isLoading = false;
             });
-            final Object html = await _webViewController
-                .runJavaScriptReturningResult(
-                  'document.documentElement.outerHTML',
-                );
-            String htmlContent = html.toString();
+            // final Object html = await _webViewController
+            //     .runJavaScriptReturningResult(
+            //       'document.documentElement.outerHTML',
+            //     );
+            // String htmlContent = html.toString();
             // log(
             //   'htmlContent:${WebviewUtil.unescapeUnicodeString(htmlContent)}',
             // );
@@ -79,7 +80,7 @@ class _WebviewTestState extends State<WebviewTest> {
             });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('加载错误: ${error.description ?? "未知错误"}'),
+                content: Text('加载错误: ${error.description}'),
                 backgroundColor: Colors.red,
               ),
             );

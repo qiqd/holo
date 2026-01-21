@@ -265,11 +265,60 @@ class LocalStore {
         .toList();
   }
 
-  static void saveRule(Rule rule) {
+  static void saveRules(List<Rule> rules) {
     if (_prefs == null) return;
     var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
-    rulesStr.add(json.encode(rule.toJson()));
+    var ruleList = rulesStr
+        .map((item) => Rule.fromJson(json.decode(item)))
+        .toList();
+    ruleList.addAll(rules);
+    // 去重,根据name,保留最新的
+    var ruleMap = <String, Rule>{};
+    for (var rule in ruleList) {
+      if (ruleMap[rule.name] != null) {
+        if (ruleMap[rule.name]!.updateAt.isAfter(rule.updateAt)) {
+          continue;
+        }
+      }
+      ruleMap[rule.name] = rule;
+    }
+    rulesStr = ruleMap.values
+        .map((item) => json.encode(item.toJson()))
+        .toList();
     _prefs!.setStringList("${_key}_rules", rulesStr);
+  }
+
+  static void removeRuleByName(String name) {
+    if (_prefs == null) return;
+    var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
+    var rules = rulesStr
+        .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
+        .toList();
+    rules.removeWhere((item) => item.name == name);
+    rulesStr = rules.map((item) => json.encode(item.toJson())).toList();
+    _prefs!.setStringList("${_key}_rules", rulesStr);
+  }
+
+  static void updateRule(Rule rule) {
+    if (_prefs == null) return;
+    var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
+    var rules = rulesStr
+        .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
+        .toList();
+    rules.removeWhere((item) => item.name == rule.name);
+    rules.add(rule);
+    rulesStr = rules.map((item) => json.encode(item.toJson())).toList();
+    _prefs!.setStringList("${_key}_rules", rulesStr);
+  }
+
+  static void saveRuleRepositoryUrl(String url) {
+    if (_prefs == null) return;
+    _prefs!.setString("${_key}_rule_repository_url", url);
+  }
+
+  static String getRuleRepositoryUrl() {
+    if (_prefs == null) return "";
+    return _prefs!.getString("${_key}_rule_repository_url") ?? "";
   }
 
   static bool getBool(String key, {bool defaultValue = false}) {

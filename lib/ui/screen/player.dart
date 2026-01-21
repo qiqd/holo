@@ -151,10 +151,12 @@ class _PlayerScreenState extends State<PlayerScreen>
       }
     } catch (e) {
       log("fetchView error: $e");
-      setState(() {
-        msg = "player.playback_error".tr();
-        onComplete?.call(msg);
-      });
+      if (mounted) {
+        setState(() {
+          msg = "player.playback_error".tr();
+          onComplete?.call(msg);
+        });
+      }
     } finally {
       isloading = false;
     }
@@ -266,6 +268,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   void _loadDanmaku({
     bool isFirstLoad = true,
+    String? keyword,
     Function(String e)? onComplete,
   }) async {
     if (_isDanmakuLoading) {
@@ -276,21 +279,21 @@ class _PlayerScreenState extends State<PlayerScreen>
       // _danmuMsg = "player.danmaku_loading".tr();
     });
     if (isFirstLoad) {
-      var data = await Api.logvar.fetchEpisodeFromLogvar(subject.nameCn ?? "", (
-        e,
-      ) {
-        if (mounted) {
-          setState(() {
-            _isDanmakuLoading = false;
-            onComplete?.call(e.toString());
-          });
-        }
-      });
+      var data = await Api.logvar.fetchEpisodeFromLogvar(
+        keyword ?? subject.nameCn ?? "",
+        (e) {
+          if (mounted) {
+            setState(() {
+              _isDanmakuLoading = false;
+              onComplete?.call(e.toString());
+            });
+          }
+        },
+      );
       setState(() {
         _danmakuList = data;
       });
       double score = 0;
-
       for (var element in data) {
         var temp = JaroWinklerSimilarity.apply(
           element.animeTitle,
@@ -305,6 +308,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       }
       if (_bestMatch == null) {
         setState(() {
+          _isDanmakuLoading = false;
           onComplete?.call("player.danmaku_not_exist".tr());
         });
         return;
@@ -619,70 +623,115 @@ class _PlayerScreenState extends State<PlayerScreen>
                             IconButton(
                               tooltip: "player.danmaku_selection".tr(),
                               onPressed: () {
+                                //弹幕选择sheet
                                 showModalBottomSheet(
                                   context: context,
-                                  barrierLabel: "fff",
                                   builder: (context) {
-                                    return Column(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          child: Center(
-                                            child: Text(
-                                              'player.choose_danmaku_sheet_text'
-                                                  .tr(),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: StatefulBuilder(
-                                            builder: (context, setState) =>
-                                                (_danmakuList == null ||
-                                                    _danmakuList!.isEmpty)
-                                                ? Center(
-                                                    child: Text(
-                                                      'player.no_danmaku_sheet_text'
-                                                          .tr(),
+                                    return StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return Column(
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                              ).copyWith(top: 10),
+                                              child: Center(
+                                                child: TextField(
+                                                  textInputAction: .search,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        'player.danmaku_search_hint'
+                                                            .tr(),
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            20,
+                                                          ),
                                                     ),
-                                                  )
-                                                : ListView.separated(
-                                                    itemCount:
-                                                        _danmakuList?.length ??
-                                                        0,
-                                                    separatorBuilder:
-                                                        (context, index) =>
-                                                            Divider(height: 1),
-                                                    itemBuilder: (context, index) {
-                                                      return ListTile(
-                                                        selected:
-                                                            _bestMatch
-                                                                ?.animeId ==
-                                                            _danmakuList?[index]
-                                                                .animeId,
-                                                        title: Text(
-                                                          _danmakuList?[index]
-                                                                  .animeTitle ??
-                                                              '',
+                                                  ),
+                                                  onSubmitted: (value) {
+                                                    if (value.isEmpty) {
+                                                      return;
+                                                    }
+                                                    _loadDanmaku(
+                                                      isFirstLoad: true,
+                                                      keyword: value,
+                                                      onComplete: (e) {
+                                                        setState(() {});
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(e),
+                                                            showCloseIcon: true,
+                                                          ),
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                            if (_isDanmakuLoading)
+                                              Padding(
+                                                padding: .only(top: 3),
+                                                child:
+                                                    LinearProgressIndicator(),
+                                              ),
+                                            Expanded(
+                                              child: StatefulBuilder(
+                                                builder: (context, setState) =>
+                                                    (_danmakuList == null ||
+                                                        _danmakuList!.isEmpty)
+                                                    ? Center(
+                                                        child: Text(
+                                                          'player.no_danmaku_sheet_text'
+                                                              .tr(),
                                                         ),
-                                                        subtitle: Text(
-                                                          _danmakuList?[index]
-                                                                  .animeTitle ??
-                                                              '',
-                                                        ),
-                                                        onTap: () {
-                                                          _onDanmakuSourceChange(
-                                                            _danmakuList![index],
-                                                          );
-                                                          Navigator.pop(
-                                                            context,
+                                                      )
+                                                    : ListView.separated(
+                                                        itemCount:
+                                                            _danmakuList
+                                                                ?.length ??
+                                                            0,
+                                                        separatorBuilder:
+                                                            (context, index) =>
+                                                                Divider(
+                                                                  height: 1,
+                                                                ),
+                                                        itemBuilder: (context, index) {
+                                                          return ListTile(
+                                                            selected:
+                                                                _bestMatch
+                                                                    ?.animeId ==
+                                                                _danmakuList?[index]
+                                                                    .animeId,
+                                                            title: Text(
+                                                              _danmakuList?[index]
+                                                                      .animeTitle ??
+                                                                  '',
+                                                            ),
+                                                            subtitle: Text(
+                                                              _danmakuList?[index]
+                                                                      .animeTitle ??
+                                                                  '',
+                                                            ),
+                                                            onTap: () {
+                                                              _onDanmakuSourceChange(
+                                                                _danmakuList![index],
+                                                              );
+                                                              Navigator.pop(
+                                                                context,
+                                                              );
+                                                            },
                                                           );
                                                         },
-                                                      );
-                                                    },
-                                                  ),
-                                          ),
-                                        ),
-                                      ],
+                                                      ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     );
                                   },
                                 );
@@ -723,7 +772,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                               BlendMode.srcATop,
                                             ),
                                             child: LottieBuilder.asset(
-                                              "lib/assert/lottie/playing.json",
+                                              "lib/assets/lottie/playing.json",
                                               repeat: true,
                                               width: 40,
                                             ),
@@ -839,7 +888,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                                         ),
                                         leading: Image.network(
                                           width: 50,
-                                          source.getLogoUrl(),
+                                          source.getLogoUrl().contains('http')
+                                              ? source.getLogoUrl()
+                                              : 'https://${source.getLogoUrl()}',
                                           errorBuilder:
                                               (context, error, stackTrace) {
                                                 return Icon(Icons.error);
@@ -898,7 +949,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                                   BlendMode.srcATop,
                                                 ),
                                                 child: LottieBuilder.asset(
-                                                  "lib/assert/lottie/playing.json",
+                                                  "lib/assets/lottie/playing.json",
                                                   repeat: true,
                                                   width: 40,
                                                 ),

@@ -5,12 +5,12 @@ import 'package:html/parser.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebviewUtil {
-  static final WebViewController _webViewController = WebViewController();
-  static bool containsUnicode(String str) {
+  final WebViewController _webViewController = WebViewController();
+  bool containsUnicode(String str) {
     return !RegExp(r'^[\x00-\x7F]*$').hasMatch(str);
   }
 
-  static String unescapeUnicodeString(String input) {
+  String unescapeUnicodeString(String input) {
     // 处理 \\uXXXX 双转义（先变成 \uXXXX）
     String result = input.replaceAllMapped(RegExp(r'\\u([0-9a-fA-F]{4})'), (
       Match match,
@@ -39,7 +39,7 @@ class WebviewUtil {
   }
 
   /// 检测HTML文档中是否包含iframe或video标签，且它们的src属性包含http链接
-  static bool hasValidMediaElements(String htmlContent) {
+  bool hasValidMediaElements(String htmlContent) {
     try {
       var doc = parse(htmlContent);
       var iframes = doc.querySelectorAll('iframe');
@@ -68,8 +68,10 @@ class WebviewUtil {
     }
   }
 
-  static Future<String> fetchHtml(
+  Future<String> fetchHtml(
     String url, {
+    bool isPlayerPage = false,
+    bool waitForMediaElement = false,
     Duration timeout = const Duration(seconds: 10),
     Map<String, String>? headers,
     Function(String error)? onError,
@@ -93,22 +95,24 @@ class WebviewUtil {
                 htmlContent = unescapeUnicodeString(htmlContent);
               }
               int count = 0;
-              // 等待直到HTML内容中包含有效媒体元素或超时结束
-              while (!hasValidMediaElements(htmlContent) &&
-                  !completer.isCompleted) {
-                count++;
-                log('HTML内容中不包含有效媒体元素，继续等待...');
+              if (isPlayerPage && waitForMediaElement) {
+                // 等待直到HTML内容中包含有效媒体元素或超时结束
+                while (!hasValidMediaElements(htmlContent) &&
+                    !completer.isCompleted) {
+                  count++;
+                  log('HTML内容中不包含有效媒体元素，继续等待...');
 
-                htmlContent =
-                    (await _webViewController.runJavaScriptReturningResult(
-                      'document.documentElement.outerHTML',
-                    )).toString();
-                if (containsUnicode(htmlContent)) {
-                  htmlContent = unescapeUnicodeString(htmlContent);
-                }
-                await Future.delayed(Duration(seconds: 1));
-                if (count == 50) {
-                  log('html content:$htmlContent');
+                  htmlContent =
+                      (await _webViewController.runJavaScriptReturningResult(
+                        'document.documentElement.outerHTML',
+                      )).toString();
+                  if (containsUnicode(htmlContent)) {
+                    htmlContent = unescapeUnicodeString(htmlContent);
+                  }
+                  await Future.delayed(Duration(seconds: 1));
+                  if (count == 50) {
+                    log('html content:$htmlContent');
+                  }
                 }
               }
               htmlContent =
@@ -148,9 +152,9 @@ class WebviewUtil {
       );
 
       await _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
-
+      log("loadRequest url:$url");
       await _webViewController.loadRequest(
-        Uri.parse("https://$url"),
+        Uri.parse(url.contains("http") ? url : "https://$url"),
         headers: headers ?? {},
       );
 

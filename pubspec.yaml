@@ -49,8 +49,8 @@ flutter:
   uses-material-design: true
   assets:
     - lib/images/launcher.png
-    - lib/assert/translations/
-    - lib/assert/lottie/
+    - lib/assets/translations/
+    - lib/assets/lottie/
 
 package_rename_config:
   android:

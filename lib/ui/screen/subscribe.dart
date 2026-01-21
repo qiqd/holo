@@ -151,7 +151,20 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(tr("subscribe.title"))),
+      appBar: AppBar(
+        title: Text(tr("subscribe.title")),
+        actions: [
+          if (_deleteModeIds.isNotEmpty)
+            IconButton(
+              icon: Icon(Icons.remove_done_rounded),
+              onPressed: () {
+                setState(() {
+                  _deleteModeIds.clear();
+                });
+              },
+            ),
+        ],
+      ),
 
       body: VisibilityDetector(
         key: const Key('subscribe_screen'),

@@ -13,6 +13,9 @@ class Rule {
   /// 规则logoUrl(通常是网站的logo)
   final String logoUrl;
 
+  ///规则版本号
+  final String version;
+
   /// 搜索Url(通常是网站的搜索页面)
   final String searchUrl;
 
@@ -61,16 +64,28 @@ class Rule {
   /// 播放视频选择器(通常是播放页面的视频标签,比如video,iframe等)
   final String playerVideoSelector;
 
+  /// 视频元素属性(通常是视频标签的src属性,比如video标签的src属性)
+  final String? videoElementAttribute;
+
   /// 嵌入视频选择器,英文逗号分隔(通常是播放页面的嵌入视频标签,比如iframe等)
   final String? embedVideoSelector;
+
+  /// 是否等待视频元素加载完成(如果是,则等待视频元素加载完成,否则立即返回)
+  final bool waitForMediaElement;
 
   ///视频url截取,通常是从params参数中截取视频url,比如params=videoUrl=xxxx,则截取xxxx,如果是null,则直接返回匹配的url
   final String? videoUrlSubsChar;
 
-  const Rule({
+  /// 规则更新时间
+  DateTime updateAt;
+  //规则是否启用
+  bool isEnabled;
+
+  Rule({
     required this.name,
     required this.logoUrl,
     required this.searchUrl,
+
     required this.fullSearchUrl,
     required this.detailUrl,
     required this.playerUrl,
@@ -85,6 +100,11 @@ class Rule {
     required this.itemIdSelector,
     required this.baseUrl,
     required this.itemImgFromSrc,
+    required this.updateAt,
+    required this.waitForMediaElement,
+    this.videoElementAttribute,
+    this.version = '1.0',
+    this.isEnabled = true,
     this.timeout = 5,
     this.embedVideoSelector,
     this.itemGenreSelector,

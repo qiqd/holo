@@ -2,11 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
+import 'package:holo/service/api.dart';
 import 'package:holo/util/local_store.dart';
 
 class RuleEditScreen extends StatefulWidget {
   final Rule? rule;
-  const RuleEditScreen({super.key, this.rule});
+  final bool isEditMode;
+  const RuleEditScreen({super.key, this.rule, this.isEditMode = false});
 
   @override
   State<RuleEditScreen> createState() => _RuleEditScreenState();
@@ -18,7 +20,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   String? _baseUrl;
   String? _logoUrl;
   String? _searchUrl;
-  bool _fullSearchUrl = false;
+  final bool _fullSearchUrl = false;
   int? _timeout;
   String? _searchSelector;
   String? _itemImgSelector;
@@ -27,16 +29,18 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   String? _itemIdSelector;
   String? _itemGenreSelector;
   String? _detailUrl;
-  bool _fullDetailUrl = false;
+  final bool _fullDetailUrl = false;
   String? _lineSelector;
   String? _episodeSelector;
   String? _playerUrl;
-  bool _fullPlayerUrl = false;
+  final bool _fullPlayerUrl = false;
   String? _playerVideoSelector;
   String? _embedVideoSelector;
   String? _videoUrlSubsChar;
+  String? _videoElementAttribute;
+  bool _waitForMediaElement = false;
   void _saveRule() {
-    if (!_formKey.currentState!.validate()) {
+    if (!_formKey.currentState!.validate() || !widget.isEditMode) {
       return;
     }
     final rule = Rule(
@@ -61,13 +65,17 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
       playerVideoSelector: _playerVideoSelector ?? '',
       embedVideoSelector: _embedVideoSelector ?? '',
       videoUrlSubsChar: _videoUrlSubsChar ?? '',
+      videoElementAttribute: _videoElementAttribute,
+      waitForMediaElement: _waitForMediaElement,
+      updateAt: DateTime.now(),
     );
-    LocalStore.saveRule(rule);
+    LocalStore.saveRules([rule]);
+    Api.initSources();
     context.pop();
   }
 
-  void _showHelpDialog() {
-    showDialog(
+  Future<void> _showHelpDialog() async {
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -78,13 +86,13 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '【规则名称】\n• 作用：设置此规则的名称，用于在界面中显示和区分不同规则\n• 示例：Bilibili、微博、知乎、豆瓣等\n• 要求：不能为空，建议使用网站的常用名称',
+                  '【规则名称】\n• 作用：设置此规则的名称，用于在界面中显示和区分不同规则\n• 示例：樱花动漫,次元动漫等\n• 要求：不能为空，建议使用网站的常用名称',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
                 Divider(),
                 Text(
-                  '\n【网站域名】\n• 作用：指定目标网站的域名，用于匹配和识别网页\n• 格式：仅输入域名部分，不需要协议前缀（如 http:// 或 https://）\n• 示例：www.bilibili.com、tieba.baidu.com、weibo.com\n• 注意：支持主域名和子域名，不要包含路径部分',
+                  '\n【网站域名】\n• 作用：指定目标网站的域名，用于匹配和识别网页\n• 格式：仅输入域名部分，不需要协议前缀（如 http:// 或 https://）\n• 示例：www.exapmle.com、 oneanime.com等\n• 注意：支持主域名和子域名，不要包含路径部分',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
@@ -127,7 +135,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             ),
           ),
           actions: [
-            TextButton(
+            FilledButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -174,6 +182,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                     child: Padding(
                       padding: EdgeInsets.all(12),
                       child: Column(
+                        spacing: 12,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -183,9 +192,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
                             initialValue: widget.rule?.name,
                             decoration: InputDecoration(
                               labelText: '规则名称',
@@ -208,12 +217,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
                             initialValue: widget.rule?.baseUrl,
                             decoration: InputDecoration(
-                              labelText: '网站域名()',
+                              labelText: '网站域名(baseUrl)',
                               hintText: '例如：www.example.com',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
@@ -236,9 +245,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
                             initialValue: widget.rule?.logoUrl,
                             decoration: InputDecoration(
                               labelText: '网站图标URL',
@@ -262,9 +271,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
                             initialValue: widget.rule?.timeout.toString(),
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -289,10 +298,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   // 搜索页面规则
                   Card(
                     margin: EdgeInsets.all(10),
+
                     child: Padding(
                       padding: EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 12,
                         children: [
                           Text(
                             '搜索页面规则',
@@ -301,9 +312,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
                             initialValue: widget.rule?.searchUrl,
                             decoration: InputDecoration(
                               labelText: '搜索页面路径',
@@ -330,25 +341,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
-                          SwitchListTile(
-                            title: Text('搜索路径是否完整'),
-                            subtitle: Text(
-                              '开启：搜索路径不与 baseUrl 拼接\n'
-                              '关闭：搜索路径与 baseUrl 拼接',
-                            ),
-                            value: _fullSearchUrl,
-                            onChanged: widget.rule == null
-                                ? (value) {
-                                    setState(() {
-                                      _fullSearchUrl = value;
-                                    });
-                                  }
-                                : null,
-                          ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.searchSelector,
                             decoration: InputDecoration(
                               labelText: '搜索结果列表选择器',
                               hintText: '例如：div.search-results 或 ul.list-items',
@@ -370,9 +366,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.itemImgSelector,
                             decoration: InputDecoration(
                               labelText: '搜索结果图片选择器',
                               hintText: '例如：img.poster 或 .thumbnail img',
@@ -394,15 +391,16 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
+
                           SwitchListTile(
                             title: Text('图片链接来自src属性'),
                             subtitle: Text(
                               '开启：使用src属性获取图片\n'
                               '关闭：使用data-original等属性',
                             ),
-                            value: _itemImgFromSrc,
-                            onChanged: widget.rule == null
+                            value:
+                                widget.rule?.itemImgFromSrc ?? _itemImgFromSrc,
+                            onChanged: widget.isEditMode
                                 ? (value) {
                                     setState(() {
                                       _itemImgFromSrc = value;
@@ -410,9 +408,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                                   }
                                 : null,
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.itemTitleSelector,
                             decoration: InputDecoration(
                               labelText: '搜索结果标题选择器',
                               hintText: '例如：h3.title 或 .result-title',
@@ -434,9 +433,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.itemIdSelector,
                             decoration: InputDecoration(
                               labelText: '搜索结果ID选择器',
                               hintText: '例如：a[href*="/detail/"] 或 .detail-link',
@@ -458,9 +458,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.itemGenreSelector,
                             decoration: InputDecoration(
                               labelText: '搜索结果分类选择器',
                               hintText: '例如：span.genre 或 .category',
@@ -487,6 +488,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       padding: EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 12,
                         children: [
                           Text(
                             '详情页面规则',
@@ -495,9 +497,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.detailUrl,
                             decoration: InputDecoration(
                               labelText: '详情页面路径',
                               hintText: '例如：/detail/{mediaId}',
@@ -522,25 +525,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
-                          SwitchListTile(
-                            title: Text('详情路径是否完整'),
-                            subtitle: Text(
-                              '开启：详情路径不与 baseUrl 拼接\n'
-                              '关闭：详情路径与 baseUrl 拼接',
-                            ),
-                            value: _fullDetailUrl,
-                            onChanged: widget.rule == null
-                                ? (value) {
-                                    setState(() {
-                                      _fullDetailUrl = value;
-                                    });
-                                  }
-                                : null,
-                          ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.lineSelector,
                             decoration: InputDecoration(
                               labelText: '播放路线选择器',
                               hintText: '例如：div.route-list 或 .play-routes',
@@ -562,9 +550,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.episodeSelector,
                             decoration: InputDecoration(
                               labelText: '剧集列表选择器',
                               hintText: '例如：ul.episodes 或 .episode-list',
@@ -597,6 +586,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       padding: EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 12,
                         children: [
                           Text(
                             '播放页面规则',
@@ -605,9 +595,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.playerUrl,
                             decoration: InputDecoration(
                               labelText: '播放页面路径',
                               hintText: '例如：/play/{episodeId}',
@@ -632,25 +623,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
-                          SwitchListTile(
-                            title: Text('播放路径是否完整'),
-                            subtitle: Text(
-                              '开启：播放路径不与 baseUrl 拼接\n'
-                              '关闭：播放路径与 baseUrl 拼接',
-                            ),
-                            value: _fullPlayerUrl,
-                            onChanged: widget.rule == null
-                                ? (value) {
-                                    setState(() {
-                                      _fullPlayerUrl = value;
-                                    });
-                                  }
-                                : null,
-                          ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.playerVideoSelector,
                             decoration: InputDecoration(
                               labelText: '视频播放器选择器',
                               hintText:
@@ -673,9 +649,41 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12),
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.videoElementAttribute,
+                            decoration: InputDecoration(
+                              labelText: '视频元素属性',
+                              hintText: '例如：data-play 或 data-src',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _videoElementAttribute = value;
+                              });
+                            },
+                          ),
+                          SwitchListTile(
+                            value:
+                                widget.rule?.waitForMediaElement ??
+                                _waitForMediaElement,
+                            onChanged: widget.isEditMode
+                                ? (value) {
+                                    setState(() {
+                                      _waitForMediaElement = value;
+                                    });
+                                  }
+                                : null,
+                            title: Text('等待视频元素加载完成'),
+                            subtitle: Text('如果启用，将等待视频元素加载完成后再返回'),
+                          ),
+                          TextFormField(
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.embedVideoSelector,
                             decoration: InputDecoration(
                               labelText: '嵌入式视频选择器',
                               hintText: '多个选择器用英文逗号分隔，例如：iframe, #embed-player',
@@ -691,9 +699,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               });
                             },
                           ),
-                          SizedBox(height: 12),
+
                           TextFormField(
-                            enabled: widget.rule == null,
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.videoUrlSubsChar,
                             decoration: InputDecoration(
                               labelText: '视频URL提取规则',
                               hintText: '例如：提取 params=videoUrl=xxxx 中的 xxxx 部分',

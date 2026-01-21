@@ -589,326 +589,20 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
               ),
             ),
           ),
-          // 剧集列表
-          AnimatedPositioned(
-            top: 0,
-            right: showEpisodeList && widget.isFullScreen ? 0 : -300,
-            width: 300,
-            height: MediaQuery.of(context).size.height,
-            duration: const Duration(milliseconds: 300),
-            child: Container(
-              color: Colors.white,
-              child: ListView.builder(
-                key: PageStorageKey("player_episodes_list"),
-                itemCount: widget.episodeList.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    selected: index == widget.currentEpisodeIndex,
-                    horizontalTitleGap: 0,
-                    leading: Text(
-                      (index + 1).toString(),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    title: Text(widget.episodeList[index]),
-                    trailing: widget.currentEpisodeIndex == index
-                        ? ColorFiltered(
-                            colorFilter: ColorFilter.mode(
-                              Theme.of(context).colorScheme.primary,
-                              BlendMode.srcATop,
-                            ),
-                            child: LottieBuilder.asset(
-                              "lib/assert/lottie/playing2.json",
-                              repeat: true,
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : null,
-                    onTap: () => widget.onEpisodeSelected?.call(index),
-                  );
-                },
-              ),
-            ),
-          ),
-          // 弹幕设置
-          AnimatedPositioned(
-            top: 0,
-            right: _showSetting && widget.isFullScreen ? 0 : -300,
-            width: 300,
-            height: MediaQuery.of(context).size.height,
-            curve: Curves.easeInOut,
-            duration: const Duration(milliseconds: 200),
-            onEnd: () {
-              if (_showSetting) return;
-              _danmuController?.updateOption(
-                DanmakuOption(
-                  opacity: _opacity,
-                  area: _displayArea,
-                  fontSize: _danmakuFontsize,
-                  hideTop: _hideTopDanmaku,
-                  hideBottom: _hideBottomDanmaku,
-                  hideScroll: _hideScrollDanmaku,
-                  massiveMode: _massiveDanmakuMode,
-                ),
-              );
-              _saveDanmuSetting();
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  bottomLeft: Radius.circular(10),
-                ),
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: TextField(
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.done,
-                        onChanged: (value) {
-                          setState(() {
-                            _filter = value;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          labelText: context.tr(
-                            'component.cap_video_player.danmaku_filter_keywords',
-                          ),
-                          hintStyle: TextStyle(fontSize: 10),
-                          hintText: context.tr(
-                            'component.cap_video_player.danmaku_filter_hint',
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    ListTile(
-                      title: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            context.tr(
-                              'component.cap_video_player.danmaku_offset_adjustment',
-                            ),
-                          ),
-                          Tooltip(
-                            message: context.tr(
-                              'component.cap_video_player.danmaku_offset_tooltip',
-                            ),
-                            child: Icon(
-                              Icons.help_outline,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                      subtitle: Text(
-                        context.tr(
-                          'component.cap_video_player.current_offset',
-                          args: [_danmakuOffset.toString()],
-                        ),
-                      ),
-
-                      leading: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _danmakuOffset--;
-                          });
-                        },
-                        icon: Icon(Icons.exposure_neg_1),
-                      ),
-                      trailing: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _danmakuOffset++;
-                          });
-                        },
-                        icon: Icon(Icons.exposure_plus_1),
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        context.tr(
-                          'component.cap_video_player.hide_top_danmaku',
-                        ),
-                      ),
-                      trailing: Switch(
-                        value: _hideTopDanmaku,
-                        onChanged: (value) {
-                          setState(() {
-                            _hideTopDanmaku = value;
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        context.tr(
-                          'component.cap_video_player.hide_bottom_danmaku',
-                        ),
-                      ),
-                      trailing: Switch(
-                        value: _hideBottomDanmaku,
-                        onChanged: (value) {
-                          setState(() {
-                            _hideBottomDanmaku = value;
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        context.tr(
-                          'component.cap_video_player.hide_scroll_danmaku',
-                        ),
-                      ),
-                      trailing: Switch(
-                        value: _hideScrollDanmaku,
-                        onChanged: (value) {
-                          setState(() {
-                            _hideScrollDanmaku = value;
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        context.tr(
-                          'component.cap_video_player.massive_danmaku_mode',
-                        ),
-                      ),
-                      subtitle: Text(
-                        context.tr(
-                          'component.cap_video_player.massive_danmaku_subtitle',
-                        ),
-                      ),
-                      trailing: Switch(
-                        value: _massiveDanmakuMode,
-                        onChanged: (value) {
-                          setState(() {
-                            _massiveDanmakuMode = value;
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        context.tr(
-                          'component.cap_video_player.danmaku_opacity',
-                        ),
-                      ),
-                      leading: null,
-                      subtitle: Row(
-                        children: [
-                          Text('${(_opacity * 100).round()}%'),
-                          Expanded(
-                            child: Slider(
-                              min: 0.1,
-                              max: 1.0,
-                              value: _opacity,
-                              onChanged: (value) {
-                                setState(() {
-                                  _opacity = value;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        context.tr('component.cap_video_player.display_area'),
-                      ),
-                      subtitle: Row(
-                        children: [
-                          Text('${(_displayArea * 100).round()}%'),
-                          Expanded(
-                            child: Slider(
-                              min: 0.1,
-                              max: 1.0,
-                              value: _displayArea,
-                              onChanged: (value) {
-                                setState(() {
-                                  _displayArea = value;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        context.tr(
-                          'component.cap_video_player.danmaku_font_size',
-                        ),
-                      ),
-                      subtitle: Row(
-                        children: [
-                          Text('${(_danmakuFontsize).round()}'),
-                          Expanded(
-                            child: Slider(
-                              min: 10.0,
-                              max: 50.0,
-                              value: _danmakuFontsize,
-                              onChanged: (value) {
-                                setState(() {
-                                  _danmakuFontsize = value;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // ListTile(
-                    //   title: Text('字体粗细'),
-                    //   subtitle: Row(
-                    //     children: [
-                    //       Text('${(_danmakuFontweight).round()}'),
-                    //       Expanded(
-                    //         child: Slider(
-                    //           min: 2.0,
-                    //           max: 10.0,
-                    //           value: _danmakuFontweight,
-                    //           onChanged: (value) {
-                    //             setState(() {
-                    //               _danmakuFontweight = value;
-                    //             });
-                    //           },
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          //视频控制层-头部
           AnimatedPositioned(
             key: ValueKey('show_video_controls_top'),
             duration: Duration(milliseconds: 300),
             top: showVideoControls && !isLock ? 0 : -73,
             left: 0,
             right: 0,
-            child: //视频控制层-头部
-            IgnorePointer(
+            child: IgnorePointer(
               ignoring: !showVideoControls,
               child: AnimatedOpacity(
                 opacity: showVideoControls && !isLock ? 1.0 : 0.0,
                 duration: Duration(milliseconds: 300),
                 child: Container(
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -1197,6 +891,313 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                       ),
                     ],
                   ),
+                ),
+              ),
+            ),
+          ),
+          // 剧集列表
+          AnimatedPositioned(
+            top: 0,
+            right: showEpisodeList && widget.isFullScreen ? 0 : -300,
+            width: 300,
+            height: MediaQuery.of(context).size.height,
+            duration: const Duration(milliseconds: 300),
+            child: Container(
+              color: Colors.white,
+              child: ListView.builder(
+                key: PageStorageKey("player_episodes_list"),
+                itemCount: widget.episodeList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    selected: index == widget.currentEpisodeIndex,
+                    horizontalTitleGap: 0,
+                    leading: Text(
+                      (index + 1).toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    title: Text(widget.episodeList[index]),
+                    trailing: widget.currentEpisodeIndex == index
+                        ? ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.primary,
+                              BlendMode.srcATop,
+                            ),
+                            child: LottieBuilder.asset(
+                              "lib/assets/lottie/playing2.json",
+                              repeat: true,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : null,
+                    onTap: () => widget.onEpisodeSelected?.call(index),
+                  );
+                },
+              ),
+            ),
+          ),
+          // 弹幕设置
+          AnimatedPositioned(
+            top: 0,
+            right: _showSetting && widget.isFullScreen ? 0 : -300,
+            width: 300,
+            height: MediaQuery.of(context).size.height,
+            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 200),
+            onEnd: () {
+              if (_showSetting) return;
+              _danmuController?.updateOption(
+                DanmakuOption(
+                  opacity: _opacity,
+                  area: _displayArea,
+                  fontSize: _danmakuFontsize,
+                  hideTop: _hideTopDanmaku,
+                  hideBottom: _hideBottomDanmaku,
+                  hideScroll: _hideScrollDanmaku,
+                  massiveMode: _massiveDanmakuMode,
+                ),
+              );
+              _saveDanmuSetting();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: TextField(
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.done,
+                        onChanged: (value) {
+                          setState(() {
+                            _filter = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: context.tr(
+                            'component.cap_video_player.danmaku_filter_keywords',
+                          ),
+                          hintStyle: TextStyle(fontSize: 10),
+                          hintText: context.tr(
+                            'component.cap_video_player.danmaku_filter_hint',
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    ListTile(
+                      title: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            context.tr(
+                              'component.cap_video_player.danmaku_offset_adjustment',
+                            ),
+                          ),
+                          Tooltip(
+                            message: context.tr(
+                              'component.cap_video_player.danmaku_offset_tooltip',
+                            ),
+                            child: Icon(
+                              Icons.help_outline,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      subtitle: Text(
+                        context.tr(
+                          'component.cap_video_player.current_offset',
+                          args: [_danmakuOffset.toString()],
+                        ),
+                      ),
+
+                      leading: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _danmakuOffset--;
+                          });
+                        },
+                        icon: Icon(Icons.exposure_neg_1),
+                      ),
+                      trailing: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _danmakuOffset++;
+                          });
+                        },
+                        icon: Icon(Icons.exposure_plus_1),
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.hide_top_danmaku',
+                        ),
+                      ),
+                      trailing: Switch(
+                        value: _hideTopDanmaku,
+                        onChanged: (value) {
+                          setState(() {
+                            _hideTopDanmaku = value;
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.hide_bottom_danmaku',
+                        ),
+                      ),
+                      trailing: Switch(
+                        value: _hideBottomDanmaku,
+                        onChanged: (value) {
+                          setState(() {
+                            _hideBottomDanmaku = value;
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.hide_scroll_danmaku',
+                        ),
+                      ),
+                      trailing: Switch(
+                        value: _hideScrollDanmaku,
+                        onChanged: (value) {
+                          setState(() {
+                            _hideScrollDanmaku = value;
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.massive_danmaku_mode',
+                        ),
+                      ),
+                      subtitle: Text(
+                        context.tr(
+                          'component.cap_video_player.massive_danmaku_subtitle',
+                        ),
+                      ),
+                      trailing: Switch(
+                        value: _massiveDanmakuMode,
+                        onChanged: (value) {
+                          setState(() {
+                            _massiveDanmakuMode = value;
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.danmaku_opacity',
+                        ),
+                      ),
+                      leading: null,
+                      subtitle: Row(
+                        children: [
+                          Text('${(_opacity * 100).round()}%'),
+                          Expanded(
+                            child: Slider(
+                              min: 0.1,
+                              max: 1.0,
+                              value: _opacity,
+                              onChanged: (value) {
+                                setState(() {
+                                  _opacity = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        context.tr('component.cap_video_player.display_area'),
+                      ),
+                      subtitle: Row(
+                        children: [
+                          Text('${(_displayArea * 100).round()}%'),
+                          Expanded(
+                            child: Slider(
+                              min: 0.1,
+                              max: 1.0,
+                              value: _displayArea,
+                              onChanged: (value) {
+                                setState(() {
+                                  _displayArea = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        context.tr(
+                          'component.cap_video_player.danmaku_font_size',
+                        ),
+                      ),
+                      subtitle: Row(
+                        children: [
+                          Text('${(_danmakuFontsize).round()}'),
+                          Expanded(
+                            child: Slider(
+                              min: 10.0,
+                              max: 50.0,
+                              value: _danmakuFontsize,
+                              onChanged: (value) {
+                                setState(() {
+                                  _danmakuFontsize = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // ListTile(
+                    //   title: Text('字体粗细'),
+                    //   subtitle: Row(
+                    //     children: [
+                    //       Text('${(_danmakuFontweight).round()}'),
+                    //       Expanded(
+                    //         child: Slider(
+                    //           min: 2.0,
+                    //           max: 10.0,
+                    //           value: _danmakuFontweight,
+                    //           onChanged: (value) {
+                    //             setState(() {
+                    //               _danmakuFontweight = value;
+                    //             });
+                    //           },
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
             ),
