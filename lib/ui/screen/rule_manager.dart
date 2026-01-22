@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -32,9 +33,9 @@ class _RuleManagerState extends State<RuleManager> {
       });
     } catch (e) {
       log('Import rules failed: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('导入失败,格式有误')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('rule_manager.import_failure'.tr())),
+      );
     }
   }
 
@@ -44,16 +45,17 @@ class _RuleManagerState extends State<RuleManager> {
     }
     var jsonStr = json.encode(_rules);
     Clipboard.setData(ClipboardData(text: jsonStr));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('所有本地规则已复制到剪贴板')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('rule_manager.copy_to_clipboard'.tr())),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('规则管理'),
+        titleSpacing: 0,
+        title: Text('rule_manager.title'.tr()),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () {
@@ -87,15 +89,15 @@ class _RuleManagerState extends State<RuleManager> {
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: const Text('从JSON导入'),
+                    title: Text('rule_manager.import_from_json'.tr()),
                     content: TextField(
                       maxLines: 10,
                       minLines: 5,
                       onChanged: (value) {
                         _rulesStr = value;
                       },
-                      decoration: const InputDecoration(
-                        hintText: '请输入规则JSON字符串',
+                      decoration: InputDecoration(
+                        hintText: 'rule_manager.import_from_json_hint'.tr(),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -104,14 +106,14 @@ class _RuleManagerState extends State<RuleManager> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('取消'),
+                        child: Text('rule_manager.cancel'.tr()),
                       ),
                       FilledButton(
                         onPressed: () {
                           _importRulesFromJson();
                           Navigator.of(context).pop();
                         },
-                        child: const Text('确认'),
+                        child: Text('rule_manager.confirm'.tr()),
                       ),
                     ],
                   );

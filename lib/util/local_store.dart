@@ -321,8 +321,16 @@ class LocalStore {
     return _prefs!.getString("${_key}_rule_repository_url") ?? "";
   }
 
+  static bool getUseSystemColor() {
+    return _prefs!.getBool("${_key}_use_system_color") ?? false;
+  }
+
+  static void setUseSystemColor(bool value) {
+    _prefs?.setBool("${_key}_use_system_color", value);
+  }
+
   static bool getBool(String key, {bool defaultValue = false}) {
-    return _prefs!.getBool(key) ?? defaultValue;
+    return _prefs!.getBool("${_key}_$key") ?? defaultValue;
   }
 
   static int getInt(String key, {int defaultValue = 0}) {

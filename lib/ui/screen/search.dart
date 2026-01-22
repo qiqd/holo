@@ -195,12 +195,12 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                         itemBuilder: (context, index) {
                           final item = _recommended!.data![index];
+                          var nameCN = item.nameCn ?? '';
+                          var name = item.name ?? "";
                           return MediaGrid(
                             id: "search_${item.id!}",
                             imageUrl: item.images?.medium,
-                            title: item.nameCn!.isEmpty
-                                ? item.name ?? ""
-                                : item.nameCn,
+                            title: nameCN.isNotEmpty ? nameCN : name,
                             rating: item.rating?.score,
                             airDate: item.date,
                             onTap: () {

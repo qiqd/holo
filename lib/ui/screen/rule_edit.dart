@@ -1,9 +1,9 @@
-// ... existing code ...
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/util/local_store.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class RuleEditScreen extends StatefulWidget {
   final Rule? rule;
@@ -79,56 +79,56 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('规则配置详细说明'),
+          title: Text('rule_edit.help_title'.tr()),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '【规则名称】\n• 作用：设置此规则的名称，用于在界面中显示和区分不同规则\n• 示例：樱花动漫,次元动漫等\n• 要求：不能为空，建议使用网站的常用名称',
+                  'rule_edit.help_rule_name'.tr(),
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
                 Divider(),
                 Text(
-                  '\n【网站域名】\n• 作用：指定目标网站的域名，用于匹配和识别网页\n• 格式：仅输入域名部分，不需要协议前缀（如 http:// 或 https://）\n• 示例：www.exapmle.com、 oneanime.com等\n• 注意：支持主域名和子域名，不要包含路径部分',
+                  '\n${'rule_edit.help_base_url'.tr()}',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
                 Divider(),
                 Text(
-                  '\n【Logo路径】\n• 作用：指定网站Logo的路径，用于界面展示\n• 格式：可使用相对路径或完整URL路径（不带协议前缀）\n• 示例：logo.png、images/site-logo.svg、static/logo.jpg\n• 支持：PNG、JPG、SVG等常见图片格式',
+                  '\n${'rule_edit.help_logo_url'.tr()}',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
                 Divider(),
                 Text(
-                  '\n【搜索图片选择器】\n• 作用：在搜索结果页面定位缩略图元素\n• 格式：CSS选择器语法，用于提取列表页的图片链接\n• 示例：img.thumbnail、.image-box img、[data-src]、.cover-image\n• 常见类型：img标签、带背景图的div、data属性等',
+                  '\n${'rule_edit.help_search_img_selector'.tr()}',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
                 Divider(),
                 Text(
-                  '\n【详情标题选择器】\n• 作用：在详情页提取标题内容\n• 格式：CSS选择器，通常为标题标签或标题类名\n• 示例：h1.title、.detail-title、article h1、header h2\n• 建议：优先选择唯一性高、结构稳定的元素',
+                  '\n${'rule_edit.help_detail_title_selector'.tr()}',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
                 Divider(),
                 Text(
-                  '\n【详情描述选择器】\n• 作用：在详情页提取描述或摘要信息\n• 格式：CSS选择器，通常是段落或描述容器\n• 示例：.description、p.summary、.intro-text、.content-brief\n• 注意：选择包含关键描述信息的元素',
+                  '\n${'rule_edit.help_detail_desc_selector'.tr()}',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
                 Divider(),
                 Text(
-                  '\n【详情内容选择器】\n• 作用：在详情页提取核心内容\n• 格式：CSS选择器，通常是文章主体或内容容器\n• 示例：.content、article、.detail-content、main div\n• 重要：这是抓取主要内容的关键选择器，请确保准确性',
+                  '\n${'rule_edit.help_detail_content_selector'.tr()}',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 10),
                 Divider(),
                 Text(
-                  '\n【启用规则】\n• 作用：控制此规则是否生效\n• 开启：规则将被使用，参与网页解析\n• 关闭：规则将被禁用，不参与解析过程\n• 用途：方便测试和管理多个规则',
+                  '\n${'rule_edit.help_enable_rule'.tr()}',
                   style: TextStyle(fontSize: 14),
                 ),
               ],
@@ -139,7 +139,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('确定'),
+              child: Text('rule_edit.help_ok_button'.tr()),
             ),
           ],
         );
@@ -151,6 +151,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.save_rounded),
@@ -167,7 +168,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => context.pop(),
         ),
-        title: const Text('规则编辑'),
+        title: Text('rule_edit.title'.tr()),
       ),
       body: SafeArea(
         child: SizedBox(
@@ -176,7 +177,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  // 基本信息
                   Card(
                     margin: EdgeInsets.all(10),
                     child: Padding(
@@ -186,7 +186,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '基本信息',
+                            'rule_edit.basic_info'.tr(),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -197,8 +197,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.name,
                             decoration: InputDecoration(
-                              labelText: '规则名称',
-                              hintText: '例如：樱花动漫',
+                              labelText: 'rule_edit.rule_name_label'.tr(),
+                              hintText: 'rule_edit.rule_name_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -212,7 +212,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入规则名称';
+                                return 'rule_edit.rule_name_validator'.tr();
                               }
                               return null;
                             },
@@ -222,8 +222,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.baseUrl,
                             decoration: InputDecoration(
-                              labelText: '网站域名(baseUrl)',
-                              hintText: '例如：www.example.com',
+                              labelText: 'rule_edit.base_url_label'.tr(),
+                              hintText: 'rule_edit.base_url_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -237,10 +237,11 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入网站域名';
+                                return 'rule_edit.base_url_validator'.tr();
                               }
                               if (value.contains('://')) {
-                                return '请勿包含协议前缀 (http:// 或 https://)';
+                                return 'rule_edit.base_url_protocol_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -250,9 +251,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.logoUrl,
                             decoration: InputDecoration(
-                              labelText: '网站图标URL',
-                              hintText:
-                                  '例如：/logo.png 或 https://example.com/logo.png',
+                              labelText: 'rule_edit.logo_url_label'.tr(),
+                              hintText: 'rule_edit.logo_url_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -266,7 +266,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入网站图标URL';
+                                return 'rule_edit.logo_url_validator'.tr();
                               }
                               return null;
                             },
@@ -277,8 +277,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             initialValue: widget.rule?.timeout.toString(),
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: '请求超时时间(秒)',
-                              hintText: '默认5秒，超过此时间请求将被取消',
+                              labelText: 'rule_edit.timeout_label'.tr(),
+                              hintText: 'rule_edit.timeout_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -295,10 +295,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       ),
                     ),
                   ),
-                  // 搜索页面规则
+
                   Card(
                     margin: EdgeInsets.all(10),
-
                     child: Padding(
                       padding: EdgeInsets.all(12),
                       child: Column(
@@ -306,7 +305,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                         spacing: 12,
                         children: [
                           Text(
-                            '搜索页面规则',
+                            'rule_edit.search_page_rules'.tr(),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -317,9 +316,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.searchUrl,
                             decoration: InputDecoration(
-                              labelText: '搜索页面路径',
-                              hintText:
-                                  '例如：/search 或 /search?keyword={keyword}',
+                              labelText: 'rule_edit.search_url_label'.tr(),
+                              hintText: 'rule_edit.search_url_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -333,10 +331,11 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入搜索页面路径';
+                                return 'rule_edit.search_url_validator'.tr();
                               }
                               if (value.contains('://')) {
-                                return '请勿包含协议前缀 (http:// 或 https://)';
+                                return 'rule_edit.base_url_protocol_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -346,8 +345,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.searchSelector,
                             decoration: InputDecoration(
-                              labelText: '搜索结果列表选择器',
-                              hintText: '例如：div.search-results 或 ul.list-items',
+                              labelText: 'rule_edit.search_selector_label'.tr(),
+                              hintText: 'rule_edit.search_selector_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -361,7 +360,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入搜索结果列表选择器';
+                                return 'rule_edit.search_selector_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -371,8 +371,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.itemImgSelector,
                             decoration: InputDecoration(
-                              labelText: '搜索结果图片选择器',
-                              hintText: '例如：img.poster 或 .thumbnail img',
+                              labelText: 'rule_edit.item_img_selector_label'
+                                  .tr(),
+                              hintText: 'rule_edit.item_img_selector_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -386,17 +387,19 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入搜索结果图片选择器';
+                                return 'rule_edit.item_img_selector_validator'
+                                    .tr();
                               }
                               return null;
                             },
                           ),
 
                           SwitchListTile(
-                            title: Text('图片链接来自src属性'),
+                            title: Text(
+                              'rule_edit.item_img_from_src_label'.tr(),
+                            ),
                             subtitle: Text(
-                              '开启：使用src属性获取图片\n'
-                              '关闭：使用data-original等属性',
+                              'rule_edit.item_img_from_src_subtitle'.tr(),
                             ),
                             value:
                                 widget.rule?.itemImgFromSrc ?? _itemImgFromSrc,
@@ -413,8 +416,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.itemTitleSelector,
                             decoration: InputDecoration(
-                              labelText: '搜索结果标题选择器',
-                              hintText: '例如：h3.title 或 .result-title',
+                              labelText: 'rule_edit.item_title_selector_label'
+                                  .tr(),
+                              hintText: 'rule_edit.item_title_selector_hint'
+                                  .tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -428,7 +433,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入搜索结果标题选择器';
+                                return 'rule_edit.item_title_selector_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -438,8 +444,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.itemIdSelector,
                             decoration: InputDecoration(
-                              labelText: '搜索结果ID选择器',
-                              hintText: '例如：a[href*="/detail/"] 或 .detail-link',
+                              labelText: 'rule_edit.item_id_selector_label'
+                                  .tr(),
+                              hintText: 'rule_edit.item_id_selector_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -453,7 +460,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入搜索结果ID选择器';
+                                return 'rule_edit.item_id_selector_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -463,8 +471,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.itemGenreSelector,
                             decoration: InputDecoration(
-                              labelText: '搜索结果分类选择器',
-                              hintText: '例如：span.genre 或 .category',
+                              labelText: 'rule_edit.item_genre_selector_label'
+                                  .tr(),
+                              hintText: 'rule_edit.item_genre_selector_hint'
+                                  .tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -481,7 +491,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       ),
                     ),
                   ),
-                  // 详情页规则
+
                   Card(
                     margin: EdgeInsets.all(10),
                     child: Padding(
@@ -491,7 +501,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                         spacing: 12,
                         children: [
                           Text(
-                            '详情页面规则',
+                            'rule_edit.detail_page_rules'.tr(),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -502,8 +512,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.detailUrl,
                             decoration: InputDecoration(
-                              labelText: '详情页面路径',
-                              hintText: '例如：/detail/{mediaId}',
+                              labelText: 'rule_edit.detail_url_label'.tr(),
+                              hintText: 'rule_edit.detail_url_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -517,10 +527,11 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入详情页面路径';
+                                return 'rule_edit.detail_url_validator'.tr();
                               }
                               if (value.contains('://')) {
-                                return '请勿包含协议前缀 (http:// 或 https://)';
+                                return 'rule_edit.base_url_protocol_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -530,8 +541,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.lineSelector,
                             decoration: InputDecoration(
-                              labelText: '播放路线选择器',
-                              hintText: '例如：div.route-list 或 .play-routes',
+                              labelText: 'rule_edit.line_selector_label'.tr(),
+                              hintText: 'rule_edit.line_selector_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -545,7 +556,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入播放路线选择器';
+                                return 'rule_edit.line_selector_validator'.tr();
                               }
                               return null;
                             },
@@ -555,8 +566,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.episodeSelector,
                             decoration: InputDecoration(
-                              labelText: '剧集列表选择器',
-                              hintText: '例如：ul.episodes 或 .episode-list',
+                              labelText: 'rule_edit.episode_selector_label'
+                                  .tr(),
+                              hintText: 'rule_edit.episode_selector_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -570,7 +582,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入剧集列表选择器';
+                                return 'rule_edit.episode_selector_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -579,7 +592,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       ),
                     ),
                   ),
-                  // 播放页面规则
+
                   Card(
                     margin: EdgeInsets.all(10),
                     child: Padding(
@@ -589,7 +602,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                         spacing: 12,
                         children: [
                           Text(
-                            '播放页面规则',
+                            'rule_edit.player_page_rules'.tr(),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -600,8 +613,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.playerUrl,
                             decoration: InputDecoration(
-                              labelText: '播放页面路径',
-                              hintText: '例如：/play/{episodeId}',
+                              labelText: 'rule_edit.player_url_label'.tr(),
+                              hintText: 'rule_edit.player_url_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -615,10 +628,11 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入播放页面路径';
+                                return 'rule_edit.player_url_validator'.tr();
                               }
                               if (value.contains('://')) {
-                                return '请勿包含协议前缀 (http:// 或 https://)';
+                                return 'rule_edit.base_url_protocol_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -628,9 +642,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.playerVideoSelector,
                             decoration: InputDecoration(
-                              labelText: '视频播放器选择器',
-                              hintText:
-                                  '例如：video#player 或 iframe[src*="embed"]',
+                              labelText: 'rule_edit.player_video_selector_label'
+                                  .tr(),
+                              hintText: 'rule_edit.player_video_selector_hint'
+                                  .tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -644,7 +659,8 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '请输入视频播放器选择器';
+                                return 'rule_edit.player_video_selector_validator'
+                                    .tr();
                               }
                               return null;
                             },
@@ -653,8 +669,11 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.videoElementAttribute,
                             decoration: InputDecoration(
-                              labelText: '视频元素属性',
-                              hintText: '例如：data-play 或 data-src',
+                              labelText:
+                                  'rule_edit.video_element_attribute_label'
+                                      .tr(),
+                              hintText: 'rule_edit.video_element_attribute_hint'
+                                  .tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -678,15 +697,21 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                                     });
                                   }
                                 : null,
-                            title: Text('等待视频元素加载完成'),
-                            subtitle: Text('如果启用，将等待视频元素加载完成后再返回'),
+                            title: Text(
+                              'rule_edit.wait_for_media_element_label'.tr(),
+                            ),
+                            subtitle: Text(
+                              'rule_edit.wait_for_media_element_subtitle'.tr(),
+                            ),
                           ),
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.embedVideoSelector,
                             decoration: InputDecoration(
-                              labelText: '嵌入式视频选择器',
-                              hintText: '多个选择器用英文逗号分隔，例如：iframe, #embed-player',
+                              labelText: 'rule_edit.embed_video_selector_label'
+                                  .tr(),
+                              hintText: 'rule_edit.embed_video_selector_hint'
+                                  .tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
@@ -704,8 +729,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.videoUrlSubsChar,
                             decoration: InputDecoration(
-                              labelText: '视频URL提取规则',
-                              hintText: '例如：提取 params=videoUrl=xxxx 中的 xxxx 部分',
+                              labelText: 'rule_edit.video_url_subs_char_label'
+                                  .tr(),
+                              hintText: 'rule_edit.video_url_subs_char_hint'
+                                  .tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),

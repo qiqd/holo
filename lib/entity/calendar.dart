@@ -40,7 +40,7 @@ class Item {
   final String? nameCn;
   final String? summary;
   @JsonKey(name: 'air_date')
-  final String? airDate;
+  String? airDate;
   @JsonKey(name: 'air_weekday')
   final int? airWeekday;
   final Rating? rating;

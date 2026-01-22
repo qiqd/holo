@@ -85,16 +85,14 @@ class _CalendarScreenState extends State<CalendarScreen>
                         ),
                         itemBuilder: (context, itemIndex) {
                           final item = _calendar[index].items;
+                          var nameCN = item?[itemIndex].nameCn ?? '';
+                          var name = item?[itemIndex].name ?? "";
                           return MediaGrid(
                             id: "calendar_${item![itemIndex].id ?? 0}",
                             rating:
                                 item[itemIndex].rating?.score?.toDouble() ?? 0,
                             imageUrl: item[itemIndex].images?.large ?? '',
-                            title:
-                                item[itemIndex].nameCn ??
-                                item[itemIndex].name ??
-                                '',
-
+                            title: nameCN.isNotEmpty ? nameCN : name,
                             airDate: item[itemIndex].airDate ?? "1999-9-9",
                             onTap: () => context.push(
                               '/detail',

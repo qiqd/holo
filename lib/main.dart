@@ -48,6 +48,9 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   static final themeNotifier = ValueNotifier<ThemeMode>(ThemeMode.system);
+  static final useSystemColorNotifier = ValueNotifier<bool>(
+    LocalStore.getUseSystemColor(),
+  );
   const MyApp({super.key});
 
   @override
@@ -223,25 +226,34 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
+      key: ValueKey('main_theme_mode_notifier'),
       valueListenable: MyApp.themeNotifier,
       builder: (context, themeMode, child) {
-        return MaterialApp.router(
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          debugShowCheckedModeBanner: false,
-          routerConfig: _router,
-          themeMode: themeMode,
-          theme: ThemeData(
-            brightness: Brightness.light,
-            colorSchemeSeed: const Color(0xffd08b57),
-            useMaterial3: true,
-          ),
-          darkTheme: ThemeData(
-            colorSchemeSeed: const Color(0xffd08b57),
-            brightness: Brightness.dark,
-            useMaterial3: true,
-          ),
+        return ValueListenableBuilder<bool>(
+          key: ValueKey('main_color_notifier'),
+          valueListenable: MyApp.useSystemColorNotifier,
+          builder: (context, useSystemColor, child) {
+            return MaterialApp.router(
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              debugShowCheckedModeBanner: false,
+              routerConfig: _router,
+              themeMode: themeMode,
+              theme: ThemeData(
+                useSystemColors: useSystemColor,
+                brightness: Brightness.light,
+                colorSchemeSeed: const Color(0xffd08b57),
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData(
+                useSystemColors: useSystemColor,
+                colorSchemeSeed: const Color(0xffd08b57),
+                brightness: Brightness.dark,
+                useMaterial3: true,
+              ),
+            );
+          },
         );
       },
     );

@@ -250,8 +250,10 @@ class _SetttingScreenState extends State<SetttingScreen>
           // 规则管理部分
           ListTile(
             leading: const Icon(Icons.rule_rounded),
-            title: Text('规则管理'),
-            subtitle: Text('规则编辑与管理'),
+            title: Text('setting.data_management.rule_manager'.tr()),
+            subtitle: Text(
+              'setting.data_management.rule_manager_description'.tr(),
+            ),
             onTap: () => context.push('/rule_manager'),
           ),
 
@@ -262,6 +264,17 @@ class _SetttingScreenState extends State<SetttingScreen>
             title: Text('setting.appearance.theme_mode'.tr()),
             subtitle: Text(_getThemeModeText()),
             onTap: () => _showThemeModeDialog(),
+          ),
+          SwitchListTile(
+            secondary: Icon(Icons.colorize_rounded),
+            value: LocalStore.getUseSystemColor(),
+            title: Text('setting.appearance.use_system_color'.tr()),
+            subtitle: Text(
+              'setting.appearance.use_system_color_description'.tr(),
+            ),
+            onChanged: (value) => setState(() {
+              LocalStore.setUseSystemColor(value);
+            }),
           ),
 
           // 开源项目部分

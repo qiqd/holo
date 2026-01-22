@@ -236,10 +236,12 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                       separatorBuilder: (context, index) => SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         var data = _subject?.data;
+                        var nameCN = data?[index].nameCn!;
+                        var name = data?[index].name!;
                         return MediaCard(
                           id: "image.search_${data?[index].id!}",
                           imageUrl: data?[index].images?.large ?? '',
-                          nameCn: data?[index].nameCn ?? '',
+                          nameCn: nameCN!.isNotEmpty ? nameCN : name ?? '',
                           airDate: data?[index].date,
                           genre: data?[index].metaTags?.join('/') ?? '',
                           onTap: () {

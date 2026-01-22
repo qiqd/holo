@@ -805,10 +805,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                                       MediaCard(
                                         id: "player_${subject.id!}",
                                         imageUrl: subject.images?.large!,
-                                        nameCn:
-                                            subject.nameCn ??
-                                            subject.name ??
-                                            '',
+                                        nameCn: subject.nameCn!.isNotEmpty
+                                            ? subject.nameCn!
+                                            : subject.name ?? '',
                                         genre: subject.metaTags?.join('/'),
                                         episode: subject.eps ?? 0,
                                         rating: subject.rating?.score,
