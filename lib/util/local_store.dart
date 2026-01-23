@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:canvas_danmaku/models/danmaku_option.dart';
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/rule.dart';
+import 'package:holo/entity/subject.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -327,6 +328,35 @@ class LocalStore {
 
   static void setUseSystemColor(bool value) {
     _prefs?.setBool("${_key}_use_system_color", value);
+  }
+
+  static void setSubjectCacheAndSource(Data data) {
+    if (_prefs == null) return;
+    var dataListStr = _prefs!.getStringList("${_key}_data_source") ?? [];
+    var dataList = dataListStr
+        .map((item) => Data.fromJson(json.decode(item)))
+        .toList();
+    dataList.add(data);
+    var dataMap = {};
+    for (var item in dataList) {
+      dataMap[item.id] = item;
+    }
+    dataListStr = dataMap.values
+        .map((item) => json.encode(item.toJson()))
+        .toList();
+    _prefs!.setStringList("${_key}_data_cache", dataListStr);
+  }
+
+  static Data? getSubjectCacheAndSource(int subId) {
+    if (_prefs == null) return null;
+    var dataListStr = _prefs!.getStringList("${_key}_data_cache") ?? [];
+    if (dataListStr.isEmpty) {
+      return null;
+    }
+    var dataList = dataListStr
+        .map((item) => Data.fromJson(json.decode(item)))
+        .toList();
+    return dataList.where((item) => item.id == subId).firstOrNull;
   }
 
   static bool getBool(String key, {bool defaultValue = false}) {

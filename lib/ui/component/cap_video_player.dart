@@ -482,6 +482,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
           Column(
             children: [
               //视频控制层-中间
+              SizedBox(height: 40),
               Expanded(
                 child: SizedBox(
                   child: SimpleGestureDetector(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:holo/api/setting_api.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/subject.dart' show Data;
 import 'package:holo/service/api.dart';
@@ -107,6 +108,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             keyword: map['keyword'] as String,
             cover: map['cover'] as String,
             from: map['from'] as String,
+            subject: map['subject'] as Data?,
           );
         },
       ),
@@ -199,7 +201,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-
+    SettingApi.fetchSetting(() {}, (_) {});
     WidgetsBinding.instance.addObserver(this);
     MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
       (element) => element.toString() == LocalStore.getString('theme_mode'),

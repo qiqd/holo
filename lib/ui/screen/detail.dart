@@ -24,12 +24,14 @@ class DetailScreen extends StatefulWidget {
   final String keyword;
   final String cover;
   final String from;
+  final Data? subject;
   const DetailScreen({
     super.key,
     required this.id,
     required this.keyword,
     required this.cover,
     required this.from,
+    this.subject,
   });
 
   @override
@@ -39,7 +41,7 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen>
     with TickerProviderStateMixin {
   late String keyword = widget.keyword;
-  Data? data;
+  late Data? data = widget.subject;
   List<Person> person = [];
   List<Character> character = [];
   List<SubjectRelation>? relation;
@@ -59,15 +61,17 @@ class _DetailScreenState extends State<DetailScreen>
   Timer? _cancelSyncTimer;
 
   void _fetchSubjec() async {
-    final res = await Api.bangumi.fetchSubjectSync(widget.id, (e) {
-      setState(() {
-        _msg = e.toString();
+    if (data == null) {
+      final res = await Api.bangumi.fetchSubjectSync(widget.id, (e) {
+        setState(() {
+          _msg = e.toString();
+        });
       });
-    });
-    setState(() {
-      data = res;
-      _loadHistory();
-    });
+      setState(() {
+        data = res;
+      });
+    }
+    _loadHistory();
   }
 
   Future<void> _fetchMedia() async {
@@ -98,12 +102,16 @@ class _DetailScreenState extends State<DetailScreen>
     for (var value in source2Media.values) {
       value.sort((a, b) => b.score!.compareTo(a.score!));
     }
-    // if (source2Media.values.isNotEmpty &&
-    //     source2Media.values.first.isNotEmpty) {
-    //   defaultMedia = source2Media.values.first.first;
-    // }
     final keys = source2Media.keys.toList();
     keys.sort((a, b) => b.delay.compareTo(a.delay));
+    var sourceName = widget.subject?.sourceName;
+    if (sourceName != null) {
+      defaultSource = sources.firstWhere(
+        (element) => element.getName() == sourceName,
+      );
+      defaultMedia = source2Media[defaultSource]!.first;
+    }
+
     //defaultSource = keys.first;
     if (mounted) {
       setState(() {

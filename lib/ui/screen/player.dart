@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
+import 'package:holo/api/setting_api.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode.dart';
 import 'package:holo/entity/logvar_episode.dart';
@@ -231,6 +232,9 @@ class _PlayerScreenState extends State<PlayerScreen>
       imgUrl: widget.subject.images?.large ?? "",
     );
     _syncPlaybackHistory(history);
+    var data = widget.subject;
+    data.sourceName = source.getName();
+    LocalStore.setSubjectCacheAndSource(data);
     LocalStore.addPlaybackHistory(history);
   }
 
@@ -385,7 +389,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   void dispose() {
     _controller?.dispose();
     _storeLocalHistory();
-
+    SettingApi.updateSetting(() {}, (_) {});
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     super.dispose();

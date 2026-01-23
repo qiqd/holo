@@ -54,6 +54,7 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
   locked: json['locked'] as bool?,
   nsfw: json['nsfw'] as bool?,
   type: (json['type'] as num?)?.toInt(),
+  sourceName: json['source_name'] as String?,
 );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
@@ -76,6 +77,7 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
   'locked': instance.locked,
   'nsfw': instance.nsfw,
   'type': instance.type,
+  'source_name': instance.sourceName,
 };
 
 Tag _$TagFromJson(Map<String, dynamic> json) => Tag(

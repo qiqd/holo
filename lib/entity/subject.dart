@@ -41,7 +41,7 @@ class Data {
   final bool? locked;
   final bool? nsfw;
   final int? type;
-
+  String? sourceName;
   Data({
     this.date,
     this.platform,
@@ -62,6 +62,7 @@ class Data {
     this.locked,
     this.nsfw,
     this.type,
+    this.sourceName,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => _$DataFromJson(json);

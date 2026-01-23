@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
 import 'package:holo/entity/playback_history.dart';
+import 'package:holo/entity/subject.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -65,6 +66,10 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     playback.sort((a, b) => b.lastPlaybackAt.compareTo(a.lastPlaybackAt));
     subscribe.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     setState(() {});
+  }
+
+  Data? _getCacheBySubId(int id) {
+    return LocalStore.getSubjectCacheAndSource(id);
   }
 
   void _deletePlaybackHistory(int id) {
@@ -218,15 +223,19 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                                 onLongPress: (_) =>
                                     _toggleDeleteMode(item.subId),
                                 onDelete: _deleteSubscribeHistory,
-                                onTap: () => context.push(
-                                  '/detail',
-                                  extra: {
-                                    "id": item.subId,
-                                    "keyword": item.title,
-                                    "cover": item.imgUrl,
-                                    "from": "subscribe",
-                                  },
-                                ),
+                                onTap: () {
+                                  var cache = _getCacheBySubId(item.subId);
+                                  context.push(
+                                    '/detail',
+                                    extra: {
+                                      "id": item.subId,
+                                      "keyword": item.title,
+                                      "cover": item.imgUrl,
+                                      "from": "subscribe",
+                                      'subject': cache,
+                                    },
+                                  );
+                                },
                               );
                             },
                           ),
@@ -263,15 +272,19 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                                 onLongPress: (_) =>
                                     _toggleDeleteMode(item.subId),
                                 onDelete: _deletePlaybackHistory,
-                                onTap: () => context.push(
-                                  '/detail',
-                                  extra: {
-                                    "id": item.subId,
-                                    "keyword": item.title,
-                                    "cover": item.imgUrl,
-                                    "from": "subscribe.history",
-                                  },
-                                ),
+                                onTap: () {
+                                  var cache = _getCacheBySubId(item.subId);
+                                  context.push(
+                                    '/detail',
+                                    extra: {
+                                      "id": item.subId,
+                                      "keyword": item.title,
+                                      "cover": item.imgUrl,
+                                      "from": "subscribe.history",
+                                      'subject': cache,
+                                    },
+                                  );
+                                },
                               );
                             },
                           ),
