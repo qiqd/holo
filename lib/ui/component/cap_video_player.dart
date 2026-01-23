@@ -85,7 +85,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   double _displayArea = 1.0;
   double _opacity = 1.0;
   double _danmakuFontsize = 16.0;
-  //int _danmakuFontweight = 4;
+  final int _danmakuFontweight = 4;
   String _filter = "";
   int _danmakuOffset = 0;
   Timer? _timer;
@@ -331,10 +331,19 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
 
   void _saveDanmuSetting() {
     _filterDanmakuItems();
-    LocalStore.saveDanmakuOption(
-      _danmuController?.option ?? DanmakuOption(),
-      filter: _filter,
+    log('hideTop:$_hideTopDanmaku');
+    final option = DanmakuOption(
+      hideTop: _hideTopDanmaku,
+      hideBottom: _hideBottomDanmaku,
+      hideScroll: _hideScrollDanmaku,
+      massiveMode: _massiveDanmakuMode,
+      area: _displayArea,
+      fontSize: _danmakuFontsize,
+      fontWeight: _danmakuFontweight,
+      opacity: _opacity,
     );
+    log('filter:$_filter');
+    LocalStore.saveDanmakuOption(option, filter: _filter);
   }
 
   void _filterDanmakuItems() {
@@ -384,7 +393,6 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     // _showSetting = false;
     // showEpisodeList = false;
     _showVideoControlsTimer();
-    _loadDanmuSetting();
     super.didChangeDependencies();
   }
 
@@ -950,6 +958,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             curve: Curves.easeInOut,
             duration: const Duration(milliseconds: 200),
             onEnd: () {
+              log('onEnd:$_filter');
               if (_showSetting) return;
               _danmuController?.updateOption(
                 DanmakuOption(
@@ -984,6 +993,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                           setState(() {
                             _filter = value;
                           });
+                          log('input:$_filter');
                         },
                         decoration: InputDecoration(
                           labelText: context.tr(

@@ -192,8 +192,8 @@
     "player": {
         "summary": "Summary",
         "episodes": "Episodes",
-        "route_selection": "Route Selection",
-        "route_number": "Route {}",
+        "route_selection": "Source Selection",
+        "route_number": "Source {}",
         "no_comments": "No comments",
         "no_episode_name": "No episode name",
         "episode_not_exist": "Episode is not updated yet",

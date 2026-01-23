@@ -57,7 +57,7 @@ class Bangumi implements MetaService {
         var dateTime = DateTime.parse(time);
         dateTime = dateTime.add(const Duration(hours: 8));
         result[subjectId] = dateTime;
-        log('subjectId: $subjectId, time: $time, dateTime: $dateTime');
+        // log('subjectId: $subjectId, time: $time, dateTime: $dateTime');
       }
       return result;
     } catch (e) {
