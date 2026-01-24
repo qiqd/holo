@@ -39,7 +39,9 @@ class Api {
     final futures = _sources.map((source) async {
       try {
         final response = await HttpUtil.createDio().getWithTiming(
-          source.getBaseUrl(),
+          source.getBaseUrl().contains('http')
+              ? source.getBaseUrl()
+              : 'https://${source.getBaseUrl()}',
         );
         final duration = response.extra['request_duration'] as int?;
         source.delay = duration ?? 9999;

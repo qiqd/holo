@@ -8,6 +8,7 @@ import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
+import 'package:holo/util/local_store.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ? _recommended?.data?.addAll(recommended?.data ?? [])
           : _recommended = recommended;
     });
+    LocalStore.setHomeCache(_recommended!);
     setState(() {
       _loading = false;
     });
@@ -51,8 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _recommended = LocalStore.getHomeCache();
     _scrollController.addListener(_onScrollToBottom);
-    _fetchRecommended();
+    if (_recommended == null) {
+      _fetchRecommended();
+    }
   }
 
   @override

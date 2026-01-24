@@ -42,7 +42,6 @@ class _SeviceCommonTestState extends State<SeviceCommonTest> {
       timeout: 30,
       playerVideoSelector: 'video#lelevideo',
       waitForMediaElement: true,
-      updateAt: DateTime.now(),
     ),
   );
   String _keyword = '';

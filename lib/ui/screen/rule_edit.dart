@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/api.dart';
@@ -16,60 +17,18 @@ class RuleEditScreen extends StatefulWidget {
 
 class _RuleEditScreenState extends State<RuleEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _name;
-  String? _baseUrl;
-  String? _logoUrl;
-  String? _searchUrl;
-  final bool _fullSearchUrl = false;
-  int? _timeout;
-  String? _searchSelector;
-  String? _itemImgSelector;
-  bool _itemImgFromSrc = false;
-  String? _itemTitleSelector;
-  String? _itemIdSelector;
-  String? _itemGenreSelector;
-  String? _detailUrl;
-  final bool _fullDetailUrl = false;
-  String? _lineSelector;
-  String? _episodeSelector;
-  String? _playerUrl;
-  final bool _fullPlayerUrl = false;
-  String? _playerVideoSelector;
-  String? _embedVideoSelector;
-  String? _videoUrlSubsChar;
-  String? _videoElementAttribute;
-  bool _waitForMediaElement = false;
+  late final _isEditMode = widget.isEditMode;
+  late final Rule _rule = widget.rule ?? Rule();
+
   void _saveRule() {
-    if (!_formKey.currentState!.validate() || !widget.isEditMode) {
+    if (!_formKey.currentState!.validate() || !_isEditMode) {
       return;
     }
-    final rule = Rule(
-      name: _name ?? '',
-      baseUrl: _baseUrl ?? '',
-      logoUrl: _logoUrl ?? '',
-      searchUrl: _searchUrl ?? '',
-      fullSearchUrl: _fullSearchUrl,
-      timeout: _timeout ?? 5,
-      searchSelector: _searchSelector ?? '',
-      itemImgSelector: _itemImgSelector ?? '',
-      itemImgFromSrc: _itemImgFromSrc,
-      itemTitleSelector: _itemTitleSelector ?? '',
-      itemIdSelector: _itemIdSelector ?? '',
-      itemGenreSelector: _itemGenreSelector ?? '',
-      detailUrl: _detailUrl ?? '',
-      fullDetailUrl: _fullDetailUrl,
-      lineSelector: _lineSelector ?? '',
-      episodeSelector: _episodeSelector ?? '',
-      playerUrl: _playerUrl ?? '',
-      fullPlayerUrl: _fullPlayerUrl,
-      playerVideoSelector: _playerVideoSelector ?? '',
-      embedVideoSelector: _embedVideoSelector ?? '',
-      videoUrlSubsChar: _videoUrlSubsChar ?? '',
-      videoElementAttribute: _videoElementAttribute,
-      waitForMediaElement: _waitForMediaElement,
-      updateAt: DateTime.now(),
-    );
-    LocalStore.saveRules([rule]);
+    if (widget.rule != null) {
+      LocalStore.updateRule(_rule);
+    } else {
+      LocalStore.saveRules([_rule]);
+    }
     Api.initSources();
     context.pop();
   }
@@ -177,6 +136,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               key: _formKey,
               child: Column(
                 children: [
+                  //基本信息部分
                   Card(
                     margin: EdgeInsets.all(10),
                     child: Padding(
@@ -207,7 +167,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _name = value;
+                                _rule.name = value;
                               });
                             },
                             validator: (value) {
@@ -232,7 +192,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _baseUrl = value;
+                                _rule.baseUrl = value;
                               });
                             },
                             validator: (value) {
@@ -261,7 +221,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _logoUrl = value;
+                                _rule.logoUrl = value;
                               });
                             },
                             validator: (value) {
@@ -287,7 +247,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _timeout = int.tryParse(value) ?? 5;
+                                _rule.timeout = int.tryParse(value) ?? 5;
                               });
                             },
                           ),
@@ -295,7 +255,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       ),
                     ),
                   ),
-
+                  //搜索页面规则部分
                   Card(
                     margin: EdgeInsets.all(10),
                     child: Padding(
@@ -326,7 +286,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _searchUrl = value;
+                                _rule.searchUrl = value;
                               });
                             },
                             validator: (value) {
@@ -355,7 +315,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _searchSelector = value;
+                                _rule.searchSelector = value;
                               });
                             },
                             validator: (value) {
@@ -382,7 +342,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _itemImgSelector = value;
+                                _rule.itemImgSelector = value;
                               });
                             },
                             validator: (value) {
@@ -402,11 +362,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               'rule_edit.item_img_from_src_subtitle'.tr(),
                             ),
                             value:
-                                widget.rule?.itemImgFromSrc ?? _itemImgFromSrc,
+                                widget.rule?.itemImgFromSrc ??
+                                _rule.itemImgFromSrc,
                             onChanged: widget.isEditMode
                                 ? (value) {
                                     setState(() {
-                                      _itemImgFromSrc = value;
+                                      _rule.itemImgFromSrc = value;
                                     });
                                   }
                                 : null,
@@ -428,7 +389,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _itemTitleSelector = value;
+                                _rule.itemTitleSelector = value;
                               });
                             },
                             validator: (value) {
@@ -455,7 +416,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _itemIdSelector = value;
+                                _rule.itemIdSelector = value;
                               });
                             },
                             validator: (value) {
@@ -483,15 +444,61 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _itemGenreSelector = value;
+                                _rule.itemGenreSelector = value;
                               });
+                            },
+                          ),
+
+                          TextFormField(
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.searchRequestHeaders
+                                ?.toString(),
+                            decoration: InputDecoration(
+                              labelText: 'rule_edit.search_request_header_label'
+                                  .tr(),
+                              hintText: 'rule_edit.search_request_header_hint'
+                                  .tr(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null;
+                              }
+                              var headerList = value
+                                  .split(',')
+                                  .where((element) => element.contains(':'))
+                                  .toList();
+                              if (headerList.isEmpty) {
+                                return '';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              var headerList = value
+                                  .split(',')
+                                  .where((element) => element.contains('='))
+                                  .toList();
+                              if (headerList.isEmpty) {
+                                return;
+                              }
+                              var headers = {
+                                for (var e in headerList)
+                                  e.split('=')[0].trim(): e
+                                      .split('=')[1]
+                                      .trim(),
+                              };
+                              _rule.searchRequestHeaders = headers;
                             },
                           ),
                         ],
                       ),
                     ),
                   ),
-
+                  // 详情页规则
                   Card(
                     margin: EdgeInsets.all(10),
                     child: Padding(
@@ -522,7 +529,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _detailUrl = value;
+                                _rule.detailUrl = value;
                               });
                             },
                             validator: (value) {
@@ -551,7 +558,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _lineSelector = value;
+                                _rule.lineSelector = value;
                               });
                             },
                             validator: (value) {
@@ -577,7 +584,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _episodeSelector = value;
+                                _rule.episodeSelector = value;
                               });
                             },
                             validator: (value) {
@@ -588,11 +595,56 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
+                          TextFormField(
+                            enabled: widget.isEditMode,
+                            initialValue: widget.rule?.detailRequestHeaders
+                                ?.toString(),
+                            decoration: InputDecoration(
+                              labelText: 'rule_edit.detail_request_header_label'
+                                  .tr(),
+                              hintText: 'rule_edit.detail_request_header_hint'
+                                  .tr(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null;
+                              }
+                              var headerList = value
+                                  .split(',')
+                                  .where((element) => element.contains('='))
+                                  .toList();
+                              if (headerList.isEmpty) {
+                                return '';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              var headerList = value
+                                  .split(',')
+                                  .where((element) => element.contains('='))
+                                  .toList();
+                              if (headerList.isEmpty) {
+                                return;
+                              }
+                              var headers = {
+                                for (var e in headerList)
+                                  e.split('=')[0].trim(): e
+                                      .split('=')[1]
+                                      .trim(),
+                              };
+                              _rule.detailRequestHeaders = headers;
+                            },
+                          ),
                         ],
                       ),
                     ),
                   ),
-
+                  // 播放页规则
                   Card(
                     margin: EdgeInsets.all(10),
                     child: Padding(
@@ -623,7 +675,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _playerUrl = value;
+                                _rule.playerUrl = value;
                               });
                             },
                             validator: (value) {
@@ -654,7 +706,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _playerVideoSelector = value;
+                                _rule.playerVideoSelector = value;
                               });
                             },
                             validator: (value) {
@@ -682,18 +734,18 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _videoElementAttribute = value;
+                                _rule.videoElementAttribute = value;
                               });
                             },
                           ),
                           SwitchListTile(
                             value:
                                 widget.rule?.waitForMediaElement ??
-                                _waitForMediaElement,
+                                _rule.waitForMediaElement,
                             onChanged: widget.isEditMode
                                 ? (value) {
                                     setState(() {
-                                      _waitForMediaElement = value;
+                                      _rule.waitForMediaElement = value;
                                     });
                                   }
                                 : null,
@@ -720,18 +772,40 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _embedVideoSelector = value;
+                                _rule.embedVideoSelector = value;
                               });
                             },
                           ),
 
+                          // TextFormField(
+                          //   enabled: widget.isEditMode,
+                          //   initialValue: widget.rule?.videoUrlSubsChar,
+                          //   decoration: InputDecoration(
+                          //     labelText: 'rule_edit.video_url_subs_char_label'
+                          //         .tr(),
+                          //     hintText: 'rule_edit.video_url_subs_char_hint'
+                          //         .tr(),
+                          //     border: OutlineInputBorder(
+                          //       borderRadius: BorderRadius.all(
+                          //         Radius.circular(20.0),
+                          //       ),
+                          //     ),
+                          //   ),
+                          //   onChanged: (value) {
+                          //     setState(() {
+                          //       _rule.videoUrlSubsChar = value;
+                          //     });
+                          //   },
+                          // ),
                           TextFormField(
+                            key: Key('playerRequestHeaders'),
                             enabled: widget.isEditMode,
-                            initialValue: widget.rule?.videoUrlSubsChar,
+                            initialValue: widget.rule?.playerRequestHeaders
+                                ?.toString(),
                             decoration: InputDecoration(
-                              labelText: 'rule_edit.video_url_subs_char_label'
+                              labelText: 'rule_edit.player_request_header_label'
                                   .tr(),
-                              hintText: 'rule_edit.video_url_subs_char_hint'
+                              hintText: 'rule_edit.player_request_header_hint'
                                   .tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
@@ -739,10 +813,34 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                                 ),
                               ),
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null;
+                              }
+                              var headerList = value
+                                  .split(',')
+                                  .where((element) => element.contains('='))
+                                  .toList();
+                              if (headerList.isEmpty) {
+                                return '';
+                              }
+                              return null;
+                            },
                             onChanged: (value) {
-                              setState(() {
-                                _videoUrlSubsChar = value;
-                              });
+                              var headerList = value
+                                  .split(',')
+                                  .where((element) => element.contains('='))
+                                  .toList();
+                              if (headerList.isEmpty) {
+                                return;
+                              }
+                              var headers = {
+                                for (var e in headerList)
+                                  e.split('=')[0].trim(): e
+                                      .split('=')[1]
+                                      .trim(),
+                              };
+                              _rule.playerRequestHeaders = headers;
                             },
                           ),
                         ],

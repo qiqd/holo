@@ -6,6 +6,7 @@ import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
+import 'package:holo/util/local_store.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -21,6 +22,9 @@ class _CalendarScreenState extends State<CalendarScreen>
   String? _msg;
   List<String> _weekdays = tr("calendar.week").split(',');
   void _fetchCalendar() async {
+    if (_calendar.isNotEmpty && DateTime.now().hour % 3 != 0) {
+      return;
+    }
     final calendar = await Api.bangumi.fetchCalendarSync(
       (e) => setState(() {
         _msg = e.toString();
@@ -29,6 +33,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     setState(() {
       _calendar = calendar;
     });
+    LocalStore.setCalendarCache(calendar);
   }
 
   @override
@@ -42,6 +47,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   @override
   void initState() {
+    _calendar = LocalStore.getCalendarCache();
     _fetchCalendar();
     WidgetsBinding.instance.addObserver(this);
     _tabController.animateTo(DateTime.now().weekday - 1);

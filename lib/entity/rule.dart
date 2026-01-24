@@ -2,106 +2,120 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'rule.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Rule {
   /// 规则名称(通常为网站名称)
-  final String name;
+  String name;
 
   /// 规则baseUrl(通常是网站的域名)
-  final String baseUrl;
+  String baseUrl;
 
   /// 规则logoUrl(通常是网站的logo)
-  final String logoUrl;
+  String logoUrl;
 
   ///规则版本号
-  final String version;
+  String version;
 
   /// 搜索Url(通常是网站的搜索页面)
-  final String searchUrl;
+  String searchUrl;
+
+  ///搜索请求头部(通常是网站的搜索页面的请求头部)
+  Map<String, String>? searchRequestHeaders;
 
   /// 是否是完整的搜索Url(如果是,则不与 baseUrl 拼接,否则拼接)
-  final bool fullSearchUrl;
+  bool fullSearchUrl;
 
   /// 超时时间(默认5秒)
-  final int timeout;
+  int timeout;
 
   /// 搜索选择器(通常是搜索结果的列表)
-  final String searchSelector;
+  String searchSelector;
 
   /// 搜索图片选择器(通常是搜索结果的列表中的每一项的图片,一般是一个img标签)
-  final String itemImgSelector;
+  String itemImgSelector;
 
   /// 是否是图片选择器中的src属性(如果是,则图片选择器中的src属性是图片的url,否则是data-original属性)
-  final bool itemImgFromSrc;
+  bool itemImgFromSrc;
 
   /// 搜索标题选择器(通常是搜索结果的列表中的每一项的标题,一般是一个a标签)
-  final String itemTitleSelector;
+  String itemTitleSelector;
 
   /// MediaId选择器(通常是搜索结果的列表中的每一项的Id,一般是一个a标签)
-  final String itemIdSelector;
+  String itemIdSelector;
 
   /// 搜索类型选择器(通常是搜索结果的列表中的每一项的内容的类型)
-  final String? itemGenreSelector;
+  String? itemGenreSelector;
 
   /// 详情Url(通常是网站的详情页面)
-  final String detailUrl;
+  String detailUrl;
+
+  /// 详情请求头部(通常是网站的详情页面的请求头部)
+  Map<String, String>? detailRequestHeaders;
 
   /// 是否是完整的详情Url(如果是,则不与 baseUrl 拼接,否则拼接)
-  final bool fullDetailUrl;
+  bool fullDetailUrl;
 
   /// 路线选择器(该视频的播放路线)
-  final String lineSelector;
+  String lineSelector;
 
   /// 剧集选择器(每一条线路下对应的剧集,一般是一个a标签)
-  final String episodeSelector;
+  String episodeSelector;
 
   /// 播放页面Url(通常是网站的播放页面的视频播放地址)
-  final String playerUrl;
+  String playerUrl;
+
+  /// 播放页面请求头部(通常是网站的播放页面的请求头部)
+  Map<String, String>? playerRequestHeaders;
 
   /// 是否是完整的播放Url(如果是 ,则不与 baseUrl 拼接,否则拼接)
-  final bool fullPlayerUrl;
+  bool fullPlayerUrl;
 
   /// 播放视频选择器(通常是播放页面的视频标签,比如video,iframe等)
-  final String playerVideoSelector;
+  String playerVideoSelector;
 
   /// 视频元素属性(通常是视频标签的src属性,比如video标签的src属性)
-  final String? videoElementAttribute;
+  String? videoElementAttribute;
 
   /// 嵌入视频选择器,英文逗号分隔(通常是播放页面的嵌入视频标签,比如iframe等)
-  final String? embedVideoSelector;
+  String? embedVideoSelector;
 
   /// 是否等待视频元素加载完成(如果是,则等待视频元素加载完成,否则立即返回)
-  final bool waitForMediaElement;
+  bool waitForMediaElement;
 
   ///视频url截取,通常是从params参数中截取视频url,比如params=videoUrl=xxxx,则截取xxxx,如果是null,则直接返回匹配的url
-  final String? videoUrlSubsChar;
+  String? videoUrlSubsChar;
 
   /// 规则更新时间
   DateTime updateAt;
+
   //规则是否启用
   bool isEnabled;
 
-  Rule({
-    required this.name,
-    required this.logoUrl,
-    required this.searchUrl,
+  //是否是本地规则
+  bool isLocal;
 
-    required this.fullSearchUrl,
-    required this.detailUrl,
-    required this.playerUrl,
-    required this.fullPlayerUrl,
-    required this.searchSelector,
-    required this.fullDetailUrl,
-    required this.lineSelector,
-    required this.episodeSelector,
-    required this.playerVideoSelector,
-    required this.itemImgSelector,
-    required this.itemTitleSelector,
-    required this.itemIdSelector,
-    required this.baseUrl,
-    required this.itemImgFromSrc,
-    required this.updateAt,
-    required this.waitForMediaElement,
+  Rule({
+    this.name = '',
+    this.logoUrl = '',
+    this.searchUrl = '',
+    this.fullSearchUrl = false,
+    this.detailUrl = '',
+    this.playerUrl = '',
+    this.fullPlayerUrl = false,
+    this.searchSelector = '',
+    this.fullDetailUrl = false,
+    this.lineSelector = '',
+    this.episodeSelector = '',
+    this.playerVideoSelector = '',
+    this.itemImgSelector = '',
+    this.itemTitleSelector = '',
+    this.itemIdSelector = '',
+    this.baseUrl = '',
+    this.itemImgFromSrc = true,
+    this.waitForMediaElement = true,
+    this.searchRequestHeaders,
+    this.detailRequestHeaders,
+    this.playerRequestHeaders,
     this.videoElementAttribute,
     this.version = '1.0',
     this.isEnabled = true,
@@ -109,7 +123,8 @@ class Rule {
     this.embedVideoSelector,
     this.itemGenreSelector,
     this.videoUrlSubsChar,
-  });
+    this.isLocal = true,
+  }) : updateAt = DateTime.now();
   factory Rule.fromJson(Map<String, dynamic> json) => _$RuleFromJson(json);
 
   Map<String, dynamic> toJson() => _$RuleToJson(this);

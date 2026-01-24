@@ -122,7 +122,7 @@ class WebviewUtil {
               if (containsUnicode(htmlContent)) {
                 htmlContent = unescapeUnicodeString(htmlContent);
               }
-              //log('final html content:$htmlContent');
+              // log('final html content:$htmlContent');
               if (!completer.isCompleted) {
                 completer.complete(htmlContent);
               }
@@ -152,7 +152,7 @@ class WebviewUtil {
       );
 
       await _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
-      log("loadRequest url:$url");
+      log("loadRequest url:https://$url");
       await _webViewController.loadRequest(
         Uri.parse(url.contains("http") ? url : "https://$url"),
         headers: headers ?? {},

@@ -8,6 +8,10 @@ import 'package:html/parser.dart';
 
 class Common extends SourceService {
   final Rule rule;
+  final pattern = RegExp(
+    r'https?://[^?&\s]*?\.(?:m3u8|mp4)(?:\?[^&\s]*)?(?=&|\s|$)',
+    caseSensitive: false,
+  );
   final RegExp reg = RegExp(r'\{[^}]*\}');
   final WebviewUtil webviewUtil = WebviewUtil();
   Common({required this.rule});
@@ -39,6 +43,7 @@ class Common extends SourceService {
       final htmlStr = await webviewUtil.fetchHtml(
         rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId),
         timeout: Duration(seconds: rule.timeout),
+        headers: rule.detailRequestHeaders,
         onError: exceptionHandler,
       );
       //log("detail-htmlStr:$htmlStr");
@@ -69,6 +74,7 @@ class Common extends SourceService {
       final htmlStr = await webviewUtil.fetchHtml(
         rule.baseUrl + rule.searchUrl.replaceAll(reg, keyword),
         timeout: Duration(seconds: rule.timeout),
+        headers: rule.searchRequestHeaders,
         onError: exceptionHandler,
       );
       // log("htmlStr:$htmlStr");
@@ -113,6 +119,7 @@ class Common extends SourceService {
         rule.baseUrl + rule.playerUrl.replaceAll(reg, episodeId),
         timeout: Duration(seconds: rule.timeout),
         isPlayerPage: true,
+        headers: rule.playerRequestHeaders,
         waitForMediaElement: rule.waitForMediaElement,
         onError: exceptionHandler,
       );
@@ -126,6 +133,7 @@ class Common extends SourceService {
           var tempHtmlStr = await webviewUtil.fetchHtml(
             tempUrl,
             isPlayerPage: true,
+            headers: rule.playerRequestHeaders,
             waitForMediaElement: rule.waitForMediaElement,
             timeout: Duration(seconds: rule.timeout),
           );
@@ -136,24 +144,34 @@ class Common extends SourceService {
           //  log('embed tempHtmlStr:$tempHtmlStr');
         }
       }
+      var videoElement = doc.querySelector(rule.playerVideoSelector);
 
-      var videoUrl =
-          doc
-              .querySelector(rule.playerVideoSelector)
-              ?.attributes[rule.videoElementAttribute ?? 'src'] ??
-          '';
+      var videoAttributes = videoElement?.attributes ?? {};
+      var videoUrl = '';
+      for (var attr in videoAttributes.values) {
+        var at = attr as String;
+        if (pattern.hasMatch(at)) {
+          videoUrl = pattern.firstMatch(at)?.group(0) ?? '';
+        }
+      }
+      // var videoUrl =
+      //     doc
+      //         .querySelector(rule.playerVideoSelector)
+      //         ?.attributes[rule.videoElementAttribute ?? 'src'] ??
+      //     '';
       // 如果videoUrl为空，尝试从playerVideoSelector中获取文本内容
       if (videoUrl.isEmpty) {
         videoUrl = doc.querySelector(rule.playerVideoSelector)?.text ?? '';
       }
-      if (rule.videoUrlSubsChar != null && rule.videoUrlSubsChar!.isNotEmpty) {
-        videoUrl = videoUrl.split(rule.videoUrlSubsChar!).last;
-      }
-      log('fetch_view_videoUrl==${DateTime.now().millisecond}==}:$videoUrl');
-      return videoUrl;
+      // if (rule.videoUrlSubsChar != null && rule.videoUrlSubsChar!.isNotEmpty) {
+      //   videoUrl = videoUrl.split(rule.videoUrlSubsChar!).last;
+      // }
+      // log('fetch_view_videoUrl==${DateTime.now().millisecond}==}:$videoUrl');
+      //return videoUrl;
     } catch (e) {
       exceptionHandler(e.toString());
       return null;
     }
+    return null;
   }
 }

@@ -151,7 +151,10 @@ class _RuleManagerState extends State<RuleManager> {
                     onTap: () {
                       context.push(
                         '/rule_edit',
-                        extra: {'rule': _rules[index], 'isEditMode': false},
+                        extra: {
+                          'rule': _rules[index],
+                          'isEditMode': _rules[index].isLocal,
+                        },
                       );
                     },
                     leading: SizedBox(

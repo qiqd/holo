@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:canvas_danmaku/models/danmaku_option.dart';
+import 'package:holo/entity/calendar.dart';
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/subject.dart';
@@ -357,6 +358,33 @@ class LocalStore {
         .map((item) => Data.fromJson(json.decode(item)))
         .toList();
     return dataList.where((item) => item.id == subId).firstOrNull;
+  }
+
+  static void setCalendarCache(List<Calendar> calendars) {
+    if (_prefs == null) return;
+    var calendarsStr = _prefs!.getStringList("${_key}_calendar_cache") ?? [];
+    calendarsStr.addAll(calendars.map((item) => json.encode(item.toJson())));
+    _prefs!.setStringList("${_key}_calendar_cache", calendarsStr);
+  }
+
+  static List<Calendar> getCalendarCache() {
+    if (_prefs == null) return [];
+    var calendarsStr = _prefs!.getStringList("${_key}_calendar_cache") ?? [];
+    return calendarsStr
+        .map((item) => Calendar.fromJson(json.decode(item)))
+        .toList();
+  }
+
+  static void setHomeCache(Subject s) {
+    if (_prefs == null) return;
+    _prefs!.setString("${_key}_home_cache", json.encode(s.toJson()));
+  }
+
+  static Subject? getHomeCache() {
+    if (_prefs == null) return null;
+    var homeCache = _prefs!.getString("${_key}_home_cache");
+    if (homeCache == null) return null;
+    return Subject.fromJson(json.decode(homeCache));
   }
 
   static bool getBool(String key, {bool defaultValue = false}) {
