@@ -278,6 +278,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (_isDanmakuLoading) {
       return;
     }
+    bool hasError = false;
     setState(() {
       _isDanmakuLoading = true;
       // _danmuMsg = "player.danmaku_loading".tr();
@@ -286,6 +287,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       var data = await Api.logvar.fetchEpisodeFromLogvar(
         keyword ?? subject.nameCn ?? "",
         (e) {
+          hasError = true;
           if (mounted) {
             setState(() {
               _isDanmakuLoading = false;
@@ -318,10 +320,13 @@ class _PlayerScreenState extends State<PlayerScreen>
         return;
       }
     }
-
+    if (hasError) {
+      return;
+    }
     final danmu = await Api.logvar.fetchDammakuSync(
       _bestMatch!.episodes![episodeIndex].episodeId!,
       (e) {
+        hasError = true;
         if (mounted) {
           setState(() {
             _isDanmakuLoading = false;

@@ -125,6 +125,7 @@ class Common extends SourceService {
       );
       // log("htmlStr:$htmlStr");
       var doc = parse(htmlStr);
+      //如果是嵌入式视频，需要获取最终的播放网页
       if (rule.embedVideoSelector != null &&
           rule.embedVideoSelector!.isNotEmpty) {
         var embedSelectors = rule.embedVideoSelector!.split(',');
@@ -144,34 +145,42 @@ class Common extends SourceService {
           //  log('embed tempHtmlStr:$tempHtmlStr');
         }
       }
+      // 从videoElement中获取视频URL
       var videoElement = doc.querySelector(rule.playerVideoSelector);
-
       var videoAttributes = videoElement?.attributes ?? {};
       var videoUrl = '';
-      for (var attr in videoAttributes.values) {
-        var at = attr as String;
-        if (pattern.hasMatch(at)) {
-          videoUrl = pattern.firstMatch(at)?.group(0) ?? '';
+      //如果规则中指定了视频元素属性，直接从属性中获取URL，否则遍历所有属性，筛选符合条件的属性值
+      if (rule.videoElementAttribute != null &&
+          rule.videoElementAttribute!.isNotEmpty) {
+        videoUrl =
+            doc
+                .querySelector(rule.playerVideoSelector)
+                ?.attributes[rule.videoElementAttribute!] ??
+            '';
+        videoUrl = videoUrl.contains('m3u8')
+            ? pattern.firstMatch(videoUrl)?.group(0) ?? ''
+            : videoUrl;
+      } else {
+        for (var attr in videoAttributes.values) {
+          var at = attr as String;
+          if (pattern.hasMatch(at)) {
+            videoUrl = pattern.firstMatch(at)?.group(0) ?? '';
+          }
         }
       }
-      // var videoUrl =
-      //     doc
-      //         .querySelector(rule.playerVideoSelector)
-      //         ?.attributes[rule.videoElementAttribute ?? 'src'] ??
-      //     '';
       // 如果videoUrl为空，尝试从playerVideoSelector中获取文本内容
       if (videoUrl.isEmpty) {
         videoUrl = doc.querySelector(rule.playerVideoSelector)?.text ?? '';
       }
+      log('fetch_view_videoUrl==${DateTime.now().millisecond}==}:$videoUrl');
       // if (rule.videoUrlSubsChar != null && rule.videoUrlSubsChar!.isNotEmpty) {
       //   videoUrl = videoUrl.split(rule.videoUrlSubsChar!).last;
       // }
       // log('fetch_view_videoUrl==${DateTime.now().millisecond}==}:$videoUrl');
-      //return videoUrl;
+      return videoUrl;
     } catch (e) {
       exceptionHandler(e.toString());
       return null;
     }
-    return null;
   }
 }
