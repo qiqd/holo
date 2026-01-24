@@ -17,7 +17,7 @@ class SettingApi {
       var danmuOption = LocalStore.getDanmakuOption();
       var themeMode = LocalStore.getString('theme_mode');
       Map<String, dynamic>? danmakuOptionMap;
-      var filterWord = danmuOption?['filterWord'] ?? '';
+      var filterWord = danmuOption?['filter'] ?? '';
       if (danmuOption != null && danmuOption['option'] != null) {
         DanmakuOption option = danmuOption['option'];
         danmakuOptionMap = {
