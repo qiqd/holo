@@ -19,8 +19,14 @@ class Rule {
   /// 搜索Url(通常是网站的搜索页面)
   String searchUrl;
 
+  /// 搜索请求方法(默认get)
+  RequestMethod searchRequestMethod;
+
+  /// 搜索请求体(通常是网站的搜索页面的请求体)
+  Map<String, String> searchRequestBody;
+
   ///搜索请求头部(通常是网站的搜索页面的请求头部)
-  Map<String, String>? searchRequestHeaders;
+  Map<String, String> searchRequestHeaders;
 
   /// 是否是完整的搜索Url(如果是,则不与 baseUrl 拼接,否则拼接)
   bool fullSearchUrl;
@@ -49,8 +55,14 @@ class Rule {
   /// 详情Url(通常是网站的详情页面)
   String detailUrl;
 
+  /// 详情请求方法(默认get)
+  RequestMethod detailRequestMethod;
+
+  /// 详情请求体(通常是网站的详情页面的请求体)
+  Map<String, String> detailRequestBody;
+
   /// 详情请求头部(通常是网站的详情页面的请求头部)
-  Map<String, String>? detailRequestHeaders;
+  Map<String, String> detailRequestHeaders;
 
   /// 是否是完整的详情Url(如果是,则不与 baseUrl 拼接,否则拼接)
   bool fullDetailUrl;
@@ -64,8 +76,14 @@ class Rule {
   /// 播放页面Url(通常是网站的播放页面的视频播放地址)
   String playerUrl;
 
+  /// 播放页面请求方法(默认get)
+  RequestMethod playerRequestMethod;
+
+  /// 播放页面请求体(通常是网站的播放页面的请求体)
+  Map<String, String> playerRequestBody;
+
   /// 播放页面请求头部(通常是网站的播放页面的请求头部)
-  Map<String, String>? playerRequestHeaders;
+  Map<String, String> playerRequestHeaders;
 
   /// 是否是完整的播放Url(如果是 ,则不与 baseUrl 拼接,否则拼接)
   bool fullPlayerUrl;
@@ -98,12 +116,9 @@ class Rule {
     this.name = '',
     this.logoUrl = '',
     this.searchUrl = '',
-    this.fullSearchUrl = false,
     this.detailUrl = '',
     this.playerUrl = '',
-    this.fullPlayerUrl = false,
     this.searchSelector = '',
-    this.fullDetailUrl = false,
     this.lineSelector = '',
     this.episodeSelector = '',
     this.playerVideoSelector = '',
@@ -111,21 +126,46 @@ class Rule {
     this.itemTitleSelector = '',
     this.itemIdSelector = '',
     this.baseUrl = '',
+    this.fullSearchUrl = false,
+    this.fullPlayerUrl = false,
+    this.fullDetailUrl = false,
     this.itemImgFromSrc = true,
     this.waitForMediaElement = true,
-    this.searchRequestHeaders,
-    this.detailRequestHeaders,
-    this.playerRequestHeaders,
+    this.searchRequestHeaders = const {},
+    this.detailRequestHeaders = const {},
+    this.playerRequestHeaders = const {},
+    this.searchRequestBody = const {},
+    this.detailRequestBody = const {},
+    this.playerRequestBody = const {},
     this.videoElementAttribute,
     this.version = '1.0',
     this.isEnabled = true,
     this.timeout = 5,
+    this.isLocal = true,
+    this.searchRequestMethod = RequestMethod.get,
+    this.detailRequestMethod = RequestMethod.get,
+    this.playerRequestMethod = RequestMethod.get,
     this.embedVideoSelector,
     this.itemGenreSelector,
     this.videoUrlSubsChar,
-    this.isLocal = true,
   }) : updateAt = DateTime.now();
+
   factory Rule.fromJson(Map<String, dynamic> json) => _$RuleFromJson(json);
 
   Map<String, dynamic> toJson() => _$RuleToJson(this);
+}
+
+enum RequestMethod {
+  @JsonValue('get')
+  get,
+  @JsonValue('post')
+  post,
+  @JsonValue('put')
+  put,
+  @JsonValue('delete')
+  delete,
+  @JsonValue('head')
+  head,
+  @JsonValue('options')
+  options,
 }

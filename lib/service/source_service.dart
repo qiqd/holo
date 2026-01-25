@@ -15,7 +15,8 @@ abstract class SourceService {
   int get delay;
   set delay(int value);
 
-  /// 解析搜索结果
+  ///
+  /// 搜索媒体
   ///
   /// @param keyword 搜索关键词
   /// @param page 页码

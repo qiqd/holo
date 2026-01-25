@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -76,11 +78,15 @@ class MediaCard extends StatelessWidget {
                         height: double.infinity,
                         fit: BoxFit.fitHeight,
 
-                        errorWidget: (context, url, error) => const SizedBox(
-                          height: double.infinity,
-                          width: double.infinity,
-                          child: Icon(Icons.broken_image),
-                        ),
+                        errorWidget: (context, url, error) {
+                          log("meida_card.image_url:$url");
+                          log("meida_card.image_error:$error");
+                          return SizedBox(
+                            height: double.infinity,
+                            width: double.infinity,
+                            child: Icon(Icons.broken_image),
+                          );
+                        },
                         placeholder: (context, url) => const SizedBox(
                           height: double.infinity,
                           width: double.infinity,

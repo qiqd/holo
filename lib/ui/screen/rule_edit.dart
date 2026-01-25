@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/service/api.dart';
+
 import 'package:holo/util/local_store.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -29,7 +29,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
     } else {
       LocalStore.saveRules([_rule]);
     }
-    Api.initSources();
     context.pop();
   }
 
@@ -271,7 +270,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-
+                          //搜索页面路径
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.searchUrl,
@@ -300,7 +299,83 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-
+                          //搜索请求方法
+                          DropdownButtonFormField<RequestMethod>(
+                            //  enabled: widget.isEditMode,
+                            initialValue: _rule.searchRequestMethod,
+                            decoration: InputDecoration(
+                              labelText: 'rule_edit.request_method_label'.tr(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            items: RequestMethod.values.map((e) {
+                              return DropdownMenuItem<RequestMethod>(
+                                value: e,
+                                child: Text(e.toString().split('.').last),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _rule.searchRequestMethod =
+                                    value ?? RequestMethod.get;
+                              });
+                            },
+                          ),
+                          //请求体
+                          AnimatedSize(
+                            duration: Duration(milliseconds: 300),
+                            child:
+                                _rule.searchRequestMethod == RequestMethod.get
+                                ? SizedBox.shrink()
+                                : TextFormField(
+                                    enabled: widget.isEditMode,
+                                    initialValue: widget
+                                        .rule
+                                        ?.searchRequestBody
+                                        .entries
+                                        .map((e) => '${e.key}=${e.value}')
+                                        .join(','),
+                                    decoration: InputDecoration(
+                                      labelText: '请求体'.tr(),
+                                      hintText: 'key与value用=隔开,多个用英文逗号隔开'.tr(),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20.0),
+                                        ),
+                                      ),
+                                    ),
+                                    onChanged: (value) {
+                                      var bodyList = value
+                                          .split(',')
+                                          .where(
+                                            (element) => element.contains('='),
+                                          )
+                                          .toList();
+                                      if (bodyList.isEmpty) {
+                                        return;
+                                      }
+                                      var body = {
+                                        for (var element in bodyList)
+                                          element.split('=')[0]: element.split(
+                                            '=',
+                                          )[1],
+                                      };
+                                      setState(() {
+                                        _rule.searchRequestBody = body;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return '';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                          ),
+                          //搜索元素选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.searchSelector,
@@ -326,7 +401,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-
+                          //  搜索元素图片选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.itemImgSelector,
@@ -353,7 +428,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-
+                          //  搜索元素图片是否从src获取
                           SwitchListTile(
                             title: Text(
                               'rule_edit.item_img_from_src_label'.tr(),
@@ -372,7 +447,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                                   }
                                 : null,
                           ),
-
+                          //  搜索元素标题选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.itemTitleSelector,
@@ -400,7 +475,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-
+                          //  搜索元素id选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.itemIdSelector,
@@ -427,7 +502,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-
+                          //  搜索元素类型选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.itemGenreSelector,
@@ -448,50 +523,46 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               });
                             },
                           ),
-
+                          //  搜索请求头Referer
                           TextFormField(
                             enabled: widget.isEditMode,
-                            initialValue: widget.rule?.searchRequestHeaders
-                                ?.toString(),
+                            maxLines: 2,
+                            initialValue:
+                                widget.rule?.searchRequestHeaders['Referer'] ??
+                                ''.toString(),
                             decoration: InputDecoration(
-                              labelText: 'rule_edit.search_request_header_label'
-                                  .tr(),
-                              hintText: 'rule_edit.search_request_header_hint'
-                                  .tr(),
+                              labelText: "Referer",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
                                 ),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return null;
-                              }
-                              var headerList = value
-                                  .split(',')
-                                  .where((element) => element.contains(':'))
-                                  .toList();
-                              if (headerList.isEmpty) {
-                                return '';
-                              }
-                              return null;
-                            },
                             onChanged: (value) {
-                              var headerList = value
-                                  .split(',')
-                                  .where((element) => element.contains('='))
-                                  .toList();
-                              if (headerList.isEmpty) {
-                                return;
-                              }
-                              var headers = {
-                                for (var e in headerList)
-                                  e.split('=')[0].trim(): e
-                                      .split('=')[1]
-                                      .trim(),
+                              _rule.searchRequestHeaders = {'Referer': value};
+                            },
+                          ),
+                          //  搜索请求头User-Agent
+                          TextFormField(
+                            enabled: widget.isEditMode,
+                            maxLines: 2,
+                            initialValue:
+                                widget
+                                    .rule
+                                    ?.searchRequestHeaders['User-Agent'] ??
+                                ''.toString(),
+                            decoration: InputDecoration(
+                              labelText: "User-Agent",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              _rule.searchRequestHeaders = {
+                                'User-Agent': value,
                               };
-                              _rule.searchRequestHeaders = headers;
                             },
                           ),
                         ],
@@ -543,7 +614,83 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-
+                          //详情页请求方法
+                          DropdownButtonFormField<RequestMethod>(
+                            //  enabled: widget.isEditMode,
+                            initialValue: _rule.detailRequestMethod,
+                            decoration: InputDecoration(
+                              labelText: 'rule_edit.request_method_label'.tr(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            items: RequestMethod.values.map((e) {
+                              return DropdownMenuItem<RequestMethod>(
+                                value: e,
+                                child: Text(e.toString().split('.').last),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _rule.detailRequestMethod =
+                                    value ?? RequestMethod.get;
+                              });
+                            },
+                          ),
+                          //请求体
+                          AnimatedSize(
+                            duration: Duration(milliseconds: 300),
+                            child:
+                                _rule.detailRequestMethod == RequestMethod.get
+                                ? SizedBox()
+                                : TextFormField(
+                                    enabled: widget.isEditMode,
+                                    initialValue: widget
+                                        .rule
+                                        ?.detailRequestBody
+                                        .entries
+                                        .map((e) => '${e.key}=${e.value}')
+                                        .join(','),
+                                    decoration: InputDecoration(
+                                      labelText: '请求体'.tr(),
+                                      hintText: 'key与value用=隔开,多个用英文逗号隔开'.tr(),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20.0),
+                                        ),
+                                      ),
+                                    ),
+                                    onChanged: (value) {
+                                      if (value
+                                          .split(',')
+                                          .where(
+                                            (element) => element.contains('='),
+                                          )
+                                          .toList()
+                                          .isEmpty) {
+                                        return;
+                                      }
+                                      var body = {
+                                        for (var element in value.split(','))
+                                          element.split('=')[0]: element.split(
+                                            '=',
+                                          )[1],
+                                      };
+                                      setState(() {
+                                        _rule.detailRequestBody = body;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return '';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                          ),
+                          //详情页播放路线选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.lineSelector,
@@ -568,7 +715,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-
+                          //详情页剧集选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.episodeSelector,
@@ -595,49 +742,46 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
+                          //  详情页请求头Referer
                           TextFormField(
                             enabled: widget.isEditMode,
-                            initialValue: widget.rule?.detailRequestHeaders
-                                ?.toString(),
+                            maxLines: 2,
+                            initialValue:
+                                widget.rule?.detailRequestHeaders['Referer'] ??
+                                ''.toString(),
                             decoration: InputDecoration(
-                              labelText: 'rule_edit.detail_request_header_label'
-                                  .tr(),
-                              hintText: 'rule_edit.detail_request_header_hint'
-                                  .tr(),
+                              labelText: "Referer",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
                                 ),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return null;
-                              }
-                              var headerList = value
-                                  .split(',')
-                                  .where((element) => element.contains('='))
-                                  .toList();
-                              if (headerList.isEmpty) {
-                                return '';
-                              }
-                              return null;
-                            },
                             onChanged: (value) {
-                              var headerList = value
-                                  .split(',')
-                                  .where((element) => element.contains('='))
-                                  .toList();
-                              if (headerList.isEmpty) {
-                                return;
-                              }
-                              var headers = {
-                                for (var e in headerList)
-                                  e.split('=')[0].trim(): e
-                                      .split('=')[1]
-                                      .trim(),
+                              _rule.detailRequestHeaders = {'Referer': value};
+                            },
+                          ),
+                          //  搜索请求头User-Agent
+                          TextFormField(
+                            enabled: widget.isEditMode,
+                            maxLines: 2,
+                            initialValue:
+                                widget
+                                    .rule
+                                    ?.detailRequestHeaders['User-Agent'] ??
+                                ''.toString(),
+                            decoration: InputDecoration(
+                              labelText: "User-Agent",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              _rule.detailRequestHeaders = {
+                                'User-Agent': value,
                               };
-                              _rule.detailRequestHeaders = headers;
                             },
                           ),
                         ],
@@ -689,7 +833,83 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
-
+                          //详情页请求方法
+                          DropdownButtonFormField<RequestMethod>(
+                            //  enabled: widget.isEditMode,
+                            initialValue: _rule.playerRequestMethod,
+                            decoration: InputDecoration(
+                              labelText: 'rule_edit.request_method_label'.tr(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            items: RequestMethod.values.map((e) {
+                              return DropdownMenuItem<RequestMethod>(
+                                value: e,
+                                child: Text(e.toString().split('.').last),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _rule.playerRequestMethod =
+                                    value ?? RequestMethod.get;
+                              });
+                            },
+                          ),
+                          //请求体
+                          AnimatedSize(
+                            duration: Duration(milliseconds: 300),
+                            child:
+                                _rule.playerRequestMethod == RequestMethod.get
+                                ? SizedBox()
+                                : TextFormField(
+                                    enabled: widget.isEditMode,
+                                    initialValue: widget
+                                        .rule
+                                        ?.playerRequestBody
+                                        .entries
+                                        .map((e) => '${e.key}=${e.value}')
+                                        .join(','),
+                                    decoration: InputDecoration(
+                                      labelText: '请求体'.tr(),
+                                      hintText: 'key与value用=隔开,多个用英文逗号隔开'.tr(),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20.0),
+                                        ),
+                                      ),
+                                    ),
+                                    onChanged: (value) {
+                                      if (value
+                                          .split(',')
+                                          .where(
+                                            (element) => element.contains('='),
+                                          )
+                                          .toList()
+                                          .isEmpty) {
+                                        return;
+                                      }
+                                      var body = {
+                                        for (var element in value.split(','))
+                                          element.split('=')[0]: element.split(
+                                            '=',
+                                          )[1],
+                                      };
+                                      setState(() {
+                                        _rule.playerRequestBody = body;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return '';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                          ),
+                          //播放页面视频选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.playerVideoSelector,
@@ -717,6 +937,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               return null;
                             },
                           ),
+                          //详情页视频元素属性选择器
                           TextFormField(
                             enabled: widget.isEditMode,
                             initialValue: widget.rule?.videoElementAttribute,
@@ -738,6 +959,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               });
                             },
                           ),
+                          //详情页等待视频元素加载开关
                           SwitchListTile(
                             value:
                                 widget.rule?.waitForMediaElement ??
@@ -797,50 +1019,46 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           //     });
                           //   },
                           // ),
+                          //  播放请求头Referer
                           TextFormField(
-                            key: Key('playerRequestHeaders'),
                             enabled: widget.isEditMode,
-                            initialValue: widget.rule?.playerRequestHeaders
-                                ?.toString(),
+                            maxLines: 2,
+                            initialValue:
+                                widget.rule?.playerRequestHeaders['Referer'] ??
+                                ''.toString(),
                             decoration: InputDecoration(
-                              labelText: 'rule_edit.player_request_header_label'
-                                  .tr(),
-                              hintText: 'rule_edit.player_request_header_hint'
-                                  .tr(),
+                              labelText: "Referer",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20.0),
                                 ),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return null;
-                              }
-                              var headerList = value
-                                  .split(',')
-                                  .where((element) => element.contains('='))
-                                  .toList();
-                              if (headerList.isEmpty) {
-                                return '';
-                              }
-                              return null;
-                            },
                             onChanged: (value) {
-                              var headerList = value
-                                  .split(',')
-                                  .where((element) => element.contains('='))
-                                  .toList();
-                              if (headerList.isEmpty) {
-                                return;
-                              }
-                              var headers = {
-                                for (var e in headerList)
-                                  e.split('=')[0].trim(): e
-                                      .split('=')[1]
-                                      .trim(),
+                              _rule.playerRequestHeaders = {'Referer': value};
+                            },
+                          ),
+                          //  播放请求头User-Agent
+                          TextFormField(
+                            enabled: widget.isEditMode,
+                            maxLines: 2,
+                            initialValue:
+                                widget
+                                    .rule
+                                    ?.playerRequestHeaders['User-Agent'] ??
+                                ''.toString(),
+                            decoration: InputDecoration(
+                              labelText: "User-Agent",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              _rule.playerRequestHeaders = {
+                                'User-Agent': value,
                               };
-                              _rule.playerRequestHeaders = headers;
                             },
                           ),
                         ],

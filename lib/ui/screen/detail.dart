@@ -105,11 +105,14 @@ class _DetailScreenState extends State<DetailScreen>
     final keys = source2Media.keys.toList();
     keys.sort((a, b) => b.delay.compareTo(a.delay));
     var sourceName = widget.subject?.sourceName;
-    if (sourceName != null) {
+    if (sourceName != null && sourceName.isNotEmpty) {
       defaultSource = sources.firstWhere(
         (element) => element.getName() == sourceName,
+        orElse: () => keys.first,
       );
-      defaultMedia = source2Media[defaultSource]!.first;
+      defaultMedia = source2Media[defaultSource]!.isEmpty
+          ? null
+          : source2Media[defaultSource]!.first;
     }
 
     //defaultSource = keys.first;

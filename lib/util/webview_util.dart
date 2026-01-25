@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 
+import 'package:holo/entity/rule.dart';
 import 'package:html/parser.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -70,10 +73,12 @@ class WebviewUtil {
 
   Future<String> fetchHtml(
     String url, {
+    RequestMethod requestMethod = RequestMethod.get,
     bool isPlayerPage = false,
     bool waitForMediaElement = false,
     Duration timeout = const Duration(seconds: 10),
-    Map<String, String>? headers,
+    Map<String, String> headers = const {},
+    Map<String, String> requestBody = const {},
     Function(String error)? onError,
   }) async {
     Completer<String> completer = Completer<String>();
@@ -83,7 +88,9 @@ class WebviewUtil {
       await _webViewController.setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) async {
-            log('页面加载完成: $url');
+            log(
+              '页面加载完成,请求方法: $requestMethod,参数: ${requestBody.toString()},头部: ${headers.toString()},url: $url',
+            );
             try {
               final Object html = await _webViewController
                   .runJavaScriptReturningResult(
@@ -150,12 +157,28 @@ class WebviewUtil {
           },
         ),
       );
+      log("loadRequest url:https://$url");
 
+      Uint8List? bodyBytes;
+      // 将 Map<String, String> 转换为表单格式的字符串
+      String formBody = requestBody.entries
+          .map(
+            (entry) =>
+                '${Uri.encodeComponent(entry.key)}=${Uri.encodeComponent(entry.value)}',
+          )
+          .join('&');
+      bodyBytes = utf8.encode(formBody);
+      await _webViewController.setUserAgent(headers['User-Agent']);
       await _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
       log("loadRequest url:https://$url");
+
       await _webViewController.loadRequest(
         Uri.parse(url.contains("http") ? url : "https://$url"),
-        headers: headers ?? {},
+        method: requestMethod == RequestMethod.get
+            ? LoadRequestMethod.get
+            : LoadRequestMethod.post,
+        body: bodyBytes,
+        headers: headers,
       );
 
       // 等待HTML获取完成并返回结果

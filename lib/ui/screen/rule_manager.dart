@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/util/local_store.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class RuleManager extends StatefulWidget {
   const RuleManager({super.key});
@@ -39,6 +40,12 @@ class _RuleManagerState extends State<RuleManager> {
     }
   }
 
+  Future<void> _refreshRulesAndSourceService() async {
+    _rules = LocalStore.getRules();
+    Api.initSources();
+    await Api.delayTest();
+  }
+
   void _clipboardRulesToJson() {
     if (_rules.isEmpty) {
       return;
@@ -55,7 +62,17 @@ class _RuleManagerState extends State<RuleManager> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        title: Text('rule_manager.title'.tr()),
+        title: VisibilityDetector(
+          key: Key('rule_manager_title'),
+          child: Text('rule_manager.title'.tr()),
+          onVisibilityChanged: (info) {
+            if (info.visibleFraction > 0) {
+              setState(() {
+                _rules = LocalStore.getRules();
+              });
+            }
+          },
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () {
@@ -130,12 +147,8 @@ class _RuleManagerState extends State<RuleManager> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () {
-          setState(() {
-            _rules = LocalStore.getRules();
-          });
-          Api.initSources();
-          return Future.value(null);
+        onRefresh: () async {
+          await _refreshRulesAndSourceService();
         },
         child: Column(
           children: [

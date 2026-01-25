@@ -40,10 +40,15 @@ class Common extends SourceService {
     Function(String) exceptionHandler,
   ) async {
     try {
+      var detailUrl = rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId);
       final htmlStr = await webviewUtil.fetchHtml(
-        rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId),
+        mediaId.contains('http') ? mediaId : detailUrl,
+        requestMethod: rule.detailRequestMethod,
         timeout: Duration(seconds: rule.timeout),
         headers: rule.detailRequestHeaders,
+        requestBody: rule.detailRequestBody.map(
+          (key, value) => MapEntry(key, value.replaceAll('{mediaId}', mediaId)),
+        ),
         onError: exceptionHandler,
       );
       //log("detail-htmlStr:$htmlStr");
@@ -71,38 +76,49 @@ class Common extends SourceService {
     timeout = const Duration(seconds: 60),
   }) async {
     try {
+      var searchUrl = rule.baseUrl + rule.searchUrl.replaceAll(reg, keyword);
       final htmlStr = await webviewUtil.fetchHtml(
-        rule.baseUrl + rule.searchUrl.replaceAll(reg, keyword),
+        keyword.contains('http') ? keyword : searchUrl,
+        requestMethod: rule.searchRequestMethod,
+        requestBody: rule.searchRequestBody.map(
+          (key, value) => MapEntry(key, value.replaceAll('{keyword}', keyword)),
+        ),
         timeout: Duration(seconds: rule.timeout),
         headers: rule.searchRequestHeaders,
         onError: exceptionHandler,
       );
       // log("htmlStr:$htmlStr");
       var doc = parse(htmlStr);
-      return doc
-          .querySelectorAll(rule.searchSelector)
-          .map(
-            (e) => Media(
-              id:
-                  e.querySelector(rule.itemIdSelector)?.attributes['href'] ??
-                  '',
-              title: e.querySelector(rule.itemTitleSelector)?.text ?? '',
-              coverUrl:
-                  e
-                      .querySelector(rule.itemImgSelector)
-                      ?.attributes[rule.itemImgFromSrc
-                      ? 'src'
-                      : 'data-original'] ??
-                  '',
+      var imgAttrs = ['data-original', 'data-src'];
+      return doc.querySelectorAll(rule.searchSelector).map((e) {
+        var imgUrl = '';
+        if (rule.itemImgFromSrc) {
+          imgUrl =
+              e.querySelector(rule.itemImgSelector)?.attributes['src'] ?? '';
+        } else {
+          for (var attr in imgAttrs) {
+            var temp =
+                e.querySelector(rule.itemImgSelector)?.attributes[attr] ?? '';
+            if (temp.isNotEmpty) {
+              imgUrl = temp;
+              break;
+            }
+          }
+        }
+        imgUrl = imgUrl.contains('http') ? imgUrl : rule.baseUrl + imgUrl;
 
-              type:
-                  (rule.itemGenreSelector != null &&
-                      rule.itemGenreSelector!.isNotEmpty)
-                  ? e.querySelector(rule.itemGenreSelector!)?.text
-                  : null,
-            ),
-          )
-          .toList();
+        return Media(
+          id: e.querySelector(rule.itemIdSelector)?.attributes['href'] ?? '',
+          title: e.querySelector(rule.itemTitleSelector)?.text ?? '',
+          coverUrl: imgUrl,
+
+          type:
+              (rule.itemGenreSelector != null &&
+                  rule.itemGenreSelector!.isNotEmpty)
+              ? e.querySelector(rule.itemGenreSelector!)?.text
+              : null,
+        );
+      }).toList();
     } catch (e) {
       exceptionHandler(e.toString());
       return [];
@@ -115,9 +131,15 @@ class Common extends SourceService {
     Function(String) exceptionHandler,
   ) async {
     try {
+      var viewUrl = rule.baseUrl + rule.playerUrl.replaceAll(reg, episodeId);
       final htmlStr = await webviewUtil.fetchHtml(
-        rule.baseUrl + rule.playerUrl.replaceAll(reg, episodeId),
+        episodeId.contains('http') ? episodeId : viewUrl,
         timeout: Duration(seconds: rule.timeout),
+        requestMethod: rule.playerRequestMethod,
+        requestBody: rule.playerRequestBody.map(
+          (key, value) =>
+              MapEntry(key, value.replaceAll('{episodeId}', episodeId)),
+        ),
         isPlayerPage: true,
         headers: rule.playerRequestHeaders,
         waitForMediaElement: rule.waitForMediaElement,

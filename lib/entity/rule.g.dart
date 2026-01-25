@@ -10,12 +10,9 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   name: json['name'] as String? ?? '',
   logoUrl: json['logoUrl'] as String? ?? '',
   searchUrl: json['searchUrl'] as String? ?? '',
-  fullSearchUrl: json['fullSearchUrl'] as bool? ?? false,
   detailUrl: json['detailUrl'] as String? ?? '',
   playerUrl: json['playerUrl'] as String? ?? '',
-  fullPlayerUrl: json['fullPlayerUrl'] as bool? ?? false,
   searchSelector: json['searchSelector'] as String? ?? '',
-  fullDetailUrl: json['fullDetailUrl'] as bool? ?? false,
   lineSelector: json['lineSelector'] as String? ?? '',
   episodeSelector: json['episodeSelector'] as String? ?? '',
   playerVideoSelector: json['playerVideoSelector'] as String? ?? '',
@@ -23,22 +20,67 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   itemTitleSelector: json['itemTitleSelector'] as String? ?? '',
   itemIdSelector: json['itemIdSelector'] as String? ?? '',
   baseUrl: json['baseUrl'] as String? ?? '',
+  fullSearchUrl: json['fullSearchUrl'] as bool? ?? false,
+  fullPlayerUrl: json['fullPlayerUrl'] as bool? ?? false,
+  fullDetailUrl: json['fullDetailUrl'] as bool? ?? false,
   itemImgFromSrc: json['itemImgFromSrc'] as bool? ?? true,
   waitForMediaElement: json['waitForMediaElement'] as bool? ?? true,
-  searchRequestHeaders: (json['searchRequestHeaders'] as Map<String, dynamic>?)
-      ?.map((k, e) => MapEntry(k, e as String)),
-  detailRequestHeaders: (json['detailRequestHeaders'] as Map<String, dynamic>?)
-      ?.map((k, e) => MapEntry(k, e as String)),
-  playerRequestHeaders: (json['playerRequestHeaders'] as Map<String, dynamic>?)
-      ?.map((k, e) => MapEntry(k, e as String)),
+  searchRequestHeaders:
+      (json['searchRequestHeaders'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ) ??
+      const {},
+  detailRequestHeaders:
+      (json['detailRequestHeaders'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ) ??
+      const {},
+  playerRequestHeaders:
+      (json['playerRequestHeaders'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ) ??
+      const {},
+  searchRequestBody:
+      (json['searchRequestBody'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ) ??
+      const {},
+  detailRequestBody:
+      (json['detailRequestBody'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ) ??
+      const {},
+  playerRequestBody:
+      (json['playerRequestBody'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ) ??
+      const {},
   videoElementAttribute: json['videoElementAttribute'] as String?,
   version: json['version'] as String? ?? '1.0',
   isEnabled: json['isEnabled'] as bool? ?? true,
   timeout: (json['timeout'] as num?)?.toInt() ?? 5,
+  isLocal: json['isLocal'] as bool? ?? true,
+  searchRequestMethod:
+      $enumDecodeNullable(
+        _$RequestMethodEnumMap,
+        json['searchRequestMethod'],
+      ) ??
+      RequestMethod.get,
+  detailRequestMethod:
+      $enumDecodeNullable(
+        _$RequestMethodEnumMap,
+        json['detailRequestMethod'],
+      ) ??
+      RequestMethod.get,
+  playerRequestMethod:
+      $enumDecodeNullable(
+        _$RequestMethodEnumMap,
+        json['playerRequestMethod'],
+      ) ??
+      RequestMethod.get,
   embedVideoSelector: json['embedVideoSelector'] as String?,
   itemGenreSelector: json['itemGenreSelector'] as String?,
   videoUrlSubsChar: json['videoUrlSubsChar'] as String?,
-  isLocal: json['isLocal'] as bool? ?? true,
 )..updateAt = DateTime.parse(json['updateAt'] as String);
 
 Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
@@ -47,6 +89,8 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'logoUrl': instance.logoUrl,
   'version': instance.version,
   'searchUrl': instance.searchUrl,
+  'searchRequestMethod': _$RequestMethodEnumMap[instance.searchRequestMethod]!,
+  'searchRequestBody': instance.searchRequestBody,
   'searchRequestHeaders': instance.searchRequestHeaders,
   'fullSearchUrl': instance.fullSearchUrl,
   'timeout': instance.timeout,
@@ -57,11 +101,15 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'itemIdSelector': instance.itemIdSelector,
   'itemGenreSelector': instance.itemGenreSelector,
   'detailUrl': instance.detailUrl,
+  'detailRequestMethod': _$RequestMethodEnumMap[instance.detailRequestMethod]!,
+  'detailRequestBody': instance.detailRequestBody,
   'detailRequestHeaders': instance.detailRequestHeaders,
   'fullDetailUrl': instance.fullDetailUrl,
   'lineSelector': instance.lineSelector,
   'episodeSelector': instance.episodeSelector,
   'playerUrl': instance.playerUrl,
+  'playerRequestMethod': _$RequestMethodEnumMap[instance.playerRequestMethod]!,
+  'playerRequestBody': instance.playerRequestBody,
   'playerRequestHeaders': instance.playerRequestHeaders,
   'fullPlayerUrl': instance.fullPlayerUrl,
   'playerVideoSelector': instance.playerVideoSelector,
@@ -72,4 +120,13 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'updateAt': instance.updateAt.toIso8601String(),
   'isEnabled': instance.isEnabled,
   'isLocal': instance.isLocal,
+};
+
+const _$RequestMethodEnumMap = {
+  RequestMethod.get: 'get',
+  RequestMethod.post: 'post',
+  RequestMethod.put: 'put',
+  RequestMethod.delete: 'delete',
+  RequestMethod.head: 'head',
+  RequestMethod.options: 'options',
 };

@@ -27,7 +27,6 @@ class Api {
         .map((rule) => Common.build(rule))
         .toList();
     _sources.addAll(commonSources);
-    delayTest();
   }
 
   static List<SourceService> getSources() {
