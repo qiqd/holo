@@ -142,7 +142,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
       }
       var d = maxEnd.inSeconds.toDouble();
 
-      return d >= widget.controller.value.duration.inSeconds.toDouble() ? 4 : 0;
+      return d >= widget.controller.value.duration.inSeconds.toDouble() ? 4 : d;
     } catch (e) {
       setState(() {
         msgText = e.toString();
