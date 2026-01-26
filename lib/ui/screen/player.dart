@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/setting_api.dart';
@@ -376,10 +377,16 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void didChangeDependencies() {
     _storeLocalHistory();
-    setState(() {
-      _isTablet = MediaQuery.of(context).size.width > 600;
-      _showEpisodeList = false;
-    });
+    if (Device.get().isTablet) {
+      setState(() {
+        _isTablet = MediaQuery.of(context).size.width > 600;
+        _showEpisodeList = false;
+      });
+    } else {
+      setState(() {
+        _isFullScreen = !_isFullScreen;
+      });
+    }
     super.didChangeDependencies();
   }
 
@@ -387,6 +394,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   void initState() {
     _loadHistory();
     _fetchEpisode();
+    _isTablet = Device.get().isTablet;
     WidgetsBinding.instance.addObserver(this);
     _fetchMediaEpisode().then(
       (value) => _fetchViewInfo(position: historyPosition),
@@ -910,9 +918,8 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isTablet = MediaQuery.of(context).size.width >= 600;
-    _isTablet = isTablet;
-    return isTablet
+
+    return _isTablet
         ? Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: _showEpisodeList ? null : Colors.black,

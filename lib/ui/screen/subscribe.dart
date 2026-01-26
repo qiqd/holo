@@ -155,6 +155,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
   @override
   Widget build(BuildContext context) {
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
         title: Text(tr("subscribe.title")),
@@ -207,7 +209,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                             itemCount: subscribe.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
+                                  crossAxisCount: isLandscape ? 6 : 3,
                                   crossAxisSpacing: 6,
                                   mainAxisSpacing: 6,
                                   childAspectRatio: 0.6,

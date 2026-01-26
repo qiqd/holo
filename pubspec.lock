@@ -358,6 +358,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.4.1"
+  flutter_device_type:
+    dependency: "direct main"
+    description:
+      name: flutter_device_type
+      sha256: "8f41f2271733f615957924dd1dcd10ef90848bb86b603ae20578f91591b900f3"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
