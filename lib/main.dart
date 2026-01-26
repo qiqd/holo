@@ -13,6 +13,7 @@ import 'package:holo/ui/screen/image_search.dart';
 import 'package:holo/ui/screen/rule_edit.dart';
 import 'package:holo/ui/screen/rule_manager.dart';
 import 'package:holo/ui/screen/rule_repository.dart';
+import 'package:holo/ui/screen/rule_test.dart';
 import 'package:holo/ui/screen/sign.dart';
 import 'package:holo/util/local_store.dart';
 
@@ -161,16 +162,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           return RuleManager();
         },
       ),
-      GoRoute(
-        path: '/rule_manager',
-        builder: (context, state) {
-          return RuleManager();
-        },
-      ),
+
       GoRoute(
         path: '/rule_repository',
         builder: (context, state) {
           return RuleRepository();
+        },
+      ),
+      GoRoute(
+        path: '/rule_test',
+        builder: (context, state) {
+          return RuleTestScreen(source: state.extra as SourceService);
         },
       ),
     ],

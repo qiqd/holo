@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
+import 'package:holo/service/api.dart';
 
 import 'package:holo/util/local_store.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -105,18 +106,30 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
     );
   }
 
+  void _goRuleTestScreen() {
+    if (widget.rule == null) {
+      return;
+    }
+    var sources = Api.getSources();
+    var first = sources
+        .where((element) => element.getName() == widget.rule!.name)
+        .first;
+    context.push('/rule_test', extra: first);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         actions: [
+          IconButton(icon: Text('Test'), onPressed: _goRuleTestScreen),
           IconButton(
-            icon: const Icon(Icons.save_rounded),
+            icon: const Icon(Icons.save_outlined),
             onPressed: _saveRule,
           ),
           IconButton(
-            icon: const Icon(Icons.help_rounded),
+            icon: const Icon(Icons.help_outline_outlined),
             onPressed: () {
               _showHelpDialog();
             },

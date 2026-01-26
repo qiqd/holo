@@ -610,8 +610,6 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Widget _buildShimmerSkeleton() {
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: Column(
