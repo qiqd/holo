@@ -18,6 +18,7 @@ import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;
@@ -221,6 +222,14 @@ class _DetailScreenState extends State<DetailScreen>
     });
   }
 
+  void _openBangumiUrl() {
+    if (data == null) {
+      return;
+    }
+
+    launchUrl(Uri.parse("https://bangumi.tv/subject/${data!.id}"));
+  }
+
   @override
   void dispose() {
     _storeLocalHistory();
@@ -284,6 +293,10 @@ class _DetailScreenState extends State<DetailScreen>
         title: Text("detail.title".tr()),
         actions: [
           IconButton(
+            onPressed: _openBangumiUrl,
+            icon: Icon(Icons.link_rounded),
+          ),
+          IconButton(
             onPressed: () {
               if (data == null) {
                 return;
@@ -304,101 +317,106 @@ class _DetailScreenState extends State<DetailScreen>
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
-                  return StatefulBuilder(
-                    builder: (context, setState) {
-                      return Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            TextField(
-                              textInputAction: TextInputAction.search,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                hintText: "detail.search_hint".tr(),
-                                hintStyle: Theme.of(
-                                  context,
-                                ).textTheme.bodySmall,
+                  return SizedBox(
+                    width: double.infinity,
+                    child: StatefulBuilder(
+                      builder: (context, setState) {
+                        return Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              TextField(
+                                textInputAction: TextInputAction.search,
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                  hintText: "detail.search_hint".tr(),
+                                  hintStyle: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall,
+                                ),
+                                onSubmitted: (value) async {
+                                  setState(() {
+                                    keyword = value;
+                                    isLoading = true;
+                                  });
+                                  await _fetchMedia();
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                },
                               ),
-                              onSubmitted: (value) async {
-                                setState(() {
-                                  keyword = value;
-                                  isLoading = true;
-                                });
-                                await _fetchMedia();
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              },
-                            ),
 
-                            TabBar(
-                              isScrollable: true,
-                              tabAlignment: TabAlignment.start,
-                              controller: subTabController,
-                              tabs: sourceService
-                                  .map((e) => Tab(text: e.getName()))
-                                  .toList(),
-                            ),
-                            Expanded(
-                              child: source2Media.isEmpty
-                                  ? LoadingOrShowMsg(
-                                      msg: "detail.no_search_results".tr(),
-                                    )
-                                  : Padding(
-                                      padding: EdgeInsets.only(top: 6),
-                                      child: TabBarView(
-                                        controller: subTabController,
-                                        children: sourceService.map((e) {
-                                          final item = source2Media[e] ?? [];
-                                          return isLoading
-                                              ? LoadingOrShowMsg(msg: _msg)
-                                              : ListView.builder(
-                                                  itemCount: item.length,
-                                                  itemBuilder: (context, index) {
-                                                    final m = item[index];
-                                                    return Column(
-                                                      children: [
-                                                        MediaCard(
-                                                          id: " ${Random().nextInt(10000)}_${m.id!}",
-                                                          score: m.score ?? 0,
-                                                          imageUrl: m.coverUrl!,
-                                                          nameCn:
-                                                              m.title ??
-                                                              "detail.no_title"
-                                                                  .tr(),
-                                                          genre: m.type,
-                                                          height: 150,
-                                                          onTap: () {
-                                                            context.push(
-                                                              "/player",
-                                                              extra: {
-                                                                "isLove":
-                                                                    isSubscribed,
-                                                                "mediaId":
-                                                                    m.id!,
-                                                                "subject": data,
-                                                                "source": e,
-                                                                "nameCn":
-                                                                    m.title ??
-                                                                    "detail.no_title"
-                                                                        .tr(),
-                                                              },
-                                                            );
-                                                          },
-                                                        ),
-                                                        Divider(height: 5),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                        }).toList(),
+                              TabBar(
+                                isScrollable: true,
+                                tabAlignment: TabAlignment.start,
+                                controller: subTabController,
+                                tabs: sourceService
+                                    .map((e) => Tab(text: e.getName()))
+                                    .toList(),
+                              ),
+                              Expanded(
+                                child: source2Media.isEmpty
+                                    ? LoadingOrShowMsg(
+                                        msg: "detail.no_search_results".tr(),
+                                      )
+                                    : Padding(
+                                        padding: EdgeInsets.only(top: 6),
+                                        child: TabBarView(
+                                          controller: subTabController,
+                                          children: sourceService.map((e) {
+                                            final item = source2Media[e] ?? [];
+                                            return isLoading
+                                                ? LoadingOrShowMsg(msg: _msg)
+                                                : ListView.builder(
+                                                    itemCount: item.length,
+                                                    itemBuilder: (context, index) {
+                                                      final m = item[index];
+                                                      return Column(
+                                                        children: [
+                                                          MediaCard(
+                                                            id: " ${Random().nextInt(10000)}_${m.id!}",
+                                                            score: m.score ?? 0,
+                                                            imageUrl:
+                                                                m.coverUrl!,
+                                                            nameCn:
+                                                                m.title ??
+                                                                "detail.no_title"
+                                                                    .tr(),
+                                                            genre: m.type,
+                                                            height: 150,
+                                                            onTap: () {
+                                                              context.push(
+                                                                "/player",
+                                                                extra: {
+                                                                  "isLove":
+                                                                      isSubscribed,
+                                                                  "mediaId":
+                                                                      m.id!,
+                                                                  "subject":
+                                                                      data,
+                                                                  "source": e,
+                                                                  "nameCn":
+                                                                      m.title ??
+                                                                      "detail.no_title"
+                                                                          .tr(),
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                          Divider(height: 5),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                          }).toList(),
+                                        ),
                                       ),
-                                    ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   );
                 },
               );
@@ -438,7 +456,7 @@ class _DetailScreenState extends State<DetailScreen>
                       child: Column(
                         children: [
                           TabBar(
-                            labelPadding: EdgeInsets.zero,
+                            tabAlignment: .center,
                             controller: tabController,
                             tabs: [
                               Tab(text: "detail.tabs.summary".tr()),
@@ -454,13 +472,16 @@ class _DetailScreenState extends State<DetailScreen>
                                 // 简介板块
                                 data?.summary != null &&
                                         data!.summary!.isNotEmpty
-                                    ? SingleChildScrollView(
-                                        padding: EdgeInsets.only(top: 8),
-                                        child: Text(
-                                          data?.summary == null ||
-                                                  data!.summary!.isEmpty
-                                              ? "detail.no_summary".tr()
-                                              : data!.summary!,
+                                    ? SizedBox(
+                                        width: double.infinity,
+                                        child: SingleChildScrollView(
+                                          padding: EdgeInsets.only(top: 8),
+                                          child: Text(
+                                            data?.summary == null ||
+                                                    data!.summary!.isEmpty
+                                                ? "detail.no_summary".tr()
+                                                : data!.summary!,
+                                          ),
                                         ),
                                       )
                                     : Center(
@@ -589,13 +610,14 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Widget _buildShimmerSkeleton() {
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         children: [
           MediaCard(
             id: "${widget.from}_${widget.id}",
-
             imageUrl: widget.cover,
             nameCn: "----------",
             name: "---------",
@@ -609,7 +631,7 @@ class _DetailScreenState extends State<DetailScreen>
           SizedBox(
             height: 48,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: .center,
               children: List.generate(4, (index) {
                 return Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,

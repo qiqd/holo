@@ -130,16 +130,25 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   }
 
   double getBufferedEnd() {
-    final buffered = widget.controller.value.buffered;
-    if (buffered.isEmpty) return 0.0;
+    try {
+      final buffered = widget.controller.value.buffered;
+      if (buffered.isEmpty) return 0.0;
 
-    Duration maxEnd = buffered.first.end;
-    for (var range in buffered) {
-      if (range.end > maxEnd) {
-        maxEnd = range.end;
+      Duration maxEnd = buffered.first.end;
+      for (var range in buffered) {
+        if (range.end > maxEnd) {
+          maxEnd = range.end;
+        }
       }
+      var d = maxEnd.inSeconds.toDouble();
+
+      return d >= widget.controller.value.duration.inSeconds.toDouble() ? 4 : 0;
+    } catch (e) {
+      setState(() {
+        msgText = e.toString();
+      });
+      return 0.0;
     }
-    return maxEnd.inSeconds.toDouble();
   }
 
   void _updateShowVolumeOrBrightnessTimer() {

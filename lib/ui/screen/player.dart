@@ -23,9 +23,7 @@ import 'package:holo/ui/component/cap_video_player.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
-
 import 'package:shimmer/shimmer.dart';
-
 import 'package:video_player/video_player.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -68,7 +66,8 @@ class _PlayerScreenState extends State<PlayerScreen>
   LogvarEpisode? _bestMatch;
   Danmu? _dammaku;
   bool _isDanmakuLoading = false;
-
+  bool _showEpisodeList = true;
+  bool _isTablet = false;
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
@@ -103,7 +102,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  void _fetchViewInfo({
+  Future<void> _fetchViewInfo({
     int position = 0,
     Function(String e)? onComplete,
   }) async {
@@ -144,6 +143,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
         if (mounted) {
           setState(() {
+            msg = "";
             _controller = newController;
             _controller?.seekTo(Duration(seconds: position));
             _isActive ? _controller?.play() : _controller?.pause();
@@ -376,6 +376,10 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void didChangeDependencies() {
     _storeLocalHistory();
+    setState(() {
+      _isTablet = MediaQuery.of(context).size.width > 600;
+      _showEpisodeList = false;
+    });
     super.didChangeDependencies();
   }
 
@@ -396,7 +400,9 @@ class _PlayerScreenState extends State<PlayerScreen>
     _storeLocalHistory();
     SettingApi.updateSetting(() {}, (_) {});
     WidgetsBinding.instance.removeObserver(this);
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    if (!_isTablet) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    }
     super.dispose();
   }
 
@@ -524,459 +530,467 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
+  Widget _buildPlayer({
+    required bool isFullScreen,
+    required Function(bool isFullScreen) onFullScreenChanged,
+    required Function() onBackPressed,
+    Function()? onMsgTab,
+  }) {
+    return Flexible(
+      flex: 1,
+      fit: FlexFit.tight,
+      child: Container(
+        color: Colors.black,
+        height: double.infinity,
+        width: double.infinity,
+        child: Center(
+          child: _controller != null && !isloading
+              ? CapVideoPlayer(
+                  title: widget.nameCn,
+                  subTitle: _episode?.data?[episodeIndex].nameCn,
+                  isloading: isloading,
+                  controller: _controller!,
+                  isFullScreen: isFullScreen,
+                  currentEpisodeIndex: episodeIndex,
+                  dammaku: _dammaku,
+                  episodeList:
+                      _episode?.data?.map((e) => e.name!).toList() ?? [],
+                  onError: (error) => setState(() {
+                    msg = error.toString();
+                  }),
+                  onEpisodeSelected: (index) => _onEpisodeSelected(index),
+                  onNextTab: () {
+                    if (isloading ||
+                        episodeIndex + 1 >
+                            _detail!.lines![lineIndex].episodes!.length - 1) {
+                      return;
+                    }
+                    setState(() {
+                      ++episodeIndex;
+                    });
+                    _fetchViewInfo();
+                  },
+                  onFullScreenChanged: (f) {
+                    onFullScreenChanged(f);
+                  },
+                  onBackPressed: () {
+                    onBackPressed();
+                  },
+                )
+              : LoadingOrShowMsg(
+                  msg: msg,
+                  backgroundColor: Colors.black,
+                  onMsgTab: onMsgTab,
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEpisode() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TabBar(
+                dividerColor: Colors.transparent,
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                padding: EdgeInsets.all(0),
+                controller: _tabController,
+                tabs: [
+                  Tab(text: "player.summary".tr()),
+                  Tab(text: "player.episodes".tr()),
+                ],
+              ),
+            ),
+            IconButton(
+              tooltip: "player.danmaku_selection".tr(),
+              onPressed: () {
+                //弹幕选择sheet
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        return Column(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ).copyWith(top: 10),
+                              child: Center(
+                                child: TextField(
+                                  textInputAction: .search,
+                                  decoration: InputDecoration(
+                                    hintText: 'player.danmaku_search_hint'.tr(),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  onSubmitted: (value) {
+                                    if (value.isEmpty) {
+                                      return;
+                                    }
+                                    _loadDanmaku(
+                                      isFirstLoad: true,
+                                      keyword: value,
+                                      onComplete: (e) {
+                                        setState(() {});
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(e),
+                                            showCloseIcon: true,
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            if (_isDanmakuLoading)
+                              Padding(
+                                padding: .only(top: 3),
+                                child: LinearProgressIndicator(),
+                              ),
+                            Expanded(
+                              child: StatefulBuilder(
+                                builder: (context, setState) =>
+                                    (_danmakuList == null ||
+                                        _danmakuList!.isEmpty)
+                                    ? Center(
+                                        child: Text(
+                                          'player.no_danmaku_sheet_text'.tr(),
+                                        ),
+                                      )
+                                    : ListView.separated(
+                                        itemCount: _danmakuList?.length ?? 0,
+                                        separatorBuilder: (context, index) =>
+                                            Divider(height: 1),
+                                        itemBuilder: (context, index) {
+                                          return ListTile(
+                                            selected:
+                                                _bestMatch?.animeId ==
+                                                _danmakuList?[index].animeId,
+                                            title: Text(
+                                              _danmakuList?[index].animeTitle ??
+                                                  '',
+                                            ),
+                                            subtitle: Text(
+                                              _danmakuList?[index].animeTitle ??
+                                                  '',
+                                            ),
+                                            onTap: () {
+                                              _onDanmakuSourceChange(
+                                                _danmakuList![index],
+                                              );
+                                              Navigator.pop(context);
+                                            },
+                                          );
+                                        },
+                                      ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+              icon: Icon(Icons.subtitles_rounded, color: Colors.grey),
+            ),
+            // 路线选择
+            PopupMenuButton(
+              tooltip: 'player.route_selection'.tr(),
+              borderRadius: BorderRadius.circular(50),
+              child: IconButton(
+                onPressed: null,
+                icon: Icon(Icons.source_rounded),
+              ),
+              itemBuilder: (context) => [
+                ...List.generate(
+                  _detail?.lines?.length ?? 1,
+                  (index) => PopupMenuItem(
+                    value: index,
+                    child: Row(
+                      spacing: 10,
+                      children: [
+                        Text(
+                          'player.route_number'.tr(
+                            args: [(index + 1).toString()],
+                          ),
+                        ),
+
+                        if (index == lineIndex)
+                          ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.primary,
+                              BlendMode.srcATop,
+                            ),
+                            child: LottieBuilder.asset(
+                              "lib/assets/lottie/playing.json",
+                              repeat: true,
+                              width: 40,
+                            ),
+                          ),
+                      ],
+                    ),
+                    onTap: () {
+                      if (index == lineIndex || isloading) {
+                        return;
+                      }
+                      _onLineSelected(index);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        Flexible(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              //简介
+              Container(
+                padding: EdgeInsets.all(12),
+                child: SingleChildScrollView(
+                  child: Column(
+                    spacing: 6,
+                    children: [
+                      MediaCard(
+                        id: "player_${subject.id!}",
+                        imageUrl: subject.images?.large!,
+                        nameCn: subject.nameCn!.isNotEmpty
+                            ? subject.nameCn!
+                            : subject.name ?? '',
+                        genre: subject.metaTags?.join('/'),
+                        episode: subject.eps ?? 0,
+                        rating: subject.rating?.score,
+                        height: 180,
+                        airDate: subject.infobox
+                            ?.firstWhere(
+                              (element) =>
+                                  element.key?.contains(
+                                    "detail.air_date_key".tr(),
+                                  ) ??
+                                  false,
+                              orElse: () => InfoBox(),
+                            )
+                            .value,
+                      ),
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        height: _dammaku != null ? 38 : 0,
+                        width: double.infinity,
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: _isDanmakuLoading
+                              ? LinearProgressIndicator()
+                              : Text(
+                                  context.tr(
+                                    'player.danmaku_statistics',
+                                    args: [
+                                      (_danmakuList?.length ?? 0).toString(),
+                                      (_dammaku?.comments?.length ?? 0)
+                                          .toString(),
+                                      (_dammaku?.comments?.length ?? 0)
+                                          .toString(),
+                                    ],
+                                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                        ),
+                      ),
+                      ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        tileColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                        title: Text(
+                          "player.datasource".tr(),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        subtitle: Text(
+                          source.getName(),
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        leading: Image.network(
+                          width: 50,
+                          source.getLogoUrl().contains('http')
+                              ? source.getLogoUrl()
+                              : 'https://${source.getLogoUrl()}',
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.error);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // 剧集列表
+              msg.isNotEmpty
+                  ? LoadingOrShowMsg(
+                      msg: msg,
+                      onMsgTab: () {
+                        _fetchViewInfo();
+                      },
+                    )
+                  : _episode == null
+                  ? _buildFadeEpisodeSection()
+                  : GridView.builder(
+                      key: PageStorageKey("player_episodes"),
+                      padding: EdgeInsets.all(10),
+                      itemCount: _episode?.data?.length ?? 0,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 5,
+                        crossAxisSpacing: 5,
+                      ),
+                      itemBuilder: (context, index) => ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        selected: episodeIndex == index,
+                        onTap: () {
+                          if (episodeIndex == index || isloading) {
+                            return;
+                          }
+                          _onEpisodeSelected(index);
+                        },
+                        subtitle: Text(
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                          _episode?.data?[index].nameCn ??
+                              "player.no_episode_name".tr(),
+                        ),
+                        title: Row(
+                          children: [
+                            Text('${index + 1}'),
+                            SizedBox(width: 10),
+                            if (episodeIndex == index)
+                              ColorFiltered(
+                                colorFilter: ColorFilter.mode(
+                                  Theme.of(context).colorScheme.primary,
+                                  BlendMode.srcATop,
+                                ),
+                                child: LottieBuilder.asset(
+                                  "lib/assets/lottie/playing.json",
+                                  repeat: true,
+                                  width: 40,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: _isFullScreen ? Colors.black : null,
-      body: SafeArea(
-        child: Center(
-          child: PopScope(
-            canPop: !_isFullScreen,
-            onPopInvokedWithResult: (didPop, result) {
-              setState(() {
-                _toggleFullScreen(false);
-              });
-            },
-            child: Column(
-              children: [
-                //视频播放器
-                Flexible(
-                  flex: 1,
-                  fit: FlexFit.tight,
-                  child: Container(
-                    color: Colors.black,
-                    height: double.infinity,
-                    width: double.infinity,
-                    child: Center(
-                      child: _controller != null && !isloading
-                          ? CapVideoPlayer(
-                              title: widget.nameCn,
-                              subTitle: _episode?.data?[episodeIndex].nameCn,
-                              isloading: isloading,
-                              controller: _controller!,
-                              isFullScreen: _isFullScreen,
-                              currentEpisodeIndex: episodeIndex,
-                              dammaku: _dammaku,
-                              episodeList:
-                                  _episode?.data
-                                      ?.map((e) => e.name!)
-                                      .toList() ??
-                                  [],
-                              onError: (error) => setState(() {
-                                msg = error.toString();
-                              }),
-                              onEpisodeSelected: (index) =>
-                                  _onEpisodeSelected(index),
-                              onNextTab: () {
-                                if (isloading ||
-                                    episodeIndex + 1 >
-                                        _detail!
-                                                .lines![lineIndex]
-                                                .episodes!
-                                                .length -
-                                            1) {
-                                  return;
-                                }
-                                setState(() {
-                                  ++episodeIndex;
-                                });
-                                _fetchViewInfo();
-                              },
-                              onFullScreenChanged: (isFullScreen) {
-                                setState(() {
-                                  _toggleFullScreen(isFullScreen);
-                                });
-                              },
-                              onBackPressed: () {
-                                if (_isFullScreen) {
-                                  setState(() {
-                                    _toggleFullScreen(false);
-                                  });
-                                } else {
-                                  context.pop();
-                                }
-                              },
-                            )
-                          : LoadingOrShowMsg(
-                              msg: msg,
-                              backgroundColor: Colors.black,
+    final isTablet = MediaQuery.of(context).size.width >= 600;
+    _isTablet = isTablet;
+    return isTablet
+        ? Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: _showEpisodeList ? null : Colors.black,
+            body: SafeArea(
+              child: Row(
+                children: [
+                  _buildPlayer(
+                    isFullScreen: !_showEpisodeList,
+                    onFullScreenChanged: (_) {
+                      setState(() {
+                        _showEpisodeList = !_showEpisodeList;
+                      });
+                    },
+                    onBackPressed: () {
+                      context.pop();
+                    },
+                    onMsgTab: () {
+                      setState(() {
+                        _showEpisodeList = true;
+                      });
+                    },
+                  ),
+                  AnimatedSize(
+                    duration: Duration(milliseconds: 300),
+                    child: _showEpisodeList
+                        ? SizedBox(
+                            width: 500,
+                            child: Theme(
+                              data: Theme.of(context),
+                              child: _buildEpisode(),
                             ),
-                    ),
+                          )
+                        : SizedBox(),
+                  ),
+                ],
+              ),
+            ),
+          )
+        : Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: _isFullScreen ? Colors.black : null,
+            body: SafeArea(
+              child: Center(
+                child: PopScope(
+                  canPop: !_isFullScreen,
+                  onPopInvokedWithResult: (didPop, result) {
+                    setState(() {
+                      _toggleFullScreen(false);
+                    });
+                  },
+                  child: Column(
+                    children: [
+                      //视频播放器
+                      _buildPlayer(
+                        isFullScreen: _isFullScreen,
+                        onFullScreenChanged: (isFullScreen) {
+                          setState(() {
+                            _toggleFullScreen(isFullScreen);
+                          });
+                        },
+                        onBackPressed: () {
+                          if (_isFullScreen) {
+                            setState(() {
+                              _toggleFullScreen(false);
+                            });
+                          } else {
+                            context.pop();
+                          }
+                        },
+                      ),
+                      //剧集列表
+                      if (!_isFullScreen)
+                        Flexible(flex: 2, child: _buildEpisode()),
+                    ],
                   ),
                 ),
-                //剧集列表
-                if (!_isFullScreen)
-                  Flexible(
-                    flex: 2,
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TabBar(
-                                dividerColor: Colors.transparent,
-                                isScrollable: true,
-                                tabAlignment: TabAlignment.start,
-                                padding: EdgeInsets.all(0),
-                                controller: _tabController,
-                                tabs: [
-                                  Tab(text: "player.summary".tr()),
-                                  Tab(text: "player.episodes".tr()),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              tooltip: "player.danmaku_selection".tr(),
-                              onPressed: () {
-                                //弹幕选择sheet
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) {
-                                    return StatefulBuilder(
-                                      builder: (context, setState) {
-                                        return Column(
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 10,
-                                              ).copyWith(top: 10),
-                                              child: Center(
-                                                child: TextField(
-                                                  textInputAction: .search,
-                                                  decoration: InputDecoration(
-                                                    hintText:
-                                                        'player.danmaku_search_hint'
-                                                            .tr(),
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            20,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                  onSubmitted: (value) {
-                                                    if (value.isEmpty) {
-                                                      return;
-                                                    }
-                                                    _loadDanmaku(
-                                                      isFirstLoad: true,
-                                                      keyword: value,
-                                                      onComplete: (e) {
-                                                        setState(() {});
-                                                        ScaffoldMessenger.of(
-                                                          context,
-                                                        ).showSnackBar(
-                                                          SnackBar(
-                                                            content: Text(e),
-                                                            showCloseIcon: true,
-                                                          ),
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                            if (_isDanmakuLoading)
-                                              Padding(
-                                                padding: .only(top: 3),
-                                                child:
-                                                    LinearProgressIndicator(),
-                                              ),
-                                            Expanded(
-                                              child: StatefulBuilder(
-                                                builder: (context, setState) =>
-                                                    (_danmakuList == null ||
-                                                        _danmakuList!.isEmpty)
-                                                    ? Center(
-                                                        child: Text(
-                                                          'player.no_danmaku_sheet_text'
-                                                              .tr(),
-                                                        ),
-                                                      )
-                                                    : ListView.separated(
-                                                        itemCount:
-                                                            _danmakuList
-                                                                ?.length ??
-                                                            0,
-                                                        separatorBuilder:
-                                                            (context, index) =>
-                                                                Divider(
-                                                                  height: 1,
-                                                                ),
-                                                        itemBuilder: (context, index) {
-                                                          return ListTile(
-                                                            selected:
-                                                                _bestMatch
-                                                                    ?.animeId ==
-                                                                _danmakuList?[index]
-                                                                    .animeId,
-                                                            title: Text(
-                                                              _danmakuList?[index]
-                                                                      .animeTitle ??
-                                                                  '',
-                                                            ),
-                                                            subtitle: Text(
-                                                              _danmakuList?[index]
-                                                                      .animeTitle ??
-                                                                  '',
-                                                            ),
-                                                            onTap: () {
-                                                              _onDanmakuSourceChange(
-                                                                _danmakuList![index],
-                                                              );
-                                                              Navigator.pop(
-                                                                context,
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              icon: Icon(
-                                Icons.subtitles_rounded,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            // 路线选择
-                            PopupMenuButton(
-                              tooltip: 'player.route_selection'.tr(),
-                              borderRadius: BorderRadius.circular(50),
-                              child: IconButton(
-                                onPressed: null,
-                                icon: Icon(Icons.source_rounded),
-                              ),
-                              itemBuilder: (context) => [
-                                ...List.generate(
-                                  _detail?.lines?.length ?? 1,
-                                  (index) => PopupMenuItem(
-                                    value: index,
-                                    child: Row(
-                                      spacing: 10,
-                                      children: [
-                                        Text(
-                                          'player.route_number'.tr(
-                                            args: [(index + 1).toString()],
-                                          ),
-                                        ),
-
-                                        if (index == lineIndex)
-                                          ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.primary,
-                                              BlendMode.srcATop,
-                                            ),
-                                            child: LottieBuilder.asset(
-                                              "lib/assets/lottie/playing.json",
-                                              repeat: true,
-                                              width: 40,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      if (index == lineIndex || isloading) {
-                                        return;
-                                      }
-                                      _onLineSelected(index);
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Flexible(
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: [
-                              //简介
-                              Container(
-                                padding: EdgeInsets.all(12),
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    spacing: 6,
-                                    children: [
-                                      MediaCard(
-                                        id: "player_${subject.id!}",
-                                        imageUrl: subject.images?.large!,
-                                        nameCn: subject.nameCn!.isNotEmpty
-                                            ? subject.nameCn!
-                                            : subject.name ?? '',
-                                        genre: subject.metaTags?.join('/'),
-                                        episode: subject.eps ?? 0,
-                                        rating: subject.rating?.score,
-                                        height: 180,
-                                        airDate: subject.infobox
-                                            ?.firstWhere(
-                                              (element) =>
-                                                  element.key?.contains(
-                                                    "detail.air_date_key".tr(),
-                                                  ) ??
-                                                  false,
-                                              orElse: () => InfoBox(),
-                                            )
-                                            .value,
-                                      ),
-                                      AnimatedContainer(
-                                        duration: Duration(milliseconds: 300),
-                                        height: _dammaku != null ? 38 : 0,
-                                        width: double.infinity,
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.surfaceContainerHighest,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: _isDanmakuLoading
-                                              ? LinearProgressIndicator()
-                                              : Text(
-                                                  context.tr(
-                                                    'player.danmaku_statistics',
-                                                    args: [
-                                                      (_danmakuList?.length ??
-                                                              0)
-                                                          .toString(),
-                                                      (_dammaku
-                                                                  ?.comments
-                                                                  ?.length ??
-                                                              0)
-                                                          .toString(),
-                                                      (_dammaku
-                                                                  ?.comments
-                                                                  ?.length ??
-                                                              0)
-                                                          .toString(),
-                                                    ],
-                                                  ),
-                                                  style: Theme.of(
-                                                    context,
-                                                  ).textTheme.bodyMedium,
-                                                ),
-                                        ),
-                                      ),
-                                      ListTile(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        tileColor: Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainerHighest,
-                                        title: Text(
-                                          "player.datasource".tr(),
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium,
-                                        ),
-                                        subtitle: Text(
-                                          source.getName(),
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.titleMedium,
-                                        ),
-                                        leading: Image.network(
-                                          width: 50,
-                                          source.getLogoUrl().contains('http')
-                                              ? source.getLogoUrl()
-                                              : 'https://${source.getLogoUrl()}',
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                                return Icon(Icons.error);
-                                              },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // 剧集列表
-                              msg.isNotEmpty
-                                  ? LoadingOrShowMsg(msg: msg)
-                                  : _episode == null
-                                  ? _buildFadeEpisodeSection()
-                                  : GridView.builder(
-                                      key: PageStorageKey("player_episodes"),
-                                      padding: EdgeInsets.all(10),
-                                      itemCount: _episode?.data?.length ?? 0,
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 3,
-                                            mainAxisSpacing: 5,
-                                            crossAxisSpacing: 5,
-                                          ),
-                                      itemBuilder: (context, index) => ListTile(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        selected: episodeIndex == index,
-                                        onTap: () {
-                                          if (episodeIndex == index ||
-                                              isloading) {
-                                            return;
-                                          }
-                                          _onEpisodeSelected(index);
-                                        },
-                                        subtitle: Text(
-                                          maxLines: 4,
-                                          overflow: TextOverflow.ellipsis,
-                                          _episode?.data?[index].nameCn ??
-                                              "player.no_episode_name".tr(),
-                                        ),
-                                        title: Row(
-                                          children: [
-                                            Text('${index + 1}'),
-                                            SizedBox(width: 10),
-                                            if (episodeIndex == index)
-                                              ColorFiltered(
-                                                colorFilter: ColorFilter.mode(
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.primary,
-                                                  BlendMode.srcATop,
-                                                ),
-                                                child: LottieBuilder.asset(
-                                                  "lib/assets/lottie/playing.json",
-                                                  repeat: true,
-                                                  width: 40,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 }

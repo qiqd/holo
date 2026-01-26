@@ -181,6 +181,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         child: Column(
           children: [
             TabBar(
+              tabAlignment: .center,
+              dividerHeight: 0,
               controller: _tabController,
               tabs: [
                 Tab(text: tr("subscribe.tab_subs")),

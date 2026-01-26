@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:holo/util/webview_util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main(List<String> args) {
@@ -32,24 +28,11 @@ class WebviewTest extends StatefulWidget {
 class _WebviewTestState extends State<WebviewTest> {
   final TextEditingController _urlController = TextEditingController();
   final WebViewController _webViewController = WebViewController();
-  final WebviewUtil _webviewUtil = WebviewUtil();
   bool _isLoading = false;
   String _currentUrl = '';
-  Timer? _timer;
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      log('定时器触发====');
-      _webViewController
-          .runJavaScriptReturningResult('document.documentElement.outerHTML')
-          .then((value) {
-            String htmlContent = value.toString();
-            log(
-              'htmlContent:${_webviewUtil.unescapeUnicodeString(htmlContent)}',
-            );
-          });
-    });
     // 设置WebView控制器
     _webViewController
       ..setJavaScriptMode(JavaScriptMode.unrestricted)

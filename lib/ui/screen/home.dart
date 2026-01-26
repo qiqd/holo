@@ -34,7 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ? _recommended?.data?.addAll(recommended?.data ?? [])
           : _recommended = recommended;
     });
-    LocalStore.setHomeCache(_recommended!);
+    if (_recommended != null) {
+      LocalStore.setHomeCache(_recommended!);
+    }
     setState(() {
       _loading = false;
     });
@@ -62,93 +64,98 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        animateColor: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.image_search_rounded),
-            onPressed: () {
-              context.push('/image_search');
-            },
-          ),
-        ],
-        title: Padding(
-          padding: EdgeInsets.only(left: 12),
-          child: TextField(
-            readOnly: true,
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search_rounded),
-              contentPadding: EdgeInsets.all(0),
-              hintText: context.tr("home.hint_text"),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade400),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: Colors.grey.shade400),
-              ),
-            ),
-            onTap: () {
-              context.push('/search');
-            },
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          if (_loading) LinearProgressIndicator(),
-          Expanded(
-            child: Center(
-              child: _msg != null
-                  ? LoadingOrShowMsg(msg: _msg)
-                  : _recommended == null
-                  ? buildShimmerSkeleton()
-                  : GridView.builder(
-                      controller: _scrollController,
-                      itemCount: _recommended!.data!.length,
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            mainAxisSpacing: 8,
-                            crossAxisSpacing: 8,
-                            crossAxisCount: 3,
-                            childAspectRatio: 0.6,
-                          ),
-                      itemBuilder: (context, index) {
-                        final item = _recommended!.data![index];
-                        var nameCN = item.nameCn ?? '';
-                        var name = item.name ?? "";
-                        return MediaGrid(
-                          id: "home_${item.id!}",
-                          imageUrl: item.images?.medium,
-                          title: nameCN.isNotEmpty ? nameCN : name,
-                          rating: item.rating?.score,
-                          airDate: item.infobox
-                              ?.firstWhere(
-                                (element) =>
-                                    element.key?.contains("放送开始") ?? false,
-                              )
-                              .value,
-                          onTap: () {
-                            context.push(
-                              '/detail',
-                              extra: {
-                                'id': item.id!,
-                                'keyword': item.nameCn ?? item.name ?? "",
-                                'cover': item.images?.large ?? "",
-                                'from': "home",
-                              },
-                            );
-                          },
-                        );
-                      },
+      appBar: isLandscape
+          ? null
+          : AppBar(
+              titleSpacing: 0,
+              animateColor: true,
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.image_search_rounded),
+                  onPressed: () {
+                    context.push('/image_search');
+                  },
+                ),
+              ],
+              title: Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: TextField(
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search_rounded),
+                    contentPadding: EdgeInsets.all(0),
+                    hintText: context.tr("home.hint_text"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(color: Colors.grey.shade400),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(color: Colors.grey.shade400),
+                    ),
+                  ),
+                  onTap: () {
+                    context.push('/search');
+                  },
+                ),
+              ),
             ),
-          ),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            if (_loading) LinearProgressIndicator(),
+            Expanded(
+              child: Center(
+                child: _msg != null
+                    ? LoadingOrShowMsg(msg: _msg)
+                    : _recommended == null
+                    ? buildShimmerSkeleton()
+                    : GridView.builder(
+                        controller: _scrollController,
+                        itemCount: _recommended!.data!.length,
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                          crossAxisCount: isLandscape ? 6 : 3,
+                          childAspectRatio: 0.6,
+                        ),
+                        itemBuilder: (context, index) {
+                          final item = _recommended!.data![index];
+                          var nameCN = item.nameCn ?? '';
+                          var name = item.name ?? "";
+                          return MediaGrid(
+                            id: "home_${item.id!}",
+                            imageUrl: item.images?.medium,
+                            title: nameCN.isNotEmpty ? nameCN : name,
+                            rating: item.rating?.score,
+                            airDate: item.infobox
+                                ?.firstWhere(
+                                  (element) =>
+                                      element.key?.contains("放送开始") ?? false,
+                                )
+                                .value,
+                            onTap: () {
+                              context.push(
+                                '/detail',
+                                extra: {
+                                  'id': item.id!,
+                                  'keyword': item.nameCn ?? item.name ?? "",
+                                  'cover': item.images?.large ?? "",
+                                  'from': "home",
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

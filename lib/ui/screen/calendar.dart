@@ -63,13 +63,15 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   @override
   Widget build(BuildContext context) {
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(title: Text(tr("calendar.title"))),
       body: Column(
         children: [
           TabBar(
-            labelPadding: EdgeInsets.zero,
             controller: _tabController,
+            labelPadding: .zero,
             tabs: List.generate(7, (index) => Tab(text: _weekdays[index])),
           ),
           Expanded(
@@ -84,7 +86,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         padding: const EdgeInsets.all(8),
                         itemCount: _calendar[index].items?.length ?? 0,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
+                          crossAxisCount: isLandscape ? 6 : 3,
                           mainAxisSpacing: 8,
                           crossAxisSpacing: 8,
                           childAspectRatio: 0.6,
