@@ -376,10 +376,16 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void didChangeDependencies() {
     _storeLocalHistory();
+    var info = MediaQuery.of(context);
     if (Device.get().isTablet) {
       setState(() {
-        _isTablet = MediaQuery.of(context).size.width > 600;
+        _isTablet = info.size.width > 600;
         _showEpisodeList = false;
+      });
+    }
+    if (Device.get().isPhone) {
+      setState(() {
+        _isFullScreen = info.orientation == Orientation.landscape;
       });
     }
     super.didChangeDependencies();
