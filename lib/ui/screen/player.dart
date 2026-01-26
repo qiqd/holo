@@ -54,7 +54,6 @@ class _PlayerScreenState extends State<PlayerScreen>
   late Data subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
-
   int episodeIndex = 0;
   int lineIndex = 0;
   Episode? _episode;
@@ -381,10 +380,6 @@ class _PlayerScreenState extends State<PlayerScreen>
       setState(() {
         _isTablet = MediaQuery.of(context).size.width > 600;
         _showEpisodeList = false;
-      });
-    } else {
-      setState(() {
-        _isFullScreen = !_isFullScreen;
       });
     }
     super.didChangeDependencies();
