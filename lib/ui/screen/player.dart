@@ -409,9 +409,11 @@ class _PlayerScreenState extends State<PlayerScreen>
     _storeLocalHistory();
     SettingApi.updateSetting(() {}, (_) {});
     WidgetsBinding.instance.removeObserver(this);
-    if (!_isTablet) {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    }
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     super.dispose();
   }
 
