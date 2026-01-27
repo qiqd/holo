@@ -54,7 +54,6 @@ class _PlayerScreenState extends State<PlayerScreen>
   late Data subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
-
   int episodeIndex = 0;
   int lineIndex = 0;
   Episode? _episode;
@@ -377,14 +376,16 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void didChangeDependencies() {
     _storeLocalHistory();
+    var info = MediaQuery.of(context);
     if (Device.get().isTablet) {
       setState(() {
-        _isTablet = MediaQuery.of(context).size.width > 600;
+        _isTablet = info.size.width > 600;
         _showEpisodeList = false;
       });
-    } else {
+    }
+    if (Device.get().isPhone) {
       setState(() {
-        _isFullScreen = !_isFullScreen;
+        _isFullScreen = info.orientation == Orientation.landscape;
       });
     }
     super.didChangeDependencies();
@@ -408,9 +409,11 @@ class _PlayerScreenState extends State<PlayerScreen>
     _storeLocalHistory();
     SettingApi.updateSetting(() {}, (_) {});
     WidgetsBinding.instance.removeObserver(this);
-    if (!_isTablet) {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    }
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     super.dispose();
   }
 
