@@ -12,12 +12,22 @@ on:
           - debug
           - release
           - profile
+      build_platform:
+        description: "Build Platform"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - android
+          - ios
+          - both
 
 jobs:
   build-android:
     name: Build Android APKs
     runs-on: ubuntu-latest
     environment: product
+    if: ${{ github.event.inputs.build_platform == 'android' || github.event.inputs.build_platform == 'both' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,6 +58,7 @@ jobs:
     name: Build iOS IPA
     runs-on: macos-latest
     environment: product
+    if: ${{ github.event.inputs.build_platform == 'ios' || github.event.inputs.build_platform == 'both' }}
     steps:
       - uses: actions/checkout@v4
 
