@@ -88,7 +88,8 @@
             "metadata_content": "Bangumi バンジグループ",
             "libraries_title": "サードパーティライブラリ",
             "danmaku_title": "弾幕対応",
-            "anime_image_search": "画像検索"
+            "anime_image_search": "画像検索",
+            "daily_sentence": "毎日の一言"
         },
         "language": {
             "change": "言語切替"

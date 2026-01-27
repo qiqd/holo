@@ -39,6 +39,8 @@
 
 - **弹幕提供**：[canvas_danmaku](https://github.com/huangxd-/danmu_api)
 - **番剧源信息**： [bangumi/api](https://github.com/bangumi/api)
+- **以图搜番**： [AnimeTrace](https://ai.animedb.cn)
+- **一言句子**： [sekaiai.github.io](https://github.com/sekaiai/sekaiai.github.io)
 
 ## 项目结构
 

@@ -23,7 +23,7 @@ void main() {
       print(json.encode(res));
     });
     test("fetchView", () async {
-      var res = await aafun.fetchView("/f/7RCCCS-2-9.html", (e) {
+      var res = await aafun.fetchPlaybackUrl("/f/7RCCCS-2-9.html", (e) {
         print(e);
       });
       print(json.encode(res));

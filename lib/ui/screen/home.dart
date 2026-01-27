@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: _msg != null
                     ? LoadingOrShowMsg(msg: _msg)
                     : _recommended == null
-                    ? buildShimmerSkeleton()
+                    ? const ShimmerSkeleton()
                     : GridView.builder(
                         controller: _scrollController,
                         itemCount: _recommended!.data!.length,

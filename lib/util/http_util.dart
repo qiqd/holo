@@ -36,7 +36,9 @@ class HttpUtil {
     return dio;
   }
 
-  static Future<Dio> createDioWithUserAgent() async {
+  static Future<Dio> createDioWithUserAgent({
+    Duration timeout = const Duration(seconds: 20),
+  }) async {
     final dio = Dio();
     var packageInfo = await PackageInfo.fromPlatform();
     dio.options
@@ -45,9 +47,9 @@ class HttpUtil {
             "holo/$packageInfo (Android,IOS)(https://github.com/qiqd/holo)",
         'Accept': '*/*',
       }
-      ..connectTimeout = const Duration(seconds: 20)
-      ..receiveTimeout = const Duration(seconds: 20)
-      ..sendTimeout = const Duration(seconds: 20);
+      ..connectTimeout = timeout
+      ..receiveTimeout = timeout
+      ..sendTimeout = timeout;
     return dio;
   }
 

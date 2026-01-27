@@ -32,6 +32,7 @@ class _RuleManagerState extends State<RuleManager> {
       setState(() {
         _rules = LocalStore.getRules();
       });
+      Api.initSources();
     } catch (e) {
       log('Import rules failed: $e');
       ScaffoldMessenger.of(context).showSnackBar(

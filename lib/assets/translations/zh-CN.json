@@ -88,7 +88,8 @@
             "metadata_content": "Bangumi 番组计划",
             "libraries_title": "第三方库",
             "danmaku_title": "弹幕提供",
-            "anime_image_search": "图片搜索"
+            "anime_image_search": "图片搜索",
+            "daily_sentence": "每日一言"
         },
         "language": {
             "change": "切换语言"

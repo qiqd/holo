@@ -126,7 +126,7 @@ class Common extends SourceService {
   }
 
   @override
-  Future<String?> fetchView(
+  Future<String?> fetchPlaybackUrl(
     String episodeId,
     Function(String) exceptionHandler,
   ) async {

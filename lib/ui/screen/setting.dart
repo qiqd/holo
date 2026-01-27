@@ -112,42 +112,7 @@ class _SetttingScreenState extends State<SetttingScreen>
               child: Image.asset('lib/images/launcher.png', width: 100),
             ),
             applicationLegalese: 'AGPL-3.0 license',
-            aboutBoxChildren: [
-              Text('setting.app_description'.tr()),
-              //番剧元数据
-              Text(
-                'setting.app_info.metadata_title'.tr(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              InkWell(
-                child: const Text('Bangumi 番组计划'),
-                onTap: () {
-                  launchUrl(Uri.parse('https://bangumi.tv'));
-                },
-              ),
-              //弹幕提供
-              Text(
-                'setting.app_info.danmaku_title'.tr(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              InkWell(
-                child: const Text('LogVar 弹幕'),
-                onTap: () {
-                  launchUrl(Uri.parse('https://danmuapi.vercel.app'));
-                },
-              ),
-              //番剧图片搜索
-              Text(
-                'setting.app_info.anime_image_search'.tr(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              InkWell(
-                child: const Text('AnimeTrace'),
-                onTap: () {
-                  launchUrl(Uri.parse('https://ai.animedb.cn'));
-                },
-              ),
-            ],
+            aboutBoxChildren: _buildAboutBoxChildren(),
           ),
 
           // 切换语言部分
@@ -316,84 +281,54 @@ class _SetttingScreenState extends State<SetttingScreen>
     );
   }
 
-  void _showAboutDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('setting.app_info.about_dialog_title'.tr()),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('setting.app_info.about_dialog_content'.tr()),
-              const SizedBox(height: 16),
-              Text(
-                'setting.app_info.license_title'.tr(),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text('AGPL-3.0 license'),
-              const SizedBox(height: 8),
-              Text(
-                'setting.app_info.metadata_title'.tr(),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text('Bangumi 番组计划'),
-              Text(
-                'setting.app_info.danmaku_title'.tr(),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text('LogVar 弹幕'),
-              Text(
-                'setting.app_info.libraries_title'.tr(),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const Text('• flutter - BSD License'),
-              const Text('• dio - MIT License'),
-              const Text('• shared_preferences - BSD License'),
-              const Text('• url_launcher - BSD License'),
-              const Text('• package_info_plus - BSD License'),
-              const Text('• path_provider - BSD License'),
-              const Text('• video_player - BSD License'),
-              const Text('• go_router - BSD License'),
-              const Text('• screen_brightness - MIT License'),
-              const Text('• volume_controller - MIT License'),
-              const Text('• simple_gesture_detector - MIT License'),
-              const Text('• cached_network_image - MIT License'),
-              const Text('• flutter_svg - MIT License'),
-              const Text('• provider - MIT License'),
-              const Text('• flutter_localizations - BSD License'),
-              const Text('• intl - BSD License'),
-              const Text('• crypto - BSD License'),
-              const Text('• convert - BSD License'),
-              const Text('• collection - BSD License'),
-              const Text('• typed_data - BSD License'),
-              const Text('• meta - BSD License'),
-              const Text('• vector_math - BSD License'),
-              const Text('• flutter_test - BSD License'),
-              const Text('• flutter_lints - BSD License'),
-              const Text('• build_runner - BSD License'),
-              const Text('• flutter_launcher_icons - MIT License'),
-              const Text('• html - BSD License'),
-              const Text('• pointycastle - MIT License'),
-              const Text('• encrypt - MIT License'),
-              const Text('• canvas_danmaku - MIT License'),
-              const Text('• visibility_detector - BSD License'),
-              const Text('• easy_localization - MIT License'),
-              const Text('• shimmer - BSD-3-Clause License'),
-              const Text('• flutter_dotenv - MIT License'),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('setting.data_management.clear_dialog_confirm'.tr()),
-          ),
-        ],
+  List<Widget> _buildAboutBoxChildren() {
+    return [
+      Text('setting.app_description'.tr()),
+      //番剧元数据
+      Text(
+        'setting.app_info.metadata_title'.tr(),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-    );
+      InkWell(
+        child: const Text('Bangumi 番组计划'),
+        onTap: () {
+          launchUrl(Uri.parse('https://bangumi.tv'));
+        },
+      ),
+      //弹幕提供
+      Text(
+        'setting.app_info.danmaku_title'.tr(),
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      InkWell(
+        child: const Text('LogVar 弹幕'),
+        onTap: () {
+          launchUrl(Uri.parse('https://danmuapi.vercel.app'));
+        },
+      ),
+      //番剧图片搜索
+      Text(
+        'setting.app_info.anime_image_search'.tr(),
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      InkWell(
+        child: const Text('AnimeTrace'),
+        onTap: () {
+          launchUrl(Uri.parse('https://ai.animedb.cn'));
+        },
+      ),
+      //每日一言
+      // Text(
+      //   'setting.app_info.daily_sentence'.tr(),
+      //   style: const TextStyle(fontWeight: FontWeight.bold),
+      // ),
+      // InkWell(
+      //   child: const Text('sekaiai.github.io'),
+      //   onTap: () {
+      //     launchUrl(Uri.parse('https://github.com/sekaiai/sekaiai.github.io'));
+      //   },
+      // ),
+    ];
   }
 
   void _clearHistory(

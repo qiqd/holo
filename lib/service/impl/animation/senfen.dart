@@ -96,7 +96,7 @@ class Senfen implements SourceService {
   }
 
   @override
-  Future<String?> fetchView(
+  Future<String?> fetchPlaybackUrl(
     String episodeId,
     Function(dynamic) exceptionHandler,
   ) async {

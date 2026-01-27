@@ -2,6 +2,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'rule.g.dart';
 
+const defaultUserAgent =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0';
+
 @JsonSerializable(explicitToJson: true)
 class Rule {
   /// 规则名称(通常为网站名称)
@@ -131,9 +134,9 @@ class Rule {
     this.fullDetailUrl = false,
     this.itemImgFromSrc = true,
     this.waitForMediaElement = true,
-    this.searchRequestHeaders = const {},
-    this.detailRequestHeaders = const {},
-    this.playerRequestHeaders = const {},
+    this.searchRequestHeaders = const {'User-Agent': defaultUserAgent},
+    this.detailRequestHeaders = const {'User-Agent': defaultUserAgent},
+    this.playerRequestHeaders = const {'User-Agent': defaultUserAgent},
     this.searchRequestBody = const {},
     this.detailRequestBody = const {},
     this.playerRequestBody = const {},

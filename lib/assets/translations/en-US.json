@@ -88,7 +88,8 @@
             "metadata_content": "Bangumi Database",
             "libraries_title": "Third-party Libraries",
             "danmaku_title": "Danmaku Provided",
-            "anime_image_search": "Anime Image Search"
+            "anime_image_search": "Anime Image Search",
+            "daily_sentence": "Daily Sentence"
         },
         "language": {
             "change": "Change Language"

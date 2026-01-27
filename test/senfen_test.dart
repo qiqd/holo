@@ -20,7 +20,9 @@ void main() {
       print(json.encode(res));
     });
     test("fetchView", () async {
-      var res = await senfen.fetchView("/vodwatch/2025702564/ep1.html", (e) {
+      var res = await senfen.fetchPlaybackUrl("/vodwatch/2025702564/ep1.html", (
+        e,
+      ) {
         log(e);
       });
       print(json.encode(res));

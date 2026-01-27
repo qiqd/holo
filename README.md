@@ -38,7 +38,9 @@ An open-source anime streaming application built with Flutter, supporting Androi
 ## Acknowledgments for System Functions
 
 - **Danmaku API Library**: [canvas_danmaku](https://github.com/huangxd-/danmu_api)
-- **Anime Source Provider**: [bangumi/api](https://github.com/bangumi/api)
+- **Anime Metainfo Provider**: [bangumi/api](https://github.com/bangumi/api)
+- **Image Search Provider**: [AnimeTrace](https://ai.animedb.cn)
+- **Hitokoto API**: [sekaiai.github.io](https://github.com/sekaiai/sekaiai.github.io)
 
 ## Project Structure
 

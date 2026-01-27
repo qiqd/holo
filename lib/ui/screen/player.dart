@@ -127,7 +127,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
           },
         );
-        final newUrl = await source.fetchView(
+        final newUrl = await source.fetchPlaybackUrl(
           _detail!.lines![lineIndex].episodes![episodeIndex],
           (e) => setState(() {
             log("fetchView error: $e");
@@ -376,18 +376,26 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void didChangeDependencies() {
     _storeLocalHistory();
+    log("didChangeDependencies");
+    //log('isTablet:${Device.get().isTablet}');
     var info = MediaQuery.of(context);
-    if (Device.get().isTablet) {
-      setState(() {
-        _isTablet = info.size.width > 600;
-        _showEpisodeList = false;
-      });
-    }
-    if (Device.get().isPhone) {
-      setState(() {
-        _isFullScreen = info.orientation == Orientation.landscape;
-      });
-    }
+    setState(() {
+      _isTablet =
+          Device.get().isTablet && info.orientation == Orientation.landscape;
+      _isFullScreen = info.orientation == Orientation.landscape;
+    });
+    log("_isTablet: $_isTablet");
+    // if (Device.get().isTablet) {
+    //   setState(() {
+    //     _isTablet = info.size.width > 600;
+    //     log("_isTablet: $_isTablet");
+    //   });
+    // }
+    // if (Device.get().isPhone) {
+    //   setState(() {
+    //     _isFullScreen = info.orientation == Orientation.landscape;
+    //   });
+    // }
     super.didChangeDependencies();
   }
 
@@ -564,6 +572,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                   isFullScreen: isFullScreen,
                   currentEpisodeIndex: episodeIndex,
                   dammaku: _dammaku,
+                  isTablet: _isTablet,
                   episodeList:
                       _episode?.data?.map((e) => e.name!).toList() ?? [],
                   onError: (error) => setState(() {
@@ -921,7 +930,6 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
     return _isTablet
         ? Scaffold(
             resizeToAvoidBottomInset: false,
@@ -949,7 +957,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                     duration: Duration(milliseconds: 300),
                     child: _showEpisodeList
                         ? SizedBox(
-                            width: 500,
+                            width: 400,
                             child: Theme(
                               data: Theme.of(context),
                               child: _buildEpisode(),
@@ -980,6 +988,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                         isFullScreen: _isFullScreen,
                         onFullScreenChanged: (isFullScreen) {
                           setState(() {
+                            _isTablet = false;
+                            _showEpisodeList = false;
                             _toggleFullScreen(isFullScreen);
                           });
                         },

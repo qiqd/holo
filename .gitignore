@@ -48,3 +48,4 @@ app.*.map.json
 /test/
 .vscode/launch.json
 website.md
+key.properties

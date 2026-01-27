@@ -62,7 +62,7 @@ class _SeviceCommonTestState extends State<SeviceCommonTest> {
   }
 
   void _player() async {
-    final res = await _sourceService.fetchView(_episodeId, (e) {
+    final res = await _sourceService.fetchPlaybackUrl(_episodeId, (e) {
       log('fetchView error:$e');
     });
     log('fetchView res:$res');

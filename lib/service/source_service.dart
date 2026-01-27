@@ -45,7 +45,7 @@ abstract class SourceService {
   /// @param episodeId 剧集id
   /// @param exceptionHandler 异常处理器
   /// @return ViewInfo
-  Future<String?> fetchView(
+  Future<String?> fetchPlaybackUrl(
     String episodeId,
     Function(dynamic) exceptionHandler,
   );

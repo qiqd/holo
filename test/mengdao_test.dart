@@ -20,7 +20,7 @@ void main() {
       print(json.encode(res));
     });
     test("fetchViewSync", () async {
-      var res = await mengdao.fetchView("/man_v/14596-0-5.html", (e) {
+      var res = await mengdao.fetchPlaybackUrl("/man_v/14596-0-5.html", (e) {
         log(e.toString());
       });
       print(json.encode(res));

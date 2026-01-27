@@ -20,7 +20,7 @@ void main() {
       print(json.encode(res));
     });
     test("fetchViewSync", () async {
-      var res = await mwcy.fetchView("/play/YELCCS-5-1.html", (e) {
+      var res = await mwcy.fetchPlaybackUrl("/play/YELCCS-5-1.html", (e) {
         log(e);
       });
       print(json.encode(res));

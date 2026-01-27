@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:holo/entity/media.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/media_grid.dart';
@@ -8,7 +9,12 @@ import 'package:video_player/video_player.dart';
 
 class RuleTestScreen extends StatefulWidget {
   final SourceService source;
-  const RuleTestScreen({super.key, required this.source});
+  final bool showNavBtn;
+  const RuleTestScreen({
+    super.key,
+    required this.source,
+    this.showNavBtn = true,
+  });
 
   @override
   State<RuleTestScreen> createState() => _RuleTestScreenState();
@@ -52,14 +58,15 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
       if (hasError || detail == null || detail.lines!.isEmpty) {
         return;
       }
-      var url = await widget.source.fetchView(detail.lines![0].episodes![0], (
-        e,
-      ) {
-        hasError = true;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('fetch view error: ${e.toString()}')),
-        );
-      });
+      var url = await widget.source.fetchPlaybackUrl(
+        detail.lines![0].episodes![0],
+        (e) {
+          hasError = true;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('fetch view error: ${e.toString()}')),
+          );
+        },
+      );
       if (url == null && mounted) {
         ScaffoldMessenger.of(
           context,
@@ -99,7 +106,15 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('规则测试页面')),
+      appBar: AppBar(
+        leading: widget.showNavBtn
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios_rounded),
+                onPressed: () => context.pop(),
+              )
+            : SizedBox(),
+        title: Text('${widget.source.getName()} Test'),
+      ),
       body: Container(
         padding: .only(bottom: 20),
         width: double.infinity,
@@ -190,7 +205,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                   ),
                 ),
                 Text(
-                  'View Result:',
+                  'Player Result:',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(

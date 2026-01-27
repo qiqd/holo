@@ -20,7 +20,7 @@ void main() {
       print(json.encode(res));
     });
     test("fetchViewSync", () async {
-      var res = await girugiru.fetchView("/playGV765-1-3/", (e) {
+      var res = await girugiru.fetchPlaybackUrl("/playGV765-1-3/", (e) {
         log(e);
       });
       print(json.encode(res));

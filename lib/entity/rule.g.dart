@@ -29,17 +29,17 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
       (json['searchRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      const {},
+      const {'User-Agent': defaultUserAgent},
   detailRequestHeaders:
       (json['detailRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      const {},
+      const {'User-Agent': defaultUserAgent},
   playerRequestHeaders:
       (json['playerRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      const {},
+      const {'User-Agent': defaultUserAgent},
   searchRequestBody:
       (json['searchRequestBody'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
