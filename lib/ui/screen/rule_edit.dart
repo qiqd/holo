@@ -113,10 +113,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   @override
   void initState() {
     var sources = Api.getSources();
-    var first = sources
-        .where((element) => element.getName() == widget.rule!.name)
-        .first;
-    _service = first;
+    var services = sources.where(
+      (element) => element.getName() == widget.rule?.name,
+    );
+    if (services.isNotEmpty) {
+      _service = services.first;
+    }
     super.initState();
   }
 
@@ -1164,10 +1166,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 ),
               ),
             ),
-            if (_isTablet && widget.rule != null)
+            if (_isTablet)
               Flexible(
                 fit: FlexFit.tight,
-                child: RuleTestScreen(source: _service!, showNavBtn: false),
+                child: widget.rule == null
+                    ? Center(child: Text('保存规则后即可测试'))
+                    : RuleTestScreen(source: _service!, showNavBtn: false),
               ),
           ],
         ),

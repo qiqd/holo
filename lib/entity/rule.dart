@@ -163,12 +163,4 @@ enum RequestMethod {
   get,
   @JsonValue('post')
   post,
-  @JsonValue('put')
-  put,
-  @JsonValue('delete')
-  delete,
-  @JsonValue('head')
-  head,
-  @JsonValue('options')
-  options,
 }

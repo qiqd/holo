@@ -125,8 +125,4 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
 const _$RequestMethodEnumMap = {
   RequestMethod.get: 'get',
   RequestMethod.post: 'post',
-  RequestMethod.put: 'put',
-  RequestMethod.delete: 'delete',
-  RequestMethod.head: 'head',
-  RequestMethod.options: 'options',
 };
