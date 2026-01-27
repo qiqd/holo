@@ -82,10 +82,16 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         actions: [
+          IconButton(
+            onPressed: () => context.push('/image_search'),
+            icon: Icon(Icons.image_search_rounded),
+          ),
           IconButton(
             onPressed: () {
               _showDeleteDialog();
@@ -186,13 +192,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     : GridView.builder(
                         itemCount: _recommended!.data!.length,
                         padding: EdgeInsets.symmetric(horizontal: 12),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              mainAxisSpacing: 6,
-                              crossAxisSpacing: 6,
-                              crossAxisCount: 3,
-                              childAspectRatio: 0.6,
-                            ),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisSpacing: 6,
+                          crossAxisSpacing: 6,
+                          crossAxisCount: isLandscape ? 6 : 3,
+                          childAspectRatio: 0.6,
+                        ),
                         itemBuilder: (context, index) {
                           final item = _recommended!.data![index];
                           var nameCN = item.nameCn ?? '';

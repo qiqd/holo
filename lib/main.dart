@@ -292,12 +292,6 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                       context.push('/search');
                     },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.image_search_rounded),
-                    onPressed: () {
-                      context.push('/image_search');
-                    },
-                  ),
                 ],
               ),
 
