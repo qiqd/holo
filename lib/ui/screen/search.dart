@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
@@ -88,10 +89,11 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(
         titleSpacing: 0,
         actions: [
-          IconButton(
-            onPressed: () => context.push('/image_search'),
-            icon: Icon(Icons.image_search_rounded),
-          ),
+          if (Device.get().isTablet)
+            IconButton(
+              onPressed: () => context.push('/image_search'),
+              icon: Icon(Icons.image_search_rounded),
+            ),
           IconButton(
             onPressed: () {
               _showDeleteDialog();
@@ -101,7 +103,8 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          alignment: .center,
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () {
             context.pop();
           },

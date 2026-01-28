@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +28,8 @@ import 'package:holo/ui/screen/search.dart';
 
 import 'package:holo/ui/screen/setting.dart';
 import 'package:holo/ui/screen/subscribe.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +37,22 @@ void main() async {
   await LocalStore.init();
   await Bangumi.initDio();
   Api.initSources();
+  MediaKit.ensureInitialized();
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = WindowOptions(
+      size: Size(1000, 800),
+      minimumSize: Size(800, 600),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.normal,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
   runApp(
     EasyLocalization(
       supportedLocales: [
@@ -280,55 +300,62 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
     if (orientation == Orientation.landscape) {
       // 横屏布局 - 使用侧边导航栏
       return Scaffold(
-        body: Row(
-          children: [
-            // 侧边导航栏
-            NavigationRail(
-              leading: Column(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.search_rounded),
-                    onPressed: () {
-                      context.push('/search');
-                    },
+        body: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: Platform.isLinux || Platform.isWindows || Platform.isMacOS
+                ? 12
+                : 0,
+          ),
+          child: Row(
+            children: [
+              // 侧边导航栏
+              NavigationRail(
+                leading: Column(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.search_rounded),
+                      onPressed: () {
+                        context.push('/search');
+                      },
+                    ),
+                  ],
+                ),
+
+                selectedIndex: widget.navigationShell.currentIndex,
+                onDestinationSelected: (index) {
+                  widget.navigationShell.goBranch(index);
+                },
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                selectedIconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                unselectedIconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home_rounded),
+                    label: Text('home.title'.tr()),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.calendar_month_rounded),
+                    label: Text('calendar.title'.tr()),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.subscriptions_rounded),
+                    label: Text('subscribe.title'.tr()),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.settings_rounded),
+                    label: Text('setting.title'.tr()),
                   ),
                 ],
+                labelType: NavigationRailLabelType.selected,
               ),
-
-              selectedIndex: widget.navigationShell.currentIndex,
-              onDestinationSelected: (index) {
-                widget.navigationShell.goBranch(index);
-              },
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              selectedIconTheme: IconThemeData(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              unselectedIconTheme: IconThemeData(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home_rounded),
-                  label: Text('home.title'.tr()),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.calendar_month_rounded),
-                  label: Text('calendar.title'.tr()),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.subscriptions_rounded),
-                  label: Text('subscribe.title'.tr()),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.settings_rounded),
-                  label: Text('setting.title'.tr()),
-                ),
-              ],
-              labelType: NavigationRailLabelType.selected,
-            ),
-            // 主内容区域
-            Expanded(child: widget.navigationShell),
-          ],
+              // 主内容区域
+              Expanded(child: widget.navigationShell),
+            ],
+          ),
         ),
       );
     } else {

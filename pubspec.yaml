@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.8+2
+version: 1.1.8+3
 
 environment:
   sdk: ^3.10.3
@@ -19,12 +19,14 @@ dependencies:
   html: ^0.15.6
   pointycastle: ^3.7.3
   encrypt: ^5.0.3
-  video_player: ^2.10.1
+  media_kit: ^1.2.6
+  media_kit_video: ^2.0.1
+  media_kit_libs_video: ^1.0.7
   shared_preferences: ^2.5.4
   canvas_danmaku: ^0.3.1
   url_launcher: ^6.3.0
   visibility_detector: ^0.4.0+2
-  screen_brightness: ^2.1.7
+  screen_brightness: ^2.1.7 # not supported on web linux
   simple_gesture_detector: ^0.2.1
   volume_controller: ^3.4.1
   cached_network_image: ^3.4.1
@@ -34,9 +36,11 @@ dependencies:
   easy_localization: ^3.0.8
   shimmer: ^3.0.0
   image_picker: ^1.2.1
-  webview_flutter: ^4.13.1
+  webview_flutter: ^4.13.1 # not supported on  web and windows
+  flutter_inappwebview: ^6.1.5
   lottie: ^3.3.2
-  flutter_device_type: ^0.4.0
+  flutter_device_type: ^0.4.0 #not supported on web, windows and macos
+  window_manager: ^0.5.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,3 +67,17 @@ package_rename_config:
     app_name: "Holo"
     bundle_name: "Holo"
     package_name: "com.github.qiqd.holo"
+  linux:
+    app_name: "Holo"
+    package_name: "com.github.qiqd.holo"
+    exe_name: "holo"
+  macos:
+    app_name: "Holo"
+    package_name: "com.github.qiqd.holo"
+    copyright_notice: "Copyright © 2025"
+
+  windows:
+    app_name: "Holo"
+    organization: "com.github.qiqd.holo"
+    copyright_notice: "Copyright © 2025"
+    exe_name: "holo"

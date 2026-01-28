@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:holo/entity/media.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/util/webview_util.dart';
+import 'package:holo/util/webview_util_flutter.dart';
 import 'package:html/parser.dart';
 
 class Common extends SourceService {
@@ -13,7 +13,7 @@ class Common extends SourceService {
     caseSensitive: false,
   );
   final RegExp reg = RegExp(r'\{[^}]*\}');
-  final WebviewUtil webviewUtil = WebviewUtil();
+  final WebviewUtilFlutter webviewUtil = WebviewUtilFlutter();
   Common({required this.rule});
   factory Common.build(Rule rule) => Common(rule: rule);
   @override

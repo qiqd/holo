@@ -2,10 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/media.dart';
+import 'package:holo/entity/media.dart' as media;
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/media_grid.dart';
-import 'package:video_player/video_player.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 class RuleTestScreen extends StatefulWidget {
   final SourceService source;
@@ -22,11 +23,12 @@ class RuleTestScreen extends StatefulWidget {
 
 class _RuleTestScreenState extends State<RuleTestScreen> {
   String _keyword = '';
-  List<Media> _mediaList = [];
-  Detail? _detail;
+  List<media.Media> _mediaList = [];
+  media.Detail? _detail;
   String? _playUrl;
   bool _isloading = false;
-  VideoPlayerController? _controller;
+  late final player = Player();
+  late final controller = VideoController(player);
   void _fetchTest() async {
     bool hasError = false;
     setState(() {
@@ -73,14 +75,11 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         ).showSnackBar(SnackBar(content: Text('video url is null')));
         return;
       }
-      _controller =
-          VideoPlayerController.networkUrl(
-              Uri.parse(Uri.parse(url!).toString()),
-            )
-            ..initialize()
-            ..play().then((_) {
-              setState(() {});
-            });
+      player.open(
+        Media(
+          'https://v16.toutiao50.com/704d1d8b3d404aeb3e16f51b83e5ee0e/697afc4d/video/tos/alisg/tos-alisg-v-90231e-sg/oYfKdNAYYEW9tfsSIy0AIVIqfupRqCDgHDmr1F/',
+        ),
+      );
       setState(() {
         _playUrl = url;
         _isloading = false;
@@ -99,7 +98,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
 
   @override
   void dispose() {
-    _controller?.dispose();
+    player.dispose();
     super.dispose();
   }
 
@@ -211,18 +210,24 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: Center(
-                    child: _controller?.value.isInitialized ?? false
-                        ? AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: VideoPlayer(_controller!),
-                          )
-                        : Container(
-                            color: Colors.black,
-                            child: Text(
-                              'url: $_playUrl',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
+                    child: Column(
+                      children: [
+                        Text('url: $_playUrl'),
+                        FilledButton(
+                          onPressed: () {
+                            player.playOrPause();
+                          },
+                          child: const Text('Play'),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height:
+                              MediaQuery.of(context).size.width * 9.0 / 16.0,
+
+                          child: Video(controller: controller),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

@@ -1,25 +1,25 @@
 import 'dart:async';
 import 'dart:developer';
-
+import 'dart:io';
 import 'package:canvas_danmaku/danmaku_controller.dart';
 import 'package:canvas_danmaku/danmaku_screen.dart';
 import 'package:canvas_danmaku/models/danmaku_content_item.dart';
-
 import 'package:canvas_danmaku/models/danmaku_option.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:lottie/lottie.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
-import 'package:video_player/video_player.dart';
 import 'package:volume_controller/volume_controller.dart';
+import 'package:window_manager/window_manager.dart';
 
 class CapVideoPlayer extends StatefulWidget {
-  final VideoPlayerController controller;
+  final Player kitPlayer;
   final bool isloading;
   final String? title;
   final String? subTitle;
@@ -35,9 +35,10 @@ class CapVideoPlayer extends StatefulWidget {
   final Function()? onBackPressed;
   final Function(bool isPlaying)? onPlayOrPause;
   final Function()? onSettingTab;
+  final Function(Duration position)? onPositionChanged;
   const CapVideoPlayer({
     super.key,
-    required this.controller,
+    required this.kitPlayer,
     required this.isloading,
     this.isTablet = false,
     this.isFullScreen = false,
@@ -53,6 +54,7 @@ class CapVideoPlayer extends StatefulWidget {
     this.onBackPressed,
     this.onPlayOrPause,
     this.onSettingTab,
+    this.onPositionChanged,
   });
 
   @override
@@ -61,15 +63,9 @@ class CapVideoPlayer extends StatefulWidget {
 
 class _CapVideoPlayerState extends State<CapVideoPlayer> {
   late final String title = widget.title ?? context.tr("component.title");
-  late final VideoPlayerController _player = widget.controller;
   late final ScreenBrightness _brightnessController;
   DanmakuController<double>? _danmuController;
-  double videoDuration = 0.0;
-  double videoPosition = 0.0;
-  double bufferedEnd = 0.0;
-  double aspectRatio = 16 / 9;
-  bool isPlaying = false;
-  bool isBuffering = false;
+  late final _kitController = VideoController(widget.kitPlayer);
   String msgText = '';
   bool showMsg = false;
   bool showVideoControls = true;
@@ -94,12 +90,17 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   Timer? _videoControlsTimer;
   Timer? _videoTimer;
   Timer? _danmuTimer;
-  double _currentVolume = 0;
+  late double _currentVolume = widget.kitPlayer.state.volume;
   double _currentBrightness = 0;
   bool _showVolume = false;
   bool _showBrightness = false;
   bool _showDragOffset = false;
+
+  /// 是否全屏,只在桌面平台生效
+  bool _isFullScreen = false;
   final List<DanmakuContentItem<double>> _danmakuItems = [];
+
+  /// 显示视频控制条定时器
   void _showVideoControlsTimer() {
     // log("showVideoControlsTimer");
     _videoControlsTimer?.cancel();
@@ -112,47 +113,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
-  void _addListener() {
-    _player.addListener(() {
-      if (_player.value.hasError) {
-        log("error on video player: ${_player.value.errorDescription}");
-        widget.onError?.call(_player.value.errorDescription ?? "");
-      }
-      if (mounted) {
-        setState(() {
-          videoPosition = _player.value.position.inSeconds.toDouble();
-          bufferedEnd = getBufferedEnd();
-          videoDuration = _player.value.duration.inSeconds.toDouble();
-          isPlaying = _player.value.isPlaying;
-          isBuffering = _player.value.isBuffering;
-          aspectRatio = _player.value.aspectRatio;
-        });
-      }
-    });
-  }
-
-  double getBufferedEnd() {
-    try {
-      final buffered = widget.controller.value.buffered;
-      if (buffered.isEmpty) return 0.0;
-
-      Duration maxEnd = buffered.first.end;
-      for (var range in buffered) {
-        if (range.end > maxEnd) {
-          maxEnd = range.end;
-        }
-      }
-      var d = maxEnd.inSeconds.toDouble();
-
-      return d >= widget.controller.value.duration.inSeconds.toDouble() ? 4 : d;
-    } catch (e) {
-      setState(() {
-        msgText = e.toString();
-      });
-      return 0.0;
-    }
-  }
-
+  /// 更新显示音量或亮度的定时器
   void _updateShowVolumeOrBrightnessTimer() {
     _timer?.cancel();
     _timer = Timer(Duration(seconds: 5), () {
@@ -163,10 +124,16 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
+  /// 更新显示拖动偏移量的定时器
   void _updateShowDragOffsetTimer() {
     _videoTimer?.cancel();
-    _videoTimer = Timer(Duration(milliseconds: 500), () {
-      _player.seekTo(Duration(seconds: videoPosition.toInt() + dragOffset));
+    _videoTimer = Timer(Duration(milliseconds: 500), () async {
+      // _player.seekTo(Duration(seconds: videoPosition.toInt() + dragOffset));
+      await widget.kitPlayer.seek(
+        Duration(
+          seconds: widget.kitPlayer.state.position.inSeconds + dragOffset,
+        ),
+      );
       setState(() {
         _showDragOffset = false;
         dragOffset = 0;
@@ -174,7 +141,11 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
+  /// 改变亮度,仅在移动平台生效
   void _changeBrightnessBy1Percent(SwipeDirection direction) async {
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      return;
+    }
     if (isLock) {
       return;
     }
@@ -200,30 +171,34 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
+  /// 改变音量,仅在移动平台生效
   void _changeVolumeBy1Percent(SwipeDirection direction) async {
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      return;
+    }
     if (isLock) {
       return;
     }
     _showVolume = true;
     _showBrightness = false;
     _updateShowVolumeOrBrightnessTimer();
-    final current = widget.controller.value.volume;
+    final current = _currentVolume;
     double newVolume = current;
     if (direction == SwipeDirection.up) {
-      newVolume = current + 0.01;
+      newVolume = current + 1;
     } else if (direction == SwipeDirection.down) {
-      newVolume = current - 0.01;
+      newVolume = current - 1;
     }
     log("set volume to $newVolume");
-    newVolume = newVolume.clamp(0.0, 1.0);
-    widget.controller.setVolume(newVolume);
+    newVolume = newVolume.clamp(0, 100);
+    widget.kitPlayer.setVolume(newVolume);
     setState(() {
       showMsg = true;
-      // msgText ='${context.tr("component.cap_video_player.volume")}: ${(newVolume * 100).toStringAsFixed(0)}%';
-      _currentVolume = newVolume * 100;
+      _currentVolume = newVolume;
     });
   }
 
+  /// 处理视频进度改变事件
   void _handleVideoProgressChange(SwipeDirection direction) {
     log("handleVideoProgressChange $direction");
     if (isLock) {
@@ -242,6 +217,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
+  /// 填充弹幕
   void _fillDanmaku() {
     if (_danmuController == null) return;
     var danmu = widget.dammaku;
@@ -295,11 +271,13 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     _danmakuItems.addAll(top);
   }
 
+  /// 初始化弹幕定时器,用于填充弹幕
   void _initTimerForDanmu() {
     _danmuTimer?.cancel();
     _danmuTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {});
       if (_danmuController == null ||
-          !_player.value.isPlaying ||
+          !widget.kitPlayer.state.playing ||
           widget.isloading) {
         _danmuController?.pause();
         return;
@@ -308,7 +286,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
         _fillDanmaku();
       }
       _danmuController?.resume();
-      var position = _player.value.position.inSeconds;
+      var position = widget.kitPlayer.state.position.inSeconds;
       _danmakuItems
           .where((item) {
             return item.extra?.toInt() == (position + _danmakuOffset);
@@ -319,6 +297,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     });
   }
 
+  /// 加载弹幕设置
   void _loadDanmuSetting() {
     var option = LocalStore.getDanmakuOption();
     if (option == null) return;
@@ -340,6 +319,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     }
   }
 
+  /// 保存弹幕设置
   void _saveDanmuSetting() {
     _filterDanmakuItems();
     // log('hideTop:$_hideTopDanmaku');
@@ -357,6 +337,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     LocalStore.saveDanmakuOption(option, filter: _filter);
   }
 
+  /// 过滤弹幕
   void _filterDanmakuItems() {
     if (_filter.isEmpty) {
       return;
@@ -369,7 +350,6 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
 
   @override
   void initState() {
-    _addListener();
     _loadDanmuSetting();
     _initTimerForDanmu();
     VolumeController.instance.showSystemUI = false;
@@ -420,10 +400,15 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
             //播放器层
             Center(
               child: AspectRatio(
-                aspectRatio: _player.value.aspectRatio,
-                child: VideoPlayer(_player),
+                aspectRatio: 16 / 9,
+                child: Video(
+                  pauseUponEnteringBackgroundMode: false,
+                  controller: _kitController,
+                  controls: null,
+                ),
               ),
             ),
+
             // 弹幕层
             if (widget.dammaku != null && _isShowDanmaku)
               DanmakuScreen<double>(
@@ -434,7 +419,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                     LocalStore.getDanmakuOption()?["option"] as DanmakuOption,
               ),
             // 加载中或缓冲中
-            if (isBuffering || widget.isloading) LoadingOrShowMsg(msg: null),
+            if (widget.kitPlayer.state.buffering || widget.isloading)
+              LoadingOrShowMsg(msg: null),
             //亮度或者音量或者拖拽进度显示
             AnimatedOpacity(
               curve: (_showVolume || _showBrightness || _showDragOffset)
@@ -527,7 +513,9 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                         showVideoControls = !showVideoControls;
                       }),
                       onDoubleTap: () {
-                        isPlaying ? _player.pause() : _player.play();
+                        widget.kitPlayer.state.playing
+                            ? widget.kitPlayer.pause()
+                            : widget.kitPlayer.play();
                         _showVideoControlsTimer();
                       },
                       onHorizontalSwipe: (direction) =>
@@ -671,6 +659,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                           : null,
                       trailing: widget.isFullScreen
                           ? IconButton(
+                              tooltip: 'Setting',
                               onPressed: () {
                                 setState(() {
                                   _showSetting = !_showSetting;
@@ -724,24 +713,25 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   horizontal: 30,
                                   vertical: 0,
                                 ),
-                                secondaryTrackValue: getBufferedEnd(),
-                                value: widget
-                                    .controller
-                                    .value
-                                    .position
+                                secondaryTrackValue: widget
+                                    .kitPlayer
+                                    .state
+                                    .buffer
                                     .inSeconds
                                     .toDouble(),
+                                value: widget.kitPlayer.state.position.inSeconds
+                                    .toDouble(),
                                 max:
-                                    widget.controller.value.duration.inSeconds
+                                    widget.kitPlayer.state.duration.inSeconds
                                         .toDouble() +
                                     4,
                                 onChangeEnd: (value) {
                                   _showVideoControlsTimer();
                                   setState(() {
-                                    widget.controller.seekTo(
+                                    widget.kitPlayer.seek(
                                       Duration(seconds: value.toInt()),
                                     );
-                                    widget.controller.play();
+                                    widget.kitPlayer.play();
                                   });
                                 },
                                 onChanged: (value) {},
@@ -755,18 +745,14 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                             IconButton(
                               onPressed: () {
                                 _showVideoControlsTimer();
-                                if (widget.controller.value.isPlaying) {
-                                  widget.controller.pause();
-                                } else {
-                                  widget.controller.play();
-                                }
+                                widget.kitPlayer.playOrPause();
                                 widget.onPlayOrPause?.call(
-                                  widget.controller.value.isPlaying,
+                                  widget.kitPlayer.state.playing,
                                 );
                                 setState(() {});
                               },
                               icon: Icon(
-                                widget.controller.value.isPlaying
+                                widget.kitPlayer.state.playing
                                     ? Icons.pause_rounded
                                     : Icons.play_arrow_rounded,
                                 color: Colors.white,
@@ -795,13 +781,14 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                 ),
                                 onPressed: null,
                                 child: Text(
-                                  "${widget.controller.value.position.inMinutes}:${widget.controller.value.position.inSeconds.remainder(60)}/${widget.controller.value.duration.inMinutes}:${widget.controller.value.duration.inSeconds.remainder(60)}",
+                                  "${widget.kitPlayer.state.position.inMinutes}:${widget.kitPlayer.state.position.inSeconds.remainder(60)}/${widget.kitPlayer.state.duration.inMinutes}:${widget.kitPlayer.state.duration.inSeconds.remainder(60)}",
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),
                             ),
-                            //弹幕
+                            //弹幕开关按钮
                             IconButton(
+                              tooltip: 'Danmaku Switch',
                               splashColor: Colors.transparent,
                               color: Colors.white,
                               onPressed: () {
@@ -825,16 +812,22 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                 ],
                               ),
                             ),
-                            //剧集列表
+                            //剧集列表按钮
                             if (widget.isFullScreen) ...[
                               Badge(
                                 backgroundColor: Colors.transparent,
                                 textColor: Colors.white,
-                                offset: Offset(0, 5),
+                                offset:
+                                    (Platform.isWindows ||
+                                        Platform.isMacOS ||
+                                        Platform.isLinux)
+                                    ? null
+                                    : Offset(0, 5),
                                 label: Text(
                                   "${widget.currentEpisodeIndex + 1} ",
                                 ),
                                 child: IconButton(
+                                  tooltip: 'Episode List',
                                   onPressed: () {
                                     setState(() {
                                       showEpisodeList = !showEpisodeList;
@@ -851,13 +844,18 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                               // 播放速度
                               Badge(
                                 textColor: Colors.white,
-                                offset: Offset(9, -7),
+                                offset:
+                                    (Platform.isWindows ||
+                                        Platform.isMacOS ||
+                                        Platform.isLinux)
+                                    ? Offset(9, -11)
+                                    : Offset(9, -7),
                                 backgroundColor: Colors.transparent,
                                 label: Text(
-                                  widget.controller.value.playbackSpeed
-                                      .toString(),
+                                  widget.kitPlayer.state.rate.toString(),
                                 ),
                                 child: PopupMenuButton(
+                                  tooltip: 'Video Speed',
                                   child: Icon(
                                     Icons.speed_rounded,
                                     color: Colors.white,
@@ -866,46 +864,65 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                     PopupMenuItem(
                                       value: 2.0,
                                       child: Text('2.0x'),
-                                      onTap: () => widget.controller
-                                          .setPlaybackSpeed(2.0),
+                                      onTap: () =>
+                                          widget.kitPlayer.setRate(2.0),
                                     ),
                                     PopupMenuItem(
                                       value: 1.5,
                                       child: Text('1.5x'),
-                                      onTap: () => widget.controller
-                                          .setPlaybackSpeed(1.5),
+                                      onTap: () =>
+                                          widget.kitPlayer.setRate(1.5),
                                     ),
                                     PopupMenuItem(
                                       value: 1.25,
                                       child: Text('1.25x'),
-                                      onTap: () => widget.controller
-                                          .setPlaybackSpeed(1.25),
+                                      onTap: () =>
+                                          widget.kitPlayer.setRate(1.25),
                                     ),
                                     PopupMenuItem(
                                       value: 1.0,
                                       child: Text('1.0x'),
-                                      onTap: () => widget.controller
-                                          .setPlaybackSpeed(1.0),
+                                      onTap: () =>
+                                          widget.kitPlayer.setRate(1.0),
                                     ),
                                     PopupMenuItem(
                                       value: 0.75,
                                       child: Text('0.75x'),
-                                      onTap: () => widget.controller
-                                          .setPlaybackSpeed(0.75),
+                                      onTap: () =>
+                                          widget.kitPlayer.setRate(0.75),
                                     ),
                                     PopupMenuItem(
                                       value: 0.5,
                                       child: Text('0.5x'),
-                                      onTap: () => widget.controller
-                                          .setPlaybackSpeed(0.5),
+                                      onTap: () =>
+                                          widget.kitPlayer.setRate(0.5),
                                     ),
                                   ],
                                 ),
                               ),
                             ],
-
+                            //音量调整,只在桌面端显示
+                            if ((Platform.isWindows ||
+                                    Platform.isMacOS ||
+                                    Platform.isLinux) &&
+                                widget.isFullScreen)
+                              SizedBox(
+                                width: 150,
+                                child: Slider(
+                                  min: 0,
+                                  max: 100,
+                                  value: _currentVolume,
+                                  onChanged: (value) {
+                                    widget.kitPlayer.setVolume(value);
+                                    setState(() {
+                                      _currentVolume = value;
+                                    });
+                                  },
+                                ),
+                              ),
                             Spacer(),
-                            // 全屏
+
+                            // 全屏按钮
                             IconButton(
                               onPressed: () {
                                 _showVideoControlsTimer();
@@ -915,13 +932,38 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   !widget.isFullScreen,
                                 );
                               },
-                              icon: Icon(
-                                widget.isFullScreen
-                                    ? Icons.fullscreen_exit_rounded
-                                    : Icons.fullscreen_rounded,
-                                color: Colors.white,
-                              ),
+                              icon: (Platform.isAndroid || Platform.isIOS)
+                                  ? Icon(
+                                      widget.isFullScreen
+                                          ? Icons.fullscreen_exit_rounded
+                                          : Icons.fullscreen_rounded,
+                                      color: Colors.white,
+                                    )
+                                  : Icon(
+                                      Icons.menu_open_rounded,
+                                      color: Colors.white,
+                                    ),
                             ),
+                            if (Platform.isMacOS ||
+                                Platform.isWindows ||
+                                Platform.isLinux) ...[
+                              IconButton(
+                                onPressed: () async {
+                                  await windowManager.setFullScreen(
+                                    !_isFullScreen,
+                                  );
+                                  setState(() {
+                                    _isFullScreen = !_isFullScreen;
+                                  });
+                                },
+                                icon: Icon(
+                                  _isFullScreen
+                                      ? Icons.fullscreen_exit_rounded
+                                      : Icons.fullscreen_rounded,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ],
@@ -1242,6 +1284,23 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                 ),
               ),
             ),
+            //鼠标悬停显示视频控制条
+            if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+              SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: MouseRegion(
+                  opaque: false,
+                  onHover: (event) => setState(() {
+                    showVideoControls = true;
+                    _showVideoControlsTimer();
+                  }),
+                  onExit: (event) => setState(() {
+                    showVideoControls = false;
+                  }),
+                  child: SizedBox.expand(),
+                ),
+              ),
           ],
         ),
       ),

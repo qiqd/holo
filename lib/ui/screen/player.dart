@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer' show log;
+import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
@@ -11,8 +11,7 @@ import 'package:holo/api/setting_api.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode.dart';
 import 'package:holo/entity/logvar_episode.dart';
-import 'package:holo/entity/media.dart';
-
+import 'package:holo/entity/media.dart' as media_entity;
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
@@ -24,8 +23,9 @@ import 'package:holo/ui/component/cap_video_player.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:video_player/video_player.dart';
+import 'package:window_manager/window_manager.dart';
 
 class PlayerScreen extends StatefulWidget {
   final String mediaId;
@@ -57,7 +57,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   int episodeIndex = 0;
   int lineIndex = 0;
   Episode? _episode;
-  Detail? _detail;
+  media_entity.Detail? _detail;
   bool isloading = false;
   int historyPosition = 0;
   String? playUrl;
@@ -71,11 +71,46 @@ class _PlayerScreenState extends State<PlayerScreen>
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
-  VideoPlayerController? _controller;
+  final Player _kitPlayer = Player();
+  late FocusNode _focusNode;
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
   );
+  // 添加键盘事件处理
+  void _handleKeyEvent(KeyEvent event) {
+    log("${event.logicalKey}");
+
+    if ((event is KeyDownEvent) &&
+        (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+      switch (event.logicalKey) {
+        case LogicalKeyboardKey.space:
+          _kitPlayer.playOrPause();
+          break;
+        case LogicalKeyboardKey.escape:
+          windowManager.setFullScreen(false);
+          break;
+        case LogicalKeyboardKey.keyF:
+          windowManager.isFullScreen().then((isfu) {
+            windowManager.setFullScreen(!isfu);
+          });
+          break;
+        case LogicalKeyboardKey.arrowRight:
+          _kitPlayer.seek(_kitPlayer.state.position + Duration(seconds: 5));
+          break;
+        case LogicalKeyboardKey.arrowLeft:
+          _kitPlayer.seek(_kitPlayer.state.position - Duration(seconds: 5));
+          break;
+        case LogicalKeyboardKey.arrowUp:
+          _kitPlayer.setVolume((_kitPlayer.state.volume + 5).clamp(0, 100));
+          break;
+        case LogicalKeyboardKey.arrowDown:
+          _kitPlayer.setVolume((_kitPlayer.state.volume - 5).clamp(0, 100));
+          break;
+      }
+    }
+  }
+
   Future<void> _fetchMediaEpisode() async {
     isloading = true;
     try {
@@ -110,10 +145,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     isloading = true;
     try {
       if (_detail != null) {
-        await _controller?.pause();
-        await _controller?.dispose();
-
-        _controller = null;
+        await _kitPlayer.pause();
         lineIndex = lineIndex.clamp(0, _detail!.lines!.length - 1);
         episodeIndex = episodeIndex.clamp(
           0,
@@ -136,17 +168,17 @@ class _PlayerScreenState extends State<PlayerScreen>
           }),
         );
         playUrl = newUrl;
-        final newController = VideoPlayerController.networkUrl(
-          Uri.parse(newUrl ?? ""),
-        );
-        await newController.initialize();
-
+        // final newController = VideoPlayerController.networkUrl(
+        //   Uri.parse(newUrl ?? ""),
+        // );
+        log('new url: $newUrl');
+        await _kitPlayer.open(Media(newUrl ?? ""));
+        await _kitPlayer.play();
         if (mounted) {
           setState(() {
             msg = "";
-            _controller = newController;
-            _controller?.seekTo(Duration(seconds: position));
-            _isActive ? _controller?.play() : _controller?.pause();
+            _kitPlayer.seek(Duration(seconds: position));
+            _isActive ? _kitPlayer.play() : _kitPlayer.pause();
           });
         }
       }
@@ -217,7 +249,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  void _storeLocalHistory() {
+  void _storeLocalHistory() async {
     if (playUrl == null) {
       return;
     }
@@ -228,7 +260,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       lineIndex: lineIndex,
       lastPlaybackAt: DateTime.now(),
       createdAt: DateTime.now(),
-      position: _controller?.value.position.inSeconds ?? 0,
+      position: _kitPlayer.state.position.inSeconds,
       imgUrl: widget.subject.images?.large ?? "",
     );
     _syncPlaybackHistory(history);
@@ -378,29 +410,26 @@ class _PlayerScreenState extends State<PlayerScreen>
     _storeLocalHistory();
     log("didChangeDependencies");
     //log('isTablet:${Device.get().isTablet}');
-    var info = MediaQuery.of(context);
-    setState(() {
-      _isTablet =
-          Device.get().isTablet && info.orientation == Orientation.landscape;
-      _isFullScreen = info.orientation == Orientation.landscape;
-    });
-    log("_isTablet: $_isTablet");
-    // if (Device.get().isTablet) {
-    //   setState(() {
-    //     _isTablet = info.size.width > 600;
-    //     log("_isTablet: $_isTablet");
-    //   });
-    // }
-    // if (Device.get().isPhone) {
-    //   setState(() {
-    //     _isFullScreen = info.orientation == Orientation.landscape;
-    //   });
-    // }
+    if (Platform.isAndroid || Platform.isIOS) {
+      var info = MediaQuery.of(context);
+      setState(() {
+        _isTablet =
+            Device.get().isTablet && info.orientation == Orientation.landscape;
+        _isFullScreen = info.orientation == Orientation.landscape;
+      });
+    }
+    if (Platform.isWindows || Platform.isMacOS) {
+      setState(() {
+        _isTablet = true;
+        _isFullScreen = true;
+      });
+    }
     super.didChangeDependencies();
   }
 
   @override
   void initState() {
+    _focusNode = FocusNode();
     _loadHistory();
     _fetchEpisode();
     _isTablet = Device.get().isTablet;
@@ -413,7 +442,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _kitPlayer.dispose();
     _storeLocalHistory();
     SettingApi.updateSetting(() {}, (_) {});
     WidgetsBinding.instance.removeObserver(this);
@@ -422,6 +451,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -430,80 +460,6 @@ class _PlayerScreenState extends State<PlayerScreen>
     log("didRequestAppExit");
     _storeLocalHistory();
     return super.didRequestAppExit();
-  }
-
-  Widget _buildFadeSummarySection() {
-    return Column(
-      spacing: 10,
-      children: [
-        Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Column(
-            children: [
-              Container(
-                height: 180,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                height: 30,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white38,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: double.infinity * 0.4,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: double.infinity * 0.3,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildFadeEpisodeSection() {
@@ -563,12 +519,12 @@ class _PlayerScreenState extends State<PlayerScreen>
         height: double.infinity,
         width: double.infinity,
         child: Center(
-          child: _controller != null && !isloading
+          child: !isloading
               ? CapVideoPlayer(
                   title: widget.nameCn,
                   subTitle: _episode?.data?[episodeIndex].nameCn,
                   isloading: isloading,
-                  controller: _controller!,
+                  kitPlayer: _kitPlayer,
                   isFullScreen: isFullScreen,
                   currentEpisodeIndex: episodeIndex,
                   dammaku: _dammaku,
@@ -603,6 +559,42 @@ class _PlayerScreenState extends State<PlayerScreen>
                   onMsgTab: onMsgTab,
                 ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildEpisodeItem(int index) {
+    return ListTile(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      selected: episodeIndex == index,
+      onTap: () {
+        if (episodeIndex == index || isloading) {
+          return;
+        }
+        _onEpisodeSelected(index);
+      },
+      subtitle: Text(
+        maxLines: 4,
+        overflow: TextOverflow.ellipsis,
+        _episode?.data?[index].nameCn ?? "player.no_episode_name".tr(),
+      ),
+      title: Row(
+        children: [
+          Text('${index + 1}'),
+          SizedBox(width: 10),
+          if (episodeIndex == index)
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.primary,
+                BlendMode.srcATop,
+              ),
+              child: LottieBuilder.asset(
+                "lib/assets/lottie/playing.json",
+                repeat: true,
+                width: 40,
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -872,8 +864,15 @@ class _PlayerScreenState extends State<PlayerScreen>
                     )
                   : _episode == null
                   ? _buildFadeEpisodeSection()
+                  : _isTablet
+                  ? ListView.builder(
+                      key: PageStorageKey("player_episodes_list"),
+                      padding: EdgeInsets.all(10),
+                      itemCount: _episode?.data?.length ?? 0,
+                      itemBuilder: (context, index) => _buildEpisodeItem(index),
+                    )
                   : GridView.builder(
-                      key: PageStorageKey("player_episodes"),
+                      key: PageStorageKey("player_episodes_grid"),
                       padding: EdgeInsets.all(10),
                       itemCount: _episode?.data?.length ?? 0,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -881,42 +880,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                         mainAxisSpacing: 5,
                         crossAxisSpacing: 5,
                       ),
-                      itemBuilder: (context, index) => ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        selected: episodeIndex == index,
-                        onTap: () {
-                          if (episodeIndex == index || isloading) {
-                            return;
-                          }
-                          _onEpisodeSelected(index);
-                        },
-                        subtitle: Text(
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                          _episode?.data?[index].nameCn ??
-                              "player.no_episode_name".tr(),
-                        ),
-                        title: Row(
-                          children: [
-                            Text('${index + 1}'),
-                            SizedBox(width: 10),
-                            if (episodeIndex == index)
-                              ColorFiltered(
-                                colorFilter: ColorFilter.mode(
-                                  Theme.of(context).colorScheme.primary,
-                                  BlendMode.srcATop,
-                                ),
-                                child: LottieBuilder.asset(
-                                  "lib/assets/lottie/playing.json",
-                                  repeat: true,
-                                  width: 40,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
+                      itemBuilder: (context, index) => _buildEpisodeItem(index),
                     ),
             ],
           ),
@@ -934,38 +898,43 @@ class _PlayerScreenState extends State<PlayerScreen>
         ? Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: _showEpisodeList ? null : Colors.black,
-            body: SafeArea(
-              child: Row(
-                children: [
-                  _buildPlayer(
-                    isFullScreen: !_showEpisodeList,
-                    onFullScreenChanged: (_) {
-                      setState(() {
-                        _showEpisodeList = !_showEpisodeList;
-                      });
-                    },
-                    onBackPressed: () {
-                      context.pop();
-                    },
-                    onMsgTab: () {
-                      setState(() {
-                        _showEpisodeList = true;
-                      });
-                    },
-                  ),
-                  AnimatedSize(
-                    duration: Duration(milliseconds: 300),
-                    child: _showEpisodeList
-                        ? SizedBox(
-                            width: 400,
-                            child: Theme(
-                              data: Theme.of(context),
-                              child: _buildEpisode(),
-                            ),
-                          )
-                        : SizedBox(),
-                  ),
-                ],
+            body: KeyboardListener(
+              onKeyEvent: _handleKeyEvent,
+              focusNode: _focusNode,
+              autofocus: true,
+              child: SafeArea(
+                child: Row(
+                  children: [
+                    _buildPlayer(
+                      isFullScreen: !_showEpisodeList,
+                      onFullScreenChanged: (_) {
+                        setState(() {
+                          _showEpisodeList = !_showEpisodeList;
+                        });
+                      },
+                      onBackPressed: () {
+                        context.pop();
+                      },
+                      onMsgTab: () {
+                        setState(() {
+                          _showEpisodeList = true;
+                        });
+                      },
+                    ),
+                    AnimatedSize(
+                      duration: Duration(milliseconds: 300),
+                      child: _showEpisodeList
+                          ? SizedBox(
+                              width: 300,
+                              child: Theme(
+                                data: Theme.of(context),
+                                child: _buildEpisode(),
+                              ),
+                            )
+                          : SizedBox(),
+                    ),
+                  ],
+                ),
               ),
             ),
           )

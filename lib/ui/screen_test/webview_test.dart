@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_flutter/webview_flutter.dart' as webview_flutter;
 
 void main(List<String> args) {
   runApp(const WebviewTestApp());
@@ -27,7 +28,11 @@ class WebviewTest extends StatefulWidget {
 
 class _WebviewTestState extends State<WebviewTest> {
   final TextEditingController _urlController = TextEditingController();
-  final WebViewController _webViewController = WebViewController();
+  final webview_flutter.WebViewController _webViewController =
+      webview_flutter.WebViewController();
+  InAppWebViewController? _inAppWebViewController;
+  late final HeadlessInAppWebView _headlessWebViewController =
+      HeadlessInAppWebView();
   bool _isLoading = false;
   String _currentUrl = '';
   @override
@@ -35,9 +40,9 @@ class _WebviewTestState extends State<WebviewTest> {
     super.initState();
     // 设置WebView控制器
     _webViewController
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setJavaScriptMode(webview_flutter.JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
-        NavigationDelegate(
+        webview_flutter.NavigationDelegate(
           onPageStarted: (String url) {
             setState(() {
               _isLoading = true;
@@ -57,7 +62,7 @@ class _WebviewTestState extends State<WebviewTest> {
             //   'htmlContent:${WebviewUtil.unescapeUnicodeString(htmlContent)}',
             // );
           },
-          onWebResourceError: (WebResourceError error) {
+          onWebResourceError: (webview_flutter.WebResourceError error) {
             setState(() {
               _isLoading = false;
             });
@@ -189,7 +194,7 @@ class _WebviewTestState extends State<WebviewTest> {
           Expanded(
             child: Stack(
               children: [
-                WebViewWidget(controller: _webViewController),
+                webview_flutter.WebViewWidget(controller: _webViewController),
                 if (_isLoading)
                   Container(
                     color: Colors.white.withOpacity(0.8),
