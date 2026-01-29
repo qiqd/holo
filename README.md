@@ -14,7 +14,7 @@ An open-source anime streaming application built with Flutter, supporting Androi
 - 💾 **History**: Keep track of your watching progress
 - 💬 **Danmaku Support**: Real-time interactive bullet chat experience
 - 🌍 **Multi-language Support**: Internationalized interface supporting multiple languages
-- 🌐 **Multi-platform**: Supports Android and iOS
+- 🌐 **Multi-platform**: Supports Windows, macOS, Android and iOS
 - 🖼️ **Image Search**: Search for anime by uploading images
 
 ## App Screenshots
