@@ -85,6 +85,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     if ((event is KeyDownEvent) &&
         (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       switch (event.logicalKey) {
+        case LogicalKeyboardKey.tab:
+          break;
         case LogicalKeyboardKey.keyQ:
           setState(() {
             _showEpisodeList = !_showEpisodeList;

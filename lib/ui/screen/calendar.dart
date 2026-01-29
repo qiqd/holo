@@ -27,6 +27,9 @@ class _CalendarScreenState extends State<CalendarScreen>
     if (_calendar.isNotEmpty && DateTime.now().hour % 3 != 0) {
       return;
     }
+    setState(() {
+      _calendar = [];
+    });
     final calendar = await Api.bangumi.fetchCalendarSync(
       (e) => setState(() {
         _msg = e.toString();

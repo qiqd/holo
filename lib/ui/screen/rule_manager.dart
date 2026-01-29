@@ -20,7 +20,7 @@ class RuleManager extends StatefulWidget {
 class _RuleManagerState extends State<RuleManager> {
   List<Rule> _rules = LocalStore.getRules();
   String _rulesStr = '';
-  final bool _isUpdating = false;
+  bool _isUpdating = false;
   void _importRulesFromJson() {
     if (_rulesStr.isEmpty) {
       return;
@@ -44,9 +44,15 @@ class _RuleManagerState extends State<RuleManager> {
   }
 
   Future<void> _refreshRulesAndSourceService() async {
+    setState(() {
+      _isUpdating = true;
+    });
     _rules = LocalStore.getRules();
     Api.initSources();
     await Api.delayTest();
+    setState(() {
+      _isUpdating = false;
+    });
   }
 
   void _clipboardRulesToJson() {

@@ -28,10 +28,9 @@ dependencies:
   visibility_detector: ^0.4.0+2
   screen_brightness: ^2.1.7 # not supported on web linux
   simple_gesture_detector: ^0.2.1
-  volume_controller: ^3.4.1
+  volume_controller: ^3.4.1 #not supported on web
   cached_network_image: ^3.4.1
   package_info_plus: ^9.0.0
-  path_provider: ^2.1.1
   flutter_cache_manager: ^3.4.1
   easy_localization: ^3.0.8
   shimmer: ^3.0.0
@@ -40,7 +39,7 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   lottie: ^3.3.2
   flutter_device_type: ^0.4.0 #not supported on web, windows and macos
-  window_manager: ^0.5.1
+  window_manager: ^0.5.1 #not supported on web
   flutter_single_instance: ^1.7.0
 dev_dependencies:
   flutter_test:

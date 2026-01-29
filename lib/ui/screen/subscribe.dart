@@ -26,6 +26,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   List<PlaybackHistory> playback = [];
   List<SubscribeHistory> subscribe = [];
   final Set<int> _deleteModeIds = {};
+  bool _isUpdating = false;
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
@@ -167,9 +168,15 @@ class _SubscribeScreenState extends State<SubscribeScreen>
           if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
             IconButton(
               tooltip: 'Refresh All',
-              onPressed: () {
-                _fetchPlaybackHistoryFromServer();
-                _fetchSubscribeHistoryFromServer();
+              onPressed: () async {
+                setState(() {
+                  _isUpdating = true;
+                });
+                await _fetchPlaybackHistoryFromServer();
+                await _fetchSubscribeHistoryFromServer();
+                setState(() {
+                  _isUpdating = false;
+                });
               },
               icon: Icon(Icons.refresh_rounded),
             ),
@@ -204,6 +211,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 Tab(text: tr("subscribe.tab_view")),
               ],
             ),
+            if (_isUpdating) const LinearProgressIndicator(),
             Expanded(
               child: TabBarView(
                 controller: _tabController,

@@ -284,6 +284,7 @@ class _DetailScreenState extends State<DetailScreen>
         ),
       ),
       appBar: AppBar(
+        actionsPadding: .symmetric(horizontal: 12),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_rounded),
           onPressed: () {
