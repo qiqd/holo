@@ -4,7 +4,7 @@
 
 # Holo
 
-一个使用 Flutter 构建的开源看番 APP，支持 Android、iOS 平台。
+一个使用 Flutter 构建的开源看番 APP，支持 Windows,macOS, Android、iOS 平台。
 
 ## 功能特性
 
@@ -14,7 +14,7 @@
 - 💾 **观看历史**：跟踪您的观看进度
 - 💬 **弹幕功能**：支持实时弹幕互动体验
 - 🌍 **多语言支持**：支持多种语言的国际化界面
-- 🌐 **多平台支持**：覆盖 Android、iOS
+- 🌐 **多平台支持**：覆盖 Windows,macOS, Android、iOS
 - 🖼️ **以图搜番**：支持通过图片搜索相关动漫
 
 ## App Screenshots
