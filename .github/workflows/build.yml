@@ -121,11 +121,11 @@ jobs:
           flutter build windows --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
 
       - name: List built Windows artifacts
-        run: Get-ChildItem -Path build\windows\runner\Release\
+        run: Get-ChildItem -Path build\windows\x64\runner\${{ github.event.inputs.build_type }}\
 
       - name: Package Windows app
         run: |
-          Compress-Archive -Path build\windows\runner\Release\* -DestinationPath holo-windows.zip
+          Compress-Archive -Path build\windows\x64\runner\${{ github.event.inputs.build_type }}\* -DestinationPath holo-windows.zip
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
@@ -199,7 +199,7 @@ jobs:
       - name: Install Linux build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-10-dev
+           sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-10-dev libasound2-dev
 
       - name: Get Flutter doctor info
         run: flutter doctor -v

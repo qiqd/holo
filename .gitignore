@@ -49,3 +49,4 @@ app.*.map.json
 .vscode/launch.json
 website.md
 key.properties
+/build_log/*
