@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -159,8 +161,19 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
+        actionsPadding: .symmetric(horizontal: 12),
         title: Text(tr("subscribe.title")),
         actions: [
+          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
+            IconButton(
+              tooltip: 'Refresh All',
+              onPressed: () {
+                _fetchPlaybackHistoryFromServer();
+                _fetchSubscribeHistoryFromServer();
+              },
+              icon: Icon(Icons.refresh_rounded),
+            ),
+          ],
           if (_deleteModeIds.isNotEmpty)
             IconButton(
               icon: Icon(Icons.remove_done_rounded),
@@ -264,7 +277,12 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                             itemBuilder: (context, index) {
                               final item = playback[index];
                               return MediaCard(
-                                height: 190,
+                                height:
+                                    (Platform.isWindows ||
+                                        Platform.isLinux ||
+                                        Platform.isMacOS)
+                                    ? 240
+                                    : 190,
                                 lastViewAt: item.lastPlaybackAt,
                                 historyEpisode: item.episodeIndex,
                                 id: "subscribe.history_${item.subId}",

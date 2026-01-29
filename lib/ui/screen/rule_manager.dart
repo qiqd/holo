@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,6 +65,7 @@ class _RuleManagerState extends State<RuleManager> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
+        actionsPadding: .symmetric(horizontal: 12),
         title: VisibilityDetector(
           key: Key('rule_manager_title'),
           child: Text('rule_manager.title'.tr()),
@@ -82,7 +84,14 @@ class _RuleManagerState extends State<RuleManager> {
           },
         ),
         actions: [
+          if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
+            IconButton(
+              tooltip: "Refresh Rules",
+              onPressed: _refreshRulesAndSourceService,
+              icon: Icon(Icons.refresh_rounded),
+            ),
           IconButton(
+            tooltip: 'Share All rules',
             icon: const Icon(Icons.share_rounded),
             onPressed: () {
               _clipboardRulesToJson();
@@ -96,12 +105,14 @@ class _RuleManagerState extends State<RuleManager> {
               icon: Icon(Icons.update_rounded),
             ),
           IconButton(
+            tooltip: "Import Rules From Repository",
             icon: const Icon(Icons.inventory_2_rounded),
             onPressed: () {
               context.push('/rule_repository');
             },
           ),
           IconButton(
+            tooltip: 'Import Rules from JSON',
             icon: const Icon(Icons.content_copy_rounded),
             onPressed: () {
               showDialog(
@@ -141,6 +152,7 @@ class _RuleManagerState extends State<RuleManager> {
             },
           ),
           IconButton(
+            tooltip: "Add Local Rule",
             icon: const Icon(Icons.add_rounded),
             onPressed: () {
               context.push('/rule_edit', extra: {'isEditMode': true});

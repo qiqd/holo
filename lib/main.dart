@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_single_instance/flutter_single_instance.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/setting_api.dart';
@@ -40,11 +41,15 @@ void main() async {
   MediaKit.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
+    if (!await FlutterSingleInstance().isFirstInstance()) {
+      await FlutterSingleInstance().focus();
+      exit(0);
+    }
     WindowOptions windowOptions = WindowOptions(
       size: Size(1000, 800),
       minimumSize: Size(800, 600),
       center: true,
-      backgroundColor: Colors.transparent,
+
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
     );
@@ -320,7 +325,6 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                     ),
                   ],
                 ),
-
                 selectedIndex: widget.navigationShell.currentIndex,
                 onDestinationSelected: (index) {
                   widget.navigationShell.goBranch(index);
@@ -352,6 +356,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 ],
                 labelType: NavigationRailLabelType.selected,
               ),
+              VerticalDivider(width: 1),
               // 主内容区域
               Expanded(child: widget.navigationShell),
             ],

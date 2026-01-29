@@ -77,13 +77,19 @@ class _PlayerScreenState extends State<PlayerScreen>
     vsync: this,
     length: 2,
   );
-  // 添加键盘事件处理
+
+  /// 键盘事件处理
   void _handleKeyEvent(KeyEvent event) {
     log("${event.logicalKey}");
 
     if ((event is KeyDownEvent) &&
         (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       switch (event.logicalKey) {
+        case LogicalKeyboardKey.keyQ:
+          setState(() {
+            _showEpisodeList = !_showEpisodeList;
+          });
+          break;
         case LogicalKeyboardKey.space:
           _kitPlayer.playOrPause();
           break;
@@ -111,6 +117,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 获取剧集信息
   Future<void> _fetchMediaEpisode() async {
     isloading = true;
     try {
@@ -137,6 +144,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 获取播放信息
   Future<void> _fetchViewInfo({
     int position = 0,
     Function(String e)? onComplete,
@@ -146,6 +154,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     try {
       if (_detail != null) {
         await _kitPlayer.pause();
+
         lineIndex = lineIndex.clamp(0, _detail!.lines!.length - 1);
         episodeIndex = episodeIndex.clamp(
           0,
@@ -154,9 +163,9 @@ class _PlayerScreenState extends State<PlayerScreen>
         _loadDanmaku(
           isFirstLoad: true,
           onComplete: (e) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
+            // ScaffoldMessenger.of(
+            //   context,
+            // ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
           },
         );
         final newUrl = await source.fetchPlaybackUrl(
@@ -173,14 +182,18 @@ class _PlayerScreenState extends State<PlayerScreen>
         // );
         log('new url: $newUrl');
         await _kitPlayer.open(Media(newUrl ?? ""));
+        log('seek to: $position');
         await _kitPlayer.play();
+
         if (mounted) {
           setState(() {
             msg = "";
-            _kitPlayer.seek(Duration(seconds: position));
             _isActive ? _kitPlayer.play() : _kitPlayer.pause();
           });
         }
+        _kitPlayer.stream.duration.first.then((value) {
+          _kitPlayer.seek(Duration(seconds: position));
+        });
       }
     } catch (e) {
       log("fetchView error: $e");
@@ -195,6 +208,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 线路选择
   void _onLineSelected(int index) {
     if (index == lineIndex) {
       return;
@@ -205,6 +219,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     _fetchViewInfo();
   }
 
+  /// 剧集选择
   void _onEpisodeSelected(int index) {
     if (index >= _detail!.lines![lineIndex].episodes!.length) {
       setState(() {
@@ -223,6 +238,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     _fetchViewInfo();
   }
 
+  /// 加载播放历史
   void _loadHistory() async {
     final history = LocalStore.getPlaybackHistoryById(widget.subject.id!);
     if (history != null && mounted) {
@@ -234,6 +250,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 获取剧集列表
   void _fetchEpisode() async {
     final res = await Api.bangumi.fethcEpisodeSync(
       widget.subject.id!,
@@ -249,6 +266,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 存储播放历史
   void _storeLocalHistory() async {
     if (playUrl == null) {
       return;
@@ -270,6 +288,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     LocalStore.addPlaybackHistory(history);
   }
 
+  /// 切换全屏
   void _toggleFullScreen(bool isFullScreen) async {
     setState(() {
       _isFullScreen = isFullScreen;
@@ -290,6 +309,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 同步播放历史
   void _syncPlaybackHistory(PlaybackHistory history) {
     PlayBackApi.savePlaybackHistory(
       history,
@@ -302,6 +322,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
+  /// 加载弹幕
   void _loadDanmaku({
     bool isFirstLoad = true,
     String? keyword,
@@ -376,6 +397,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 弹幕源选择
   void _onDanmakuSourceChange(LogvarEpisode e) {
     if (e.animeId == _bestMatch?.animeId) {
       return;
@@ -386,18 +408,21 @@ class _PlayerScreenState extends State<PlayerScreen>
     _loadDanmaku(isFirstLoad: false);
   }
 
+  /// 应用生命周期变化处理
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       setState(() {
         _isActive = false;
       });
+      _kitPlayer.pause();
       _storeLocalHistory();
     }
     if (state == AppLifecycleState.resumed) {
       setState(() {
         _isActive = true;
       });
+      _kitPlayer.play();
     }
     if (state == AppLifecycleState.inactive) {
       _storeLocalHistory();
@@ -648,17 +673,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                                     _loadDanmaku(
                                       isFirstLoad: true,
                                       keyword: value,
-                                      onComplete: (e) {
-                                        setState(() {});
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(e),
-                                            showCloseIcon: true,
-                                          ),
-                                        );
-                                      },
                                     );
                                   },
                                 ),

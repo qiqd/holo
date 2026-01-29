@@ -87,6 +87,7 @@ class _SearchScreenState extends State<SearchScreen> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
+        actionsPadding: .symmetric(horizontal: 12),
         titleSpacing: 0,
         actions: [
           if (Device.get().isTablet)

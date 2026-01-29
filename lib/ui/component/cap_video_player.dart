@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:canvas_danmaku/danmaku_controller.dart';
 import 'package:canvas_danmaku/danmaku_screen.dart';
 import 'package:canvas_danmaku/models/danmaku_content_item.dart';
 import 'package:canvas_danmaku/models/danmaku_option.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -95,6 +97,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   bool _showVolume = false;
   bool _showBrightness = false;
   bool _showDragOffset = false;
+  final double _currentSpeed = 1.0;
 
   /// 是否全屏,只在桌面平台生效
   bool _isFullScreen = false;
@@ -346,6 +349,55 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
     _danmakuItems.removeWhere((item) {
       return filters.any((filter) => item.text.contains(filter.trim()) == true);
     });
+  }
+
+  ///显示键盘快捷键
+  void _showKeyboardShortcuts() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          surfaceTintColor: Colors.transparent,
+          title: Text('Keyboard Shortcuts'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.play_arrow_rounded),
+                title: Text('Play/Pause'),
+                subtitle: Text('Space'),
+              ),
+
+              ListTile(
+                leading: Icon(Icons.volume_up_rounded),
+                title: Text('Volume Up'),
+                subtitle: Text('Up Arrow'),
+              ),
+              ListTile(
+                leading: Icon(Icons.volume_down_rounded),
+                title: Text('Volume Down'),
+                subtitle: Text('Down Arrow'),
+              ),
+              ListTile(
+                leading: Icon(Icons.fast_forward_rounded),
+                title: Text('Seek Forward'),
+                subtitle: Text('Right Arrow'),
+              ),
+              ListTile(
+                leading: Icon(Icons.fast_rewind_rounded),
+                title: Text('Seek Backward'),
+                subtitle: Text('Left Arrow'),
+              ),
+              ListTile(
+                leading: Icon(CupertinoIcons.sidebar_right),
+                title: Text('Show Slidebar'),
+                subtitle: Text('Q'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -658,17 +710,38 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                             )
                           : null,
                       trailing: widget.isFullScreen
-                          ? IconButton(
-                              tooltip: 'Setting',
-                              onPressed: () {
-                                setState(() {
-                                  _showSetting = !_showSetting;
-                                });
-                                _showVideoControlsTimer();
-                              },
-                              icon: Icon(
-                                Icons.settings_rounded,
-                                color: Colors.white,
+                          ? SizedBox(
+                              width: 100,
+                              child: Row(
+                                mainAxisAlignment: .end,
+                                children: [
+                                  if (Platform.isLinux ||
+                                      Platform.isWindows ||
+                                      Platform.isMacOS)
+                                    IconButton(
+                                      tooltip: 'keyboard shortcuts',
+                                      onPressed: () {
+                                        _showKeyboardShortcuts();
+                                      },
+                                      icon: Icon(
+                                        Icons.help_outline_rounded,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  IconButton(
+                                    tooltip: 'Setting',
+                                    onPressed: () {
+                                      setState(() {
+                                        _showSetting = !_showSetting;
+                                      });
+                                      _showVideoControlsTimer();
+                                    },
+                                    icon: Icon(
+                                      Icons.settings_rounded,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
                             )
                           : null,
@@ -840,77 +913,64 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 14),
-                              // 播放速度
-                              Badge(
-                                textColor: Colors.white,
-                                offset:
-                                    (Platform.isWindows ||
-                                        Platform.isMacOS ||
-                                        Platform.isLinux)
-                                    ? Offset(9, -11)
-                                    : Offset(9, -7),
-                                backgroundColor: Colors.transparent,
-                                label: Text(
-                                  widget.kitPlayer.state.rate.toString(),
-                                ),
-                                child: PopupMenuButton(
-                                  tooltip: 'Video Speed',
-                                  child: Icon(
-                                    Icons.speed_rounded,
-                                    color: Colors.white,
+                              PopupMenuButton(
+                                tooltip: 'Playback Speed',
+                                padding: .zero,
+                                icon: Badge(
+                                  backgroundColor: Colors.transparent,
+                                  textColor: Colors.white,
+                                  label: Text(
+                                    widget.kitPlayer.state.rate.toStringAsFixed(
+                                      1,
+                                    ),
                                   ),
-                                  itemBuilder: (context) => [
-                                    PopupMenuItem(
-                                      value: 2.0,
-                                      child: Text('2.0x'),
-                                      onTap: () =>
-                                          widget.kitPlayer.setRate(2.0),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 1.5,
-                                      child: Text('1.5x'),
-                                      onTap: () =>
-                                          widget.kitPlayer.setRate(1.5),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 1.25,
-                                      child: Text('1.25x'),
-                                      onTap: () =>
-                                          widget.kitPlayer.setRate(1.25),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 1.0,
-                                      child: Text('1.0x'),
-                                      onTap: () =>
-                                          widget.kitPlayer.setRate(1.0),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 0.75,
-                                      child: Text('0.75x'),
-                                      onTap: () =>
-                                          widget.kitPlayer.setRate(0.75),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 0.5,
-                                      child: Text('0.5x'),
-                                      onTap: () =>
-                                          widget.kitPlayer.setRate(0.5),
-                                    ),
-                                  ],
                                 ),
+
+                                onSelected: (value) {
+                                  widget.kitPlayer.setRate(value);
+                                },
+                                itemBuilder: (context) {
+                                  var items = <PopupMenuItem<double>>[];
+                                  for (var i = 0.5; i <= 4.0; i += 0.5) {
+                                    items.add(
+                                      PopupMenuItem(
+                                        value: i,
+                                        child: Text(i.toString()),
+                                      ),
+                                    );
+                                  }
+                                  return items.reversed.toList();
+                                },
                               ),
+
+                              // SizedBox(width: 14),
                             ],
                             //音量调整,只在桌面端显示
                             if ((Platform.isWindows ||
                                     Platform.isMacOS ||
                                     Platform.isLinux) &&
-                                widget.isFullScreen)
+                                widget.isFullScreen) ...[
+                              IconButton(
+                                tooltip: 'Volume',
+                                onPressed: () {
+                                  setState(() {
+                                    _currentVolume = 0;
+                                    widget.kitPlayer.setVolume(_currentVolume);
+                                  });
+                                },
+                                icon: Icon(
+                                  _currentVolume > 0
+                                      ? Icons.volume_up_rounded
+                                      : Icons.volume_off_rounded,
+                                  color: Colors.white,
+                                ),
+                              ),
                               SizedBox(
-                                width: 150,
+                                width: 120,
                                 child: Slider(
                                   min: 0,
                                   max: 100,
+                                  padding: .symmetric(horizontal: 10),
                                   value: _currentVolume,
                                   onChanged: (value) {
                                     widget.kitPlayer.setVolume(value);
@@ -920,9 +980,10 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                   },
                                 ),
                               ),
+                            ],
                             Spacer(),
 
-                            // 全屏按钮
+                            // 全屏按钮(移动平台下,否则侧边栏)
                             IconButton(
                               onPressed: () {
                                 _showVideoControlsTimer();
@@ -940,7 +1001,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                       color: Colors.white,
                                     )
                                   : Icon(
-                                      Icons.menu_open_rounded,
+                                      CupertinoIcons.sidebar_right,
                                       color: Colors.white,
                                     ),
                             ),
@@ -948,6 +1009,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                 Platform.isWindows ||
                                 Platform.isLinux) ...[
                               IconButton(
+                                tooltip: 'Fullscreen|Exit Fullscreen',
                                 onPressed: () async {
                                   await windowManager.setFullScreen(
                                     !_isFullScreen,
@@ -1017,6 +1079,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                 ),
               ),
             ),
+
             // 弹幕设置
             AnimatedPositioned(
               top: 0,

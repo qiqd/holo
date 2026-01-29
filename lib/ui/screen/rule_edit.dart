@@ -136,6 +136,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actionsPadding: .symmetric(horizontal: 12),
         titleSpacing: 0,
         actions: [
           if (widget.rule != null && !_isTablet)
@@ -144,10 +145,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               onPressed: () => context.push('/rule_test', extra: _service!),
             ),
           IconButton(
+            tooltip: 'Save Rule To Local',
             icon: const Icon(Icons.save_outlined),
             onPressed: _saveRule,
           ),
           IconButton(
+            tooltip: 'Help',
             icon: const Icon(Icons.help_outline_outlined),
             onPressed: () {
               _showHelpDialog();

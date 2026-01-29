@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.8+3
+version: 1.1.8+4
 
 environment:
   sdk: ^3.10.3
@@ -41,6 +41,7 @@ dependencies:
   lottie: ^3.3.2
   flutter_device_type: ^0.4.0 #not supported on web, windows and macos
   window_manager: ^0.5.1
+  flutter_single_instance: ^1.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -53,7 +54,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - lib/images/launcher.png
+    - lib/images/launcher_round.png
     - lib/assets/translations/
     - lib/assets/lottie/
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -66,7 +68,19 @@ class _CalendarScreenState extends State<CalendarScreen>
     var isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
-      appBar: AppBar(title: Text(tr("calendar.title"))),
+      appBar: AppBar(
+        actionsPadding: .symmetric(horizontal: 12),
+        title: Text(tr("calendar.title")),
+        actions: [
+          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
+            IconButton(
+              tooltip: 'Refresh Calendar',
+              onPressed: _fetchCalendar,
+              icon: Icon(Icons.refresh_rounded),
+            ),
+          ],
+        ],
+      ),
       body: Column(
         children: [
           TabBar(
