@@ -7,10 +7,8 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_inappwebview_windows
   media_kit_libs_windows_video
   media_kit_video
-  screen_brightness_windows
   screen_retriever_windows
   url_launcher_windows
-  volume_controller
   window_manager
 )
 

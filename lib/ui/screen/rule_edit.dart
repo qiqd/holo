@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_device_type/flutter_device_type.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
@@ -24,7 +23,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   SourceService? _service;
   late final _isEditMode = widget.isEditMode;
   late final Rule _rule = widget.rule ?? Rule();
-  bool _isTablet = false;
+  final bool _isTablet = false;
   void _saveRule() {
     if (!_formKey.currentState!.validate() || !_isEditMode) {
       return;
@@ -125,11 +124,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    setState(() {
-      _isTablet =
-          Device.get().isTablet &&
-          MediaQuery.of(context).orientation == Orientation.landscape;
-    });
   }
 
   @override

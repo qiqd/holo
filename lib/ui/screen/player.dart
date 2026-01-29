@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_device_type/flutter_device_type.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/setting_api.dart';
@@ -440,8 +440,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (Platform.isAndroid || Platform.isIOS) {
       var info = MediaQuery.of(context);
       setState(() {
-        _isTablet =
-            Device.get().isTablet && info.orientation == Orientation.landscape;
+        _isTablet = true;
         _isFullScreen = info.orientation == Orientation.landscape;
       });
     }
@@ -459,7 +458,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     _focusNode = FocusNode();
     _loadHistory();
     _fetchEpisode();
-    _isTablet = Device.get().isTablet;
+    _isTablet = true;
     WidgetsBinding.instance.addObserver(this);
     _fetchMediaEpisode().then(
       (value) => _fetchViewInfo(position: historyPosition),

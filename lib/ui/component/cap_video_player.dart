@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:canvas_danmaku/danmaku_controller.dart';
 import 'package:canvas_danmaku/danmaku_screen.dart';
@@ -15,10 +14,7 @@ import 'package:holo/util/local_store.dart';
 import 'package:lottie/lottie.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
-import 'package:volume_controller/volume_controller.dart';
-import 'package:window_manager/window_manager.dart';
 
 class CapVideoPlayer extends StatefulWidget {
   final Player kitPlayer;
@@ -65,7 +61,6 @@ class CapVideoPlayer extends StatefulWidget {
 
 class _CapVideoPlayerState extends State<CapVideoPlayer> {
   late final String title = widget.title ?? context.tr("component.title");
-  late final ScreenBrightness _brightnessController;
   DanmakuController<double>? _danmuController;
   late final _kitController = VideoController(widget.kitPlayer);
   String msgText = '';
@@ -93,7 +88,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   Timer? _videoTimer;
   Timer? _danmuTimer;
   late double _currentVolume = widget.kitPlayer.state.volume;
-  double _currentBrightness = 0;
+  final double _currentBrightness = 0;
   bool _showVolume = false;
   bool _showBrightness = false;
   bool _showDragOffset = false;
@@ -145,34 +140,34 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   }
 
   /// 改变亮度,仅在移动平台生效
-  void _changeBrightnessBy1Percent(SwipeDirection direction) async {
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      return;
-    }
-    if (isLock) {
-      return;
-    }
-    _showBrightness = true;
-    _showVolume = false;
-    _updateShowVolumeOrBrightnessTimer();
-    final current = await _brightnessController.application;
-    double newBrightness = current;
-    if (direction == SwipeDirection.up) {
-      newBrightness = current + 0.01;
-    } else if (direction == SwipeDirection.down) {
-      newBrightness = current - 0.01;
-    }
-    log("set brightness to $newBrightness");
-    newBrightness = newBrightness.clamp(0.0, 1.0);
-    await ScreenBrightness.instance.setApplicationScreenBrightness(
-      newBrightness,
-    );
-    setState(() {
-      showMsg = true;
-      // msgText =     ' ${context.tr("component.cap_video_player.brightness")}: ${(newBrightness * 100).toStringAsFixed(0)}%';
-      _currentBrightness = newBrightness * 100;
-    });
-  }
+  // void _changeBrightnessBy1Percent(SwipeDirection direction) async {
+  //   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  //     return;
+  //   }
+  //   if (isLock) {
+  //     return;
+  //   }
+  //   _showBrightness = true;
+  //   _showVolume = false;
+  //   _updateShowVolumeOrBrightnessTimer();
+  //   final current = await _brightnessController.application;
+  //   double newBrightness = current;
+  //   if (direction == SwipeDirection.up) {
+  //     newBrightness = current + 0.01;
+  //   } else if (direction == SwipeDirection.down) {
+  //     newBrightness = current - 0.01;
+  //   }
+  //   log("set brightness to $newBrightness");
+  //   newBrightness = newBrightness.clamp(0.0, 1.0);
+  //   await ScreenBrightness.instance.setApplicationScreenBrightness(
+  //     newBrightness,
+  //   );
+  //   setState(() {
+  //     showMsg = true;
+  //     // msgText =     ' ${context.tr("component.cap_video_player.brightness")}: ${(newBrightness * 100).toStringAsFixed(0)}%';
+  //     _currentBrightness = newBrightness * 100;
+  //   });
+  // }
 
   /// 改变音量,仅在移动平台生效
   void _changeVolumeBy1Percent(SwipeDirection direction) async {
@@ -404,8 +399,8 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   void initState() {
     _loadDanmuSetting();
     _initTimerForDanmu();
-    VolumeController.instance.showSystemUI = false;
-    _brightnessController = ScreenBrightness.instance;
+    // VolumeController.instance.showSystemUI = false;
+    //  / _brightnessController = ScreenBrightness.instance;
     super.initState();
   }
 
@@ -588,7 +583,7 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                                     direction == SwipeDirection.right) {
                                   return;
                                 }
-                                _changeBrightnessBy1Percent(direction);
+                                // _changeBrightnessBy1Percent(direction);
                               },
 
                               child: Container(color: Colors.transparent),
@@ -1011,9 +1006,9 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
                               IconButton(
                                 tooltip: 'Fullscreen|Exit Fullscreen',
                                 onPressed: () async {
-                                  await windowManager.setFullScreen(
-                                    !_isFullScreen,
-                                  );
+                                  // await windowManager.setFullScreen(
+                                  //   !_isFullScreen,
+                                  // );
                                   setState(() {
                                     _isFullScreen = !_isFullScreen;
                                   });

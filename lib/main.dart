@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_single_instance/flutter_single_instance.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/setting_api.dart';
@@ -30,7 +29,6 @@ import 'package:holo/ui/screen/search.dart';
 import 'package:holo/ui/screen/setting.dart';
 import 'package:holo/ui/screen/subscribe.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,25 +37,25 @@ void main() async {
   await Bangumi.initDio();
   Api.initSources();
   MediaKit.ensureInitialized();
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    await windowManager.ensureInitialized();
-    if (!await FlutterSingleInstance().isFirstInstance()) {
-      await FlutterSingleInstance().focus();
-      exit(0);
-    }
-    WindowOptions windowOptions = WindowOptions(
-      size: Size(1000, 800),
-      minimumSize: Size(800, 600),
-      center: true,
+  // if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  //   await windowManager.ensureInitialized();
+  //   if (!await FlutterSingleInstance().isFirstInstance()) {
+  //     await FlutterSingleInstance().focus();
+  //     exit(0);
+  //   }
+  //   WindowOptions windowOptions = WindowOptions(
+  //     size: Size(1000, 800),
+  //     minimumSize: Size(800, 600),
+  //     center: true,
 
-      skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.normal,
-    );
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
-    });
-  }
+  //     skipTaskbar: false,
+  //     titleBarStyle: TitleBarStyle.normal,
+  //   );
+  //   windowManager.waitUntilReadyToShow(windowOptions, () async {
+  //     await windowManager.show();
+  //     await windowManager.focus();
+  //   });
+  // }
   runApp(
     EasyLocalization(
       supportedLocales: [
