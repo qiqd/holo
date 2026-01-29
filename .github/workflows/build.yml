@@ -15,19 +15,24 @@ on:
       build_platform:
         description: "Build Platform"
         required: true
-        default: "both"
+        default: "all"
         type: choice
         options:
           - android
           - ios
-          - both
+          - windows
+          - macos
+          - linux
+          - all
+          - mobile
+          - desktop
 
 jobs:
   build-android:
     name: Build Android APKs
     runs-on: ubuntu-latest
     environment: product
-    if: ${{ github.event.inputs.build_platform == 'android' || github.event.inputs.build_platform == 'both' }}
+    if: ${{ github.event.inputs.build_platform == 'android' || github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'mobile' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -58,7 +63,7 @@ jobs:
     name: Build iOS IPA
     runs-on: macos-latest
     environment: product
-    if: ${{ github.event.inputs.build_platform == 'ios' || github.event.inputs.build_platform == 'both' }}
+    if: ${{ github.event.inputs.build_platform == 'ios' || github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'mobile' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -86,4 +91,134 @@ jobs:
         with:
           name: ios-ipa
           path: build/ios/ipa/*.ipa
+          retention-days: 14
+
+  build-windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    environment: product
+    if: ${{ github.event.inputs.build_platform == 'windows' || github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'desktop' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.38.4"
+          cache: true
+
+      - name: Enable Windows desktop support
+        run: flutter config --enable-windows-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Get Flutter doctor info
+        run: flutter doctor -v
+
+      - name: Build Windows executable
+        run: |
+          flutter build windows --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
+
+      - name: List built Windows artifacts
+        run: Get-ChildItem -Path build\windows\runner\Release\
+
+      - name: Package Windows app
+        run: |
+          Compress-Archive -Path build\windows\runner\Release\* -DestinationPath holo-windows.zip
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-app
+          path: holo-windows.zip
+          retention-days: 14
+
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-latest
+    environment: product
+    if: ${{ github.event.inputs.build_platform == 'macos' || github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'desktop' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.38.4"
+          cache: true
+
+      - name: Enable macOS desktop support
+        run: flutter config --enable-macos-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Get Flutter doctor info
+        run: flutter doctor -v
+
+      - name: Build macOS app
+        run: |
+          flutter build macos --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
+
+      - name: List built macOS artifacts
+        run: ls -la build/macos/Build/Products/Release/
+
+      - name: Package macOS app
+        run: |
+          cd build/macos/Build/Products/Release/
+          zip -r holo-macos.zip *.app
+
+      - name: Upload macOS app
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-app
+          path: build/macos/Build/Products/Release/holo-macos.zip
+          retention-days: 14
+
+  build-linux:
+    name: Build Linux App
+    runs-on: ubuntu-latest
+    environment: product
+    if: ${{ github.event.inputs.build_platform == 'linux' || github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'desktop' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.38.4"
+          cache: true
+
+      - name: Enable Linux desktop support
+        run: flutter config --enable-linux-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-10-dev
+
+      - name: Get Flutter doctor info
+        run: flutter doctor -v
+
+      - name: Build Linux app
+        run: |
+          flutter build linux --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
+
+      - name: List built Linux artifacts
+        run: ls -la build/linux/x64/release/bundle/
+
+      - name: Package Linux app
+        run: |
+          cd build/linux/x64/release/bundle/
+          tar -czf holo-linux.tar.gz *
+
+      - name: Upload Linux app
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-app
+          path: build/linux/x64/release/bundle/holo-linux.tar.gz
           retention-days: 14
