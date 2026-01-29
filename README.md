@@ -4,7 +4,7 @@
 
 # Holo
 
-An open-source anime streaming application built with Flutter, supporting Android and iOS platforms.
+An open-source anime streaming application built with Flutter, Supports Windows, macOS, Android and iOS platforms.
 
 ## Features
 
