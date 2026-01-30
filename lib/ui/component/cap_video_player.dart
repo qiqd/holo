@@ -97,8 +97,11 @@ class _CapVideoPlayerState extends State<CapVideoPlayer> {
   bool _showVolume = false;
   bool _showBrightness = false;
   bool _showDragOffset = false;
-  final double _currentSpeed = 1.0;
-
+  // final double _currentSpeed = 1.0;
+  final Duration _buffer = Duration.zero;
+  // Duration _currentPosition = Duration.zero;
+  // Duration _currentDuration = Duration.zero;
+  // Duration _cur
   /// 是否全屏,只在桌面平台生效
   bool _isFullScreen = false;
   final List<DanmakuContentItem<double>> _danmakuItems = [];

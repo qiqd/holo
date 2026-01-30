@@ -22,6 +22,7 @@ import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/cap_video_player.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:holo/window/app_window_listener.dart';
 import 'package:lottie/lottie.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:shimmer/shimmer.dart';
@@ -50,7 +51,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     with
         SingleTickerProviderStateMixin,
         WidgetsBindingObserver,
-        AutomaticKeepAliveClientMixin {
+        AutomaticKeepAliveClientMixin,
+        WindowListener {
   late Data subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
@@ -151,6 +153,9 @@ class _PlayerScreenState extends State<PlayerScreen>
     int position = 0,
     Function(String e)? onComplete,
   }) async {
+    if (isloading) {
+      return;
+    }
     msg = "";
     isloading = true;
     try {
@@ -179,21 +184,17 @@ class _PlayerScreenState extends State<PlayerScreen>
           }),
         );
         playUrl = newUrl;
-        // final newController = VideoPlayerController.networkUrl(
-        //   Uri.parse(newUrl ?? ""),
-        // );
-        log('new url: $newUrl');
         await _kitPlayer.open(Media(newUrl ?? ""));
-        log('seek to: $position');
         await _kitPlayer.play();
-
         if (mounted) {
           setState(() {
             msg = "";
             _isActive ? _kitPlayer.play() : _kitPlayer.pause();
           });
         }
-        _kitPlayer.stream.duration.first.then((value) {
+        _kitPlayer.stream.duration.firstWhere((d) => d > Duration.zero).then((
+          _,
+        ) {
           _kitPlayer.seek(Duration(seconds: position));
         });
       }
@@ -286,8 +287,9 @@ class _PlayerScreenState extends State<PlayerScreen>
     _syncPlaybackHistory(history);
     var data = widget.subject;
     data.sourceName = source.getName();
-    LocalStore.setSubjectCacheAndSource(data);
-    LocalStore.addPlaybackHistory(history);
+    var r = LocalStore.setSubjectCacheAndSource(data);
+    var d = LocalStore.addPlaybackHistory(history);
+    log("setSubjectCacheAndSource: $r, addPlaybackHistory: $d");
   }
 
   /// 切换全屏
@@ -410,6 +412,15 @@ class _PlayerScreenState extends State<PlayerScreen>
     _loadDanmaku(isFirstLoad: false);
   }
 
+  ///给窗口添加监听(仅在桌面平台生效)
+  @override
+  void onWindowClose() {
+    _storeLocalHistory();
+    _storeLocalHistory();
+    _storeLocalHistory();
+    super.onWindowClose();
+  }
+
   /// 应用生命周期变化处理
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -456,6 +467,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void initState() {
+    windowManager.addListener(this);
     _focusNode = FocusNode();
     _loadHistory();
     _fetchEpisode();
@@ -479,6 +491,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       DeviceOrientation.landscapeRight,
     ]);
     _focusNode.dispose();
+    windowManager.removeListener(this);
     super.dispose();
   }
 

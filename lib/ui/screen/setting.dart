@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -115,7 +116,7 @@ class _SetttingScreenState extends State<SetttingScreen>
             applicationVersion: 'v$_version',
             applicationIcon: ClipRRect(
               borderRadius: BorderRadius.circular(18),
-              child: Image.asset('lib/images/launcher.png', width: 100),
+              child: Image.asset('lib/images/launcher_round.png', width: 100),
             ),
             applicationLegalese: 'AGPL-3.0 license',
             aboutBoxChildren: _buildAboutBoxChildren(),
@@ -210,14 +211,15 @@ class _SetttingScreenState extends State<SetttingScreen>
           //   subtitle: const Text('取消所有收藏'),
           //   onTap: () => _clearFavorites(),
           // ),
-          ListTile(
-            leading: const Icon(Icons.delete_outline),
-            title: Text('setting.data_management.clear_cache'.tr()),
-            subtitle: Text(
-              'setting.data_management.clear_cache_description'.tr(),
+          if (Platform.isAndroid || Platform.isIOS)
+            ListTile(
+              leading: const Icon(Icons.delete_outline),
+              title: Text('setting.data_management.clear_cache'.tr()),
+              subtitle: Text(
+                'setting.data_management.clear_cache_description'.tr(),
+              ),
+              onTap: () => _clearCache(),
             ),
-            onTap: () => _clearCache(),
-          ),
           // 规则管理部分
           ListTile(
             leading: const Icon(Icons.rule_rounded),
@@ -395,6 +397,7 @@ class _SetttingScreenState extends State<SetttingScreen>
               onPressed: () {
                 // 清除缓存逻辑
                 DefaultCacheManager().emptyCache();
+                log('应用缓存已清除');
                 Navigator.pop(context);
               },
               child: Text('setting.data_management.clear_dialog_confirm'.tr()),
@@ -402,7 +405,6 @@ class _SetttingScreenState extends State<SetttingScreen>
           ],
         ),
       );
-      log('应用缓存已清除');
     } catch (e) {
       log('清除缓存失败: $e');
     }

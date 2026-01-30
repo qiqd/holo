@@ -105,8 +105,8 @@ class LocalStore {
         .toList();
   }
 
-  static void addPlaybackHistory(PlaybackHistory history) {
-    if (_prefs == null) return;
+  static bool addPlaybackHistory(PlaybackHistory history) {
+    if (_prefs == null) return false;
     var playbackStr = _prefs!.getStringList("${_key}_playback") ?? [];
     var playback = playbackStr
         .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
@@ -135,6 +135,7 @@ class LocalStore {
     playback.add(firstWhere);
     playbackStr = playback.map((item) => json.encode(item.toJson())).toList();
     _prefs!.setStringList("${_key}_playback", playbackStr);
+    return true;
   }
 
   static List<PlaybackHistory> getPlaybackHistory() {
@@ -331,8 +332,8 @@ class LocalStore {
     _prefs?.setBool("${_key}_use_system_color", value);
   }
 
-  static void setSubjectCacheAndSource(Data data) {
-    if (_prefs == null) return;
+  static bool setSubjectCacheAndSource(Data data) {
+    if (_prefs == null) return false;
     var dataListStr = _prefs!.getStringList("${_key}_data_source") ?? [];
     var dataList = dataListStr
         .map((item) => Data.fromJson(json.decode(item)))
@@ -346,6 +347,7 @@ class LocalStore {
         .map((item) => json.encode(item.toJson()))
         .toList();
     _prefs!.setStringList("${_key}_data_cache", dataListStr);
+    return true;
   }
 
   static Data? getSubjectCacheAndSource(int subId) {

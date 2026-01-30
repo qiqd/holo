@@ -143,7 +143,9 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
   void initTabBarListener() {
     _tabController.addListener(() {
-      _deleteModeIds.clear();
+      setState(() {
+        _deleteModeIds.clear();
+      });
     });
   }
 
