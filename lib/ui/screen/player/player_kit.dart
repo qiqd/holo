@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer' show log;
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
@@ -13,34 +12,27 @@ import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode.dart';
 import 'package:holo/entity/logvar_episode.dart';
 import 'package:holo/entity/media.dart' as holo_media;
-
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/ui/component/cap_video_player.dart';
 import 'package:holo/ui/component/cap_video_player_kit.dart';
-
 import 'package:holo/ui/component/media_card.dart';
-import 'package:holo/ui/screen/player_kit.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/local_store.dart';
-
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:video_player/video_player.dart';
 
-class PlayerScreen extends StatefulWidget {
+class PlayerScreenKit extends StatefulWidget {
   final String mediaId;
   final Data subject;
   final SourceService source;
   final String nameCn;
   final bool isLove;
-  const PlayerScreen({
+  const PlayerScreenKit({
     super.key,
     required this.mediaId,
     required this.subject,
@@ -50,10 +42,10 @@ class PlayerScreen extends StatefulWidget {
   });
 
   @override
-  State<PlayerScreen> createState() => _PlayerScreenState();
+  State<PlayerScreenKit> createState() => _PlayerScreenKitState();
 }
 
-class _PlayerScreenState extends State<PlayerScreen>
+class _PlayerScreenKitState extends State<PlayerScreenKit>
     with
         SingleTickerProviderStateMixin,
         WidgetsBindingObserver,
@@ -78,8 +70,8 @@ class _PlayerScreenState extends State<PlayerScreen>
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
-  // VideoPlayerController? _controller;
-  dynamic _player;
+  Player _player = Player();
+
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
@@ -148,40 +140,24 @@ class _PlayerScreenState extends State<PlayerScreen>
         playUrl = newUrl;
         log('new url: $newUrl');
         log('seek to: $position');
-        if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
-          final newController = VideoPlayerController.networkUrl(
-            Uri.parse(newUrl ?? ""),
-          );
-          await newController.initialize();
-          if (mounted) {
-            setState(() {
-              _player = newController;
-              msg = '';
-            });
-          }
-          _player?.seekTo(Duration(seconds: position));
-          _isActive ? _player?.play() : _player?.pause();
+
+        var kitPlayer = _player as Player?;
+        await kitPlayer?.open(Media(newUrl ?? ""));
+        await kitPlayer?.play();
+        if (mounted) {
+          setState(() {
+            msg = "";
+            _isActive ? kitPlayer?.play() : kitPlayer?.pause();
+          });
         }
-        if (Platform.isLinux || Platform.isWindows) {
-          var kitPlayer = _player as Player?;
-          await kitPlayer?.open(Media(newUrl ?? ""));
-          await kitPlayer?.play();
-          if (mounted) {
-            setState(() {
-              msg = "";
-              _player = kitPlayer;
-              _isActive ? kitPlayer?.play() : kitPlayer?.pause();
+        kitPlayer?.stream.duration
+            .firstWhere(
+              (element) => element > Duration.zero,
+              orElse: () => Duration.zero,
+            )
+            .then((value) {
+              kitPlayer.seek(Duration(seconds: position));
             });
-          }
-          kitPlayer?.stream.duration
-              .firstWhere(
-                (element) => element > Duration.zero,
-                orElse: () => Duration.zero,
-              )
-              .then((value) {
-                kitPlayer.seek(Duration(seconds: position));
-              });
-        }
       }
     } catch (e) {
       log("fetchView error: $e");
@@ -256,15 +232,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (playUrl == null) {
       return;
     }
-    var position = 0;
-    if (_player is Player?) {
-      Player? kitPlayer = _player;
-      position = kitPlayer?.state.position.inSeconds ?? 0;
-    }
-    if (_player is VideoPlayerController?) {
-      VideoPlayerController? videoController = _player;
-      position = videoController?.value.position.inSeconds ?? 0;
-    }
+
     PlaybackHistory history = PlaybackHistory(
       subId: widget.subject.id!,
       title: nameCn,
@@ -272,7 +240,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       lineIndex: lineIndex,
       lastPlaybackAt: DateTime.now(),
       createdAt: DateTime.now(),
-      position: position,
+      position: _player.state.position.inSeconds,
       imgUrl: widget.subject.images?.large ?? "",
     );
     _syncPlaybackHistory(history);
@@ -462,7 +430,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    _player?.dispose();
+    _player.dispose();
     super.dispose();
   }
 
@@ -530,76 +498,40 @@ class _PlayerScreenState extends State<PlayerScreen>
         height: double.infinity,
         width: double.infinity,
         child: Center(
-          child: _player != null && !isloading
-              ? Platform.isAndroid || Platform.isIOS || Platform.isMacOS
-                    ? CapVideoPlayer(
-                        title: widget.nameCn,
-                        subTitle: _episode?.data?[episodeIndex].nameCn,
-                        isloading: isloading,
-                        player: _player! as VideoPlayerController,
-                        isFullScreen: isFullScreen,
-                        currentEpisodeIndex: episodeIndex,
-                        dammaku: _dammaku,
-                        isTablet: _isTablet,
-                        episodeList:
-                            _episode?.data?.map((e) => e.name!).toList() ?? [],
-                        onError: (error) => setState(() {
-                          msg = error.toString();
-                        }),
-                        onEpisodeSelected: (index) => _onEpisodeSelected(index),
-                        onNextTab: () {
-                          if (isloading ||
-                              episodeIndex + 1 >
-                                  _detail!.lines![lineIndex].episodes!.length -
-                                      1) {
-                            return;
-                          }
-                          setState(() {
-                            ++episodeIndex;
-                          });
-                          _fetchViewInfo();
-                        },
-                        onFullScreenChanged: (f) {
-                          onFullScreenChanged(f);
-                        },
-                        onBackPressed: () {
-                          onBackPressed();
-                        },
-                      )
-                    : CapVideoPlayerKit(
-                        title: widget.nameCn,
-                        subTitle: _episode?.data?[episodeIndex].nameCn,
-                        isloading: isloading,
-                        kitPlayer: _player! as Player,
-                        isFullScreen: isFullScreen,
-                        currentEpisodeIndex: episodeIndex,
-                        dammaku: _dammaku,
-                        isTablet: _isTablet,
-                        episodeList:
-                            _episode?.data?.map((e) => e.name!).toList() ?? [],
-                        onError: (error) => setState(() {
-                          msg = error.toString();
-                        }),
-                        onEpisodeSelected: (index) => _onEpisodeSelected(index),
-                        onNextTab: () {
-                          if (isloading ||
-                              episodeIndex + 1 >
-                                  _detail!.lines![lineIndex].episodes!.length -
-                                      1) {
-                            return;
-                          }
-                          setState(() {
-                            ++episodeIndex;
-                          });
-                          _fetchViewInfo();
-                        },
-                        onFullScreenChanged: (f) {
-                          onFullScreenChanged(f);
-                        },
-                        onBackPressed: () {
-                          onBackPressed();
-                        },
-                      )
+          child: !isloading
+              ? CapVideoPlayerKit(
+                  title: widget.nameCn,
+                  subTitle: _episode?.data?[episodeIndex].nameCn,
+                  isloading: isloading,
+                  kitPlayer: _player,
+                  isFullScreen: isFullScreen,
+                  currentEpisodeIndex: episodeIndex,
+                  dammaku: _dammaku,
+                  isTablet: _isTablet,
+                  episodeList:
+                      _episode?.data?.map((e) => e.name!).toList() ?? [],
+                  onError: (error) => setState(() {
+                    msg = error.toString();
+                  }),
+                  onEpisodeSelected: (index) => _onEpisodeSelected(index),
+                  onNextTab: () {
+                    if (isloading ||
+                        episodeIndex + 1 >
+                            _detail!.lines![lineIndex].episodes!.length - 1) {
+                      return;
+                    }
+                    setState(() {
+                      ++episodeIndex;
+                    });
+                    _fetchViewInfo();
+                  },
+                  onFullScreenChanged: (f) {
+                    onFullScreenChanged(f);
+                  },
+                  onBackPressed: () {
+                    onBackPressed();
+                  },
+                )
               : LoadingOrShowMsg(
                   msg: msg,
                   backgroundColor: Colors.black,

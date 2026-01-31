@@ -13,24 +13,21 @@ import 'package:holo/service/api.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/image_search.dart';
-import 'package:holo/ui/screen/player.dart';
+import 'package:holo/ui/screen/player/player.dart';
+import 'package:holo/ui/screen/player/player_kit.dart';
 import 'package:holo/ui/screen/rule_edit.dart';
 import 'package:holo/ui/screen/rule_manager.dart';
 import 'package:holo/ui/screen/rule_repository.dart';
 import 'package:holo/ui/screen/rule_test.dart';
 import 'package:holo/ui/screen/sign.dart';
 import 'package:holo/util/local_store.dart';
-
 import 'package:holo/ui/screen/calendar.dart';
 import 'package:holo/ui/screen/detail.dart';
-
 import 'package:holo/ui/screen/home.dart';
-import 'package:holo/ui/screen/player_kit.dart';
 import 'package:holo/ui/screen/search.dart';
-
 import 'package:holo/ui/screen/setting.dart';
 import 'package:holo/ui/screen/subscribe.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:holo/util/platform_init.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -39,7 +36,7 @@ void main() async {
   await LocalStore.init();
   await Bangumi.initDio();
   Api.initSources();
-  MediaKit.ensureInitialized();
+  await initializePlatformDependencies();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     if (!await FlutterSingleInstance().isFirstInstance()) {
@@ -144,13 +141,23 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         path: '/player',
         builder: (context, state) {
           final map = state.extra as Map<String, dynamic>;
-          return PlayerScreen(
-            mediaId: map['mediaId'] as String,
-            subject: map['subject'] as Data,
-            source: map['source'] as SourceService,
-            nameCn: map['nameCn'] as String,
-            isLove: map['isLove'] as bool,
-          );
+          if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
+            return PlayerScreen(
+              mediaId: map['mediaId'] as String,
+              subject: map['subject'] as Data,
+              source: map['source'] as SourceService,
+              nameCn: map['nameCn'] as String,
+              isLove: map['isLove'] as bool,
+            );
+          } else {
+            return PlayerScreenKit(
+              mediaId: map['mediaId'] as String,
+              subject: map['subject'] as Data,
+              source: map['source'] as SourceService,
+              nameCn: map['nameCn'] as String,
+              isLove: map['isLove'] as bool,
+            );
+          }
         },
       ),
       GoRoute(
