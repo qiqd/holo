@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:canvas_danmaku/models/danmaku_option.dart';
 import 'package:holo/entity/calendar.dart';
@@ -386,6 +387,7 @@ class LocalStore {
     if (_prefs == null) return null;
     var homeCache = _prefs!.getString("${_key}_home_cache");
     if (homeCache == null) return null;
+    log("home->getHomeCache: get cache ok");
     return Subject.fromJson(json.decode(homeCache));
   }
 

@@ -21,6 +21,8 @@ abstract class MetaService {
   Future<Subject?> fetchRecommendSync(
     int page,
     int size,
+    int year,
+    int month,
     void Function(dynamic) exception,
   );
 

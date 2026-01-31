@@ -1,36 +1,25 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:holo/entity/rule.dart';
-import 'package:html/parser.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:html/parser.dart' as html_parser;
 
-class WebviewUtil {
-  final WebViewController _webViewController = WebViewController();
+abstract class WebviewUtil {
   bool containsUnicode(String str) {
     return !RegExp(r'^[\x00-\x7F]*$').hasMatch(str);
   }
 
+  // 处理 \\uXXXX 和 \uXXXX
   String unescapeUnicodeString(String input) {
-    // 处理 \\uXXXX 双转义（先变成 \uXXXX）
-    String result = input.replaceAllMapped(RegExp(r'\\u([0-9a-fA-F]{4})'), (
+    String result = input;
+
+    result = result.replaceAllMapped(RegExp(r'\\{1,2}u([0-9a-fA-F]{4})'), (
       Match match,
     ) {
       int charCode = int.parse(match.group(1)!, radix: 16);
       return String.fromCharCode(charCode);
     });
 
-    // 处理 \uXXXX 单转义
-    result = result.replaceAllMapped(RegExp(r'\\u([0-9a-fA-F]{4})'), (
-      Match match,
-    ) {
-      int charCode = int.parse(match.group(1)!, radix: 16);
-      return String.fromCharCode(charCode);
-    });
-
-    // 处理其他常见的转义字符
+    // 处理常见转义
     result = result
         .replaceAll(r'\"', '"')
         .replaceAll(r"\'", "'")
@@ -41,32 +30,26 @@ class WebviewUtil {
     return result;
   }
 
-  /// 检测HTML文档中是否包含iframe或video标签，且它们的src属性包含http链接
+  /// 检查HTML内容是否包含有效媒体元素（iframe或video）
   bool hasValidMediaElements(String htmlContent) {
     try {
-      var doc = parse(htmlContent);
-      var iframes = doc.querySelectorAll('iframe');
-      var videos = doc.querySelectorAll('video');
+      final doc = html_parser.parse(htmlContent);
+      final iframes = doc.querySelectorAll('iframe');
+      final videos = doc.querySelectorAll('video');
 
-      // 检查iframe标签
       for (var iframe in iframes) {
-        String? src = iframe.attributes['src'];
-        if (src != null && src.contains('http')) {
-          return true;
-        }
+        final src = iframe.attributes['src'];
+        if (src != null && src.contains('http')) return true;
       }
 
-      // 检查video标签
       for (var video in videos) {
-        String? src = video.attributes['src'];
-        if (src != null && src.contains('http')) {
-          return true;
-        }
+        final src = video.attributes['src'];
+        if (src != null && src.contains('http')) return true;
       }
 
       return false;
     } catch (e) {
-      log('解析HTML错误: ${e.toString()}');
+      log('HTML解析失败: $e');
       return false;
     }
   }
@@ -76,141 +59,9 @@ class WebviewUtil {
     RequestMethod requestMethod = RequestMethod.get,
     bool isPlayerPage = false,
     bool waitForMediaElement = false,
-    Duration timeout = const Duration(seconds: 10),
+    Duration timeout = const Duration(seconds: 15),
     Map<String, String> headers = const {},
     Map<String, String> requestBody = const {},
     Function(String error)? onError,
-  }) async {
-    Completer<String> completer = Completer<String>();
-
-    try {
-      // 设置导航代理
-      await _webViewController.setNavigationDelegate(
-        NavigationDelegate(
-          onPageFinished: (String url) async {
-            log(
-              '页面加载完成,请求方法: $requestMethod,参数: ${requestBody.toString()},头部: ${headers.toString()},url: $url',
-            );
-            try {
-              final Object html = await _webViewController
-                  .runJavaScriptReturningResult(
-                    'document.documentElement.outerHTML',
-                  );
-
-              String htmlContent = html.toString();
-              if (containsUnicode(htmlContent)) {
-                htmlContent = unescapeUnicodeString(htmlContent);
-              }
-              int count = 0;
-              if (isPlayerPage && waitForMediaElement) {
-                // 等待直到HTML内容中包含有效媒体元素或超时结束
-                while (!hasValidMediaElements(htmlContent) &&
-                    !completer.isCompleted) {
-                  count++;
-                  log('HTML内容中不包含有效媒体元素，继续等待...');
-
-                  htmlContent =
-                      (await _webViewController.runJavaScriptReturningResult(
-                        'document.documentElement.outerHTML',
-                      )).toString();
-                  if (containsUnicode(htmlContent)) {
-                    htmlContent = unescapeUnicodeString(htmlContent);
-                  }
-                  await Future.delayed(Duration(seconds: 1));
-                  if (count == 50) {
-                    log('html content:$htmlContent');
-                  }
-                }
-              }
-              htmlContent =
-                  (await _webViewController.runJavaScriptReturningResult(
-                    'document.documentElement.outerHTML',
-                  )).toString();
-              if (containsUnicode(htmlContent)) {
-                htmlContent = unescapeUnicodeString(htmlContent);
-              }
-              // log('final html content:$htmlContent');
-              if (!completer.isCompleted) {
-                completer.complete(htmlContent);
-              }
-            } catch (jsError) {
-              String error = 'JavaScript执行错误: ${jsError.toString()}';
-              log(error);
-              if (onError != null) {
-                onError(error);
-              }
-              if (!completer.isCompleted) {
-                completer.completeError(error);
-              }
-            }
-          },
-          onWebResourceError: (WebResourceError error) {
-            log('error code ${error.errorCode}');
-            log('WebView加载错误: ${error.description}');
-            // String errorMsg = 'WebView资源错误: ${error.description}';
-            // if (onError != null) {
-            //   onError(errorMsg);
-            // }
-            // if (!completer.isCompleted) {
-            //   completer.completeError(errorMsg);
-            // }
-          },
-        ),
-      );
-      log("loadRequest url:https://$url");
-
-      Uint8List? bodyBytes;
-      // 将 Map<String, String> 转换为表单格式的字符串
-      String formBody = requestBody.entries
-          .map(
-            (entry) =>
-                '${Uri.encodeComponent(entry.key)}=${Uri.encodeComponent(entry.value)}',
-          )
-          .join('&');
-      bodyBytes = utf8.encode(formBody);
-      await _webViewController.setUserAgent(headers['User-Agent']);
-      await _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
-      log("loadRequest url:https://$url");
-
-      await _webViewController.loadRequest(
-        Uri.parse(url.contains("http") ? url : "https://$url"),
-        method: requestMethod == RequestMethod.get
-            ? LoadRequestMethod.get
-            : LoadRequestMethod.post,
-        body: bodyBytes,
-        headers: headers,
-      );
-
-      // 等待HTML获取完成并返回结果
-      String htmlContent = await completer.future.timeout(
-        timeout,
-        onTimeout: () {
-          String timeoutError = '页面加载超时';
-          if (onError != null) {
-            onError(timeoutError);
-          }
-          throw TimeoutException(timeoutError);
-        },
-      );
-      if (containsUnicode(htmlContent)) {
-        htmlContent = unescapeUnicodeString(htmlContent);
-      }
-      return htmlContent;
-    } catch (e) {
-      log('解析HTML错误: ${e.toString()}');
-      String error = '解析HTML错误: ${e.toString()}';
-      if (onError != null) {
-        onError(error);
-      }
-      if (!completer.isCompleted) {
-        completer.completeError(error);
-      }
-      // 如果completer没有完成，抛出异常
-      if (!completer.isCompleted) {
-        throw Exception(error);
-      }
-      // 返回completer的结果（这行实际上不会被执行，因为上面会抛出异常）
-      return await completer.future;
-    }
-  }
+  });
 }

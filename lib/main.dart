@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -14,6 +13,7 @@ import 'package:holo/service/api.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/image_search.dart';
+import 'package:holo/ui/screen/player.dart';
 import 'package:holo/ui/screen/rule_edit.dart';
 import 'package:holo/ui/screen/rule_manager.dart';
 import 'package:holo/ui/screen/rule_repository.dart';
@@ -25,7 +25,7 @@ import 'package:holo/ui/screen/calendar.dart';
 import 'package:holo/ui/screen/detail.dart';
 
 import 'package:holo/ui/screen/home.dart';
-import 'package:holo/ui/screen/player.dart';
+import 'package:holo/ui/screen/player_kit.dart';
 import 'package:holo/ui/screen/search.dart';
 
 import 'package:holo/ui/screen/setting.dart';

@@ -128,6 +128,7 @@ class MediaCard extends StatelessWidget {
                                   maxLines: 5,
                                   overflow: TextOverflow.ellipsis,
                                 ),
+
                           // 初始名称
                           showShimmer
                               ? Shimmer.fromColors(

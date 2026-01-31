@@ -21,21 +21,46 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   Subject? _recommended;
   bool _loading = false;
-  int _page = 1;
   String? _msg;
-
-  void _fetchRecommended({int page = 1, bool isLoadMore = false}) async {
+  int _month = 1;
+  int _year = DateTime.now().year;
+  int _page = 1;
+  void _fetchRecommended({
+    int page = 1,
+    bool isLoadMore = false,
+    int year = 2018,
+    int month = 1,
+  }) async {
     setState(() {
-      _loading = true;
+      _msg = null;
+      _loading = isLoadMore;
     });
-    final recommended = await Api.bangumi.fetchRecommendSync(page, 20, (e) {});
+    final recommended = await Api.bangumi.fetchRecommendSync(
+      page,
+      100,
+      year,
+      month,
+      (e) {
+        setState(() {
+          log("home->fetch recommend error: $e");
+          _msg = e.toString();
+          _loading = false;
+        });
+      },
+    );
     setState(() {
       isLoadMore
           ? _recommended?.data?.addAll(recommended?.data ?? [])
           : _recommended = recommended;
     });
     if (_recommended != null) {
-      LocalStore.setHomeCache(_recommended!);
+      var s = recommended!.data
+          ?.where(
+            (element) =>
+                element.date?.substring(0, 4) == DateTime.now().year.toString(),
+          )
+          .toList();
+      LocalStore.setHomeCache(Subject(data: s));
     }
     setState(() {
       _loading = false;
@@ -43,13 +68,39 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onScrollToBottom() {
-    // log("scroll to bottom");
+    if ((_recommended?.total ?? 0) <= (_recommended?.data?.length ?? 0) &&
+        _page + 1 >= _month + 3) {
+      log("load more cancle, page: $_page, month: $_month");
+      return;
+    }
+    log("load more page: $_page");
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 100 &&
         !_loading) {
-      log("home->load more");
-      _fetchRecommended(page: ++_page, isLoadMore: true);
+      _fetchRecommended(year: _year, month: ++_page, isLoadMore: true);
     }
+  }
+
+  void _onYearSelected(int year) {
+    if (_loading) {
+      return;
+    }
+    setState(() {
+      _year = year;
+      _recommended = null;
+    });
+    _fetchRecommended(year: _year, month: _month, isLoadMore: false);
+  }
+
+  void _onMonthSelected(int month) {
+    if (_loading) {
+      return;
+    }
+    setState(() {
+      _month = month;
+      _recommended = null;
+    });
+    _fetchRecommended(year: _year, month: _month, isLoadMore: false);
   }
 
   @override
@@ -57,8 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _recommended = LocalStore.getHomeCache();
     _scrollController.addListener(_onScrollToBottom);
-    if (_recommended == null) {
-      _fetchRecommended();
+    if (_recommended == null || _recommended?.data?.isEmpty == true) {
+      _fetchRecommended(year: _year, month: _month);
     }
   }
 
@@ -68,7 +119,51 @@ class _HomeScreenState extends State<HomeScreen> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: isLandscape
-          ? null
+          ? AppBar(
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              title: SegmentedButton(
+                segments: [
+                  ButtonSegment(value: 1, label: Text("冬季")),
+                  ButtonSegment(value: 4, label: Text("春季")),
+                  ButtonSegment(value: 7, label: Text("夏季")),
+                  ButtonSegment(value: 10, label: Text("秋季")),
+                ],
+                onSelectionChanged: (value) {
+                  log("home->month selected: ${value.first}");
+                  _onMonthSelected(value.first);
+                  _page = value.first;
+                },
+                selected: {_month},
+              ),
+              leading: PopupMenuButton(
+                icon: Icon(Icons.calendar_month),
+                onSelected: (value) {
+                  _onYearSelected(value);
+                },
+                itemBuilder: (context) {
+                  var item = <PopupMenuItem<int>>[];
+                  var year = DateTime.now().year;
+                  for (var i = 2000; i <= year; i++) {
+                    item.add(
+                      PopupMenuItem(
+                        value: i,
+                        child: Text(
+                          i.toString(),
+                          style: TextStyle(
+                            color: i == _year
+                                ? Theme.of(context).primaryColor
+                                : null,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return item.reversed.toList();
+                },
+              ),
+            )
           : AppBar(
               titleSpacing: 0,
               animateColor: true,
@@ -111,7 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Center(
                 child: _msg != null
                     ? LoadingOrShowMsg(msg: _msg)
-                    : _recommended == null
+                    : (_recommended == null ||
+                          _recommended?.data?.isEmpty == true)
                     ? const ShimmerSkeleton()
                     : GridView.builder(
                         controller: _scrollController,

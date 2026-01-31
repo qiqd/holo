@@ -19,6 +19,7 @@ dependencies:
   html: ^0.15.6
   pointycastle: ^3.7.3
   encrypt: ^5.0.3
+  video_player: ^2.10.1
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
   media_kit_libs_video: ^1.0.7

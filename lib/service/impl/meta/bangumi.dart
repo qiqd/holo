@@ -137,6 +137,8 @@ class Bangumi implements MetaService {
   Future<Subject?> fetchRecommendSync(
     int page,
     int size,
+    int year,
+    int month,
     void Function(Exception) exception,
   ) async {
     var param = Map.from({
@@ -144,8 +146,9 @@ class Bangumi implements MetaService {
       "cat": 1,
       "sort": "date",
       "limit": size,
+      "month": month,
       "offset": (page - 1) * size,
-      "year": DateTime.now().year,
+      "year": year,
     });
     try {
       final response = await _dio!.get(

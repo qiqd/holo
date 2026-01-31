@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer' show log;
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
@@ -12,35 +11,29 @@ import 'package:holo/api/setting_api.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode.dart';
 import 'package:holo/entity/logvar_episode.dart';
-import 'package:holo/entity/media.dart' as holo_media;
-
+import 'package:holo/entity/media.dart' as media_entity;
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/ui/component/cap_video_player.dart';
-import 'package:holo/ui/component/cap_video_player_kit.dart';
-
 import 'package:holo/ui/component/media_card.dart';
-import 'package:holo/ui/screen/player_kit.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/local_store.dart';
-
+import 'package:holo/ui/component/cap_video_player_kit.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:video_player/video_player.dart';
+import 'package:window_manager/window_manager.dart';
 
-class PlayerScreen extends StatefulWidget {
+class PlayerScreenKit extends StatefulWidget {
   final String mediaId;
   final Data subject;
   final SourceService source;
   final String nameCn;
   final bool isLove;
-  const PlayerScreen({
+  const PlayerScreenKit({
     super.key,
     required this.mediaId,
     required this.subject,
@@ -50,21 +43,22 @@ class PlayerScreen extends StatefulWidget {
   });
 
   @override
-  State<PlayerScreen> createState() => _PlayerScreenState();
+  State<PlayerScreenKit> createState() => _PlayerScreenKitState();
 }
 
-class _PlayerScreenState extends State<PlayerScreen>
+class _PlayerScreenKitState extends State<PlayerScreenKit>
     with
         SingleTickerProviderStateMixin,
         WidgetsBindingObserver,
-        AutomaticKeepAliveClientMixin {
+        AutomaticKeepAliveClientMixin,
+        WindowListener {
   late Data subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
   int episodeIndex = 0;
   int lineIndex = 0;
   Episode? _episode;
-  holo_media.Detail? _detail;
+  media_entity.Detail? _detail;
   bool isloading = false;
   int historyPosition = 0;
   String? playUrl;
@@ -78,18 +72,57 @@ class _PlayerScreenState extends State<PlayerScreen>
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
-  // VideoPlayerController? _controller;
-  dynamic _player;
+  final Player _kitPlayer = Player();
+  late FocusNode _focusNode;
+  bool _isSettingShow = false;
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
   );
-  void _initPlayer() {
-    if (Platform.isWindows || Platform.isLinux) {
-      _player = Player();
+
+  /// 键盘事件处理
+  void _handleKeyEvent(KeyEvent event) {
+    if (_isSettingShow) {
+      return;
+    }
+    if ((event is KeyDownEvent) &&
+        (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+      switch (event.logicalKey) {
+        case LogicalKeyboardKey.tab:
+          break;
+        case LogicalKeyboardKey.keyQ:
+          setState(() {
+            _showEpisodeList = !_showEpisodeList;
+          });
+          break;
+        case LogicalKeyboardKey.space:
+          _kitPlayer.playOrPause();
+          break;
+        case LogicalKeyboardKey.escape:
+          windowManager.setFullScreen(false);
+          break;
+        case LogicalKeyboardKey.keyF:
+          windowManager.isFullScreen().then((isfu) {
+            windowManager.setFullScreen(!isfu);
+          });
+          break;
+        case LogicalKeyboardKey.arrowRight:
+          _kitPlayer.seek(_kitPlayer.state.position + Duration(seconds: 5));
+          break;
+        case LogicalKeyboardKey.arrowLeft:
+          _kitPlayer.seek(_kitPlayer.state.position - Duration(seconds: 5));
+          break;
+        case LogicalKeyboardKey.arrowUp:
+          _kitPlayer.setVolume((_kitPlayer.state.volume + 5).clamp(0, 100));
+          break;
+        case LogicalKeyboardKey.arrowDown:
+          _kitPlayer.setVolume((_kitPlayer.state.volume - 5).clamp(0, 100));
+          break;
+      }
     }
   }
 
+  /// 获取剧集信息
   Future<void> _fetchMediaEpisode() async {
     isloading = true;
     try {
@@ -116,14 +149,20 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 获取播放信息
   Future<void> _fetchViewInfo({
     int position = 0,
     Function(String e)? onComplete,
   }) async {
+    if (isloading) {
+      return;
+    }
     msg = "";
     isloading = true;
     try {
       if (_detail != null) {
+        await _kitPlayer.pause();
+
         lineIndex = lineIndex.clamp(0, _detail!.lines!.length - 1);
         episodeIndex = episodeIndex.clamp(
           0,
@@ -132,9 +171,9 @@ class _PlayerScreenState extends State<PlayerScreen>
         _loadDanmaku(
           isFirstLoad: true,
           onComplete: (e) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
+            // ScaffoldMessenger.of(
+            //   context,
+            // ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
           },
         );
         final newUrl = await source.fetchPlaybackUrl(
@@ -146,42 +185,19 @@ class _PlayerScreenState extends State<PlayerScreen>
           }),
         );
         playUrl = newUrl;
-        log('new url: $newUrl');
-        log('seek to: $position');
-        if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
-          final newController = VideoPlayerController.networkUrl(
-            Uri.parse(newUrl ?? ""),
-          );
-          await newController.initialize();
-          if (mounted) {
-            setState(() {
-              _player = newController;
-              msg = '';
-            });
-          }
-          _player?.seekTo(Duration(seconds: position));
-          _isActive ? _player?.play() : _player?.pause();
+        await _kitPlayer.open(Media(newUrl ?? ""));
+        await _kitPlayer.play();
+        if (mounted) {
+          setState(() {
+            msg = "";
+            _isActive ? _kitPlayer.play() : _kitPlayer.pause();
+          });
         }
-        if (Platform.isLinux || Platform.isWindows) {
-          var kitPlayer = _player as Player?;
-          await kitPlayer?.open(Media(newUrl ?? ""));
-          await kitPlayer?.play();
-          if (mounted) {
-            setState(() {
-              msg = "";
-              _player = kitPlayer;
-              _isActive ? kitPlayer?.play() : kitPlayer?.pause();
-            });
-          }
-          kitPlayer?.stream.duration
-              .firstWhere(
-                (element) => element > Duration.zero,
-                orElse: () => Duration.zero,
-              )
-              .then((value) {
-                kitPlayer.seek(Duration(seconds: position));
-              });
-        }
+        _kitPlayer.stream.duration.firstWhere((d) => d > Duration.zero).then((
+          _,
+        ) {
+          _kitPlayer.seek(Duration(seconds: position));
+        });
       }
     } catch (e) {
       log("fetchView error: $e");
@@ -192,12 +208,11 @@ class _PlayerScreenState extends State<PlayerScreen>
         });
       }
     } finally {
-      setState(() {
-        isloading = false;
-      });
+      isloading = false;
     }
   }
 
+  /// 线路选择
   void _onLineSelected(int index) {
     if (index == lineIndex) {
       return;
@@ -208,6 +223,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     _fetchViewInfo();
   }
 
+  /// 剧集选择
   void _onEpisodeSelected(int index) {
     if (index >= _detail!.lines![lineIndex].episodes!.length) {
       setState(() {
@@ -226,6 +242,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     _fetchViewInfo();
   }
 
+  /// 加载播放历史
   void _loadHistory() async {
     final history = LocalStore.getPlaybackHistoryById(widget.subject.id!);
     if (history != null && mounted) {
@@ -237,6 +254,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 获取剧集列表
   void _fetchEpisode() async {
     final res = await Api.bangumi.fethcEpisodeSync(
       widget.subject.id!,
@@ -252,18 +270,10 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  void _storeLocalHistory() {
+  /// 存储播放历史
+  void _storeLocalHistory() async {
     if (playUrl == null) {
       return;
-    }
-    var position = 0;
-    if (_player is Player?) {
-      Player? kitPlayer = _player;
-      position = kitPlayer?.state.position.inSeconds ?? 0;
-    }
-    if (_player is VideoPlayerController?) {
-      VideoPlayerController? videoController = _player;
-      position = videoController?.value.position.inSeconds ?? 0;
     }
     PlaybackHistory history = PlaybackHistory(
       subId: widget.subject.id!,
@@ -272,16 +282,18 @@ class _PlayerScreenState extends State<PlayerScreen>
       lineIndex: lineIndex,
       lastPlaybackAt: DateTime.now(),
       createdAt: DateTime.now(),
-      position: position,
+      position: _kitPlayer.state.position.inSeconds,
       imgUrl: widget.subject.images?.large ?? "",
     );
     _syncPlaybackHistory(history);
     var data = widget.subject;
     data.sourceName = source.getName();
-    LocalStore.setSubjectCacheAndSource(data);
-    LocalStore.addPlaybackHistory(history);
+    var r = LocalStore.setSubjectCacheAndSource(data);
+    var d = LocalStore.addPlaybackHistory(history);
+    log("setSubjectCacheAndSource: $r, addPlaybackHistory: $d");
   }
 
+  /// 切换全屏
   void _toggleFullScreen(bool isFullScreen) async {
     setState(() {
       _isFullScreen = isFullScreen;
@@ -302,6 +314,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 同步播放历史
   void _syncPlaybackHistory(PlaybackHistory history) {
     PlayBackApi.savePlaybackHistory(
       history,
@@ -314,6 +327,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
+  /// 加载弹幕
   void _loadDanmaku({
     bool isFirstLoad = true,
     String? keyword,
@@ -388,6 +402,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 弹幕源选择
   void _onDanmakuSourceChange(LogvarEpisode e) {
     if (e.animeId == _bestMatch?.animeId) {
       return;
@@ -398,18 +413,30 @@ class _PlayerScreenState extends State<PlayerScreen>
     _loadDanmaku(isFirstLoad: false);
   }
 
+  ///给窗口添加监听(仅在桌面平台生效)
+  @override
+  void onWindowClose() {
+    _storeLocalHistory();
+    _storeLocalHistory();
+    _storeLocalHistory();
+    super.onWindowClose();
+  }
+
+  /// 应用生命周期变化处理
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       setState(() {
         _isActive = false;
       });
+      _kitPlayer.pause();
       _storeLocalHistory();
     }
     if (state == AppLifecycleState.resumed) {
       setState(() {
         _isActive = true;
       });
+      _kitPlayer.play();
     }
     if (state == AppLifecycleState.inactive) {
       _storeLocalHistory();
@@ -441,7 +468,11 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void initState() {
-    _initPlayer();
+    windowManager.addListener(this);
+    _focusNode = FocusNode(
+      descendantsAreTraversable: false,
+      skipTraversal: true,
+    );
     _loadHistory();
     _fetchEpisode();
     _isTablet = Device.get().isTablet;
@@ -454,6 +485,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void dispose() {
+    _kitPlayer.dispose();
     _storeLocalHistory();
     SettingApi.updateSetting(() {}, (_) {});
     WidgetsBinding.instance.removeObserver(this);
@@ -462,7 +494,8 @@ class _PlayerScreenState extends State<PlayerScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    _player?.dispose();
+    _focusNode.dispose();
+    windowManager.removeListener(this);
     super.dispose();
   }
 
@@ -530,82 +563,91 @@ class _PlayerScreenState extends State<PlayerScreen>
         height: double.infinity,
         width: double.infinity,
         child: Center(
-          child: _player != null && !isloading
-              ? Platform.isAndroid || Platform.isIOS || Platform.isMacOS
-                    ? CapVideoPlayer(
-                        title: widget.nameCn,
-                        subTitle: _episode?.data?[episodeIndex].nameCn,
-                        isloading: isloading,
-                        player: _player! as VideoPlayerController,
-                        isFullScreen: isFullScreen,
-                        currentEpisodeIndex: episodeIndex,
-                        dammaku: _dammaku,
-                        isTablet: _isTablet,
-                        episodeList:
-                            _episode?.data?.map((e) => e.name!).toList() ?? [],
-                        onError: (error) => setState(() {
-                          msg = error.toString();
-                        }),
-                        onEpisodeSelected: (index) => _onEpisodeSelected(index),
-                        onNextTab: () {
-                          if (isloading ||
-                              episodeIndex + 1 >
-                                  _detail!.lines![lineIndex].episodes!.length -
-                                      1) {
-                            return;
-                          }
-                          setState(() {
-                            ++episodeIndex;
-                          });
-                          _fetchViewInfo();
-                        },
-                        onFullScreenChanged: (f) {
-                          onFullScreenChanged(f);
-                        },
-                        onBackPressed: () {
-                          onBackPressed();
-                        },
-                      )
-                    : CapVideoPlayerKit(
-                        title: widget.nameCn,
-                        subTitle: _episode?.data?[episodeIndex].nameCn,
-                        isloading: isloading,
-                        kitPlayer: _player! as Player,
-                        isFullScreen: isFullScreen,
-                        currentEpisodeIndex: episodeIndex,
-                        dammaku: _dammaku,
-                        isTablet: _isTablet,
-                        episodeList:
-                            _episode?.data?.map((e) => e.name!).toList() ?? [],
-                        onError: (error) => setState(() {
-                          msg = error.toString();
-                        }),
-                        onEpisodeSelected: (index) => _onEpisodeSelected(index),
-                        onNextTab: () {
-                          if (isloading ||
-                              episodeIndex + 1 >
-                                  _detail!.lines![lineIndex].episodes!.length -
-                                      1) {
-                            return;
-                          }
-                          setState(() {
-                            ++episodeIndex;
-                          });
-                          _fetchViewInfo();
-                        },
-                        onFullScreenChanged: (f) {
-                          onFullScreenChanged(f);
-                        },
-                        onBackPressed: () {
-                          onBackPressed();
-                        },
-                      )
+          child: !isloading
+              ? CapVideoPlayerKit(
+                  title: widget.nameCn,
+                  subTitle: _episode?.data?[episodeIndex].nameCn,
+                  isloading: isloading,
+                  kitPlayer: _kitPlayer,
+                  isFullScreen: isFullScreen,
+                  currentEpisodeIndex: episodeIndex,
+                  dammaku: _dammaku,
+                  isTablet: _isTablet,
+                  episodeList:
+                      _episode?.data?.map((e) => e.name!).toList() ?? [],
+                  onError: (error) => setState(() {
+                    msg = error.toString();
+                  }),
+                  onEpisodeSelected: (index) => _onEpisodeSelected(index),
+                  onNextTab: () {
+                    if (isloading ||
+                        episodeIndex + 1 >
+                            _detail!.lines![lineIndex].episodes!.length - 1) {
+                      return;
+                    }
+                    setState(() {
+                      ++episodeIndex;
+                    });
+                    _fetchViewInfo();
+                  },
+                  onFullScreenChanged: (f) {
+                    onFullScreenChanged(f);
+                  },
+                  onBackPressed: () {
+                    onBackPressed();
+                  },
+                  onSettingTab: (isShow) {
+                    isShow ? _focusNode.unfocus() : _focusNode.requestFocus();
+                    setState(() {
+                      _isSettingShow = isShow;
+                    });
+                    if (!_isSettingShow) {
+                      _focusNode.requestFocus();
+                    }
+                  },
+                )
               : LoadingOrShowMsg(
                   msg: msg,
                   backgroundColor: Colors.black,
                   onMsgTab: onMsgTab,
                 ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildEpisodeItem(int index) {
+    return ListTile(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      selected: episodeIndex == index,
+      onTap: () {
+        if (episodeIndex == index || isloading) {
+          return;
+        }
+        _onEpisodeSelected(index);
+      },
+      subtitle: Text(
+        maxLines: 4,
+        overflow: TextOverflow.ellipsis,
+        _episode?.data?[index].nameCn ?? "player.no_episode_name".tr(),
+      ),
+      title: Row(
+        children: [
+          Text('${index + 1}'),
+          SizedBox(width: 10),
+          if (episodeIndex == index)
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.primary,
+                BlendMode.srcATop,
+              ),
+              child: LottieBuilder.asset(
+                "lib/assets/lottie/playing.json",
+                repeat: true,
+                width: 40,
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -659,17 +701,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                                     _loadDanmaku(
                                       isFirstLoad: true,
                                       keyword: value,
-                                      onComplete: (e) {
-                                        setState(() {});
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(e),
-                                            showCloseIcon: true,
-                                          ),
-                                        );
-                                      },
                                     );
                                   },
                                 ),
@@ -875,8 +906,15 @@ class _PlayerScreenState extends State<PlayerScreen>
                     )
                   : _episode == null
                   ? _buildFadeEpisodeSection()
+                  : _isTablet
+                  ? ListView.builder(
+                      key: PageStorageKey("player_episodes_list"),
+                      padding: EdgeInsets.all(10),
+                      itemCount: _episode?.data?.length ?? 0,
+                      itemBuilder: (context, index) => _buildEpisodeItem(index),
+                    )
                   : GridView.builder(
-                      key: PageStorageKey("player_episodes"),
+                      key: PageStorageKey("player_episodes_grid"),
                       padding: EdgeInsets.all(10),
                       itemCount: _episode?.data?.length ?? 0,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -884,42 +922,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                         mainAxisSpacing: 5,
                         crossAxisSpacing: 5,
                       ),
-                      itemBuilder: (context, index) => ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        selected: episodeIndex == index,
-                        onTap: () {
-                          if (episodeIndex == index || isloading) {
-                            return;
-                          }
-                          _onEpisodeSelected(index);
-                        },
-                        subtitle: Text(
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                          _episode?.data?[index].nameCn ??
-                              "player.no_episode_name".tr(),
-                        ),
-                        title: Row(
-                          children: [
-                            Text('${index + 1}'),
-                            SizedBox(width: 10),
-                            if (episodeIndex == index)
-                              ColorFiltered(
-                                colorFilter: ColorFilter.mode(
-                                  Theme.of(context).colorScheme.primary,
-                                  BlendMode.srcATop,
-                                ),
-                                child: LottieBuilder.asset(
-                                  "lib/assets/lottie/playing.json",
-                                  repeat: true,
-                                  width: 40,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
+                      itemBuilder: (context, index) => _buildEpisodeItem(index),
                     ),
             ],
           ),
@@ -937,38 +940,43 @@ class _PlayerScreenState extends State<PlayerScreen>
         ? Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: _showEpisodeList ? null : Colors.black,
-            body: SafeArea(
-              child: Row(
-                children: [
-                  _buildPlayer(
-                    isFullScreen: !_showEpisodeList,
-                    onFullScreenChanged: (_) {
-                      setState(() {
-                        _showEpisodeList = !_showEpisodeList;
-                      });
-                    },
-                    onBackPressed: () {
-                      context.pop();
-                    },
-                    onMsgTab: () {
-                      setState(() {
-                        _showEpisodeList = true;
-                      });
-                    },
-                  ),
-                  AnimatedSize(
-                    duration: Duration(milliseconds: 300),
-                    child: _showEpisodeList
-                        ? SizedBox(
-                            width: 400,
-                            child: Theme(
-                              data: Theme.of(context),
-                              child: _buildEpisode(),
-                            ),
-                          )
-                        : SizedBox(),
-                  ),
-                ],
+            body: KeyboardListener(
+              onKeyEvent: _handleKeyEvent,
+              focusNode: _focusNode,
+              autofocus: true,
+              child: SafeArea(
+                child: Row(
+                  children: [
+                    _buildPlayer(
+                      isFullScreen: !_showEpisodeList,
+                      onFullScreenChanged: (_) {
+                        setState(() {
+                          _showEpisodeList = !_showEpisodeList;
+                        });
+                      },
+                      onBackPressed: () {
+                        context.pop();
+                      },
+                      onMsgTab: () {
+                        setState(() {
+                          _showEpisodeList = true;
+                        });
+                      },
+                    ),
+                    AnimatedSize(
+                      duration: Duration(milliseconds: 300),
+                      child: _showEpisodeList
+                          ? SizedBox(
+                              width: 300,
+                              child: Theme(
+                                data: Theme.of(context),
+                                child: _buildEpisode(),
+                              ),
+                            )
+                          : SizedBox(),
+                    ),
+                  ],
+                ),
               ),
             ),
           )
