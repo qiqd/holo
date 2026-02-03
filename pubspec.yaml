@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.9+8
+version: 1.1.9+9
 
 environment:
   sdk: ^3.10.3
@@ -20,9 +20,9 @@ dependencies:
   pointycastle: ^3.7.3
   encrypt: ^5.0.3
   video_player: ^2.10.1
-  media_kit: ^1.2.6
-  media_kit_video: ^2.0.1
-  media_kit_libs_video: ^1.0.7
+  # media_kit: ^1.2.6
+  # media_kit_video: ^2.0.1
+  # media_kit_libs_video: ^1.0.7
   shared_preferences: ^2.5.4
   canvas_danmaku: ^0.3.1
   url_launcher: ^6.3.0
@@ -37,7 +37,7 @@ dependencies:
   shimmer: ^3.0.0
   image_picker: ^1.2.1
   webview_flutter: ^4.13.1 # not supported on  web and windows
-  flutter_inappwebview: ^6.1.5
+  # flutter_inappwebview: ^6.1.5
   lottie: ^3.3.2
   flutter_device_type: ^0.4.0 #not supported on web, windows and macos
   window_manager: ^0.5.1 #not supported on web

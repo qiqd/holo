@@ -5,8 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/entity/media.dart' as media;
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/media_grid.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+import 'package:video_player/video_player.dart';
 
 class RuleTestScreen extends StatefulWidget {
   final SourceService source;
@@ -27,8 +26,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
   media.Detail? _detail;
   String? _playUrl;
   bool _isloading = false;
-  late final player = Player();
-  late final controller = VideoController(player);
+  VideoPlayerController? _controller;
   void _fetchTest() async {
     bool hasError = false;
     setState(() {
@@ -75,11 +73,10 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         ).showSnackBar(SnackBar(content: Text('video url is null')));
         return;
       }
-      player.open(
-        Media(
-          'https://v16.toutiao50.com/704d1d8b3d404aeb3e16f51b83e5ee0e/697afc4d/video/tos/alisg/tos-alisg-v-90231e-sg/oYfKdNAYYEW9tfsSIy0AIVIqfupRqCDgHDmr1F/',
-        ),
-      );
+      _controller = VideoPlayerController.networkUrl(Uri.parse(url!));
+      await _controller!.initialize();
+      await _controller!.setLooping(true);
+      await _controller!.play();
       setState(() {
         _playUrl = url;
         _isloading = false;
@@ -98,7 +95,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
 
   @override
   void dispose() {
-    player.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -215,7 +212,11 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                         Text('url: $_playUrl'),
                         FilledButton(
                           onPressed: () {
-                            player.playOrPause();
+                            if (_controller?.value.isInitialized == true) {
+                              _controller?.value.isPlaying ?? false
+                                  ? _controller?.pause()
+                                  : _controller?.play();
+                            }
                           },
                           child: const Text('Play'),
                         ),
@@ -224,7 +225,9 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                           height:
                               MediaQuery.of(context).size.width * 9.0 / 16.0,
 
-                          child: Video(controller: controller),
+                          child: _controller != null
+                              ? VideoPlayer(_controller!)
+                              : Container(),
                         ),
                       ],
                     ),
