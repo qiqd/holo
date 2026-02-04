@@ -26,13 +26,13 @@ import 'package:lottie/lottie.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:shimmer/shimmer.dart';
 
-class PlayerScreenKit extends StatefulWidget {
+class PlayerScreen extends StatefulWidget {
   final String mediaId;
   final Data subject;
   final SourceService source;
   final String nameCn;
   final bool isLove;
-  const PlayerScreenKit({
+  const PlayerScreen({
     super.key,
     required this.mediaId,
     required this.subject,
@@ -42,10 +42,10 @@ class PlayerScreenKit extends StatefulWidget {
   });
 
   @override
-  State<PlayerScreenKit> createState() => _PlayerScreenKitState();
+  State<PlayerScreen> createState() => _PlayerScreenState();
 }
 
-class _PlayerScreenKitState extends State<PlayerScreenKit>
+class _PlayerScreenState extends State<PlayerScreen>
     with
         SingleTickerProviderStateMixin,
         WidgetsBindingObserver,
@@ -65,13 +65,13 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
   LogvarEpisode? _bestMatch;
   Danmu? _dammaku;
   bool _isDanmakuLoading = false;
-  bool _showEpisodeList = true;
+  bool _showInfo = true;
   bool _isTablet = false;
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
   Player _player = Player();
-
+  Duration _position = .zero;
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
@@ -110,6 +110,7 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
 
   Future<void> _fetchViewInfo({
     int position = 0,
+    bool loadDanmaku = true,
     Function(String e)? onComplete,
   }) async {
     msg = "";
@@ -121,14 +122,16 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
           0,
           _detail!.lines![lineIndex].episodes!.length - 1,
         );
-        _loadDanmaku(
-          isFirstLoad: true,
-          onComplete: (e) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
-          },
-        );
+        if (loadDanmaku) {
+          _loadDanmaku(
+            isFirstLoad: true,
+            onComplete: (e) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
+            },
+          );
+        }
         final newUrl = await source.fetchPlaybackUrl(
           _detail!.lines![lineIndex].episodes![episodeIndex],
           (e) => setState(() {
@@ -181,7 +184,7 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
     setState(() {
       lineIndex = index;
     });
-    _fetchViewInfo();
+    _fetchViewInfo(position: _position.inSeconds, loadDanmaku: false);
   }
 
   void _onEpisodeSelected(int index) {
@@ -251,9 +254,6 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
   }
 
   void _toggleFullScreen(bool isFullScreen) async {
-    setState(() {
-      _isFullScreen = isFullScreen;
-    });
     if (isFullScreen) {
       await SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
@@ -398,7 +398,7 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
         _isFullScreen = info.orientation == Orientation.landscape;
       });
     }
-    if (Platform.isWindows || Platform.isMacOS) {
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       setState(() {
         _isTablet = true;
         _isFullScreen = true;
@@ -531,6 +531,7 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
                   onBackPressed: () {
                     onBackPressed();
                   },
+                  onPositionChanged: (p) => _position = p,
                 )
               : LoadingOrShowMsg(
                   msg: msg,
@@ -542,7 +543,7 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
     );
   }
 
-  Widget _buildEpisode() {
+  Widget _buildInfo() {
     return Column(
       children: [
         Row(
@@ -868,15 +869,15 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
     return _isTablet
         ? Scaffold(
             resizeToAvoidBottomInset: false,
-            backgroundColor: _showEpisodeList ? null : Colors.black,
+            backgroundColor: _showInfo ? null : Colors.black,
             body: SafeArea(
               child: Row(
                 children: [
                   _buildPlayer(
-                    isFullScreen: !_showEpisodeList,
-                    onFullScreenChanged: (_) {
+                    isFullScreen: true,
+                    onFullScreenChanged: (f) {
                       setState(() {
-                        _showEpisodeList = !_showEpisodeList;
+                        _showInfo = f;
                       });
                     },
                     onBackPressed: () {
@@ -884,18 +885,18 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
                     },
                     onMsgTab: () {
                       setState(() {
-                        _showEpisodeList = true;
+                        _showInfo = true;
                       });
                     },
                   ),
                   AnimatedSize(
                     duration: Duration(milliseconds: 300),
-                    child: _showEpisodeList
+                    child: _showInfo
                         ? SizedBox(
                             width: 400,
                             child: Theme(
                               data: Theme.of(context),
-                              child: _buildEpisode(),
+                              child: _buildInfo(),
                             ),
                           )
                         : SizedBox(),
@@ -904,6 +905,7 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
               ),
             ),
           )
+        // 移动端
         : Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: _isFullScreen ? Colors.black : null,
@@ -913,6 +915,7 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
                   canPop: !_isFullScreen,
                   onPopInvokedWithResult: (didPop, result) {
                     setState(() {
+                      _isFullScreen = false;
                       _toggleFullScreen(false);
                     });
                   },
@@ -924,13 +927,16 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
                         onFullScreenChanged: (isFullScreen) {
                           setState(() {
                             _isTablet = false;
-                            _showEpisodeList = false;
-                            _toggleFullScreen(isFullScreen);
+                            _showInfo = false;
+                            _isFullScreen = isFullScreen;
+                            _toggleFullScreen(_isFullScreen);
+                            log('__isFullScreen:$_isFullScreen');
                           });
                         },
                         onBackPressed: () {
                           if (_isFullScreen) {
                             setState(() {
+                              _isFullScreen = false;
                               _toggleFullScreen(false);
                             });
                           } else {
@@ -940,7 +946,7 @@ class _PlayerScreenKitState extends State<PlayerScreenKit>
                       ),
                       //剧集列表
                       if (!_isFullScreen)
-                        Flexible(flex: 2, child: _buildEpisode()),
+                        Flexible(flex: 2, child: _buildInfo()),
                     ],
                   ),
                 ),

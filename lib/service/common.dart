@@ -1,10 +1,8 @@
 import 'dart:developer';
-
 import 'package:holo/entity/media.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/flutter_inappwebview.dart';
-import 'package:holo/util/webview_util.dart';
 import 'package:html/parser.dart';
 
 class Common extends SourceService {
@@ -14,8 +12,10 @@ class Common extends SourceService {
     caseSensitive: false,
   );
   final RegExp reg = RegExp(r'\{[^}]*\}');
-  final WebviewUtil _webviewUtil = FlutterInappwebview();
-  Common({required this.rule});
+  final FlutterInappwebview _webviewUtil = FlutterInappwebview();
+  Common({required this.rule}) {
+    _webviewUtil.fetchHtml(rule.baseUrl);
+  }
   factory Common.build(Rule rule) => Common(rule: rule);
   @override
   String getBaseUrl() {

@@ -19,7 +19,6 @@ dependencies:
   html: ^0.15.6
   pointycastle: ^3.7.3
   encrypt: ^5.0.3
-  video_player: ^2.10.1
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
   media_kit_libs_video: ^1.0.7
@@ -36,7 +35,6 @@ dependencies:
   easy_localization: ^3.0.8
   shimmer: ^3.0.0
   image_picker: ^1.2.1
-  webview_flutter: ^4.13.1 # not supported on  web and windows
   flutter_inappwebview: ^6.1.5
   lottie: ^3.3.2
   flutter_device_type: ^0.4.0 #not supported on web, windows and macos
@@ -71,7 +69,7 @@ package_rename_config:
   linux:
     app_name: "Holo"
     package_name: "com.github.qiqd.holo"
-    exe_name: "holo"
+    exe_name: "Holo"
   macos:
     app_name: "Holo"
     package_name: "com.github.qiqd.holo"
@@ -81,4 +79,4 @@ package_rename_config:
     app_name: "Holo"
     organization: "com.github.qiqd.holo"
     copyright_notice: "Copyright © 2025"
-    exe_name: "holo"
+    exe_name: "Holo"

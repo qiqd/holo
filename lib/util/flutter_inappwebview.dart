@@ -2,17 +2,64 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
-
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/util/webview_util.dart';
+import 'package:html/parser.dart' as html_parser;
 
-class FlutterInappwebview extends WebviewUtil {
+class FlutterInappwebview {
   HeadlessInAppWebView? _headlessWebView;
   InAppWebViewController? _webViewController;
   Completer<String>? _currentCompleter;
+  bool containsUnicode(String str) {
+    return !RegExp(r'^[\x00-\x7F]*$').hasMatch(str);
+  }
 
-  @override
+  // 处理 \\uXXXX 和 \uXXXX
+  String unescapeUnicodeString(String input) {
+    String result = input;
+
+    result = result.replaceAllMapped(RegExp(r'\\{1,2}u([0-9a-fA-F]{4})'), (
+      Match match,
+    ) {
+      int charCode = int.parse(match.group(1)!, radix: 16);
+      return String.fromCharCode(charCode);
+    });
+
+    // 处理常见转义
+    result = result
+        .replaceAll(r'\"', '"')
+        .replaceAll(r"\'", "'")
+        .replaceAll(r'\n', '\n')
+        .replaceAll(r'\t', '\t')
+        .replaceAll(r'\r', '\r');
+
+    return result;
+  }
+
+  /// 检查HTML内容是否包含有效媒体元素（iframe或video）
+  bool hasValidMediaElements(String htmlContent) {
+    try {
+      final doc = html_parser.parse(htmlContent);
+      final iframes = doc.querySelectorAll('iframe');
+      final videos = doc.querySelectorAll('video');
+
+      for (var iframe in iframes) {
+        final src = iframe.attributes['src'];
+        if (src != null && src.contains('http')) return true;
+      }
+
+      for (var video in videos) {
+        final src = video.attributes['src'];
+        if (src != null && src.contains('http')) return true;
+      }
+
+      return false;
+    } catch (e) {
+      log('HTML解析失败: $e');
+      return false;
+    }
+  }
+
   Future<String> fetchHtml(
     String url, {
     RequestMethod requestMethod = RequestMethod.get,
@@ -163,11 +210,11 @@ class FlutterInappwebview extends WebviewUtil {
       final errMsg = 'fetchHtml 异常: $e';
       log(errMsg);
       onError?.call(errMsg);
-      rethrow;
+      return '';
     }
   }
 
-  /// 清理资源（建议在 App 退出或不再需要时调用）
+  /// 清理资源
   void dispose() {
     log('释放 WebviewUtilFlutter 资源');
     _currentCompleter?.completeError('实例已释放');
