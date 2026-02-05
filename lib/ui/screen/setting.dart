@@ -57,25 +57,31 @@ class _SetttingScreenState extends State<SetttingScreen>
   }
 
   Future<void> _checkVersion() async {
+    setState(() {
+      _checkVersioning = true;
+    });
     final asset = await CheckVersion.checkVersion();
     if (!mounted) {
       return;
     }
-    setState(() {
-      _checkVersioning = true;
-    });
     if (asset != null && mounted) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text(context.tr("common.new_version")),
-          content: ListTile(
-            title: Text(
-              "${context.tr("common.current_version")}:v${asset.currentVersion}",
-            ),
-            subtitle: Text(
-              "${context.tr("common.latest_version")}:v${asset.latestVersion}",
-            ),
+          content: Column(
+            mainAxisSize: .min,
+            children: [
+              ListTile(
+                title: Text(
+                  "${context.tr("common.current_version")}:v${asset.currentVersion}",
+                ),
+                subtitle: Text(
+                  "${context.tr("common.latest_version")}:v${asset.latestVersion}",
+                ),
+              ),
+              Text(asset.summary ?? ""),
+            ],
           ),
           actions: [
             OutlinedButton(
@@ -167,9 +173,20 @@ class _SetttingScreenState extends State<SetttingScreen>
             aboutBoxChildren: _buildAboutBoxChildren(),
           ),
           ListTile(
-            leading: _checkVersioning
-                ? const CircularProgressIndicator()
-                : const Icon(Icons.update_rounded),
+            leading: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: _checkVersioning
+                  ? SizedBox(
+                      key: ValueKey('setting.app_info.check_version_loading'),
+                      width: 24,
+                      height: 24,
+                      child: const CircularProgressIndicator(padding: .zero),
+                    )
+                  : Icon(
+                      key: ValueKey('setting.app_info.check_version_icon'),
+                      Icons.update_rounded,
+                    ),
+            ),
             title: Text('setting.app_info.check_version'.tr()),
             onTap: _checkVersion,
           ),

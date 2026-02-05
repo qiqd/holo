@@ -38,7 +38,7 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   lottie: ^3.3.2
   flutter_device_type: ^0.4.0 #not supported on web, windows and macos
-  window_manager: ^0.5.1 #not supported on web
+  window_manager: ^0.5.1
   flutter_single_instance: ^1.7.0
   device_info_plus: ^12.3.0
 dev_dependencies:
@@ -46,8 +46,8 @@ dev_dependencies:
     sdk: flutter
   json_serializable: ^6.11.4
   build_runner: ^2.4.7 # dart run build_runner build --delete-conflicting-outputs --build-filter=lib/entity/**
-  package_rename: ^1.10.1
-  flutter_launcher_icons: ^0.14.4
+  package_rename: ^1.10.1 # dart run package_rename
+  flutter_launcher_icons: ^0.14.4 # dart run package_rename
   flutter_lints: ^6.0.0
 
 flutter:
@@ -62,7 +62,6 @@ package_rename_config:
     app_name: "Holo"
     bundle_name: "Holo"
     package_name: "com.github.qiqd.holo"
-
   ios:
     app_name: "Holo"
     bundle_name: "Holo"
@@ -75,7 +74,6 @@ package_rename_config:
     app_name: "Holo"
     package_name: "com.github.qiqd.holo"
     copyright_notice: "Copyright © 2025"
-
   windows:
     app_name: "Holo"
     organization: "com.github.qiqd.holo"

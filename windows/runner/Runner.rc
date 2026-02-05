@@ -94,7 +94,7 @@ BEGIN
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "Holo" "\0"
             VALUE "LegalCopyright", "Copyright © 2025" "\0"
-            VALUE "OriginalFilename", "holo.exe" "\0"
+            VALUE "OriginalFilename", "Holo.exe" "\0"
             VALUE "ProductName", "Holo" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
