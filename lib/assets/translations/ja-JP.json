@@ -89,7 +89,8 @@
             "libraries_title": "サードパーティライブラリ",
             "danmaku_title": "弾幕対応",
             "anime_image_search": "画像検索",
-            "daily_sentence": "毎日の一言"
+            "daily_sentence": "毎日の一言",
+            "check_version": "バージョンチェック"
         },
         "language": {
             "change": "言語切替"
@@ -316,5 +317,17 @@
         "embed_video_selector_hint": "複数のセレクタは英語のカンマで区切ります。例：iframe, #embed-player",
         "video_url_subs_char_label": "ビデオURL抽出ルール",
         "video_url_subs_char_hint": "例：params=videoUrl=xxxx から xxxx 部分を抽出"
+    },
+    "common": {
+        "new_version": "新しいバージョンが見つかりました",
+        "current_version": "現在のバージョン",
+        "no_update": "最新バージョンです",
+        "latest_version": "最新バージョン",
+        "would_like_to_update": "新しいバージョンに更新しますか？",
+        "dialog": {
+            "update": "更新",
+            "cancel": "キャンセル",
+            "confirm": "確認"
+        }
     }
 }

@@ -8,7 +8,9 @@ import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
+import 'package:holo/util/check_version.dart';
 import 'package:holo/util/local_store.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -103,9 +105,41 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchRecommended(year: _year, month: _month, isLoadMore: false);
   }
 
+  void _checkVersion() async {
+    final asset = await CheckVersion.checkVersion();
+    if (asset != null && mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(context.tr("common.new_version")),
+          content: ListTile(
+            title: Text(
+              "${context.tr("common.current_version")}:v${asset.currentVersion}",
+            ),
+            subtitle: Text(
+              "${context.tr("common.latest_version")}:v${asset.latestVersion}",
+            ),
+          ),
+          actions: [
+            OutlinedButton(
+              onPressed: () => context.pop(),
+              child: Text(context.tr("common.dialog.cancel")),
+            ),
+            FilledButton(
+              onPressed: () =>
+                  launchUrl(Uri.parse(asset.browserDownloadUrl ?? "")),
+              child: Text(context.tr("common.dialog.update")),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _checkVersion();
     _recommended = LocalStore.getHomeCache();
     _scrollController.addListener(_onScrollToBottom);
     if (_recommended == null || _recommended?.data?.isEmpty == true) {

@@ -89,7 +89,8 @@
             "libraries_title": "Third-party Libraries",
             "danmaku_title": "Danmaku Provided",
             "anime_image_search": "Anime Image Search",
-            "daily_sentence": "Daily Sentence"
+            "daily_sentence": "Daily Sentence",
+            "check_version": "Check Version"
         },
         "language": {
             "change": "Change Language"
@@ -316,5 +317,17 @@
         "embed_video_selector_hint": "Multiple selectors separated by commas, e.g.: iframe, #embed-player",
         "video_url_subs_char_label": "Video URL Extraction Rule",
         "video_url_subs_char_hint": "Example: Extract the xxxx part from params=videoUrl=xxxx"
+    },
+    "common": {
+        "new_version": "New version found",
+        "current_version": "Current version",
+        "no_update": "Latest version",
+        "latest_version": "Latest version",
+        "would_like_to_update": "Would you like to update to the new version?",
+        "dialog": {
+            "update": "Update",
+            "cancel": "Cancel",
+            "confirm": "Confirm"
+        }
     }
 }

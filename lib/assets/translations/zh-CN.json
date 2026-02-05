@@ -89,7 +89,8 @@
             "libraries_title": "第三方库",
             "danmaku_title": "弹幕提供",
             "anime_image_search": "图片搜索",
-            "daily_sentence": "每日一言"
+            "daily_sentence": "每日一言",
+            "check_version": "检查更新"
         },
         "language": {
             "change": "切换语言"
@@ -314,5 +315,17 @@
         "embed_video_selector_hint": "多个选择器用英文逗号分隔，例如：iframe, #embed-player",
         "video_url_subs_char_label": "视频URL截取字符,使用lastIndexOf函数,可选",
         "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分"
+    },
+    "common": {
+        "new_version": "发现新版本",
+        "current_version": "当前版本",
+        "latest_version": "最新版本",
+        "no_update": "当前版本已是最新",
+        "would_like_to_update": "是否更新到最新版本？",
+        "dialog": {
+            "update": "更新",
+            "cancel": "取消",
+            "confirm": "确认"
+        }
     }
 }
