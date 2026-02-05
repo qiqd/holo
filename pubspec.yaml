@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.9+8
+version: 1.1.9+12
 
 environment:
   sdk: ^3.10.3
@@ -19,9 +19,9 @@ dependencies:
   html: ^0.15.6
   pointycastle: ^3.7.3
   encrypt: ^5.0.3
-  media_kit: ^1.2.6
-  media_kit_video: ^2.0.1
-  media_kit_libs_video: ^1.0.7
+  video_player_media_kit: ^2.0.0
+  media_kit_libs_windows_video: ^1.0.11
+  video_player: ^2.10.1
   shared_preferences: ^2.5.4
   canvas_danmaku: ^0.3.1
   url_launcher: ^6.3.0

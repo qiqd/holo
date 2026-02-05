@@ -14,15 +14,14 @@ import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:lottie/lottie.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
+import 'package:video_player/video_player.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
 class CapVideoPlayerKit extends StatefulWidget {
-  final Player kitPlayer;
+  final VideoPlayerController controller;
   final bool isloading;
   final String? title;
   final String? subTitle;
@@ -41,7 +40,7 @@ class CapVideoPlayerKit extends StatefulWidget {
   final Function(Duration position)? onPositionChanged;
   const CapVideoPlayerKit({
     super.key,
-    required this.kitPlayer,
+    required this.controller,
     required this.isloading,
     this.isTablet = false,
     this.isFullScreen = false,
@@ -65,7 +64,6 @@ class CapVideoPlayerKit extends StatefulWidget {
 }
 
 class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
-  late final _kitController = VideoController(widget.kitPlayer);
   final FocusNode _focusNode = FocusNode(
     skipTraversal: true,
     descendantsAreTraversable: false,
@@ -182,12 +180,14 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     updateShowVolumeOrBrightnessTimer();
     final current = currentVolume;
     double newVolume = current;
+
     if (direction == SwipeDirection.up) {
-      newVolume = current + 1;
+      newVolume = current + 0.01;
     } else if (direction == SwipeDirection.down) {
-      newVolume = current - 1;
+      newVolume = current - 0.01;
     }
-    newVolume = newVolume.clamp(0, 100);
+    log("changeVolumeBy1Percent $direction $newVolume");
+    newVolume = newVolume.clamp(0, 1);
     setVolume?.call(newVolume);
     setState(() {
       showMsg = true;
@@ -400,12 +400,12 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     videoTimer?.cancel();
     videoTimer = Timer(Duration(milliseconds: 500), () async {
       // _player.seekTo(Duration(seconds: videoPosition.toInt() + dragOffset));
-      await widget.kitPlayer.seek(
+      await widget.controller.seekTo(
         Duration(
-          seconds: widget.kitPlayer.state.position.inSeconds + dragOffset,
+          seconds: widget.controller.value.position.inSeconds + dragOffset,
         ),
       );
-      widget.kitPlayer.play();
+      await widget.controller.play();
       setState(() {
         showDragOffset = false;
         dragOffset = 0;
@@ -428,7 +428,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           });
           break;
         case LogicalKeyboardKey.space:
-          widget.kitPlayer.playOrPause();
+          widget.controller.value.isPlaying
+              ? widget.controller.pause()
+              : widget.controller.play();
           break;
         case LogicalKeyboardKey.escape:
           windowManager.setFullScreen(false);
@@ -439,23 +441,23 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           });
           break;
         case LogicalKeyboardKey.arrowRight:
-          widget.kitPlayer.seek(
-            widget.kitPlayer.state.position + Duration(seconds: 5),
+          widget.controller.seekTo(
+            widget.controller.value.position + Duration(seconds: 5),
           );
           break;
         case LogicalKeyboardKey.arrowLeft:
-          widget.kitPlayer.seek(
-            widget.kitPlayer.state.position - Duration(seconds: 5),
+          widget.controller.seekTo(
+            (widget.controller.value.position) - Duration(seconds: 5),
           );
           break;
         case LogicalKeyboardKey.arrowUp:
-          widget.kitPlayer.setVolume(
-            (widget.kitPlayer.state.volume + 5).clamp(0, 100),
+          widget.controller.setVolume(
+            (widget.controller.value.volume + 0.05).clamp(0, 1),
           );
           break;
         case LogicalKeyboardKey.arrowDown:
-          widget.kitPlayer.setVolume(
-            (widget.kitPlayer.state.volume - 5).clamp(0, 100),
+          widget.controller.setVolume(
+            (widget.controller.value.volume - 0.05).clamp(0, 1),
           );
           break;
       }
@@ -464,75 +466,58 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   /// 初始化视频播放器监听器
   void _initListener() {
-    var player = widget.kitPlayer;
-    log('init volume:${player.state.volume}');
+    var player = widget.controller;
+    log('init volume:${player.value.volume}');
     setState(() {
-      currentVolume = player.state.volume;
+      currentVolume = player.value.volume;
     });
-    // 监听视频播放状态变化
-    player.stream.volume.listen((event) {
+    player.addListener(() {
       if (mounted) {
         setState(() {
-          currentVolume = event;
-        });
-      }
-    });
-    player.stream.playing.listen((event) {
-      if (mounted) {
-        setState(() {
-          isPlaying = event;
-        });
-      }
-    });
-    // 监听视频播放位置变化
-    player.stream.position.listen((event) {
-      widget.onPositionChanged?.call(event);
-      if (mounted) {
-        setState(() {
-          position = event;
-        });
-      }
-    });
-    // 监听视频播放时长变化
-    player.stream.duration.listen((event) {
-      if (mounted) {
-        setState(() {
-          duration = event;
-        });
-      }
-    });
-    player.stream.buffer.listen((event) {
-      if (mounted) {
-        setState(() {
-          bufferProgress = event.inSeconds.toDouble();
-        });
-      }
-    });
-    player.stream.rate.listen((event) {
-      if (mounted) {
-        setState(() {
-          rate = event;
-        });
-      }
-    });
-    player.stream.buffering.listen((event) {
-      if (mounted) {
-        setState(() {
-          isLoading = event || widget.isloading;
+          currentVolume = player.value.volume;
+          isPlaying = player.value.isPlaying;
+          position = player.value.position;
+          duration = player.value.duration;
+          rate = player.value.playbackSpeed;
+          isLoading = player.value.isBuffering;
+          bufferProgress = getBuffered();
         });
       }
     });
   }
 
+  /// 获取缓存
+  double getBuffered() {
+    try {
+      final buffered = widget.controller.value.buffered;
+      if (buffered.isEmpty) return 0.0;
+      Duration maxEnd = buffered.first.end;
+      for (var range in buffered) {
+        if (range.end > maxEnd) {
+          maxEnd = range.end;
+        }
+      }
+      var d = maxEnd.inSeconds.toDouble();
+      return d >= (widget.controller.value.duration.inSeconds.toDouble())
+          ? 4
+          : d;
+    } catch (e) {
+      setState(() {
+        msgText = e.toString();
+      });
+      return 0.0;
+    }
+  }
+
   @override
   void initState() {
-    super.initState();
-    loadDanmuSetting();
     _initListener();
+    loadDanmuSetting();
     initTimerForDanmu();
     dammaku = widget.dammaku;
     VolumeController.instance.showSystemUI = false;
     _brightnessController = ScreenBrightness.instance;
+    super.initState();
   }
 
   @override
@@ -579,7 +564,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     color: Colors.white,
                   ),
                   Text(
-                    "${(currentVolume).toInt()}%",
+                    "${(currentVolume * 100).toInt()}%",
                     style: TextStyle(color: Colors.white),
                   ),
                 ],
@@ -1039,7 +1024,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       width: 120,
                       child: Slider(
                         min: 0,
-                        max: 100,
+                        max: 1,
                         padding: .symmetric(horizontal: 10),
                         value: currentVolume,
                         onChanged: (value) {
@@ -1457,18 +1442,14 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               Center(
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: Video(
-                    pauseUponEnteringBackgroundMode: false,
-                    controller: _kitController,
-                    controls: null,
-                  ),
+                  child: VideoPlayer(widget.controller),
                 ),
               ),
 
               // 弹幕层
               widget.dammaku != null ? _buildDanmaku() : SizedBox.shrink(),
               // 加载中或缓冲中
-              if (widget.kitPlayer.state.buffering || widget.isloading)
+              if (widget.controller.value.isBuffering || widget.isloading)
                 LoadingOrShowMsg(msg: null),
               //亮度或者音量或者拖拽进度显示 can
               _buildToast(),
@@ -1478,16 +1459,19 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 width: double.infinity,
                 child: _buildCenter(
                   playOrPause: () {
-                    widget.kitPlayer.state.playing
-                        ? widget.kitPlayer.pause()
-                        : widget.kitPlayer.play();
+                    isPlaying
+                        ? widget.controller.pause()
+                        : widget.controller.play();
                     setState(() {
-                      isPlaying = widget.kitPlayer.state.playing;
+                      isPlaying = widget.controller.value.isPlaying;
                     });
                   },
                   onSettingTab: (bool isShow) =>
                       widget.onSettingTab?.call(isShow),
-                  setVolume: (volume) => widget.kitPlayer.setVolume(volume),
+                  setVolume: (volume) async {
+                    log("setVolume $volume");
+                    await widget.controller.setVolume(volume);
+                  },
                 ),
               ),
               // 锁定
@@ -1517,22 +1501,22 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 setFullScreen: (isFullScreen) {
                   windowManager.setFullScreen(isFullScreen);
                 },
-                setRate: (rate) => widget.kitPlayer.setRate(rate),
-                setVolume: (volume) => widget.kitPlayer.setVolume(volume),
+                setRate: (rate) => widget.controller.setPlaybackSpeed(rate),
+                setVolume: (volume) => widget.controller.setVolume(volume),
                 onFullScreenChanged: (isFullScreen) {
                   widget.onFullScreenChanged?.call(isFullScreen);
                 },
 
                 seekTo: (value) async {
-                  await widget.kitPlayer.seek(value);
-                  await widget.kitPlayer.play();
+                  await widget.controller.seekTo(value);
+                  await widget.controller.play();
                 },
                 onPlayOrPause: () {
-                  widget.kitPlayer.state.playing
-                      ? widget.kitPlayer.pause()
-                      : widget.kitPlayer.play();
+                  widget.controller.value.isPlaying
+                      ? widget.controller.pause()
+                      : widget.controller.play();
                   setState(() {
-                    isPlaying = widget.kitPlayer.state.playing;
+                    isPlaying = widget.controller.value.isPlaying;
                   });
                 },
                 onNextTab: () => widget.onNextTab?.call(),

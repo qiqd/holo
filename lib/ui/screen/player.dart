@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' show log;
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
@@ -23,8 +24,8 @@ import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:video_player/video_player.dart';
 
 class PlayerScreen extends StatefulWidget {
   final String mediaId;
@@ -70,17 +71,12 @@ class _PlayerScreenState extends State<PlayerScreen>
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
-  Player _player = Player();
+  VideoPlayerController? _controller;
   Duration _position = .zero;
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
   );
-  void _initPlayer() {
-    if (Platform.isWindows || Platform.isLinux) {
-      _player = Player();
-    }
-  }
 
   Future<void> _fetchMediaEpisode() async {
     isloading = true;
@@ -132,6 +128,9 @@ class _PlayerScreenState extends State<PlayerScreen>
             },
           );
         }
+        _controller?.pause();
+        _controller?.dispose();
+        _controller = null;
         final newUrl = await source.fetchPlaybackUrl(
           _detail!.lines![lineIndex].episodes![episodeIndex],
           (e) => setState(() {
@@ -144,23 +143,18 @@ class _PlayerScreenState extends State<PlayerScreen>
         log('new url: $newUrl');
         log('seek to: $position');
 
-        var kitPlayer = _player as Player?;
-        await kitPlayer?.open(Media(newUrl ?? ""));
-        await kitPlayer?.play();
+        final newController = VideoPlayerController.networkUrl(
+          Uri.parse(newUrl ?? ""),
+        );
+        await newController.initialize();
         if (mounted) {
           setState(() {
-            msg = "";
-            _isActive ? kitPlayer?.play() : kitPlayer?.pause();
+            _controller = newController;
+            msg = '';
           });
         }
-        kitPlayer?.stream.duration
-            .firstWhere(
-              (element) => element > Duration.zero,
-              orElse: () => Duration.zero,
-            )
-            .then((value) {
-              kitPlayer.seek(Duration(seconds: position));
-            });
+        _controller?.seekTo(Duration(seconds: position));
+        _isActive ? _controller?.play() : _controller?.pause();
       }
     } catch (e) {
       log("fetchView error: $e");
@@ -243,7 +237,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       lineIndex: lineIndex,
       lastPlaybackAt: DateTime.now(),
       createdAt: DateTime.now(),
-      position: _player.state.position.inSeconds,
+      position: _controller?.value.position.inSeconds ?? 0,
       imgUrl: widget.subject.images?.large ?? "",
     );
     _syncPlaybackHistory(history);
@@ -409,7 +403,6 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void initState() {
-    _initPlayer();
     _loadHistory();
     _fetchEpisode();
     _isTablet = Device.get().isTablet;
@@ -430,7 +423,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    _player.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -498,12 +491,15 @@ class _PlayerScreenState extends State<PlayerScreen>
         height: double.infinity,
         width: double.infinity,
         child: Center(
-          child: !isloading
+          child:
+              !isloading &&
+                  _controller != null &&
+                  _controller!.value.isInitialized
               ? CapVideoPlayerKit(
                   title: widget.nameCn,
                   subTitle: _episode?.data?[episodeIndex].nameCn,
                   isloading: isloading,
-                  kitPlayer: _player,
+                  controller: _controller!,
                   isFullScreen: isFullScreen,
                   currentEpisodeIndex: episodeIndex,
                   dammaku: _dammaku,
@@ -533,10 +529,45 @@ class _PlayerScreenState extends State<PlayerScreen>
                   },
                   onPositionChanged: (p) => _position = p,
                 )
-              : LoadingOrShowMsg(
-                  msg: msg,
-                  backgroundColor: Colors.black,
-                  onMsgTab: onMsgTab,
+              : Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    if (Platform.isWindows ||
+                        Platform.isMacOS ||
+                        Platform.isLinux)
+                      SizedBox(
+                        height: 50,
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: () => context.pop(),
+                              icon: Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => setState(() {
+                                _showInfo = !_showInfo;
+                              }),
+                              icon: Icon(
+                                CupertinoIcons.sidebar_right,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    Flexible(
+                      child: Center(
+                        child: LoadingOrShowMsg(
+                          msg: msg,
+                          backgroundColor: Colors.black,
+                          onMsgTab: onMsgTab,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
         ),
       ),

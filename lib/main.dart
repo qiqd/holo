@@ -24,7 +24,7 @@ import 'package:holo/ui/screen/home.dart';
 import 'package:holo/ui/screen/search.dart';
 import 'package:holo/ui/screen/setting.dart';
 import 'package:holo/ui/screen/subscribe.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -33,7 +33,7 @@ void main() async {
   await LocalStore.init();
   await Bangumi.initDio();
   Api.initSources();
-  MediaKit.ensureInitialized();
+  VideoPlayerMediaKit.ensureInitialized(windows: true);
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     if (!await FlutterSingleInstance().isFirstInstance()) {
