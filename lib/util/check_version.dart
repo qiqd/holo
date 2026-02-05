@@ -16,7 +16,7 @@ class CheckVersion {
     final versionCode = packageInfo.version.split('.').toList();
 
     final latestVersionCode = latestRelease.tagName!.split('.').toList();
-    final isNewVersion = latestVersionCode.asMap().entries.every((element) {
+    final isNewVersion = latestVersionCode.asMap().entries.any((element) {
       return int.parse(element.value) > int.parse(versionCode[element.key]);
     });
     if (!isNewVersion) {

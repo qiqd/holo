@@ -71,10 +71,10 @@ class _SetttingScreenState extends State<SetttingScreen>
           title: Text(context.tr("common.new_version")),
           content: ListTile(
             title: Text(
-              context.tr("common.current_version:v${asset.currentVersion}"),
+              "${context.tr("common.current_version")}:v${asset.currentVersion}",
             ),
             subtitle: Text(
-              context.tr("common.latest_version:v${asset.latestVersion}"),
+              "${context.tr("common.latest_version")}:v${asset.latestVersion}",
             ),
           ),
           actions: [
