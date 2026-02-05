@@ -472,8 +472,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       currentVolume = player.value.volume;
     });
     player.addListener(() {
+      widget.onPositionChanged?.call(player.value.position);
       if (mounted) {
         setState(() {
+          log('position:${player.value.position.inSeconds}');
           currentVolume = player.value.volume;
           isPlaying = player.value.isPlaying;
           position = player.value.position;

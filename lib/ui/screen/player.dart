@@ -165,9 +165,11 @@ class _PlayerScreenState extends State<PlayerScreen>
         });
       }
     } finally {
-      setState(() {
-        isloading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isloading = false;
+        });
+      }
     }
   }
 
@@ -302,23 +304,25 @@ class _PlayerScreenState extends State<PlayerScreen>
           }
         },
       );
-      setState(() {
-        _danmakuList = data;
-      });
+      if (mounted) {
+        setState(() {
+          _danmakuList = data;
+        });
+      }
       double score = 0;
       for (var element in data) {
         var temp = JaroWinklerSimilarity.apply(
           element.animeTitle,
           subject.nameCn ?? "",
         );
-        if (temp > score) {
+        if (temp > score && mounted) {
           score = temp;
           setState(() {
             _bestMatch = element;
           });
         }
       }
-      if (_bestMatch == null) {
+      if (_bestMatch == null && mounted) {
         setState(() {
           _isDanmakuLoading = false;
           onComplete?.call("player.danmaku_not_exist".tr());
@@ -527,7 +531,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                   onBackPressed: () {
                     onBackPressed();
                   },
-                  onPositionChanged: (p) => _position = p,
+                  onPositionChanged: (p) {
+                    _position = p;
+                  },
                 )
               : Column(
                   crossAxisAlignment: .start,
