@@ -19,6 +19,7 @@ import 'package:holo/ui/component/media_card.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:holo/util/safe_set_state.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;
@@ -117,12 +118,10 @@ class _DetailScreenState extends State<DetailScreen>
     }
 
     //defaultSource = keys.first;
-    if (mounted) {
-      setState(() {
-        sourceService = keys;
-        isLoading = false;
-      });
-    }
+    safeSetState(() {
+      sourceService = keys;
+      isLoading = false;
+    });
   }
 
   void _fetchPerson() async {

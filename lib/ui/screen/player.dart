@@ -23,6 +23,7 @@ import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:holo/util/safe_set_state.dart';
+import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:video_player/video_player.dart';
@@ -52,6 +53,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         WidgetsBindingObserver,
         AutomaticKeepAliveClientMixin {
   final _globalKey = GlobalKey<ScaffoldState>();
+  final Logger _logger = Logger();
   late Data subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
@@ -111,8 +113,10 @@ class _PlayerScreenState extends State<PlayerScreen>
     bool loadDanmaku = true,
     Function(String e)? onComplete,
   }) async {
-    msg = "";
-    isloading = true;
+    safeSetState(() {
+      msg = "";
+      isloading = true;
+    });
     try {
       if (_detail != null) {
         lineIndex = lineIndex.clamp(0, _detail!.lines!.length - 1);
@@ -136,15 +140,15 @@ class _PlayerScreenState extends State<PlayerScreen>
         final newUrl = await source.fetchPlaybackUrl(
           _detail!.lines![lineIndex].episodes![episodeIndex],
           (e) => setState(() {
-            log("fetchView error: $e");
+            _logger.e("fetchView error: $e");
             msg = "player.playback_error".tr();
+            isloading = false;
             onComplete?.call(msg);
           }),
         );
         playUrl = newUrl;
-        log('new url: $newUrl');
-        log('seek to: $position');
-
+        _logger.i('new url: $newUrl');
+        _logger.i('seek to: $position');
         final newController = VideoPlayerController.networkUrl(
           Uri.parse(newUrl ?? ""),
         );
@@ -159,7 +163,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             : _playerNotifier.value?.pause();
       }
     } catch (e) {
-      log("fetchView error: $e");
+      _logger.e("fetchView error: $e");
       if (mounted) {
         setState(() {
           msg = "player.playback_error".tr();
@@ -333,7 +337,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         return;
       }
     }
-    if (hasError) {
+    if (hasError || _bestMatch == null) {
       return;
     }
     final danmu = await Api.logvar.fetchDammakuSync(
@@ -508,6 +512,8 @@ class _PlayerScreenState extends State<PlayerScreen>
             episodeList: _episode?.data?.map((e) => e.nameCn!).toList() ?? [],
             onError: (error) => setState(() {
               msg = error.toString();
+              isloading = false;
+              _logger.e("player.error: $msg");
             }),
             onEpisodeSelected: (index) => _onEpisodeSelected(index),
             onNextTab: () {
@@ -538,7 +544,9 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   Widget _buildInfo() {
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: Platform.isLinux || Platform.isMacOS || Platform.isWindows
+          ? Theme.of(context).scaffoldBackgroundColor
+          : null,
       child: Column(
         children: [
           Row(
@@ -733,36 +741,79 @@ class _PlayerScreenState extends State<PlayerScreen>
                               )
                               .value,
                         ),
-                        AnimatedContainer(
+                        // 弹幕统计
+                        AnimatedSize(
                           duration: Duration(milliseconds: 300),
-                          height: _dammaku != null ? 38 : 0,
-                          width: double.infinity,
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: _isDanmakuLoading
-                                ? LinearProgressIndicator()
-                                : Text(
-                                    context.tr(
-                                      'player.danmaku_statistics',
-                                      args: [
-                                        (_danmakuList?.length ?? 0).toString(),
-                                        (_dammaku?.comments?.length ?? 0)
-                                            .toString(),
-                                        (_dammaku?.comments?.length ?? 0)
-                                            .toString(),
-                                      ],
-                                    ),
-                                    style: Theme.of(
+                          child: _dammaku == null
+                              ? SizedBox.shrink()
+                              : Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(
                                       context,
-                                    ).textTheme.bodyMedium,
+                                    ).colorScheme.surfaceContainerHighest,
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                          ),
+                                  child: ExpansionTile(
+                                    enabled: _dammaku != null,
+                                    shape: RoundedRectangleBorder(side: .none),
+                                    title: Center(
+                                      child: _isDanmakuLoading
+                                          ? LinearProgressIndicator()
+                                          : Text(
+                                              context.tr(
+                                                'player.danmaku_statistics',
+                                                args: [
+                                                  (_danmakuList?.length ?? 0)
+                                                      .toString(),
+                                                  (_dammaku?.comments?.length ??
+                                                          0)
+                                                      .toString(),
+                                                  (_dammaku?.comments?.length ??
+                                                          0)
+                                                      .toString(),
+                                                ],
+                                              ),
+                                              style: Theme.of(
+                                                context,
+                                              ).textTheme.bodyMedium,
+                                            ),
+                                    ),
+                                    children: [
+                                      Container(
+                                        constraints: BoxConstraints(
+                                          maxHeight: 400,
+                                        ),
+                                        child: ListView.builder(
+                                          padding: .zero,
+                                          itemCount:
+                                              _dammaku?.comments?.length ?? 0,
+                                          itemBuilder: (context, index) {
+                                            final comment =
+                                                _dammaku?.comments?[index];
+                                            final time = Duration(
+                                              seconds:
+                                                  comment?.time?.toInt() ?? 0,
+                                            );
+                                            return ListTile(
+                                              titleAlignment: .center,
+                                              leading: Text(
+                                                '${time.inMinutes}:${time.inSeconds.remainder(60)}',
+                                              ),
+                                              title: Text(
+                                                comment?.text ?? '',
+                                                maxLines: 3,
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                         ),
                         ListTile(
                           shape: RoundedRectangleBorder(

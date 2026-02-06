@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:canvas_danmaku/danmaku_controller.dart';
 import 'package:canvas_danmaku/danmaku_screen.dart';
@@ -71,6 +70,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     skipTraversal: true,
     descendantsAreTraversable: false,
   );
+  // final Logger _logger = Logger();
   late final ScreenBrightness _brightnessController;
   DanmakuController<double>? _danmuController;
   String msgText = '';
@@ -155,7 +155,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     } else if (direction == SwipeDirection.down) {
       newBrightness = current - 0.01;
     }
-    log("set brightness to $newBrightness");
     newBrightness = newBrightness.clamp(0.0, 1.0);
     await ScreenBrightness.instance.setApplicationScreenBrightness(
       newBrightness,
@@ -189,7 +188,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     } else if (direction == SwipeDirection.down) {
       newVolume = current - 0.01;
     }
-    log("changeVolumeBy1Percent $direction $newVolume");
     newVolume = newVolume.clamp(0, 1);
     setVolume?.call(newVolume);
     setState(() {
@@ -200,7 +198,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   /// 处理视频进度改变事件
   void handleVideoProgressChange(SwipeDirection direction) {
-    log("handleVideoProgressChange $direction");
     if (isLock) {
       return;
     }
@@ -462,7 +459,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     widget.playerNotifier.addListener(() {
       var player = widget.playerNotifier.value;
       if (player == null) return;
-      log('init volume:${player.value.volume}');
       safeSetState(() {
         currentVolume = player.value.volume;
       });
@@ -1025,9 +1021,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       tooltip: 'Volume',
                       onPressed: () {
                         setState(() {
-                          log("btn- currentVolume:$currentVolume");
-                          // currentVolume = 0;
-                          // setVolume?.call(currentVolume);
+                          currentVolume = 0;
+                          setVolume?.call(currentVolume);
                         });
                       },
                       icon: Icon(
@@ -1488,7 +1483,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       onSettingTab: (bool isShow) =>
                           widget.onSettingTab?.call(isShow),
                       setVolume: (volume) async {
-                        log("setVolume $volume");
                         await player?.setVolume(volume);
                       },
                     ),
