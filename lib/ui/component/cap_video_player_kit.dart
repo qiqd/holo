@@ -19,9 +19,10 @@ import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:video_player/video_player.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:holo/util/safe_set_state.dart';
 
 class CapVideoPlayerKit extends StatefulWidget {
-  final VideoPlayerController controller;
+  final ValueNotifier<VideoPlayerController?> playerNotifier;
   final bool isloading;
   final String? title;
   final String? subTitle;
@@ -30,6 +31,7 @@ class CapVideoPlayerKit extends StatefulWidget {
   final int currentEpisodeIndex;
   final Danmu? dammaku;
   final bool isTablet;
+  final bool isInputting;
   final Function(bool)? onFullScreenChanged;
   final Function(String)? onError;
   final Function()? onNextTab;
@@ -40,7 +42,7 @@ class CapVideoPlayerKit extends StatefulWidget {
   final Function(Duration position)? onPositionChanged;
   const CapVideoPlayerKit({
     super.key,
-    required this.controller,
+    required this.playerNotifier,
     required this.isloading,
     this.isTablet = false,
     this.isFullScreen = false,
@@ -49,6 +51,7 @@ class CapVideoPlayerKit extends StatefulWidget {
     this.subTitle,
     this.episodeList = const [],
     this.dammaku,
+    this.isInputting = false,
     this.onFullScreenChanged,
     this.onNextTab,
     this.onError,
@@ -102,7 +105,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   Duration position = Duration.zero;
   Duration duration = Duration.zero;
   double bufferProgress = 0.0;
-  bool isPlaying = true;
+  bool isPlaying = false;
   double rate = 1.0;
   Danmu? dammaku;
   bool isLoading = false;
@@ -271,7 +274,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   void initTimerForDanmu({bool updateStateEverySecond = false}) {
     danmuTimer?.cancel();
     danmuTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (!showSetting) {
+      if (!showSetting && !widget.isInputting) {
         _focusNode.requestFocus();
       }
       if (updateStateEverySecond) {
@@ -400,13 +403,12 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     videoTimer?.cancel();
     videoTimer = Timer(Duration(milliseconds: 500), () async {
       // _player.seekTo(Duration(seconds: videoPosition.toInt() + dragOffset));
-      await widget.controller.seekTo(
-        Duration(
-          seconds: widget.controller.value.position.inSeconds + dragOffset,
-        ),
+      final player = widget.playerNotifier.value;
+      await player?.seekTo(
+        Duration(seconds: player.value.position.inSeconds + dragOffset),
       );
-      await widget.controller.play();
-      setState(() {
+      await player?.play();
+      safeSetState(() {
         showDragOffset = false;
         dragOffset = 0;
       });
@@ -418,6 +420,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     if ((event is KeyDownEvent) &&
         !showSetting &&
         (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+      var player = widget.playerNotifier.value;
       switch (event.logicalKey) {
         case LogicalKeyboardKey.tab:
           break;
@@ -428,9 +431,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           });
           break;
         case LogicalKeyboardKey.space:
-          widget.controller.value.isPlaying
-              ? widget.controller.pause()
-              : widget.controller.play();
+          player?.value.isPlaying ?? false ? player?.pause() : player?.play();
           break;
         case LogicalKeyboardKey.escape:
           windowManager.setFullScreen(false);
@@ -441,24 +442,16 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           });
           break;
         case LogicalKeyboardKey.arrowRight:
-          widget.controller.seekTo(
-            widget.controller.value.position + Duration(seconds: 5),
-          );
+          player?.seekTo(player.value.position + Duration(seconds: 5));
           break;
         case LogicalKeyboardKey.arrowLeft:
-          widget.controller.seekTo(
-            (widget.controller.value.position) - Duration(seconds: 5),
-          );
+          player?.seekTo((player.value.position) - Duration(seconds: 5));
           break;
         case LogicalKeyboardKey.arrowUp:
-          widget.controller.setVolume(
-            (widget.controller.value.volume + 0.05).clamp(0, 1),
-          );
+          player?.setVolume((player.value.volume + 0.05).clamp(0, 1));
           break;
         case LogicalKeyboardKey.arrowDown:
-          widget.controller.setVolume(
-            (widget.controller.value.volume - 0.05).clamp(0, 1),
-          );
+          player?.setVolume((player.value.volume - 0.05).clamp(0, 1));
           break;
       }
     }
@@ -466,32 +459,56 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   /// 初始化视频播放器监听器
   void _initListener() {
-    var player = widget.controller;
-    log('init volume:${player.value.volume}');
-    setState(() {
-      currentVolume = player.value.volume;
+    widget.playerNotifier.addListener(() {
+      var player = widget.playerNotifier.value;
+      if (player == null) return;
+      log('init volume:${player.value.volume}');
+      safeSetState(() {
+        currentVolume = player.value.volume;
+      });
+      player.addListener(() {
+        widget.onPositionChanged?.call(player.value.position);
+        if (mounted) {
+          safeSetState(() {
+            currentVolume = player.value.volume;
+            isPlaying = player.value.isPlaying;
+            position = player.value.position;
+            duration = player.value.duration;
+            rate = player.value.playbackSpeed;
+            isLoading = player.value.isBuffering;
+            bufferProgress = getBuffered();
+          });
+        }
+      });
     });
-    player.addListener(() {
-      widget.onPositionChanged?.call(player.value.position);
-      if (mounted) {
-        setState(() {
-          log('position:${player.value.position.inSeconds}');
-          currentVolume = player.value.volume;
-          isPlaying = player.value.isPlaying;
-          position = player.value.position;
-          duration = player.value.duration;
-          rate = player.value.playbackSpeed;
-          isLoading = player.value.isBuffering;
-          bufferProgress = getBuffered();
-        });
-      }
-    });
+
+    // var player = widget.playerNotifier;
+    // log('init volume:${player.value.volume}');
+    // setState(() {
+    //   currentVolume = player.value.volume;
+    // });
+    // player.addListener(() {
+    //   widget.onPositionChanged?.call(player.value.position);
+    //   if (mounted) {
+    //     setState(() {
+    //       log('position:${player.value.position.inSeconds}');
+    //       currentVolume = player.value.volume;
+    //       isPlaying = player.value.isPlaying;
+    //       position = player.value.position;
+    //       duration = player.value.duration;
+    //       rate = player.value.playbackSpeed;
+    //       isLoading = player.value.isBuffering;
+    //       bufferProgress = getBuffered();
+    //     });
+    //   }
+    // });
   }
 
   /// 获取缓存
   double getBuffered() {
     try {
-      final buffered = widget.controller.value.buffered;
+      var player = widget.playerNotifier.value;
+      final buffered = player?.value.buffered ?? [];
       if (buffered.isEmpty) return 0.0;
       Duration maxEnd = buffered.first.end;
       for (var range in buffered) {
@@ -500,9 +517,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         }
       }
       var d = maxEnd.inSeconds.toDouble();
-      return d >= (widget.controller.value.duration.inSeconds.toDouble())
-          ? 4
-          : d;
+      return d >= (player?.value.duration.inSeconds.toDouble() ?? 0.0) ? 4 : d;
     } catch (e) {
       setState(() {
         msgText = e.toString();
@@ -1438,102 +1453,109 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           focusNode: _focusNode,
           autofocus: true,
           onKeyEvent: _handleKeyEvent,
-          child: Stack(
-            children: [
-              //播放器层
-              Center(
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: VideoPlayer(widget.controller),
-                ),
-              ),
+          child: ValueListenableBuilder(
+            valueListenable: widget.playerNotifier,
+            builder: (context, player, child) {
+              return Stack(
+                children: [
+                  //播放器层
+                  if (player != null)
+                    Center(
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: VideoPlayer(player),
+                      ),
+                    ),
 
-              // 弹幕层
-              widget.dammaku != null ? _buildDanmaku() : SizedBox.shrink(),
-              // 加载中或缓冲中
-              if (widget.controller.value.isBuffering || widget.isloading)
-                LoadingOrShowMsg(msg: null),
-              //亮度或者音量或者拖拽进度显示 can
-              _buildToast(),
-              //视频控制层-中间
-              SizedBox(
-                height: double.infinity,
-                width: double.infinity,
-                child: _buildCenter(
-                  playOrPause: () {
-                    isPlaying
-                        ? widget.controller.pause()
-                        : widget.controller.play();
+                  // 弹幕层
+                  widget.dammaku != null ? _buildDanmaku() : SizedBox.shrink(),
+                  // 加载中或缓冲中
+                  if ((player?.value.isBuffering ?? true) || widget.isloading)
+                    LoadingOrShowMsg(msg: null),
+                  //亮度或者音量或者拖拽进度显示 can
+                  _buildToast(),
+                  //视频控制层-中间
+                  SizedBox(
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: _buildCenter(
+                      playOrPause: () {
+                        isPlaying ? player?.pause() : player?.play();
+                        safeSetState(() {
+                          isPlaying = player?.value.isPlaying ?? false;
+                        });
+                      },
+                      onSettingTab: (bool isShow) =>
+                          widget.onSettingTab?.call(isShow),
+                      setVolume: (volume) async {
+                        log("setVolume $volume");
+                        await player?.setVolume(volume);
+                      },
+                    ),
+                  ),
+                  // 锁定
+                  _buildLock(),
+                  // 时间
+                  _buildTime(isFullScreen: widget.isFullScreen),
+                  //视频控制层-头部
+                  _buildHeader(
+                    widget.title ?? context.tr("component.title"),
+                    subTitle: widget.subTitle,
+                    isFullScreen: widget.isFullScreen,
+                    onBackPressed: () {
+                      widget.onBackPressed?.call();
+                    },
+                    onSettingTab: (isShow) {
+                      widget.onSettingTab?.call(isShow);
+                      setState(() {
+                        showSetting = isShow;
+                      });
+                      showSetting
+                          ? _focusNode.unfocus()
+                          : _focusNode.requestFocus();
+                    },
+                  ),
+                  //视频控制层-底部
+                  _buildBottom(
+                    setFullScreen: (isFullScreen) {
+                      windowManager.setFullScreen(isFullScreen);
+                    },
+                    setRate: (rate) => player?.setPlaybackSpeed(rate),
+                    setVolume: (volume) => player?.setVolume(volume),
+                    onFullScreenChanged: (isFullScreen) {
+                      widget.onFullScreenChanged?.call(isFullScreen);
+                    },
+
+                    seekTo: (value) async {
+                      await player?.seekTo(value);
+                      await player?.play();
+                    },
+                    onPlayOrPause: () {
+                      (player?.value.isPlaying ?? false)
+                          ? player?.pause()
+                          : player?.play();
+                      setState(() {
+                        isPlaying = player?.value.isPlaying ?? false;
+                      });
+                    },
+                    onNextTab: () => widget.onNextTab?.call(),
+                  ),
+                  // 剧集列表
+                  _buildEpisodeList(
+                    widget.episodeList,
+                    widget.onEpisodeSelected,
+                  ),
+                  // 弹幕设置
+                  _buildDanmakuSetting(widget.isTablet, (isShow) {
                     setState(() {
-                      isPlaying = widget.controller.value.isPlaying;
+                      showSetting = isShow;
                     });
-                  },
-                  onSettingTab: (bool isShow) =>
-                      widget.onSettingTab?.call(isShow),
-                  setVolume: (volume) async {
-                    log("setVolume $volume");
-                    await widget.controller.setVolume(volume);
-                  },
-                ),
-              ),
-              // 锁定
-              _buildLock(),
-              // 时间
-              _buildTime(isFullScreen: widget.isFullScreen),
-              //视频控制层-头部
-              _buildHeader(
-                widget.title ?? context.tr("component.title"),
-                subTitle: widget.subTitle,
-                isFullScreen: widget.isFullScreen,
-                onBackPressed: () {
-                  widget.onBackPressed?.call();
-                },
-                onSettingTab: (isShow) {
-                  widget.onSettingTab?.call(isShow);
-                  setState(() {
-                    showSetting = isShow;
-                  });
-                  showSetting
-                      ? _focusNode.unfocus()
-                      : _focusNode.requestFocus();
-                },
-              ),
-              //视频控制层-底部
-              _buildBottom(
-                setFullScreen: (isFullScreen) {
-                  windowManager.setFullScreen(isFullScreen);
-                },
-                setRate: (rate) => widget.controller.setPlaybackSpeed(rate),
-                setVolume: (volume) => widget.controller.setVolume(volume),
-                onFullScreenChanged: (isFullScreen) {
-                  widget.onFullScreenChanged?.call(isFullScreen);
-                },
-
-                seekTo: (value) async {
-                  await widget.controller.seekTo(value);
-                  await widget.controller.play();
-                },
-                onPlayOrPause: () {
-                  widget.controller.value.isPlaying
-                      ? widget.controller.pause()
-                      : widget.controller.play();
-                  setState(() {
-                    isPlaying = widget.controller.value.isPlaying;
-                  });
-                },
-                onNextTab: () => widget.onNextTab?.call(),
-              ),
-              // 剧集列表
-              _buildEpisodeList(widget.episodeList, widget.onEpisodeSelected),
-              // 弹幕设置
-              _buildDanmakuSetting(widget.isTablet, (isShow) {
-                setState(() {
-                  showSetting = isShow;
-                });
-              }),
-              //鼠标悬停显示视频控制条
-              _buildMouseHover(),
-            ],
+                  }),
+                  //鼠标悬停显示视频控制条
+                  _buildMouseHover(),
+                ],
+              );
+            },
           ),
         ),
       ),

@@ -1,12 +1,10 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/media.dart' as media;
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/media_grid.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+import 'package:video_player/video_player.dart';
 
 class RuleTestScreen extends StatefulWidget {
   final SourceService source;
@@ -27,8 +25,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
   media.Detail? _detail;
   String? _playUrl;
   bool _isloading = false;
-  late final player = Player();
-  late final controller = VideoController(player);
+  VideoPlayerController? videoController;
   void _fetchTest() async {
     bool hasError = false;
     setState(() {
@@ -75,11 +72,11 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         ).showSnackBar(SnackBar(content: Text('video url is null')));
         return;
       }
-      player.open(
-        Media(
-          'https://v16.toutiao50.com/704d1d8b3d404aeb3e16f51b83e5ee0e/697afc4d/video/tos/alisg/tos-alisg-v-90231e-sg/oYfKdNAYYEW9tfsSIy0AIVIqfupRqCDgHDmr1F/',
-        ),
-      );
+      videoController = VideoPlayerController.networkUrl(Uri.parse(url ?? ''));
+      await videoController!.initialize();
+      await videoController!.setLooping(true);
+      await videoController!.play();
+
       setState(() {
         _playUrl = url;
         _isloading = false;
@@ -98,7 +95,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
 
   @override
   void dispose() {
-    player.dispose();
+    videoController?.dispose();
     super.dispose();
   }
 
@@ -215,7 +212,9 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                         Text('url: $_playUrl'),
                         FilledButton(
                           onPressed: () {
-                            player.playOrPause();
+                            videoController?.value.isPlaying ?? false
+                                ? videoController?.pause()
+                                : videoController?.play();
                           },
                           child: const Text('Play'),
                         ),
@@ -223,8 +222,9 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                           width: MediaQuery.of(context).size.width,
                           height:
                               MediaQuery.of(context).size.width * 9.0 / 16.0,
-
-                          child: Video(controller: controller),
+                          child: videoController != null
+                              ? VideoPlayer(videoController!)
+                              : Container(),
                         ),
                       ],
                     ),
