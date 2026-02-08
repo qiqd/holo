@@ -83,6 +83,25 @@ class _DetailScreenState extends State<DetailScreen>
     final sources = Api.getSources();
     final future = sources.map((source) async {
       final res = await source.fetchSearch(keyword, 1, 10, (e) {});
+      double highestScore = 0;
+      Media? tempMedia;
+      SourceService? tempSource;
+      for (var m in res) {
+        double s = JaroWinklerSimilarity.apply(widget.keyword, m.title!);
+        m.score = s;
+        if (s > 0.9 && s > highestScore) {
+          highestScore = s;
+          tempMedia = m;
+          tempSource = source;
+        }
+      }
+      if (tempMedia != null && tempSource != null) {
+        defaultMedia = tempMedia;
+        defaultSource = tempSource;
+        safeSetState(() {
+          isLoading = false;
+        });
+      }
       source2Media[source] = res;
     });
     await Future.wait(future);
@@ -93,7 +112,7 @@ class _DetailScreenState extends State<DetailScreen>
       for (var m in value) {
         double s = JaroWinklerSimilarity.apply(widget.keyword, m.title!);
         m.score = s;
-        if (s > tempScore) {
+        if (defaultMedia == null && s > tempScore) {
           tempScore = s;
           //target = m;
           defaultMedia = m;
@@ -125,7 +144,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _fetchPerson() async {
-    final res = await Api.bangumi.fetchPersonSync(widget.id, (e) {
+    final res = await Api.bangumi.fetchPerson(widget.id, (e) {
       setState(() {
         _msg = e.toString();
       });
@@ -138,7 +157,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _fetchCharacter() async {
-    final res = await Api.bangumi.fetchCharacterSync(widget.id, (e) {
+    final res = await Api.bangumi.fetchCharacter(widget.id, (e) {
       setState(() {
         _msg = e.toString();
       });
@@ -151,7 +170,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _fetchRelation() async {
-    final res = await Api.bangumi.fetchSubjectRelationSync(widget.id, (e) {
+    final res = await Api.bangumi.fetchSubjectRelation(widget.id, (e) {
       setState(() {
         _msg = e.toString();
       });

@@ -65,7 +65,7 @@ class Bangumi implements MetaService {
   }
 
   @override
-  Future<List<Calendar>> fetchCalendarSync(
+  Future<List<Calendar>> fetchCalendar(
     void Function(Exception) exception,
   ) async {
     try {
@@ -94,7 +94,7 @@ class Bangumi implements MetaService {
   }
 
   @override
-  Future<List<Character>> fetchCharacterSync(
+  Future<List<Character>> fetchCharacter(
     int subjectId,
     void Function(Exception) exception,
   ) async {
@@ -114,7 +114,7 @@ class Bangumi implements MetaService {
   }
 
   @override
-  Future<List<Person>> fetchPersonSync(
+  Future<List<Person>> fetchPerson(
     int subjectId,
     void Function(Exception) exception,
   ) async {
@@ -134,22 +134,24 @@ class Bangumi implements MetaService {
   }
 
   @override
-  Future<Subject?> fetchRecommendSync(
-    int page,
-    int size,
-    int year,
-    int month,
-    void Function(Exception) exception,
-  ) async {
+  Future<Subject?> fetchRecommend({
+    int page = 1,
+    int size = 10,
+    int? year,
+    int? month,
+    String sort = "date",
+    void Function(Exception)? exception,
+  }) async {
     var param = Map.from({
       "type": 2,
       "cat": 1,
-      "sort": "date",
+      "sort": sort,
       "limit": size,
       "month": month,
       "offset": (page - 1) * size,
       "year": year,
     });
+    param.removeWhere((key, value) => value == null);
     try {
       final response = await _dio!.get(
         "$baseUrl/v0/subjects",
@@ -160,13 +162,13 @@ class Bangumi implements MetaService {
       }
       return null;
     } catch (e) {
-      exception(e as Exception);
+      exception?.call(e as Exception);
       return null;
     }
   }
 
   @override
-  Future<Subject?> fetchSearchSync(
+  Future<Subject?> fetchSearch(
     String keyword,
     void Function(dynamic) exception,
   ) async {
@@ -193,7 +195,7 @@ class Bangumi implements MetaService {
   }
 
   @override
-  Future<List<SubjectRelation>> fetchSubjectRelationSync(
+  Future<List<SubjectRelation>> fetchSubjectRelation(
     int subjectId,
     void Function(Exception) exception,
   ) async {
@@ -230,7 +232,7 @@ class Bangumi implements MetaService {
   }
 
   @override
-  Future<Episode?> fethcEpisodeSync(
+  Future<Episode?> fethcEpisode(
     int subjectId,
     void Function(Exception) exception,
   ) async {

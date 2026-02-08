@@ -349,7 +349,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                     label: Text('setting.title'.tr()),
                   ),
                 ],
-                labelType: NavigationRailLabelType.selected,
+                labelType: NavigationRailLabelType.none,
               ),
               VerticalDivider(width: 1),
               // 主内容区域
@@ -362,7 +362,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
       // 竖屏布局 - 使用底部导航栏
       return Scaffold(
         bottomNavigationBar: BottomNavigationBar(
-          showSelectedLabels: true,
+          showSelectedLabels: false,
           selectedItemColor: Theme.of(context).colorScheme.primary,
           unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
           items: [

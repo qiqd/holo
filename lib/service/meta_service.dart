@@ -13,41 +13,42 @@ abstract class MetaService {
 
   String get baseUrl;
 
-  Future<Subject?> fetchSearchSync(
+  Future<Subject?> fetchSearch(
     String keyword,
     void Function(dynamic) exception,
   );
 
-  Future<Subject?> fetchRecommendSync(
-    int page,
-    int size,
-    int year,
-    int month,
-    void Function(dynamic) exception,
-  );
+  Future<Subject?> fetchRecommend({
+    int page = 1,
+    int size = 10,
+    int year = 2019,
+    int month = 1,
+    String sort = "date",
+    void Function(Exception)? exception,
+  });
 
-  Future<List<Calendar>> fetchCalendarSync(void Function(dynamic) exception);
+  Future<List<Calendar>> fetchCalendar(void Function(dynamic) exception);
 
   Future<Data?> fetchSubjectSync(
     int subjectId,
     void Function(dynamic) exception,
   );
 
-  Future<List<Person>> fetchPersonSync(
+  Future<List<Person>> fetchPerson(
     int subjectId,
     void Function(dynamic) exception,
   );
 
-  Future<List<Character>> fetchCharacterSync(
+  Future<List<Character>> fetchCharacter(
     int subjectId,
     void Function(dynamic) exception,
   );
 
-  Future<List<SubjectRelation>> fetchSubjectRelationSync(
+  Future<List<SubjectRelation>> fetchSubjectRelation(
     int subjectId,
     void Function(dynamic) exception,
   );
-  Future<Episode?> fethcEpisodeSync(
+  Future<Episode?> fethcEpisode(
     int subjectId,
     void Function(dynamic) exception,
   );

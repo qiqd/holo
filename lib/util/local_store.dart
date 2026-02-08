@@ -378,16 +378,29 @@ class LocalStore {
         .toList();
   }
 
-  static void setHomeCache(Subject s) {
+  static void setHomeHotCache(Subject s) {
     if (_prefs == null) return;
-    _prefs!.setString("${_key}_home_cache", json.encode(s.toJson()));
+    _prefs!.setString("${_key}_home_hot_cache", json.encode(s.toJson()));
   }
 
-  static Subject? getHomeCache() {
+  static Subject? getHomeHotCache() {
     if (_prefs == null) return null;
-    var homeCache = _prefs!.getString("${_key}_home_cache");
+    var homeCache = _prefs!.getString("${_key}_home_hot_cache");
     if (homeCache == null) return null;
     log("home->getHomeCache: get cache ok");
+    return Subject.fromJson(json.decode(homeCache));
+  }
+
+  static void setHomeRankCache(Subject s) {
+    if (_prefs == null) return;
+    _prefs!.setString("${_key}_home_rank_cache", json.encode(s.toJson()));
+  }
+
+  static Subject? getHomeRankCache() {
+    if (_prefs == null) return null;
+    var homeCache = _prefs!.getString("${_key}_home_rank_cache");
+    if (homeCache == null) return null;
+    log("home->getHomeRankCache: get cache ok");
     return Subject.fromJson(json.decode(homeCache));
   }
 

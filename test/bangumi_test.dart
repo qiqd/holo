@@ -7,7 +7,7 @@ void main() {
   var bangumi = Bangumi();
   group("service.bangumi", () {
     test("fetchSearchSync", () async {
-      var res = await bangumi.fetchSearchSync("未来日记", (e) {
+      var res = await bangumi.fetchSearch("未来日记", (e) {
         print(e);
       });
       print(json.encode(res));
@@ -19,19 +19,19 @@ void main() {
       print(json.encode(res));
     });
     test("fetchCharacterSync", () async {
-      var res = await bangumi.fetchCharacterSync(16235, (e) {
+      var res = await bangumi.fetchCharacter(16235, (e) {
         print(e);
       });
       print(json.encode(res));
     });
     test("fetchPersonSync", () async {
-      var res = await bangumi.fetchPersonSync(16235, (e) {
+      var res = await bangumi.fetchPerson(16235, (e) {
         print(e);
       });
       print(json.encode(res));
     });
     test("fetchSubjectRelationSync", () async {
-      var res = await bangumi.fetchSubjectRelationSync(16235, (e) {
+      var res = await bangumi.fetchSubjectRelation(16235, (e) {
         print(e);
       });
       print(json.encode(res));

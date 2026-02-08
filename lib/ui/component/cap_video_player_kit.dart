@@ -111,7 +111,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   bool isLoading = false;
   bool _showSlidebar = true;
   final List<DanmakuContentItem<double>> danmakuItems = [];
-  late int currentEpisodeIndex = widget.currentEpisodeIndex;
 
   /// 显示视频控制条定时器
   void showVideoControlsTimer() {
@@ -464,40 +463,17 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       });
       player.addListener(() {
         widget.onPositionChanged?.call(player.value.position);
-        if (mounted) {
-          safeSetState(() {
-            currentVolume = player.value.volume;
-            isPlaying = player.value.isPlaying;
-            position = player.value.position;
-            duration = player.value.duration;
-            rate = player.value.playbackSpeed;
-            isLoading = player.value.isBuffering;
-            bufferProgress = getBuffered();
-          });
-        }
+        safeSetState(() {
+          currentVolume = player.value.volume;
+          isPlaying = player.value.isPlaying;
+          position = player.value.position;
+          duration = player.value.duration;
+          rate = player.value.playbackSpeed;
+          isLoading = player.value.isBuffering;
+          bufferProgress = getBuffered();
+        });
       });
     });
-
-    // var player = widget.playerNotifier;
-    // log('init volume:${player.value.volume}');
-    // setState(() {
-    //   currentVolume = player.value.volume;
-    // });
-    // player.addListener(() {
-    //   widget.onPositionChanged?.call(player.value.position);
-    //   if (mounted) {
-    //     setState(() {
-    //       log('position:${player.value.position.inSeconds}');
-    //       currentVolume = player.value.volume;
-    //       isPlaying = player.value.isPlaying;
-    //       position = player.value.position;
-    //       duration = player.value.duration;
-    //       rate = player.value.playbackSpeed;
-    //       isLoading = player.value.isBuffering;
-    //       bufferProgress = getBuffered();
-    //     });
-    //   }
-    // });
   }
 
   /// 获取缓存
@@ -974,7 +950,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                               Platform.isLinux)
                           ? null
                           : Offset(0, 5),
-                      label: Text("${currentEpisodeIndex + 1} "),
+                      label: Text("${widget.currentEpisodeIndex + 1} "),
                       child: IconButton(
                         tooltip: 'Episode List',
                         onPressed: () {
@@ -1124,14 +1100,14 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           itemCount: episodeList.length,
           itemBuilder: (context, index) {
             return ListTile(
-              selected: index == currentEpisodeIndex,
+              selected: index == widget.currentEpisodeIndex,
               horizontalTitleGap: 0,
               leading: Text(
                 (index + 1).toString(),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               title: Text(episodeList[index]),
-              trailing: currentEpisodeIndex == index
+              trailing: widget.currentEpisodeIndex == index
                   ? ColorFiltered(
                       colorFilter: ColorFilter.mode(
                         Theme.of(context).colorScheme.primary,

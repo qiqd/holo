@@ -44,7 +44,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       setState(() {
         _searchResult = result;
       });
-      var res = await Api.bangumi.fetchSearchSync(result.first['work'], (e) {
+      var res = await Api.bangumi.fetchSearch(result.first['work'], (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(tr('image_search.subject_search_error'))),
         );

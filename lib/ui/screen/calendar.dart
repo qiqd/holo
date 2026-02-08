@@ -30,7 +30,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     setState(() {
       _calendar = [];
     });
-    final calendar = await Api.bangumi.fetchCalendarSync(
+    final calendar = await Api.bangumi.fetchCalendar(
       (e) => setState(() {
         _msg = e.toString();
       }),

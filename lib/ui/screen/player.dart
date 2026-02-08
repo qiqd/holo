@@ -219,7 +219,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _fetchEpisode() async {
-    final res = await Api.bangumi.fethcEpisodeSync(
+    final res = await Api.bangumi.fethcEpisode(
       widget.subject.id!,
       (e) => setState(() {
         log("fetchEpisode error: $e");

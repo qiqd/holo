@@ -30,7 +30,7 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _loading = true;
     });
-    final result = await Api.bangumi.fetchSearchSync(keyword, (e) {
+    final result = await Api.bangumi.fetchSearch(keyword, (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("search.error_searching".tr(args: [e.toString()])),

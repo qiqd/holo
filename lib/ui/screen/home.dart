@@ -1,15 +1,19 @@
-import 'dart:developer';
-
+import 'dart:async';
+import 'dart:io';
+import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/service/api.dart';
-import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
 import 'package:holo/util/check_version.dart';
 import 'package:holo/util/local_store.dart';
+import 'package:holo/util/safe_set_state.dart';
+import 'package:logger/logger.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,88 +25,77 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
-  Subject? _recommended;
+  final CarouselController _carouselController = CarouselController();
+  final ValueNotifier<List<Data>> _hotNotifier = ValueNotifier([]);
+  final Logger _logger = Logger();
+  int index = 0;
+  Timer? _carouselTimer;
   bool _loading = false;
-  String? _msg;
-  int _month = 1;
-  int _year = DateTime.now().year;
+  String _msg = '';
   int _page = 1;
-  void _fetchRecommended({
-    int page = 1,
-    bool isLoadMore = false,
-    int year = 2018,
-    int month = 1,
-  }) async {
-    setState(() {
-      _msg = null;
-      _loading = isLoadMore;
-    });
-    final recommended = await Api.bangumi.fetchRecommendSync(
-      page,
-      100,
-      year,
-      month,
-      (e) {
+  List<Data> _rank = [];
+  Future<void> _fetchHot() async {
+    final hot = await Api.bangumi.fetchRecommend(
+      year: DateTime.now().year,
+      // month: DateTime.now().month,
+      sort: "rank",
+      page: _page,
+      size: 10,
+      exception: (e) {
         setState(() {
-          log("home->fetch recommend error: $e");
+          _logger.e("home->fetch hot error: $e");
           _msg = e.toString();
           _loading = false;
         });
       },
     );
-    setState(() {
-      isLoadMore
-          ? _recommended?.data?.addAll(recommended?.data ?? [])
-          : _recommended = recommended;
+    safeSetState(() {
+      _hotNotifier.value = hot?.data ?? [];
     });
-    if (_recommended != null) {
-      var s = recommended!.data
-          ?.where(
-            (element) =>
-                element.date?.substring(0, 4) == DateTime.now().year.toString(),
-          )
-          .toList();
-      LocalStore.setHomeCache(Subject(data: s));
+    LocalStore.setHomeHotCache(Subject(data: hot?.data));
+  }
+
+  Future<void> _fetchRank({int page = 1, bool loadMore = false}) async {
+    if (_loading) {
+      return;
     }
-    setState(() {
+    safeSetState(() {
+      _loading = true;
+    });
+    final rank = await Api.bangumi.fetchRecommend(
+      sort: "rank",
+      page: page,
+      size: Platform.isWindows || Platform.isLinux || Platform.isMacOS
+          ? 10
+          : 30,
+      exception: (e) {
+        setState(() {
+          _logger.e("home->fetch rank error: $e");
+          _msg = e.toString();
+          _loading = false;
+        });
+      },
+    );
+    safeSetState(() {
+      if (loadMore) {
+        _rank.addAll(rank?.data ?? []);
+      } else {
+        _rank = rank?.data ?? [];
+      }
+    });
+    LocalStore.setHomeRankCache(Subject(data: _rank));
+    safeSetState(() {
       _loading = false;
     });
   }
 
   void _onScrollToBottom() {
-    if ((_recommended?.total ?? 0) <= (_recommended?.data?.length ?? 0) &&
-        _page + 1 >= _month + 3) {
-      log("load more cancle, page: $_page, month: $_month");
-      return;
-    }
-    log("load more page: $_page");
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 100 &&
         !_loading) {
-      _fetchRecommended(year: _year, month: ++_page, isLoadMore: true);
+      _logger.i("load more page: $_page");
+      _fetchRank(page: ++_page, loadMore: true);
     }
-  }
-
-  void _onYearSelected(int year) {
-    if (_loading) {
-      return;
-    }
-    setState(() {
-      _year = year;
-      _recommended = null;
-    });
-    _fetchRecommended(year: _year, month: _month, isLoadMore: false);
-  }
-
-  void _onMonthSelected(int month) {
-    if (_loading) {
-      return;
-    }
-    setState(() {
-      _month = month;
-      _recommended = null;
-    });
-    _fetchRecommended(year: _year, month: _month, isLoadMore: false);
   }
 
   void _checkVersion() async {
@@ -136,15 +129,161 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _homeScreenInit() {
+    _checkVersion();
+    _hotNotifier.addListener(() {
+      if (_hotNotifier.value.isNotEmpty) {
+        _carouselTimer?.cancel();
+
+        _carouselTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+          if (index >= _hotNotifier.value.length) {
+            index = 0;
+          }
+          _carouselController.animateToItem(index++);
+        });
+      }
+    });
+    _hotNotifier.value = LocalStore.getHomeHotCache()?.data ?? [];
+    _rank = LocalStore.getHomeRankCache()?.data ?? [];
+    if (DateTime.now().hour % 3 == 0 || _hotNotifier.value.isEmpty) {
+      _fetchHot();
+    }
+    if (DateTime.now().hour % 3 == 0 || _rank.isEmpty) {
+      _fetchRank();
+    }
+    _scrollController.addListener(_onScrollToBottom);
+  }
+
+  // 热门推荐骨架屏（支持横竖屏）
+  Widget _buildHotSkeleton(bool isLandscape) {
+    return SizedBox(
+      height: isLandscape ? 400 : 200,
+      width: double.infinity,
+      child: CarouselView.weighted(
+        controller: _carouselController,
+        itemSnapping: true,
+
+        flexWeights: isLandscape ? [1, 1, 1] : [5, 1],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        children: [1, 2, 3, 4].map((e) {
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(color: Colors.white38),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // 高分推荐骨架屏（支持横竖屏）
+  Widget _buildRankSkeleton(bool isLandscape) {
+    return SliverGrid.builder(
+      key: ValueKey('home_rank_grid'),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: isLandscape ? 6 : 3,
+        mainAxisSpacing: 6,
+        crossAxisSpacing: 6,
+        childAspectRatio: 0.6,
+      ),
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(color: Colors.white38),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    _checkVersion();
-    _recommended = LocalStore.getHomeCache();
-    _scrollController.addListener(_onScrollToBottom);
-    if (_recommended == null || _recommended?.data?.isEmpty == true) {
-      _fetchRecommended(year: _year, month: _month);
-    }
+    _homeScreenInit();
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      titleSpacing: 0,
+      animateColor: true,
+      actions: [
+        IconButton(
+          icon: Icon(Icons.image_search_rounded),
+          onPressed: () {
+            context.push('/image_search');
+          },
+        ),
+      ],
+      title: Padding(
+        padding: EdgeInsets.only(left: 12),
+        child: TextField(
+          readOnly: true,
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search_rounded),
+            contentPadding: EdgeInsets.all(0),
+            hintText: context.tr("home.hint_text"),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+          ),
+          onTap: () {
+            context.push('/search');
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSliverGrid(
+    List<Data> items, {
+    required bool isLandscape,
+    required String heroKey,
+  }) {
+    return SliverGrid.builder(
+      key: ValueKey('home_rank_grid_$heroKey'),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: isLandscape ? 6 : 3,
+        mainAxisSpacing: 6,
+        crossAxisSpacing: 6,
+        childAspectRatio: 0.6,
+      ),
+
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        var item = items[index];
+        var name = item.nameCn != null && item.nameCn!.isNotEmpty
+            ? item.nameCn!
+            : item.name ?? "";
+        return MediaGrid(
+          id: '${heroKey}_${item.id}',
+          airDate: item.date,
+          rating: item.rating?.score,
+          imageUrl: item.images?.large ?? "",
+          title: name,
+          onTap: () => context.push(
+            '/detail',
+            extra: {
+              'id': item.id!,
+              'keyword': name,
+              'cover': item.images?.large ?? '',
+              'from': heroKey,
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  dispose() {
+    _carouselTimer?.cancel();
+    _hotNotifier.dispose();
+    super.dispose();
   }
 
   @override
@@ -152,139 +291,175 @@ class _HomeScreenState extends State<HomeScreen> {
     var isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
-      appBar: isLandscape
-          ? AppBar(
-              centerTitle: true,
-              backgroundColor: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              title: SegmentedButton(
-                segments: [
-                  ButtonSegment(value: 1, label: Text("冬季")),
-                  ButtonSegment(value: 4, label: Text("春季")),
-                  ButtonSegment(value: 7, label: Text("夏季")),
-                  ButtonSegment(value: 10, label: Text("秋季")),
-                ],
-                onSelectionChanged: (value) {
-                  log("home->month selected: ${value.first}");
-                  _onMonthSelected(value.first);
-                  _page = value.first;
-                },
-                selected: {_month},
-              ),
-              leading: PopupMenuButton(
-                icon: Icon(Icons.calendar_month),
-                onSelected: (value) {
-                  _onYearSelected(value);
-                },
-                itemBuilder: (context) {
-                  var item = <PopupMenuItem<int>>[];
-                  var year = DateTime.now().year;
-                  for (var i = 2000; i <= year; i++) {
-                    item.add(
-                      PopupMenuItem(
-                        value: i,
-                        child: Text(
-                          i.toString(),
-                          style: TextStyle(
-                            color: i == _year
-                                ? Theme.of(context).primaryColor
-                                : null,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  return item.reversed.toList();
-                },
-              ),
-            )
-          : AppBar(
-              titleSpacing: 0,
-              animateColor: true,
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.image_search_rounded),
-                  onPressed: () {
-                    context.push('/image_search');
-                  },
-                ),
-              ],
-              title: Padding(
-                padding: EdgeInsets.only(left: 12),
-                child: TextField(
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.search_rounded),
-                    contentPadding: EdgeInsets.all(0),
-                    hintText: context.tr("home.hint_text"),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18),
-                      borderSide: BorderSide(color: Colors.grey.shade400),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18),
-                      borderSide: BorderSide(color: Colors.grey.shade400),
-                    ),
-                  ),
-                  onTap: () {
-                    context.push('/search');
-                  },
-                ),
-              ),
-            ),
+      appBar: isLandscape ? null : _buildAppBar() as PreferredSizeWidget?,
       body: SafeArea(
-        child: Column(
-          children: [
-            if (_loading) LinearProgressIndicator(),
-            Expanded(
-              child: Center(
-                child: _msg != null
-                    ? LoadingOrShowMsg(msg: _msg)
-                    : (_recommended == null ||
-                          _recommended?.data?.isEmpty == true)
-                    ? const ShimmerSkeleton()
-                    : GridView.builder(
-                        controller: _scrollController,
-                        itemCount: _recommended!.data!.length,
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
-                          crossAxisCount: isLandscape ? 6 : 3,
-                          childAspectRatio: 0.6,
-                        ),
-                        itemBuilder: (context, index) {
-                          final item = _recommended!.data![index];
-                          var nameCN = item.nameCn ?? '';
-                          var name = item.name ?? "";
-                          return MediaGrid(
-                            id: "home_${item.id!}",
-                            imageUrl: item.images?.medium,
-                            title: nameCN.isNotEmpty ? nameCN : name,
-                            rating: item.rating?.score,
-                            airDate: item.infobox
-                                ?.firstWhere(
-                                  (element) =>
-                                      element.key?.contains("放送开始") ?? false,
-                                )
-                                .value,
-                            onTap: () {
-                              context.push(
-                                '/detail',
-                                extra: {
-                                  'id': item.id!,
-                                  'keyword': item.nameCn ?? item.name ?? "",
-                                  'cover': item.images?.large ?? "",
-                                  'from': "home",
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await _fetchRank(page: ++_page, loadMore: false);
+          },
+          child: Column(
+            children: [
+              if (_loading) LinearProgressIndicator(),
+              Expanded(
+                child: Padding(
+                  padding: .symmetric(horizontal: 12),
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    physics: BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Row(
+                          spacing: 6,
+                          children: [
+                            Text(
+                              '热门推荐',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            if (isLandscape) ...[
+                              IconButton(
+                                onPressed: () {
+                                  if (index == 0) {
+                                    return;
+                                  }
+                                  _carouselController.animateToItem(index--);
                                 },
-                              );
-                            },
-                          );
-                        },
+                                icon: Icon(Icons.navigate_before_rounded),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  if (index >= _hotNotifier.value.length - 1) {
+                                    return;
+                                  }
+                                  _carouselController.animateToItem(index++);
+                                },
+                                icon: Icon(Icons.navigate_next_rounded),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
+
+                      SliverToBoxAdapter(
+                        child: ValueListenableBuilder(
+                          valueListenable: _hotNotifier,
+                          builder: (context, hot, child) {
+                            return hot.isEmpty
+                                ? _buildHotSkeleton(isLandscape)
+                                : SizedBox(
+                                    height: isLandscape ? 400 : 200,
+                                    width: double.infinity,
+                                    child: CarouselView.weighted(
+                                      controller: _carouselController,
+                                      itemSnapping: true,
+                                      onTap: (index) {
+                                        var name =
+                                            hot[index].nameCn != null &&
+                                                hot[index].nameCn!.isNotEmpty
+                                            ? hot[index].nameCn!
+                                            : hot[index].name ?? "";
+                                        context.push(
+                                          '/detail',
+                                          extra: {
+                                            'id': hot[index].id!,
+                                            'keyword': name,
+                                            'cover':
+                                                hot[index].images?.large ?? '',
+                                            'from': "home-hot",
+                                          },
+                                        );
+                                      },
+                                      flexWeights: isLandscape
+                                          ? [1, 1, 1]
+                                          : [5, 1],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      children: hot.map((e) {
+                                        return Stack(
+                                          children: [
+                                            Hero(
+                                              tag: 'home-hot_${e.id}',
+                                              child: CachedNetworkImage(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                fit: BoxFit.cover,
+                                                imageUrl: e.images?.large ?? "",
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
+                                                progressIndicatorBuilder:
+                                                    (
+                                                      context,
+                                                      url,
+                                                      progress,
+                                                    ) => const Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: .bottomCenter,
+                                              child: Container(
+                                                width: double.infinity,
+                                                padding: .symmetric(
+                                                  horizontal: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin:
+                                                        Alignment.bottomCenter,
+                                                    end: Alignment.topCenter,
+                                                    colors: [
+                                                      Colors.black.withOpacity(
+                                                        0.5,
+                                                      ),
+                                                      Colors.transparent,
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  e.nameCn ?? "",
+                                                  maxLines: 2,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium
+                                                      ?.copyWith(
+                                                        color: Colors.white,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }).toList(),
+                                    ),
+                                  );
+                          },
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Text(
+                          '高分推荐',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                      SliverToBoxAdapter(child: SizedBox(height: 6)),
+                      _rank.isEmpty
+                          ? _buildRankSkeleton(isLandscape)
+                          : _buildSliverGrid(
+                              _rank,
+                              isLandscape: isLandscape,
+                              heroKey: "home-rank",
+                            ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
