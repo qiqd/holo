@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
+import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/util/local_store.dart';
@@ -18,7 +19,7 @@ import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:video_player/video_player.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:holo/util/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state.dart';
 
 class CapVideoPlayerKit extends StatefulWidget {
   final ValueNotifier<VideoPlayerController?> playerNotifier;
@@ -297,42 +298,46 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   /// 加载弹幕设置
   void loadDanmuSetting() {
-    var option = LocalStore.getDanmakuOption();
-    if (option == null) return;
-    final setting = option["option"] as DanmakuOption;
-
-    _danmuController?.updateOption(setting);
-    if (mounted) {
-      setState(() {
-        hideTopDanmaku = setting.hideTop;
-        hideBottomDanmaku = setting.hideBottom;
-        hideScrollDanmaku = setting.hideScroll;
-        massiveDanmakuMode = setting.massiveMode;
-        displayArea = setting.area;
-        danmakuFontsize = setting.fontSize;
-        // _danmakuFontweight = setting.fontWeight;
-        opacity = setting.opacity;
-        filter = option["filter"] as String;
-      });
-    }
+    var setting = LocalStore.getAppSetting().danmakuSetting;
+    var option = DanmakuOption(
+      opacity: setting.opacity,
+      area: setting.area,
+      fontSize: setting.fontSize,
+      hideTop: setting.hideTop,
+      hideScroll: setting.hideScroll,
+      hideBottom: setting.hideBottom,
+      massiveMode: setting.massiveMode,
+    );
+    _danmuController?.updateOption(option);
+    safeSetState(() {
+      hideTopDanmaku = setting.hideTop;
+      hideBottomDanmaku = setting.hideBottom;
+      hideScrollDanmaku = setting.hideScroll;
+      massiveDanmakuMode = setting.massiveMode;
+      displayArea = setting.area;
+      danmakuFontsize = setting.fontSize;
+      opacity = setting.opacity;
+      filter = setting.filterWords;
+    });
   }
 
   /// 保存弹幕设置
   void saveDanmuSetting() {
     filterDanmakuItems();
     // log('hideTop:$_hideTopDanmaku');
-    final option = DanmakuOption(
+    final appSetting = LocalStore.getAppSetting();
+    appSetting.danmakuSetting = DanmakuSetting(
       hideTop: hideTopDanmaku,
       hideBottom: hideBottomDanmaku,
       hideScroll: hideScrollDanmaku,
       massiveMode: massiveDanmakuMode,
       area: displayArea,
       fontSize: danmakuFontsize,
-      fontWeight: danmakuFontweight,
       opacity: opacity,
+      filterWords: filter,
     );
     //log('filter:$_filter');
-    LocalStore.saveDanmakuOption(option, filter: filter);
+    LocalStore.saveAppSetting(appSetting);
   }
 
   /// 过滤弹幕
@@ -520,12 +525,22 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   ///弹幕层
   Widget _buildDanmaku() {
+    var danmakuSetting = LocalStore.getAppSetting().danmakuSetting;
+    var option = DanmakuOption(
+      hideTop: danmakuSetting.hideTop,
+      hideBottom: danmakuSetting.hideBottom,
+      hideScroll: danmakuSetting.hideScroll,
+      massiveMode: danmakuSetting.massiveMode,
+      area: danmakuSetting.area,
+      fontSize: danmakuSetting.fontSize,
+      opacity: danmakuSetting.opacity,
+    );
     return (isShowDanmaku)
         ? DanmakuScreen<double>(
             createdController: (e) {
               _danmuController = e;
             },
-            option: LocalStore.getDanmakuOption()?["option"] as DanmakuOption,
+            option: option,
           )
         : SizedBox.shrink();
   }

@@ -1,0 +1,52 @@
+import 'package:json_annotation/json_annotation.dart';
+part 'app_setting.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class AppSetting {
+  /// 弹幕设置
+  DanmakuSetting danmakuSetting;
+
+  ///使用系统颜色，只在Android 12+ 以上版本生效s
+  bool useSystemColor;
+
+  /// 主题模式
+  /// 0: 系统主题
+  /// 1: 浅色主题
+  /// 2: 深色主题
+  int themeMode;
+  AppSetting({
+    this.danmakuSetting = const DanmakuSetting(),
+    this.useSystemColor = false,
+    this.themeMode = 0,
+  });
+  Map<String, dynamic> toJson() => _$AppSettingToJson(this);
+  factory AppSetting.fromJson(Map<String, dynamic> json) =>
+      _$AppSettingFromJson(json);
+}
+
+@JsonSerializable(explicitToJson: true)
+class DanmakuSetting {
+  final double opacity;
+  final double area;
+  final double fontSize;
+  final bool hideTop;
+  final bool hideScroll;
+  final bool hideBottom;
+  final bool massiveMode;
+
+  /// 过滤词，英文逗号分隔
+  final String filterWords;
+  const DanmakuSetting({
+    this.opacity = 1.0,
+    this.area = 1.0,
+    this.fontSize = 16,
+    this.hideTop = false,
+    this.hideScroll = false,
+    this.hideBottom = false,
+    this.massiveMode = false,
+    this.filterWords = '',
+  });
+  Map<String, dynamic> toJson() => _$DanmakuSettingToJson(this);
+  factory DanmakuSetting.fromJson(Map<String, dynamic> json) =>
+      _$DanmakuSettingFromJson(json);
+}

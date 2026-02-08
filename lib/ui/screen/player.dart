@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
-import 'package:holo/api/setting_api.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode.dart';
 import 'package:holo/entity/logvar_episode.dart';
@@ -22,7 +21,7 @@ import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:holo/util/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
@@ -423,7 +422,6 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void dispose() {
     _storeLocalHistory();
-    SettingApi.updateSetting(() {}, (_) {});
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

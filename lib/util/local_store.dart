@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
-
-import 'package:canvas_danmaku/models/danmaku_option.dart';
+import 'package:holo/api/setting_api.dart';
+import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/calendar.dart';
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/rule.dart';
@@ -227,38 +227,23 @@ class LocalStore {
     _prefs!.setStringList("${_key}_search", history);
   }
 
-  static Map<String, dynamic>? getDanmakuOption() {
-    if (_prefs == null) return null;
-    var danmakuOptionStr = _prefs!.getString("${_key}_danmaku_option") ?? "";
-    if (danmakuOptionStr.isEmpty) {
-      return {"option": DanmakuOption(), "filter": ""};
+  static AppSetting getAppSetting() {
+    if (_prefs == null) return AppSetting();
+    var appSettingStr = _prefs!.getString("${_key}_app_setting") ?? "";
+    if (appSettingStr.isEmpty) {
+      return AppSetting();
     }
-    var map = json.decode(danmakuOptionStr) as Map<String, dynamic>;
-    final option = DanmakuOption(
-      opacity: map["opacity"] as double,
-      area: map["area"] as double,
-      fontSize: map["fontSize"] as double,
-      hideTop: map["hideTop"] as bool,
-      hideBottom: map["hideBottom"] as bool,
-      hideScroll: map["hideScroll"] as bool,
-      massiveMode: map["massiveMode"] as bool,
-    );
-    return {"option": option, "filter": map["filter"] as String};
+    return (AppSetting.fromJson(json.decode(appSettingStr)));
   }
 
-  static void saveDanmakuOption(DanmakuOption option, {String filter = ""}) {
+  static void saveAppSetting(AppSetting appSetting) {
     if (_prefs == null) return;
-    final map = {
-      "opacity": option.opacity,
-      "area": option.area,
-      "fontSize": option.fontSize,
-      "hideTop": option.hideTop,
-      "hideBottom": option.hideBottom,
-      "hideScroll": option.hideScroll,
-      "massiveMode": option.massiveMode,
-      "filter": filter,
-    };
-    _prefs!.setString("${_key}_danmaku_option", json.encode(map));
+    var appSettingStr = _prefs!.getString("${_key}_app_setting") ?? "";
+    var appSetting = appSettingStr.isEmpty
+        ? AppSetting()
+        : AppSetting.fromJson(json.decode(appSettingStr));
+    _prefs!.setString("${_key}_app_setting", json.encode(appSetting));
+    SettingApi.saveSetting(appSetting, (_) {});
   }
 
   static List<Rule> getRules() {
@@ -323,14 +308,6 @@ class LocalStore {
   static String getRuleRepositoryUrl() {
     if (_prefs == null) return "";
     return _prefs!.getString("${_key}_rule_repository_url") ?? "";
-  }
-
-  static bool getUseSystemColor() {
-    return _prefs!.getBool("${_key}_use_system_color") ?? false;
-  }
-
-  static void setUseSystemColor(bool value) {
-    _prefs?.setBool("${_key}_use_system_color", value);
   }
 
   static bool setSubjectCacheAndSource(Data data) {

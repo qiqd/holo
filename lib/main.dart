@@ -44,7 +44,6 @@ void main() async {
       size: Size(1000, 800),
       minimumSize: Size(800, 600),
       center: true,
-
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
     );
@@ -69,9 +68,10 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
+  static var appSetting = LocalStore.getAppSetting();
   static final themeNotifier = ValueNotifier<ThemeMode>(ThemeMode.system);
   static final useSystemColorNotifier = ValueNotifier<bool>(
-    LocalStore.getUseSystemColor(),
+    appSetting.useSystemColor,
   );
   const MyApp({super.key});
 
@@ -220,15 +220,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
   }
 
+  void initAppSetting() async {
+    final setting = await SettingApi.fetchSetting((msg) {});
+    if (setting != null) {
+      LocalStore.saveAppSetting(setting);
+    }
+    var appSetting = setting ?? LocalStore.getAppSetting();
+    MyApp.appSetting = appSetting;
+    MyApp.useSystemColorNotifier.value = appSetting.useSystemColor;
+    MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
+      (element) => element.index == appSetting.themeMode,
+      orElse: () => ThemeMode.system,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    SettingApi.fetchSetting(() {}, (_) {});
+    initAppSetting();
     WidgetsBinding.instance.addObserver(this);
-    MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
-      (element) => element.toString() == LocalStore.getString('theme_mode'),
-      orElse: () => ThemeMode.system,
-    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateSystemNavigationBarColor(MediaQuery.platformBrightnessOf(context));
     });

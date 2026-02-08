@@ -29,11 +29,7 @@ class _SetttingScreenState extends State<SetttingScreen>
   String? _email;
   String? _token;
   bool _checkVersioning = false;
-  @override
-  void activate() {
-    log("active");
-    super.activate();
-  }
+  final _appSetting = MyApp.appSetting;
 
   @override
   void initState() {
@@ -44,6 +40,7 @@ class _SetttingScreenState extends State<SetttingScreen>
 
   @override
   void dispose() {
+    LocalStore.saveAppSetting(_appSetting);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -308,13 +305,14 @@ class _SetttingScreenState extends State<SetttingScreen>
           ),
           SwitchListTile(
             secondary: Icon(Icons.colorize_rounded),
-            value: LocalStore.getUseSystemColor(),
+            value: MyApp.useSystemColorNotifier.value,
             title: Text('setting.appearance.use_system_color'.tr()),
             subtitle: Text(
               'setting.appearance.use_system_color_description'.tr(),
             ),
             onChanged: (value) => setState(() {
-              LocalStore.setUseSystemColor(value);
+              _appSetting.useSystemColor = value;
+              LocalStore.saveAppSetting(_appSetting);
             }),
           ),
 
@@ -544,10 +542,9 @@ class _SetttingScreenState extends State<SetttingScreen>
                     }
                   },
                 ),
-
                 RadioListTile<ThemeMode>(
-                  title: Text('setting.appearance.theme_mode_dark'.tr()),
-                  value: ThemeMode.dark,
+                  title: Text('setting.appearance.theme_mode_light'.tr()),
+                  value: ThemeMode.light,
                   groupValue: currentTheme,
                   onChanged: (ThemeMode? value) {
                     if (value != null) {
@@ -558,8 +555,8 @@ class _SetttingScreenState extends State<SetttingScreen>
                   },
                 ),
                 RadioListTile<ThemeMode>(
-                  title: Text('setting.appearance.theme_mode_light'.tr()),
-                  value: ThemeMode.light,
+                  title: Text('setting.appearance.theme_mode_dark'.tr()),
+                  value: ThemeMode.dark,
                   groupValue: currentTheme,
                   onChanged: (ThemeMode? value) {
                     if (value != null) {
@@ -580,8 +577,9 @@ class _SetttingScreenState extends State<SetttingScreen>
           ),
           FilledButton(
             onPressed: () {
-              MyApp.themeNotifier.value = currentTheme!;
-              LocalStore.setString('theme_mode', currentTheme.toString());
+              MyApp.themeNotifier.value = currentTheme ?? ThemeMode.system;
+              _appSetting.themeMode = currentTheme?.index ?? 0;
+              LocalStore.saveAppSetting(_appSetting);
               Navigator.pop(context);
               setState(() {});
             },
