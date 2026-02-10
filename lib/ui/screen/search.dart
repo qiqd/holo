@@ -210,8 +210,9 @@ class _SearchScreenState extends State<SearchScreen> {
                             id: "search_${item.id!}",
                             imageUrl: item.images?.medium,
                             title: nameCN.isNotEmpty ? nameCN : name,
-                            rating: item.rating?.score,
+                            rating: item.rating?.score?.toStringAsFixed(1),
                             airDate: item.date,
+                            showAriTime: false,
                             onTap: () {
                               context.push(
                                 '/detail',

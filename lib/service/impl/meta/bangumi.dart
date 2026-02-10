@@ -79,7 +79,8 @@ class Bangumi implements MetaService {
             for (var subject in item.items!) {
               if (calenderDetail.containsKey(subject.id.toString())) {
                 var time = calenderDetail[subject.id.toString()];
-                subject.airDate = '${time!.hour}:${time.minute}';
+                subject.airDate =
+                    '${subject.airDate ?? ''}/${time!.hour}:${time.minute}';
               }
             }
           }

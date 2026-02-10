@@ -105,14 +105,10 @@ class _SetttingScreenState extends State<SetttingScreen>
 
   @override
   Widget build(BuildContext context) {
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    // var isLandscape =
+    //     MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: isLandscape ? Colors.transparent : null,
-        backgroundColor: isLandscape ? Colors.transparent : null,
-        title: Text('setting.title'.tr()),
-      ),
+      appBar: AppBar(title: Text('setting.title'.tr())),
       body: ListView(
         children: [
           _buildSectionHeader('setting.section.account_status'.tr()),

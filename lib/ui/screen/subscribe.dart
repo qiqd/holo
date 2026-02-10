@@ -25,7 +25,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     with SingleTickerProviderStateMixin, RouteAware {
   List<PlaybackHistory> playback = [];
   List<SubscribeHistory> subscribe = [];
-  final Set<int> _deleteModeIds = {};
+  final Set<int> _deletePlaybackIds = {};
+  final Set<int> _deleteSubscribeIds = {};
   bool _isUpdating = false;
   late final TabController _tabController = TabController(
     vsync: this,
@@ -94,7 +95,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
       setState(() {
         playback.removeWhere((item) => item.subId == id);
-        _deleteModeIds.remove(id);
+        _deletePlaybackIds.remove(id);
       });
     } catch (e) {
       ScaffoldMessenger.of(
@@ -122,7 +123,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
       setState(() {
         subscribe.removeWhere((item) => item.subId == id);
-        _deleteModeIds.remove(id);
+        _deletePlaybackIds.remove(id);
       });
     } catch (e) {
       ScaffoldMessenger.of(
@@ -131,12 +132,20 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     }
   }
 
-  void _toggleDeleteMode(int id) {
+  void _toggleDeleteMode(int id, bool isPlayback) {
     setState(() {
-      if (_deleteModeIds.contains(id)) {
-        _deleteModeIds.remove(id);
+      if (isPlayback) {
+        if (_deletePlaybackIds.contains(id)) {
+          _deletePlaybackIds.remove(id);
+        } else {
+          _deletePlaybackIds.add(id);
+        }
       } else {
-        _deleteModeIds.add(id);
+        if (_deleteSubscribeIds.contains(id)) {
+          _deleteSubscribeIds.remove(id);
+        } else {
+          _deleteSubscribeIds.add(id);
+        }
       }
     });
   }
@@ -144,7 +153,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   void initTabBarListener() {
     _tabController.addListener(() {
       setState(() {
-        _deleteModeIds.clear();
+        _deletePlaybackIds.clear();
       });
     });
   }
@@ -183,12 +192,13 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               icon: Icon(Icons.refresh_rounded),
             ),
           ],
-          if (_deleteModeIds.isNotEmpty)
+          if (_deletePlaybackIds.isNotEmpty || _deleteSubscribeIds.isNotEmpty)
             IconButton(
               icon: Icon(Icons.remove_done_rounded),
               onPressed: () {
                 setState(() {
-                  _deleteModeIds.clear();
+                  _deletePlaybackIds.clear();
+                  _deleteSubscribeIds.clear();
                 });
               },
             ),
@@ -244,11 +254,11 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                                 id: "subscribe_${item.subId}",
                                 imageUrl: item.imgUrl,
                                 title: item.title,
-                                showDeleteIcon: _deleteModeIds.contains(
+                                showDeleteIcon: _deleteSubscribeIds.contains(
                                   item.subId,
                                 ),
                                 onLongPress: (_) =>
-                                    _toggleDeleteMode(item.subId),
+                                    _toggleDeleteMode(item.subId, false),
                                 onDelete: _deleteSubscribeHistory,
                                 onTap: () {
                                   var cache = _getCacheBySubId(item.subId);
@@ -298,11 +308,11 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                                 id: "subscribe.history_${item.subId}",
                                 imageUrl: item.imgUrl,
                                 nameCn: item.title,
-                                showDeleteIcon: _deleteModeIds.contains(
+                                showDeleteIcon: _deletePlaybackIds.contains(
                                   item.subId,
                                 ),
                                 onLongPress: (_) =>
-                                    _toggleDeleteMode(item.subId),
+                                    _toggleDeleteMode(item.subId, true),
                                 onDelete: _deletePlaybackHistory,
                                 onTap: () {
                                   var cache = _getCacheBySubId(item.subId);

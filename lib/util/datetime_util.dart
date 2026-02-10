@@ -26,3 +26,14 @@ String formatTimeAgo(DateTime dateTime) {
   final years = (diff.inDays / 365).floor();
   return '$years 年前';
 }
+
+/// 检查 [airDate] 距离现在有多少周
+int checkUpdateAt(String? airDate) {
+  try {
+    var airTime = airDate != null ? DateTime.parse(airDate) : DateTime.now();
+    var difference = DateTime.now().difference(airTime);
+    return (difference.inDays / 7).toInt() + 1;
+  } catch (e) {
+    return -1;
+  }
+}

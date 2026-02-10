@@ -271,7 +271,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   void initTimerForDanmu({bool updateStateEverySecond = false}) {
     danmuTimer?.cancel();
     danmuTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (!showSetting && !widget.isInputting) {
+      if (!showSetting &&
+          !widget.isInputting &&
+          (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
         _focusNode.requestFocus();
       }
       if (updateStateEverySecond) {
@@ -560,9 +562,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    currentVolume > 66
+                    currentVolume > 0.66
                         ? Icons.volume_up_rounded
-                        : currentVolume > 33
+                        : currentVolume > 0.33
                         ? Icons.volume_down_rounded
                         : Icons.volume_mute_rounded,
                     color: Colors.white,

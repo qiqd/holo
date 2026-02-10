@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:holo/util/datetime_util.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MediaCard extends StatelessWidget {
@@ -49,6 +50,7 @@ class MediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var updateTo = checkUpdateAt(airDate);
     return Stack(
       children: [
         InkWell(
@@ -77,7 +79,6 @@ class MediaCard extends StatelessWidget {
                         width: double.infinity,
                         height: double.infinity,
                         fit: BoxFit.fitHeight,
-
                         errorWidget: (context, url, error) {
                           log("meida_card.image_url:$url");
                           log("meida_card.image_error:$error");
@@ -150,7 +151,7 @@ class MediaCard extends StatelessWidget {
                                     color: Colors.grey,
                                     fontSize: 14,
                                   ),
-                                  maxLines: 5,
+                                  maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
                                 )
                               : SizedBox.shrink(),
@@ -240,10 +241,11 @@ class MediaCard extends StatelessWidget {
                                             ? context.tr(
                                                 "component.media_card.status",
                                               )
-                                            : context.tr(
-                                                "component.media_card.total_episode",
-                                                args: [episode.toString()],
-                                              ),
+                                            : '${updateTo > 0
+                                                  ? updateTo <= (episode ?? 0)
+                                                        ? '更新至$updateTo话'
+                                                        : '已完结'
+                                                  : ''}/${context.tr("component.media_card.total_episode", args: [episode.toString()])}',
                                         style: const TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12,

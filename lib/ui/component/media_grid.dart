@@ -1,17 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:holo/util/datetime_util.dart';
 
 class MediaGrid extends StatelessWidget {
   final String id;
   final String? imageUrl;
   final String? title;
-  final double? rating;
+  final String? rating;
   final Function? onTap;
   final bool showRating;
   final String? airDate;
   final bool showDeleteIcon;
-
+  final bool showAriTime;
   final Function(int)? onDelete;
   final Function(bool)? onLongPress;
 
@@ -20,18 +21,28 @@ class MediaGrid extends StatelessWidget {
     required this.id,
     this.imageUrl,
     this.title,
-    this.rating = 0,
+    this.rating,
     this.showRating = true,
     this.airDate,
     this.onTap,
     this.showDeleteIcon = false,
-
+    this.showAriTime = true,
     this.onDelete,
     this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
+    var updatedTo = -1;
+    String? updateAt;
+
+    if (airDate?.contains('/') ?? false) {
+      updatedTo = checkUpdateAt(airDate!.split('/').first);
+      updateAt = airDate!.split('/').last;
+    } else if (airDate != null) {
+      updatedTo = checkUpdateAt(airDate!);
+    }
+
     return Stack(
       children: [
         InkWell(
@@ -61,8 +72,8 @@ class MediaGrid extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    if (rating != null && showRating && !showDeleteIcon)
+                    //评分
+                    if ((rating != null || updateAt != null) && !showDeleteIcon)
                       Positioned(
                         right: 4,
                         top: 4,
@@ -77,14 +88,15 @@ class MediaGrid extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              const Icon(
-                                Icons.star,
-                                color: Colors.yellow,
-                                size: 14,
-                              ),
+                              if (rating != null)
+                                const Icon(
+                                  Icons.star_rounded,
+                                  color: Colors.yellow,
+                                  size: 14,
+                                ),
                               const SizedBox(width: 2),
                               Text(
-                                rating!.toStringAsFixed(1),
+                                rating ?? updateAt ?? '',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -94,6 +106,7 @@ class MediaGrid extends StatelessWidget {
                           ),
                         ),
                       ),
+                    //放送时间
                     if (airDate != null)
                       Positioned(
                         right: 4,
@@ -108,7 +121,11 @@ class MediaGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            airDate!,
+                            showAriTime
+                                ? (updatedTo > 0
+                                      ? '更新至第${updatedTo.toString()}话'
+                                      : '暂未更新')
+                                : airDate ?? '',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,

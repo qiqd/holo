@@ -333,6 +333,7 @@ class _DetailScreenState extends State<DetailScreen>
               if (isLoading) {
                 return;
               }
+              setState(() {});
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
@@ -438,7 +439,9 @@ class _DetailScreenState extends State<DetailScreen>
                     ),
                   );
                 },
-              );
+              ).then((onValue) {
+                setState(() {});
+              });
             },
             icon: Icon(Icons.search),
           ),
@@ -460,16 +463,7 @@ class _DetailScreenState extends State<DetailScreen>
                       episode: data!.eps ?? 0,
                       rating: data!.rating?.score,
                       height: 250,
-                      airDate: data!.infobox
-                          ?.firstWhere(
-                            (element) =>
-                                element.key?.contains(
-                                  "detail.air_date_key".tr(),
-                                ) ??
-                                false,
-                            orElse: () => InfoBox(),
-                          )
-                          .value,
+                      airDate: data?.date,
                     ),
                     Expanded(
                       child: Column(

@@ -71,6 +71,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   bool _showInfo = true;
   bool _isTablet = false;
   bool _isInputting = false;
+  final String _danmakuKeyword = '';
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
@@ -126,7 +127,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         if (loadDanmaku) {
           _loadDanmaku(
             isFirstLoad: true,
-            keyword: nameCn,
+            keyword: _danmakuKeyword.isNotEmpty ? _danmakuKeyword : nameCn,
             onComplete: (e) {
               ScaffoldMessenger.of(
                 context,
@@ -238,6 +239,9 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
     final p =
         (await _playerNotifier.value?.position ?? Duration.zero).inSeconds;
+    if (p <= 0) {
+      return;
+    }
     PlaybackHistory history = PlaybackHistory(
       subId: widget.subject.id!,
       title: nameCn,
@@ -582,8 +586,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                                   horizontal: 10,
                                 ).copyWith(top: 10),
                                 child: Center(
-                                  child: TextField(
+                                  child: TextFormField(
                                     textInputAction: .search,
+                                    initialValue: _danmakuKeyword,
                                     decoration: InputDecoration(
                                       hintText: 'player.danmaku_search_hint'
                                           .tr(),
@@ -591,7 +596,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                     ),
-                                    onSubmitted: (value) async {
+                                    onFieldSubmitted: (value) async {
                                       if (value.isEmpty) {
                                         return;
                                       }

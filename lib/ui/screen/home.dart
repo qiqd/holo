@@ -257,8 +257,9 @@ class _HomeScreenState extends State<HomeScreen> {
             : item.name ?? "";
         return MediaGrid(
           id: '${heroKey}_${item.id}',
-          airDate: item.date,
-          rating: item.rating?.score,
+          // airDate: item.date,
+          // rating: item.rating?.score,
+          showRating: false,
           imageUrl: item.images?.large ?? "",
           title: name,
           onTap: () => context.push(
@@ -266,6 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
             extra: {
               'id': item.id!,
               'keyword': name,
+              'subject': item,
               'cover': item.images?.large ?? '',
               'from': heroKey,
             },
@@ -370,6 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 '/detail',
                                                 extra: {
                                                   'id': hot[index].id!,
+                                                  'subject': hot[index],
                                                   'keyword': name,
                                                   'cover':
                                                       hot[index]
