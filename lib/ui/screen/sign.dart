@@ -104,7 +104,7 @@ class _SignScreenState extends State<SignScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              launchUrl(Uri.parse('https://github.com/qiqd/holo_backend'));
+              launchUrl(Uri.parse('https://github.com/qiqd/holo_service'));
             },
             child: Text("sign.how_to_deploy".tr()),
           ),

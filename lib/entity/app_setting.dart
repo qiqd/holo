@@ -33,6 +33,7 @@ class DanmakuSetting {
   final bool hideScroll;
   final bool hideBottom;
   final bool massiveMode;
+  final danmakuOffset = 0;
 
   /// 过滤词，英文逗号分隔
   final String filterWords;
@@ -45,7 +46,32 @@ class DanmakuSetting {
     this.hideBottom = false,
     this.massiveMode = false,
     this.filterWords = '',
+    danmakuOffset = 0,
   });
+  DanmakuSetting copyWith({
+    double? opacity,
+    double? area,
+    double? fontSize,
+    bool? hideTop,
+    bool? hideScroll,
+    bool? hideBottom,
+    bool? massiveMode,
+    String? filterWords,
+    int? danmakuOffset,
+  }) {
+    return DanmakuSetting(
+      opacity: opacity ?? this.opacity,
+      area: area ?? this.area,
+      fontSize: fontSize ?? this.fontSize,
+      hideTop: hideTop ?? this.hideTop,
+      hideScroll: hideScroll ?? this.hideScroll,
+      hideBottom: hideBottom ?? this.hideBottom,
+      massiveMode: massiveMode ?? this.massiveMode,
+      filterWords: filterWords ?? this.filterWords,
+      danmakuOffset: danmakuOffset ?? this.danmakuOffset,
+    );
+  }
+
   Map<String, dynamic> toJson() => _$DanmakuSettingToJson(this);
   factory DanmakuSetting.fromJson(Map<String, dynamic> json) =>
       _$DanmakuSettingFromJson(json);

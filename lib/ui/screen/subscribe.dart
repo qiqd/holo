@@ -8,6 +8,7 @@ import 'package:holo/api/subscribe_api.dart';
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject.dart';
 import 'package:holo/entity/subscribe_history.dart';
+import 'package:holo/extension/safe_set_state.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
@@ -25,12 +26,16 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     with SingleTickerProviderStateMixin, RouteAware {
   List<PlaybackHistory> playback = [];
   List<SubscribeHistory> subscribe = [];
+  List<SubscribeHistory> wish = [];
+  List<SubscribeHistory> watching = [];
+  List<SubscribeHistory> watched = [];
+
   final Set<int> _deletePlaybackIds = {};
   final Set<int> _deleteSubscribeIds = {};
   bool _isUpdating = false;
   late final TabController _tabController = TabController(
     vsync: this,
-    length: 2,
+    length: 5,
   );
   Future<void> _fetchPlaybackHistoryFromServer() async {
     final records = await PlayBackApi.fetchPlaybackHistory((_) {
@@ -57,6 +62,9 @@ class _SubscribeScreenState extends State<SubscribeScreen>
       setState(() {
         subscribe = records;
         subscribe.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        wish = records.where((item) => item.viewingStatus == 1).toList();
+        watching = records.where((item) => item.viewingStatus == 3).toList();
+        watched = records.where((item) => item.viewingStatus == 2).toList();
         LocalStore.updateSubscribeHistory(records);
       });
     }
@@ -64,12 +72,16 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
   void _loadHistory() {
     final playbackHistory = LocalStore.getPlaybackHistory();
-    playback = playbackHistory;
     final subscribeHistory = LocalStore.getSubscribeHistory();
-    subscribe = subscribeHistory;
-    playback.sort((a, b) => b.lastPlaybackAt.compareTo(a.lastPlaybackAt));
-    subscribe.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    setState(() {});
+    safeSetState(() {
+      playback = playbackHistory;
+      subscribe = subscribeHistory;
+      playback.sort((a, b) => b.lastPlaybackAt.compareTo(a.lastPlaybackAt));
+      subscribe.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      wish = subscribe.where((item) => item.viewingStatus == 1).toList();
+      watching = subscribe.where((item) => item.viewingStatus == 3).toList();
+      watched = subscribe.where((item) => item.viewingStatus == 2).toList();
+    });
   }
 
   Data? _getCacheBySubId(int id) {
@@ -158,6 +170,110 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     });
   }
 
+  Widget _buildEmptyMsg(String msg, {bool isPlayback = false}) {
+    return LoadingOrShowMsg(
+      msg: msg,
+      onMsgTab: () async {
+        isPlayback
+            ? await _fetchPlaybackHistoryFromServer()
+            : await _fetchSubscribeHistoryFromServer();
+      },
+    );
+  }
+
+  Widget _buildTabbarView({
+    List<SubscribeHistory> s = const [],
+    List<PlaybackHistory> p = const [],
+    bool isLandscape = false,
+  }) {
+    return SizedBox.expand(
+      child: s.isNotEmpty
+          ? RefreshIndicator(
+              child: GridView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: s.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isLandscape ? 6 : 3,
+                  crossAxisSpacing: 6,
+                  mainAxisSpacing: 6,
+                  childAspectRatio: 0.6,
+                ),
+                itemBuilder: (context, index) {
+                  final item = s[index];
+                  return MediaGrid(
+                    showRating: false,
+                    id: "subscribe_${item.subId}",
+                    imageUrl: item.imgUrl,
+                    title: item.title,
+                    showDeleteIcon: _deleteSubscribeIds.contains(item.subId),
+                    onLongPress: (_) => _toggleDeleteMode(item.subId, false),
+                    onDelete: _deleteSubscribeHistory,
+                    onTap: () {
+                      var cache = _getCacheBySubId(item.subId);
+                      context.push(
+                        '/detail',
+                        extra: {
+                          "id": item.subId,
+                          "keyword": item.title,
+                          "cover": item.imgUrl,
+                          "from": "subscribe",
+                          'subject': cache,
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+              onRefresh: () async {
+                await _fetchSubscribeHistoryFromServer();
+              },
+            )
+          : RefreshIndicator(
+              child: ListView.separated(
+                padding: const EdgeInsets.all(8),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
+                itemCount: p.length,
+                itemBuilder: (context, index) {
+                  final item = p[index];
+                  return MediaCard(
+                    height:
+                        (Platform.isWindows ||
+                            Platform.isLinux ||
+                            Platform.isMacOS)
+                        ? 240
+                        : 190,
+                    lastViewAt: item.lastPlaybackAt,
+                    historyEpisode: item.episodeIndex,
+                    id: "subscribe.history_${item.subId}",
+                    imageUrl: item.imgUrl,
+                    nameCn: item.title,
+                    showDeleteIcon: _deletePlaybackIds.contains(item.subId),
+                    onLongPress: (_) => _toggleDeleteMode(item.subId, true),
+                    onDelete: _deletePlaybackHistory,
+                    onTap: () {
+                      var cache = _getCacheBySubId(item.subId);
+                      context.push(
+                        '/detail',
+                        extra: {
+                          "id": item.subId,
+                          "keyword": item.title,
+                          "cover": item.imgUrl,
+                          "from": "subscribe.history",
+                          'subject': cache,
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+              onRefresh: () async {
+                await _fetchPlaybackHistoryFromServer();
+              },
+            ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -219,8 +335,11 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               dividerHeight: 0,
               controller: _tabController,
               tabs: [
-                Tab(text: tr("subscribe.tab_subs")),
-                Tab(text: tr("subscribe.tab_view")),
+                Tab(text: tr("subscribe.tab_subs_all")),
+                Tab(text: tr("subscribe.tab_subs_wish")),
+                Tab(text: tr("subscribe.tab_subs_watched")),
+                Tab(text: tr("subscribe.tab_subs_watching")),
+                Tab(text: tr("subscribe.tab_playback")),
               ],
             ),
             if (_isUpdating) const LinearProgressIndicator(),
@@ -228,112 +347,32 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  //订阅部分
+                  //全部
                   subscribe.isEmpty
-                      ? LoadingOrShowMsg(
-                          msg: tr("subscribe.refresh_btn_subs"),
-                          onMsgTab: () async {
-                            await _fetchSubscribeHistoryFromServer();
-                          },
-                        )
-                      : RefreshIndicator(
-                          child: GridView.builder(
-                            padding: const EdgeInsets.all(8),
-                            itemCount: subscribe.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: isLandscape ? 6 : 3,
-                                  crossAxisSpacing: 6,
-                                  mainAxisSpacing: 6,
-                                  childAspectRatio: 0.6,
-                                ),
-                            itemBuilder: (context, index) {
-                              final item = subscribe[index];
-                              return MediaGrid(
-                                showRating: false,
-                                id: "subscribe_${item.subId}",
-                                imageUrl: item.imgUrl,
-                                title: item.title,
-                                showDeleteIcon: _deleteSubscribeIds.contains(
-                                  item.subId,
-                                ),
-                                onLongPress: (_) =>
-                                    _toggleDeleteMode(item.subId, false),
-                                onDelete: _deleteSubscribeHistory,
-                                onTap: () {
-                                  var cache = _getCacheBySubId(item.subId);
-                                  context.push(
-                                    '/detail',
-                                    extra: {
-                                      "id": item.subId,
-                                      "keyword": item.title,
-                                      "cover": item.imgUrl,
-                                      "from": "subscribe",
-                                      'subject': cache,
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          onRefresh: () async {
-                            await _fetchSubscribeHistoryFromServer();
-                          },
+                      ? _buildEmptyMsg(tr("subscribe.refresh_btn_subs"))
+                      : _buildTabbarView(
+                          s: subscribe,
+                          isLandscape: isLandscape,
                         ),
+                  //想看
+                  wish.isEmpty
+                      ? SizedBox.shrink()
+                      : _buildTabbarView(s: wish, isLandscape: isLandscape),
+                  //看过
+                  watched.isEmpty
+                      ? SizedBox.shrink()
+                      : _buildTabbarView(s: watched, isLandscape: isLandscape),
+                  //在看
+                  watching.isEmpty
+                      ? SizedBox.shrink()
+                      : _buildTabbarView(s: watching, isLandscape: isLandscape),
                   //播放历史部分
                   playback.isEmpty
-                      ? LoadingOrShowMsg(
-                          msg: tr("subscribe.refresh_btn_view"),
-                          onMsgTab: () async {
-                            await _fetchPlaybackHistoryFromServer();
-                          },
+                      ? _buildEmptyMsg(
+                          tr("subscribe.refresh_btn_playback"),
+                          isPlayback: true,
                         )
-                      : RefreshIndicator(
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(8),
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 10),
-                            itemCount: playback.length,
-                            itemBuilder: (context, index) {
-                              final item = playback[index];
-                              return MediaCard(
-                                height:
-                                    (Platform.isWindows ||
-                                        Platform.isLinux ||
-                                        Platform.isMacOS)
-                                    ? 240
-                                    : 190,
-                                lastViewAt: item.lastPlaybackAt,
-                                historyEpisode: item.episodeIndex,
-                                id: "subscribe.history_${item.subId}",
-                                imageUrl: item.imgUrl,
-                                nameCn: item.title,
-                                showDeleteIcon: _deletePlaybackIds.contains(
-                                  item.subId,
-                                ),
-                                onLongPress: (_) =>
-                                    _toggleDeleteMode(item.subId, true),
-                                onDelete: _deletePlaybackHistory,
-                                onTap: () {
-                                  var cache = _getCacheBySubId(item.subId);
-                                  context.push(
-                                    '/detail',
-                                    extra: {
-                                      "id": item.subId,
-                                      "keyword": item.title,
-                                      "cover": item.imgUrl,
-                                      "from": "subscribe.history",
-                                      'subject': cache,
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          onRefresh: () async {
-                            await _fetchPlaybackHistoryFromServer();
-                          },
-                        ),
+                      : _buildTabbarView(p: playback, isLandscape: isLandscape),
                 ],
               ),
             ),

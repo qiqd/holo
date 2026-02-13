@@ -8,12 +8,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/util/local_store.dart';
-import 'package:lottie/lottie.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:video_player/video_player.dart';
@@ -27,19 +25,20 @@ class CapVideoPlayerKit extends StatefulWidget {
   final String? title;
   final String? subTitle;
   final bool isFullScreen;
-  final List<String> episodeList;
   final int currentEpisodeIndex;
   final Danmu? dammaku;
   final bool isTablet;
-  final bool isInputting;
-  final Function(bool)? onFullScreenChanged;
-  final Function(String)? onError;
-  final Function()? onNextTab;
-  final Function(int index)? onEpisodeSelected;
-  final Function()? onBackPressed;
-  final Function(bool isPlaying)? onPlayOrPause;
-  final Function(bool isShow)? onSettingTab;
-  final Function(Duration position)? onPositionChanged;
+  final bool enableAutoFocus;
+  final DanmakuSetting danmakuSetting;
+  final String centerMsg;
+  final void Function(bool)? onFullScreenChanged;
+  final void Function(String)? onError;
+  final void Function()? onNextTab;
+  final void Function()? onBackPressed;
+  final void Function(bool isPlaying)? onPlayOrPause;
+  final void Function()? onSettingTab;
+  final void Function(Duration position)? onPositionChanged;
+  final void Function()? onEpisodeTab;
   const CapVideoPlayerKit({
     super.key,
     required this.playerNotifier,
@@ -49,14 +48,15 @@ class CapVideoPlayerKit extends StatefulWidget {
     this.currentEpisodeIndex = 0,
     this.title,
     this.subTitle,
-    this.episodeList = const [],
+    this.danmakuSetting = const DanmakuSetting(),
+    this.enableAutoFocus = true,
     this.dammaku,
-    this.isInputting = false,
     this.onFullScreenChanged,
     this.onNextTab,
     this.onError,
-    this.onEpisodeSelected,
+    this.onEpisodeTab,
     this.onBackPressed,
+    this.centerMsg = '',
     this.onPlayOrPause,
     this.onSettingTab,
     this.onPositionChanged,
@@ -77,22 +77,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   String msgText = '';
   bool showMsg = false;
   bool showVideoControls = true;
-  bool showEpisodeList = false;
   bool isForward = true;
   int jumpMs = 0;
   int dragOffset = 0;
   bool isLock = false;
-  bool isShowDanmaku = true;
-  bool showSetting = false;
-  bool hideTopDanmaku = false;
-  bool hideBottomDanmaku = false;
-  bool hideScrollDanmaku = false;
-  bool massiveDanmakuMode = false;
-  double displayArea = 1.0;
-  double opacity = 1.0;
-  double danmakuFontsize = 16.0;
-  final int danmakuFontweight = 4;
-  String filter = "";
   int danmakuOffset = 0;
   Timer? volumeAndBrightnessToastTimer;
   Timer? videoControlsTimer;
@@ -100,6 +88,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   Timer? danmuTimer;
   double currentVolume = 0;
   double currentBrightness = 0;
+  bool showDanmaku = true;
   bool showVolume = false;
   bool showBrightness = false;
   bool showDragOffset = false;
@@ -110,7 +99,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   double rate = 1.0;
   Danmu? dammaku;
   bool isLoading = false;
-  bool _showSlidebar = true;
+  Timer? danmakuSettingTimer;
   final List<DanmakuContentItem<double>> danmakuItems = [];
 
   /// 显示视频控制条定时器
@@ -270,9 +259,19 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   /// 初始化弹幕定时器,用于填充弹幕
   void initTimerForDanmu({bool updateStateEverySecond = false}) {
     danmuTimer?.cancel();
+    _danmuController?.updateOption(
+      DanmakuOption(
+        area: widget.danmakuSetting.area,
+        opacity: widget.danmakuSetting.opacity,
+        fontSize: widget.danmakuSetting.fontSize,
+        hideBottom: widget.danmakuSetting.hideBottom,
+        hideScroll: widget.danmakuSetting.hideScroll,
+        hideTop: widget.danmakuSetting.hideTop,
+        massiveMode: widget.danmakuSetting.massiveMode,
+      ),
+    );
     danmuTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (!showSetting &&
-          !widget.isInputting &&
+      if (widget.enableAutoFocus &&
           (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
         _focusNode.requestFocus();
       }
@@ -298,56 +297,20 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     });
   }
 
-  /// 加载弹幕设置
-  void loadDanmuSetting() {
-    var setting = LocalStore.getAppSetting().danmakuSetting;
-    var option = DanmakuOption(
-      opacity: setting.opacity,
-      area: setting.area,
-      fontSize: setting.fontSize,
-      hideTop: setting.hideTop,
-      hideScroll: setting.hideScroll,
-      hideBottom: setting.hideBottom,
-      massiveMode: setting.massiveMode,
-    );
-    _danmuController?.updateOption(option);
-    safeSetState(() {
-      hideTopDanmaku = setting.hideTop;
-      hideBottomDanmaku = setting.hideBottom;
-      hideScrollDanmaku = setting.hideScroll;
-      massiveDanmakuMode = setting.massiveMode;
-      displayArea = setting.area;
-      danmakuFontsize = setting.fontSize;
-      opacity = setting.opacity;
-      filter = setting.filterWords;
-    });
-  }
-
   /// 保存弹幕设置
-  void saveDanmuSetting() {
+  void saveDanmuSetting({DanmakuSetting? danmakuSetting}) {
     filterDanmakuItems();
-    // log('hideTop:$_hideTopDanmaku');
     final appSetting = LocalStore.getAppSetting();
-    appSetting.danmakuSetting = DanmakuSetting(
-      hideTop: hideTopDanmaku,
-      hideBottom: hideBottomDanmaku,
-      hideScroll: hideScrollDanmaku,
-      massiveMode: massiveDanmakuMode,
-      area: displayArea,
-      fontSize: danmakuFontsize,
-      opacity: opacity,
-      filterWords: filter,
-    );
-    //log('filter:$_filter');
+    appSetting.danmakuSetting = danmakuSetting ?? DanmakuSetting();
     LocalStore.saveAppSetting(appSetting);
   }
 
   /// 过滤弹幕
   void filterDanmakuItems() {
-    if (filter.isEmpty) {
+    if (widget.danmakuSetting.filterWords.isEmpty) {
       return;
     }
-    var filters = filter.split(",");
+    var filters = widget.danmakuSetting.filterWords.split(",");
     danmakuItems.removeWhere((item) {
       return filters.any((filter) => item.text.contains(filter.trim()) == true);
     });
@@ -421,17 +384,14 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   /// 键盘事件处理
   void _handleKeyEvent(KeyEvent event) {
     if ((event is KeyDownEvent) &&
-        !showSetting &&
+        widget.enableAutoFocus &&
         (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       var player = widget.playerNotifier.value;
       switch (event.logicalKey) {
         case LogicalKeyboardKey.tab:
           break;
-
         case LogicalKeyboardKey.keyQ:
-          setState(() {
-            showEpisodeList = !showEpisodeList;
-          });
+          widget.onEpisodeTab?.call();
           break;
         case LogicalKeyboardKey.space:
           player?.value.isPlaying ?? false ? player?.pause() : player?.play();
@@ -464,7 +424,14 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   void _initListener() {
     widget.playerNotifier.addListener(() {
       var player = widget.playerNotifier.value;
-      if (player == null) return;
+      if (player == null) {
+        safeSetState(() {
+          position = .zero;
+          bufferProgress = 0.0;
+          duration = Duration.zero;
+        });
+        return;
+      }
       safeSetState(() {
         currentVolume = player.value.volume;
       });
@@ -508,7 +475,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   @override
   void initState() {
     _initListener();
-    loadDanmuSetting();
+
     initTimerForDanmu();
     dammaku = widget.dammaku;
     VolumeController.instance.showSystemUI = false;
@@ -527,7 +494,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   ///弹幕层
   Widget _buildDanmaku() {
-    var danmakuSetting = LocalStore.getAppSetting().danmakuSetting;
+    var danmakuSetting = widget.danmakuSetting;
     var option = DanmakuOption(
       hideTop: danmakuSetting.hideTop,
       hideBottom: danmakuSetting.hideBottom,
@@ -537,7 +504,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       fontSize: danmakuSetting.fontSize,
       opacity: danmakuSetting.opacity,
     );
-    return (isShowDanmaku)
+    return (showDanmaku)
         ? DanmakuScreen<double>(
             createdController: (e) {
               _danmuController = e;
@@ -554,7 +521,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           ? Curves.decelerate
           : Curves.easeOutQuart,
       opacity: (showVolume || showBrightness || showDragOffset) ? 1.0 : 0.0,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       child: Align(
         alignment: Alignment.center,
         child: showVolume
@@ -607,7 +574,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     Icon(Icons.fast_forward_rounded, color: Colors.white),
                 ],
               )
-            : SizedBox(),
+            : const SizedBox(),
       ),
     );
   }
@@ -616,7 +583,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   Widget _buildLock() {
     return AnimatedOpacity(
       opacity: showVideoControls ? 1 : 0,
-      duration: Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100),
       child: Padding(
         padding: EdgeInsets.only(left: 20),
         child: Align(
@@ -641,9 +608,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   Widget _buildTime({bool isFullScreen = false}) {
     return AnimatedOpacity(
       opacity: showVideoControls && isFullScreen ? 1 : 0,
-      duration: Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100),
       child: Padding(
-        padding: EdgeInsets.only(top: 36),
+        padding: const EdgeInsets.only(top: 36),
         child: Align(
           alignment: Alignment.topCenter,
           child: Text(
@@ -661,11 +628,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     String? subTitle,
     bool isFullScreen = false,
     Function()? onBackPressed,
-    Function(bool)? onSettingTab,
+    Function()? onSettingTab,
   }) {
     return AnimatedPositioned(
-      key: ValueKey('show_video_controls_top'),
-      duration: Duration(milliseconds: 300),
+      key: const ValueKey('show_video_controls_top'),
+      duration: const Duration(milliseconds: 300),
       top: showVideoControls && !isLock ? 0 : -73,
       left: 0,
       right: 0,
@@ -673,7 +640,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         ignoring: !showVideoControls,
         child: AnimatedOpacity(
           opacity: showVideoControls && !isLock ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -687,11 +654,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               horizontalTitleGap: 0,
               titleAlignment: ListTileTitleAlignment.center,
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
                 onPressed: () {
                   showVideoControlsTimer();
-                  showSetting = false;
-                  showEpisodeList = false;
                   onBackPressed?.call();
                 },
               ),
@@ -720,7 +685,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                               onPressed: () {
                                 showKeyboardShortcuts();
                               },
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.help_outline_rounded,
                                 color: Colors.white,
                               ),
@@ -728,13 +693,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                           IconButton(
                             tooltip: 'Setting',
                             onPressed: () {
-                              setState(() {
-                                showSetting = !showSetting;
-                              });
-                              onSettingTab?.call(showSetting);
+                              onSettingTab?.call();
                               showVideoControlsTimer();
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.settings_rounded,
                               color: Colors.white,
                             ),
@@ -751,14 +713,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   }
 
   ///视频控制层-中间
-  Widget _buildCenter({
-    Function()? playOrPause,
-    Function(bool)? onSettingTab,
-    Function(double)? setVolume,
-  }) {
+  Widget _buildCenter({Function()? playOrPause, Function(double)? setVolume}) {
     return Column(
       children: [
-        SizedBox(height: 40),
+        const SizedBox(height: 40),
         Expanded(
           child: SizedBox(
             child: SimpleGestureDetector(
@@ -767,11 +725,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 swipeDetectionBehavior: SwipeDetectionBehavior.continuous,
               ),
               onTap: () => setState(() {
-                setState(() {
-                  showEpisodeList = false;
-                  showSetting = false;
-                  onSettingTab?.call(false);
-                });
                 showVideoControlsTimer();
                 showVideoControls = !showVideoControls;
               }),
@@ -849,8 +802,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     Function? onNextTab,
   }) {
     return AnimatedPositioned(
-      key: ValueKey('show_video_controls_bottom'),
-      duration: Duration(milliseconds: 300),
+      key: const ValueKey('show_video_controls_bottom'),
+      duration: const Duration(milliseconds: 300),
       bottom: showVideoControls && !isLock ? 0 : -70,
       left: 0,
       right: 0,
@@ -858,7 +811,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         key: ValueKey('show_video_controls_bottom_opacity'),
         opacity: showVideoControls && !isLock ? 1.0 : 0.0,
         curve: Curves.easeInOut,
-        duration: Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 100),
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -917,12 +870,15 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       showVideoControlsTimer();
                       onNextTab?.call();
                     },
-                    icon: Icon(Icons.skip_next_rounded, color: Colors.white),
+                    icon: const Icon(
+                      Icons.skip_next_rounded,
+                      color: Colors.white,
+                    ),
                   ),
 
                   //进度
                   Container(
-                    constraints: BoxConstraints(minWidth: 100),
+                    constraints: const BoxConstraints(minWidth: 100),
                     child: TextButton(
                       style: ButtonStyle(
                         padding: WidgetStatePropertyAll(
@@ -943,7 +899,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     color: Colors.white,
                     onPressed: () {
                       setState(() {
-                        isShowDanmaku = !isShowDanmaku;
+                        showDanmaku = !showDanmaku;
                       });
                       showVideoControlsTimer();
                     },
@@ -951,35 +907,22 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       alignment: Alignment.center,
                       children: [
                         Text('弹', style: TextStyle(color: Colors.white)),
-                        if (!isShowDanmaku)
+                        if (!showDanmaku)
                           Icon(Icons.block_rounded, color: Colors.white),
                       ],
                     ),
                   ),
                   //剧集列表按钮
                   if (widget.isFullScreen) ...[
-                    Badge(
-                      backgroundColor: Colors.transparent,
-                      textColor: Colors.white,
-                      offset:
-                          (Platform.isWindows ||
-                              Platform.isMacOS ||
-                              Platform.isLinux)
-                          ? null
-                          : Offset(0, 5),
-                      label: Text("${widget.currentEpisodeIndex + 1} "),
-                      child: IconButton(
-                        tooltip: 'Episode List',
-                        onPressed: () {
-                          setState(() {
-                            showEpisodeList = !showEpisodeList;
-                          });
-                          showVideoControlsTimer();
-                        },
-                        icon: Icon(
-                          Icons.format_list_bulleted_rounded,
-                          color: Colors.white,
-                        ),
+                    IconButton(
+                      tooltip: 'Episode List',
+                      onPressed: () {
+                        widget.onEpisodeTab?.call();
+                        showVideoControlsTimer();
+                      },
+                      icon: Icon(
+                        Icons.format_list_bulleted_rounded,
+                        color: Colors.white,
                       ),
                     ),
                     PopupMenuButton(
@@ -1006,10 +949,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     ),
                   ],
                   //音量调整,只在桌面端显示
-                  if ((Platform.isWindows ||
-                          Platform.isMacOS ||
-                          Platform.isLinux) &&
-                      !_showSlidebar) ...[
+                  if (Platform.isWindows ||
+                      Platform.isMacOS ||
+                      Platform.isLinux) ...[
                     IconButton(
                       tooltip: 'Volume',
                       onPressed: () {
@@ -1042,45 +984,18 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     ),
                   ],
                   Spacer(),
-                  //侧边栏，只在桌面平台显示
-                  if (Platform.isMacOS ||
-                      Platform.isWindows ||
-                      Platform.isLinux)
-                    IconButton(
-                      tooltip: 'Show Slidebar',
-                      onPressed: () {
-                        setState(() {
-                          _showSlidebar = !_showSlidebar;
-                        });
-                        widget.onFullScreenChanged?.call(_showSlidebar);
-                      },
-                      icon: Icon(
-                        CupertinoIcons.sidebar_right,
-                        color: Colors.white,
-                      ),
-                    ),
+
                   // 全屏按钮
                   IconButton(
                     onPressed: () async {
                       showVideoControlsTimer();
-                      showSetting = false;
-                      showEpisodeList = false;
                       if (Platform.isWindows ||
                           Platform.isMacOS ||
                           Platform.isLinux) {
                         final full = await windowManager.isFullScreen();
                         await windowManager.setFullScreen(!full);
                       } else if (Platform.isAndroid || Platform.isIOS) {
-                        if (Device.get().isTablet) {
-                          setState(() {
-                            _showSlidebar = !_showSlidebar;
-                          });
-                          widget.onFullScreenChanged?.call(_showSlidebar);
-                        } else if (Device.get().isPhone) {
-                          widget.onFullScreenChanged?.call(
-                            !widget.isFullScreen,
-                          );
-                        }
+                        widget.onFullScreenChanged?.call(!widget.isFullScreen);
                       }
                     },
                     icon: Icon(
@@ -1091,295 +1006,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     ),
                   ),
                 ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// 剧集列表
-  Widget _buildEpisodeList(
-    List<String> episodeList,
-    Function(int)? onEpisodeSelected,
-  ) {
-    return AnimatedPositioned(
-      top: 0,
-      right: showEpisodeList && widget.isFullScreen ? 0 : -300,
-      width: 300,
-      height: MediaQuery.of(context).size.height,
-      duration: const Duration(milliseconds: 300),
-      child: Container(
-        color: Colors.white,
-        child: ListView.builder(
-          key: PageStorageKey("player_episodes_list"),
-          itemCount: episodeList.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              selected: index == widget.currentEpisodeIndex,
-              horizontalTitleGap: 0,
-              leading: Text(
-                (index + 1).toString(),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              title: Text(episodeList[index]),
-              trailing: widget.currentEpisodeIndex == index
-                  ? ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                        Theme.of(context).colorScheme.primary,
-                        BlendMode.srcATop,
-                      ),
-                      child: LottieBuilder.asset(
-                        "lib/assets/lottie/playing2.json",
-                        repeat: true,
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : null,
-              onTap: () => onEpisodeSelected?.call(index),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  ///  弹幕设置
-  Widget _buildDanmakuSetting(
-    bool isTablet,
-    Function(bool)? onShowSettingChanged,
-  ) {
-    return
-    // 弹幕设置
-    AnimatedPositioned(
-      top: 0,
-      right: showSetting && widget.isFullScreen ? 0 : -300,
-      width: 300,
-      height: isTablet ? null : MediaQuery.of(context).size.height,
-      curve: Curves.easeInOut,
-      duration: const Duration(milliseconds: 200),
-      onEnd: () {
-        onShowSettingChanged?.call(showSetting);
-        if (showSetting) return;
-        _danmuController?.updateOption(
-          DanmakuOption(
-            opacity: opacity,
-            area: displayArea,
-            fontSize: danmakuFontsize,
-            hideTop: hideTopDanmaku,
-            hideBottom: hideBottomDanmaku,
-            hideScroll: hideScrollDanmaku,
-            massiveMode: massiveDanmakuMode,
-          ),
-        );
-        saveDanmuSetting();
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            bottomLeft: Radius.circular(10),
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: TextFormField(
-                  initialValue: filter,
-                  keyboardType: TextInputType.text,
-                  textInputAction: TextInputAction.done,
-                  onChanged: (value) {
-                    setState(() {
-                      filter = value;
-                    });
-                    // log('input:$_filter');
-                  },
-                  decoration: InputDecoration(
-                    labelText: context.tr(
-                      'component.cap_video_player.danmaku_filter_keywords',
-                    ),
-                    hintStyle: TextStyle(fontSize: 10),
-                    hintText: context.tr(
-                      'component.cap_video_player.danmaku_filter_hint',
-                    ),
-                  ),
-                ),
-              ),
-
-              ListTile(
-                title: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      context.tr(
-                        'component.cap_video_player.danmaku_offset_adjustment',
-                      ),
-                    ),
-                    Tooltip(
-                      message: context.tr(
-                        'component.cap_video_player.danmaku_offset_tooltip',
-                      ),
-                      child: Icon(
-                        Icons.help_outline,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Text(
-                  context.tr(
-                    'component.cap_video_player.current_offset',
-                    args: [danmakuOffset.toString()],
-                  ),
-                ),
-
-                leading: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      danmakuOffset--;
-                    });
-                  },
-                  icon: Icon(Icons.exposure_neg_1),
-                ),
-                trailing: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      danmakuOffset++;
-                    });
-                  },
-                  icon: Icon(Icons.exposure_plus_1),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  context.tr('component.cap_video_player.hide_top_danmaku'),
-                ),
-                trailing: Switch(
-                  value: hideTopDanmaku,
-                  onChanged: (value) {
-                    setState(() {
-                      hideTopDanmaku = value;
-                    });
-                  },
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  context.tr('component.cap_video_player.hide_bottom_danmaku'),
-                ),
-                trailing: Switch(
-                  value: hideBottomDanmaku,
-                  onChanged: (value) {
-                    setState(() {
-                      hideBottomDanmaku = value;
-                    });
-                  },
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  context.tr('component.cap_video_player.hide_scroll_danmaku'),
-                ),
-                trailing: Switch(
-                  value: hideScrollDanmaku,
-                  onChanged: (value) {
-                    setState(() {
-                      hideScrollDanmaku = value;
-                    });
-                  },
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  context.tr('component.cap_video_player.massive_danmaku_mode'),
-                ),
-                subtitle: Text(
-                  context.tr(
-                    'component.cap_video_player.massive_danmaku_subtitle',
-                  ),
-                ),
-                trailing: Switch(
-                  value: massiveDanmakuMode,
-                  onChanged: (value) {
-                    setState(() {
-                      massiveDanmakuMode = value;
-                    });
-                  },
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  context.tr('component.cap_video_player.danmaku_opacity'),
-                ),
-                leading: null,
-                subtitle: Row(
-                  children: [
-                    Text('${(opacity * 100).round()}%'),
-                    Expanded(
-                      child: Slider(
-                        min: 0.1,
-                        max: 1.0,
-                        value: opacity,
-                        onChanged: (value) {
-                          setState(() {
-                            opacity = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  context.tr('component.cap_video_player.display_area'),
-                ),
-                subtitle: Row(
-                  children: [
-                    Text('${(displayArea * 100).round()}%'),
-                    Expanded(
-                      child: Slider(
-                        min: 0.1,
-                        max: 1.0,
-                        value: displayArea,
-                        onChanged: (value) {
-                          setState(() {
-                            displayArea = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  context.tr('component.cap_video_player.danmaku_font_size'),
-                ),
-                subtitle: Row(
-                  children: [
-                    Text('${(danmakuFontsize).round()}'),
-                    Expanded(
-                      child: Slider(
-                        min: 10.0,
-                        max: 50.0,
-                        value: danmakuFontsize,
-                        onChanged: (value) {
-                          setState(() {
-                            danmakuFontsize = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),
@@ -1403,10 +1029,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               onExit: (event) => setState(() {
                 showVideoControls = false;
               }),
-              child: SizedBox.expand(),
+              child: const SizedBox.expand(),
             ),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   @override
@@ -1419,6 +1045,23 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       dammaku = widget.dammaku;
       danmakuItems.clear();
       fillDanmaku();
+    }
+    if (oldWidget.danmakuSetting != widget.danmakuSetting) {
+      saveDanmuSetting(danmakuSetting: widget.danmakuSetting);
+      danmakuSettingTimer?.cancel();
+      danmakuSettingTimer = Timer(const Duration(milliseconds: 500), () {
+        _danmuController?.updateOption(
+          DanmakuOption(
+            area: widget.danmakuSetting.area,
+            opacity: widget.danmakuSetting.opacity,
+            fontSize: widget.danmakuSetting.fontSize,
+            hideBottom: widget.danmakuSetting.hideBottom,
+            hideScroll: widget.danmakuSetting.hideScroll,
+            hideTop: widget.danmakuSetting.hideTop,
+            massiveMode: widget.danmakuSetting.massiveMode,
+          ),
+        );
+      });
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -1454,7 +1097,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         child: VideoPlayer(player),
                       ),
                     ),
-
+                  if (widget.centerMsg.isNotEmpty)
+                    LoadingOrShowMsg(msg: widget.centerMsg),
                   // 弹幕层
                   widget.dammaku != null ? _buildDanmaku() : SizedBox.shrink(),
                   // 加载中或缓冲中
@@ -1473,8 +1117,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                           isPlaying = player?.value.isPlaying ?? false;
                         });
                       },
-                      onSettingTab: (bool isShow) =>
-                          widget.onSettingTab?.call(isShow),
                       setVolume: (volume) async {
                         await player?.setVolume(volume);
                       },
@@ -1492,15 +1134,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     onBackPressed: () {
                       widget.onBackPressed?.call();
                     },
-                    onSettingTab: (isShow) {
-                      widget.onSettingTab?.call(isShow);
-                      setState(() {
-                        showSetting = isShow;
-                      });
-                      showSetting
-                          ? _focusNode.unfocus()
-                          : _focusNode.requestFocus();
-                    },
+                    onSettingTab: () => widget.onSettingTab?.call(),
                   ),
                   //视频控制层-底部
                   _buildBottom(
@@ -1527,17 +1161,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     },
                     onNextTab: () => widget.onNextTab?.call(),
                   ),
-                  // 剧集列表
-                  _buildEpisodeList(
-                    widget.episodeList,
-                    widget.onEpisodeSelected,
-                  ),
-                  // 弹幕设置
-                  _buildDanmakuSetting(widget.isTablet, (isShow) {
-                    setState(() {
-                      showSetting = isShow;
-                    });
-                  }),
+
                   //鼠标悬停显示视频控制条
                   _buildMouseHover(),
                 ],

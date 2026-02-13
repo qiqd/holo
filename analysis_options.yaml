@@ -9,7 +9,7 @@
 # packages, and plugins designed to encourage good coding practices.
 analyzer:
   errors:
-    invalid_use_of_protected_member: ignore ignore
+    invalid_use_of_protected_member: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

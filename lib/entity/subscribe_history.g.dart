@@ -15,6 +15,7 @@ SubscribeHistory _$SubscribeHistoryFromJson(Map<String, dynamic> json) =>
       createdAt: DateTime.parse(json['createdAt'] as String),
       imgUrl: json['imgUrl'] as String,
       isSync: json['isSync'] as bool? ?? false,
+      viewingStatus: json['viewingStatus'] as int? ?? 0,
     );
 
 Map<String, dynamic> _$SubscribeHistoryToJson(SubscribeHistory instance) =>
@@ -26,4 +27,5 @@ Map<String, dynamic> _$SubscribeHistoryToJson(SubscribeHistory instance) =>
       'airDate': instance.airDate,
       'createdAt': instance.createdAt.toIso8601String(),
       'isSync': instance.isSync,
+      'viewingStatus': instance.viewingStatus,
     };

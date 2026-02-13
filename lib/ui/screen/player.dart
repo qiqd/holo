@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer' show log;
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
+import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode.dart';
 import 'package:holo/entity/logvar_episode.dart';
@@ -51,7 +51,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         SingleTickerProviderStateMixin,
         WidgetsBindingObserver,
         AutomaticKeepAliveClientMixin {
-  final _globalKey = GlobalKey<ScaffoldState>();
+  final _globalScaffoldKey = GlobalKey<ScaffoldState>();
   final Logger _logger = Logger();
   late Data subject = widget.subject;
   bool _isFullScreen = false;
@@ -68,10 +68,13 @@ class _PlayerScreenState extends State<PlayerScreen>
   LogvarEpisode? _bestMatch;
   Danmu? _dammaku;
   bool _isDanmakuLoading = false;
-  bool _showInfo = true;
   bool _isTablet = false;
-  bool _isInputting = false;
-  final String _danmakuKeyword = '';
+  String _danmakuKeyword = '';
+  DanmakuSetting _danmakuSetting = const DanmakuSetting();
+  bool _isEpisodeDrawerOpen = false;
+  bool _isSettingDrawerOpen = false;
+  bool _isInfoDrawerOpen = false;
+  bool _enableAutoFocus = true;
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
@@ -88,7 +91,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       final res = await source.fetchDetail(
         mediaId,
         (e) => setState(() {
-          log("fetchDetail1 error: $e");
+          _logger.e("fetchDetail1 error: $e");
           msg = e.toString();
         }),
       );
@@ -99,7 +102,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         });
       }
     } catch (e) {
-      log("fetchDetail2 error: $e");
+      _logger.e("fetchDetail2 error: $e");
       setState(() {
         msg = e.toString();
       });
@@ -139,7 +142,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         _playerNotifier.value = null;
         final newUrl = await source.fetchPlaybackUrl(
           _detail!.lines![lineIndex].episodes![episodeIndex],
-          (e) => setState(() {
+          (e) => safeSetState(() {
             _logger.e("fetchView error: $e");
             msg = "player.playback_error".tr();
             isloading = false;
@@ -164,18 +167,14 @@ class _PlayerScreenState extends State<PlayerScreen>
       }
     } catch (e) {
       _logger.e("fetchView error: $e");
-      if (mounted) {
-        setState(() {
-          msg = "player.playback_error".tr();
-          onComplete?.call(msg);
-        });
-      }
+      safeSetState(() {
+        msg = "player.playback_error".tr();
+        onComplete?.call(msg);
+      });
     } finally {
-      if (mounted) {
-        setState(() {
-          isloading = false;
-        });
-      }
+      safeSetState(() {
+        isloading = false;
+      });
     }
   }
 
@@ -222,7 +221,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     final res = await Api.bangumi.fethcEpisode(
       widget.subject.id!,
       (e) => setState(() {
-        log("fetchEpisode error: $e");
+        _logger.e("fetchEpisode error: $e");
         msg = e.toString();
       }),
     );
@@ -284,7 +283,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         history.isSync = true;
       },
       (e) {
-        log("savePlaybackHistory error: $e");
+        _logger.e("savePlaybackHistory error: $e");
       },
     );
   }
@@ -294,7 +293,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     String? keyword,
     Function(String e)? onComplete,
   }) async {
-    log('loadDanmaku, isFirstLoad: $isFirstLoad, keyword: $keyword');
+    _logger.i('loadDanmaku, isFirstLoad: $isFirstLoad, keyword: $keyword');
     if (_isDanmakuLoading) {
       return;
     }
@@ -315,7 +314,6 @@ class _PlayerScreenState extends State<PlayerScreen>
           }
         },
       );
-      log("loadDanmaku: $data");
       safeSetState(() {
         _danmakuList = data;
       });
@@ -372,6 +370,98 @@ class _PlayerScreenState extends State<PlayerScreen>
     _loadDanmaku(isFirstLoad: false, keyword: nameCn);
   }
 
+  void _loadDanmakuSetting() {
+    setState(() {
+      _danmakuSetting = LocalStore.getAppSetting().danmakuSetting;
+    });
+  }
+
+  void _showDanmakuBottomSheet() {
+    setState(() {
+      _enableAutoFocus = false;
+    });
+    //弹幕选择sheet
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                  ).copyWith(top: 10),
+                  child: Center(
+                    child: TextFormField(
+                      textInputAction: .search,
+                      initialValue: _danmakuKeyword,
+                      decoration: InputDecoration(
+                        hintText: 'player.danmaku_search_hint'.tr(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _danmakuKeyword = value;
+                        });
+                      },
+                      onFieldSubmitted: (value) async {
+                        if (value.isEmpty) {
+                          return;
+                        }
+                        setState(() {});
+                        await _loadDanmaku(isFirstLoad: true, keyword: value);
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ),
+                if (_isDanmakuLoading)
+                  Padding(
+                    padding: .only(top: 3),
+                    child: LinearProgressIndicator(),
+                  ),
+                Expanded(
+                  child: (_danmakuList == null || _danmakuList!.isEmpty)
+                      ? Center(child: Text('player.no_danmaku_sheet_text'.tr()))
+                      : ListView.separated(
+                          itemCount: _danmakuList?.length ?? 0,
+                          separatorBuilder: (context, index) =>
+                              Divider(height: 1),
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              selected:
+                                  _bestMatch?.animeId ==
+                                  _danmakuList?[index].animeId,
+                              title: Text(
+                                _danmakuList?[index].animeTitle ?? '',
+                              ),
+                              subtitle: Text(
+                                _danmakuList?[index].animeTitle ?? '',
+                              ),
+                              onTap: () {
+                                _onDanmakuSourceChange(_danmakuList![index]);
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((onValue) {
+      setState(() {
+        _enableAutoFocus = true;
+      });
+    });
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
@@ -399,7 +489,6 @@ class _PlayerScreenState extends State<PlayerScreen>
       setState(() {
         _isTablet =
             Device.get().isTablet && info.orientation == Orientation.landscape;
-        //_isFullScreen = info.orientation == Orientation.landscape;
       });
     }
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
@@ -408,11 +497,15 @@ class _PlayerScreenState extends State<PlayerScreen>
         _isFullScreen = true;
       });
     }
+    if (_isTablet) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    }
     super.didChangeDependencies();
   }
 
   @override
   void initState() {
+    _loadDanmakuSetting();
     _loadHistory();
     _fetchEpisode();
     _isTablet = Device.get().isTablet;
@@ -439,7 +532,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   Future<AppExitResponse> didRequestAppExit() {
-    log("didRequestAppExit");
+    _logger.d("didRequestAppExit");
     _storeLocalHistory();
     return super.didRequestAppExit();
   }
@@ -489,9 +582,8 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   Widget _buildPlayer({
     required bool isFullScreen,
-    required Function(bool isFullScreen) onFullScreenChanged,
-    required Function() onBackPressed,
-    Function()? onMsgTab,
+    required void Function(bool isFullScreen) onFullScreenChanged,
+    required void Function() onBackPressed,
   }) {
     return Flexible(
       flex: 1,
@@ -500,55 +592,235 @@ class _PlayerScreenState extends State<PlayerScreen>
         color: Colors.black,
         height: double.infinity,
         width: double.infinity,
-        child: Center(
-          child: CapVideoPlayerKit(
-            title: widget.nameCn,
-            subTitle: _episode?.data?[episodeIndex].nameCn,
-            isloading: isloading,
-            playerNotifier: _playerNotifier,
-            isFullScreen: isFullScreen,
-            currentEpisodeIndex: episodeIndex,
-            dammaku: _dammaku,
-            isTablet: _isTablet,
-            isInputting: _isInputting,
-            episodeList: _episode?.data?.map((e) => e.nameCn!).toList() ?? [],
-            onError: (error) => setState(() {
-              msg = error.toString();
-              isloading = false;
-              _logger.e("player.error: $msg");
-            }),
-            onEpisodeSelected: (index) => _onEpisodeSelected(index),
-            onNextTab: () {
-              if (isloading ||
-                  episodeIndex + 1 >
-                      _detail!.lines![lineIndex].episodes!.length - 1) {
-                return;
-              }
-              setState(() {
-                ++episodeIndex;
-              });
-              _fetchViewInfo();
-            },
-            onFullScreenChanged: (f) {
-              onFullScreenChanged(f);
-            },
-            onBackPressed: () {
-              onBackPressed();
-            },
-            onPositionChanged: (p) {
-              _position = p;
-            },
-          ),
+        child: ValueListenableBuilder(
+          valueListenable: _playerNotifier,
+          builder: (context, value, child) {
+            return Center(
+              child: CapVideoPlayerKit(
+                title: widget.nameCn,
+                subTitle: _episode?.data?[episodeIndex].nameCn,
+                isloading: isloading,
+                centerMsg: msg,
+                playerNotifier: _playerNotifier,
+                isFullScreen: isFullScreen,
+                currentEpisodeIndex: episodeIndex,
+                dammaku: _dammaku,
+                isTablet: _isTablet,
+                danmakuSetting: _danmakuSetting,
+                enableAutoFocus: _enableAutoFocus,
+                onEpisodeTab: () {
+                  if (_isTablet ||
+                      Platform.isWindows ||
+                      Platform.isMacOS ||
+                      Platform.isLinux) {
+                    setState(() {
+                      _isInfoDrawerOpen = true;
+                      _isEpisodeDrawerOpen = false;
+                      _isSettingDrawerOpen = false;
+                    });
+                  } else {
+                    setState(() {
+                      _isEpisodeDrawerOpen = true;
+                      _isInfoDrawerOpen = false;
+                      _isSettingDrawerOpen = false;
+                    });
+                  }
+                  _globalScaffoldKey.currentState?.openEndDrawer();
+                },
+                onSettingTab: () {
+                  setState(() {
+                    _isSettingDrawerOpen = true;
+                    _isEpisodeDrawerOpen = false;
+                    _isInfoDrawerOpen = false;
+                  });
+                  _globalScaffoldKey.currentState?.openEndDrawer();
+                },
+                onError: (error) => setState(() {
+                  msg = error.toString();
+                  isloading = false;
+                  _logger.e("player.error: $msg");
+                }),
+
+                onNextTab: () {
+                  if (isloading ||
+                      episodeIndex + 1 >
+                          _detail!.lines![lineIndex].episodes!.length - 1) {
+                    return;
+                  }
+                  setState(() {
+                    ++episodeIndex;
+                  });
+                  _fetchViewInfo();
+                },
+                onFullScreenChanged: (f) {
+                  onFullScreenChanged(f);
+                },
+                onBackPressed: () {
+                  onBackPressed();
+                },
+                onPositionChanged: (p) {
+                  _position = p;
+                },
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
+  /// 简介
+  Widget _buildSummary() {
+    return Padding(
+      padding: .all(12),
+      child: CustomScrollView(
+        slivers: [
+          // 简介卡片
+          SliverToBoxAdapter(
+            child: MediaCard(
+              id: "player_${subject.id!}",
+              imageUrl: subject.images?.large!,
+              nameCn: subject.nameCn!.isNotEmpty
+                  ? subject.nameCn!
+                  : subject.name ?? '',
+              genre: subject.metaTags?.join('/'),
+              episode: subject.eps ?? 0,
+              rating: subject.rating?.score,
+              height: 180,
+              airDate: subject.date,
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          // 数据源
+          SliverToBoxAdapter(
+            child: ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              tileColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              title: Text(
+                "player.datasource".tr(),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              subtitle: Text(
+                source.getName(),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              leading: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 100),
+                child: Image.network(
+                  width: double.infinity,
+                  source.getLogoUrl().contains('http')
+                      ? source.getLogoUrl()
+                      : 'https://${source.getLogoUrl()}',
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(Icons.error);
+                  },
+                ),
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          // 弹幕
+          SliverToBoxAdapter(
+            child: AnimatedSize(
+              duration: Duration(milliseconds: 300),
+              child: _dammaku == null
+                  ? SizedBox.shrink()
+                  : Container(
+                      width: double.infinity,
+
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        title: _isDanmakuLoading
+                            ? LinearProgressIndicator()
+                            : Text(
+                                context.tr(
+                                  'player.danmaku_statistics',
+                                  args: [
+                                    (_danmakuList?.length ?? 0).toString(),
+                                    (_dammaku?.comments?.length ?? 0)
+                                        .toString(),
+                                    (_dammaku?.comments?.length ?? 0)
+                                        .toString(),
+                                  ],
+                                ),
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 剧集列表
+  Widget _buildEpisode() {
+    return msg.isNotEmpty
+        ? LoadingOrShowMsg(
+            msg: msg,
+            onMsgTab: () {
+              _fetchViewInfo();
+            },
+          )
+        : _episode == null
+        ? _buildFadeEpisodeSection()
+        : GridView.builder(
+            key: PageStorageKey("player_episodes"),
+            padding: EdgeInsets.all(10),
+            itemCount: _episode?.data?.length ?? 0,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+            ),
+            itemBuilder: (context, index) => ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              selected: episodeIndex == index,
+              onTap: () {
+                if (episodeIndex == index || isloading) {
+                  return;
+                }
+                _onEpisodeSelected(index);
+              },
+              subtitle: Text(
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+                _episode?.data?[index].nameCn ?? "player.no_episode_name".tr(),
+              ),
+              title: Row(
+                children: [
+                  Text('${index + 1}'),
+                  SizedBox(width: 10),
+                  if (episodeIndex == index)
+                    ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.primary,
+                        BlendMode.srcATop,
+                      ),
+                      child: LottieBuilder.asset(
+                        "lib/assets/lottie/playing.json",
+                        repeat: true,
+                        width: 40,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+  }
+
   Widget _buildInfo() {
-    return Container(
-      color: Platform.isLinux || Platform.isMacOS || Platform.isWindows
-          ? Theme.of(context).scaffoldBackgroundColor
-          : null,
+    return SizedBox(
       child: Column(
         children: [
           Row(
@@ -569,98 +841,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               IconButton(
                 tooltip: "player.danmaku_selection".tr(),
                 onPressed: () {
-                  setState(() {
-                    _isInputting = true;
-                  });
-                  //弹幕选择sheet
-                  showModalBottomSheet(
-                    context: context,
-                    useSafeArea: true,
-                    builder: (context) {
-                      return StatefulBuilder(
-                        builder: (context, setState) {
-                          return Column(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ).copyWith(top: 10),
-                                child: Center(
-                                  child: TextFormField(
-                                    textInputAction: .search,
-                                    initialValue: _danmakuKeyword,
-                                    decoration: InputDecoration(
-                                      hintText: 'player.danmaku_search_hint'
-                                          .tr(),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                    onFieldSubmitted: (value) async {
-                                      if (value.isEmpty) {
-                                        return;
-                                      }
-                                      setState(() {});
-                                      await _loadDanmaku(
-                                        isFirstLoad: true,
-                                        keyword: value,
-                                      );
-                                      setState(() {});
-                                    },
-                                  ),
-                                ),
-                              ),
-                              if (_isDanmakuLoading)
-                                Padding(
-                                  padding: .only(top: 3),
-                                  child: LinearProgressIndicator(),
-                                ),
-                              Expanded(
-                                child:
-                                    (_danmakuList == null ||
-                                        _danmakuList!.isEmpty)
-                                    ? Center(
-                                        child: Text(
-                                          'player.no_danmaku_sheet_text'.tr(),
-                                        ),
-                                      )
-                                    : ListView.separated(
-                                        itemCount: _danmakuList?.length ?? 0,
-                                        separatorBuilder: (context, index) =>
-                                            Divider(height: 1),
-                                        itemBuilder: (context, index) {
-                                          return ListTile(
-                                            selected:
-                                                _bestMatch?.animeId ==
-                                                _danmakuList?[index].animeId,
-                                            title: Text(
-                                              _danmakuList?[index].animeTitle ??
-                                                  '',
-                                            ),
-                                            subtitle: Text(
-                                              _danmakuList?[index].animeTitle ??
-                                                  '',
-                                            ),
-                                            onTap: () {
-                                              _onDanmakuSourceChange(
-                                                _danmakuList![index],
-                                              );
-                                              Navigator.pop(context);
-                                            },
-                                          );
-                                        },
-                                      ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ).then((onValue) {
-                    setState(() {
-                      _isInputting = false;
-                    });
-                  });
+                  _showDanmakuBottomSheet();
                 },
                 icon: Icon(Icons.subtitles_rounded, color: Colors.grey),
               ),
@@ -715,200 +896,298 @@ class _PlayerScreenState extends State<PlayerScreen>
           Flexible(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                //简介
-                Container(
-                  padding: EdgeInsets.all(12),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      spacing: 6,
-                      children: [
-                        MediaCard(
-                          id: "player_${subject.id!}",
-                          imageUrl: subject.images?.large!,
-                          nameCn: subject.nameCn!.isNotEmpty
-                              ? subject.nameCn!
-                              : subject.name ?? '',
-                          genre: subject.metaTags?.join('/'),
-                          episode: subject.eps ?? 0,
-                          rating: subject.rating?.score,
-                          height: 180,
-                          airDate: subject.infobox
-                              ?.firstWhere(
-                                (element) =>
-                                    element.key?.contains(
-                                      "detail.air_date_key".tr(),
-                                    ) ??
-                                    false,
-                                orElse: () => InfoBox(),
-                              )
-                              .value,
-                        ),
-                        // 弹幕统计
-                        AnimatedSize(
-                          duration: Duration(milliseconds: 300),
-                          child: _dammaku == null
-                              ? SizedBox.shrink()
-                              : Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.surfaceContainerHighest,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: ExpansionTile(
-                                    enabled: _dammaku != null,
-                                    shape: RoundedRectangleBorder(side: .none),
-                                    title: Center(
-                                      child: _isDanmakuLoading
-                                          ? LinearProgressIndicator()
-                                          : Text(
-                                              context.tr(
-                                                'player.danmaku_statistics',
-                                                args: [
-                                                  (_danmakuList?.length ?? 0)
-                                                      .toString(),
-                                                  (_dammaku?.comments?.length ??
-                                                          0)
-                                                      .toString(),
-                                                  (_dammaku?.comments?.length ??
-                                                          0)
-                                                      .toString(),
-                                                ],
-                                              ),
-                                              style: Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium,
-                                            ),
-                                    ),
-                                    children: [
-                                      Container(
-                                        constraints: BoxConstraints(
-                                          maxHeight: 400,
-                                        ),
-                                        child: ListView.builder(
-                                          padding: .zero,
-                                          itemCount:
-                                              _dammaku?.comments?.length ?? 0,
-                                          itemBuilder: (context, index) {
-                                            final comment =
-                                                _dammaku?.comments?[index];
-                                            final time = Duration(
-                                              seconds:
-                                                  comment?.time?.toInt() ?? 0,
-                                            );
-                                            return ListTile(
-                                              titleAlignment: .center,
-                                              leading: Text(
-                                                '${time.inMinutes}:${time.inSeconds.remainder(60)}',
-                                              ),
-                                              title: Text(
-                                                comment?.text ?? '',
-                                                maxLines: 3,
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.bodyMedium,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                        ),
-                        ListTile(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          tileColor: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
-                          title: Text(
-                            "player.datasource".tr(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          subtitle: Text(
-                            source.getName(),
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          leading: Image.network(
-                            width: 50,
-                            source.getLogoUrl().contains('http')
-                                ? source.getLogoUrl()
-                                : 'https://${source.getLogoUrl()}',
-                            errorBuilder: (context, error, stackTrace) {
-                              return Icon(Icons.error);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // 剧集列表
-                msg.isNotEmpty
-                    ? LoadingOrShowMsg(
-                        msg: msg,
-                        onMsgTab: () {
-                          _fetchViewInfo();
-                        },
-                      )
-                    : _episode == null
-                    ? _buildFadeEpisodeSection()
-                    : GridView.builder(
-                        key: PageStorageKey("player_episodes"),
-                        padding: EdgeInsets.all(10),
-                        itemCount: _episode?.data?.length ?? 0,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 5,
-                          crossAxisSpacing: 5,
-                        ),
-                        itemBuilder: (context, index) => ListTile(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          selected: episodeIndex == index,
-                          onTap: () {
-                            if (episodeIndex == index || isloading) {
-                              return;
-                            }
-                            _onEpisodeSelected(index);
-                          },
-                          subtitle: Text(
-                            maxLines: 4,
-                            overflow: TextOverflow.ellipsis,
-                            _episode?.data?[index].nameCn ??
-                                "player.no_episode_name".tr(),
-                          ),
-                          title: Row(
-                            children: [
-                              Text('${index + 1}'),
-                              SizedBox(width: 10),
-                              if (episodeIndex == index)
-                                ColorFiltered(
-                                  colorFilter: ColorFilter.mode(
-                                    Theme.of(context).colorScheme.primary,
-                                    BlendMode.srcATop,
-                                  ),
-                                  child: LottieBuilder.asset(
-                                    "lib/assets/lottie/playing.json",
-                                    repeat: true,
-                                    width: 40,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-              ],
+              children: [_buildSummary(), _buildEpisode()],
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildGenre() {
+    bool isSelected = false;
+    bool isFilterSelected = false;
+    return Wrap(
+      children: [
+        InputChip(label: Text('input_chip')),
+        ChoiceChip(
+          label: Text('choineChip'),
+          selected: isSelected,
+          onSelected: (bool value) {
+            setState(() {
+              isSelected = value;
+            });
+          },
+        ),
+        FilterChip(
+          label: Text('filterChip'),
+          onSelected: (bool value) {
+            setState(() {
+              isFilterSelected = value;
+            });
+          },
+        ),
+        ActionChip(
+          label: Text('actionChip'),
+          onPressed: () {
+            _logger.d("actionChip pressed");
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEpisodeDrawer() {
+    final eps = _episode?.data;
+    return SizedBox.expand(
+      child: ListView.builder(
+        key: const PageStorageKey("player_episodes_list"),
+        itemCount: eps?.length ?? 0,
+        itemBuilder: (context, index) {
+          return ListTile(
+            selected: index == episodeIndex,
+            horizontalTitleGap: 0,
+            leading: Text(
+              (index + 1).toString(),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            title: Text(eps?[index].nameCn ?? ""),
+            trailing: episodeIndex == index
+                ? Container(
+                    constraints: BoxConstraints(maxWidth: 80),
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.primary,
+                        BlendMode.srcATop,
+                      ),
+                      child: LottieBuilder.asset(
+                        "lib/assets/lottie/playing2.json",
+                        repeat: true,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                : null,
+            onTap: () {
+              _onEpisodeSelected(index);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  ///  弹幕设置
+  Widget _buildDanmakuSettingDrawer({
+    required DanmakuSetting setting,
+    void Function(DanmakuSetting setting)? onSettingChanged,
+  }) {
+    return SizedBox.expand(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: TextFormField(
+                initialValue: setting.filterWords,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                onChanged: (value) {
+                  onSettingChanged?.call(setting.copyWith(filterWords: value));
+                },
+                decoration: InputDecoration(
+                  labelText: context.tr(
+                    'component.cap_video_player.danmaku_filter_keywords',
+                  ),
+                  hintStyle: TextStyle(fontSize: 10),
+                  hintText: context.tr(
+                    'component.cap_video_player.danmaku_filter_hint',
+                  ),
+                ),
+              ),
+            ),
+
+            ListTile(
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    context.tr(
+                      'component.cap_video_player.danmaku_offset_adjustment',
+                    ),
+                  ),
+                  Tooltip(
+                    message: context.tr(
+                      'component.cap_video_player.danmaku_offset_tooltip',
+                    ),
+                    child: const Icon(
+                      Icons.help_outline,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Text(
+                context.tr(
+                  'component.cap_video_player.current_offset',
+                  args: [setting.danmakuOffset.toString()],
+                ),
+              ),
+
+              leading: IconButton(
+                onPressed: () {
+                  onSettingChanged?.call(
+                    setting.copyWith(danmakuOffset: setting.danmakuOffset - 1),
+                  );
+                },
+                icon: const Icon(Icons.exposure_neg_1),
+              ),
+              trailing: IconButton(
+                onPressed: () {
+                  onSettingChanged?.call(
+                    setting.copyWith(danmakuOffset: setting.danmakuOffset + 1),
+                  );
+                },
+                icon: const Icon(Icons.exposure_plus_1),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                context.tr('component.cap_video_player.hide_top_danmaku'),
+              ),
+              trailing: Switch(
+                value: setting.hideTop,
+                onChanged: (value) {
+                  onSettingChanged?.call(setting.copyWith(hideTop: value));
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(
+                context.tr('component.cap_video_player.hide_bottom_danmaku'),
+              ),
+              trailing: Switch(
+                value: setting.hideBottom,
+                onChanged: (value) {
+                  onSettingChanged?.call(setting.copyWith(hideBottom: value));
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(
+                context.tr('component.cap_video_player.hide_scroll_danmaku'),
+              ),
+              trailing: Switch(
+                value: setting.hideScroll,
+                onChanged: (value) {
+                  onSettingChanged?.call(setting.copyWith(hideScroll: value));
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(
+                context.tr('component.cap_video_player.massive_danmaku_mode'),
+              ),
+              subtitle: Text(
+                context.tr(
+                  'component.cap_video_player.massive_danmaku_subtitle',
+                ),
+              ),
+              trailing: Switch(
+                value: setting.massiveMode,
+                onChanged: (value) {
+                  onSettingChanged?.call(setting.copyWith(massiveMode: value));
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(
+                context.tr('component.cap_video_player.danmaku_opacity'),
+              ),
+              leading: null,
+              subtitle: Row(
+                children: [
+                  Text('${(setting.opacity * 100).round()}%'),
+                  Expanded(
+                    child: Slider(
+                      min: 0.1,
+                      max: 1.0,
+                      value: setting.opacity,
+                      onChanged: (value) {
+                        onSettingChanged?.call(
+                          setting.copyWith(opacity: value),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              title: Text(
+                context.tr('component.cap_video_player.display_area'),
+              ),
+              subtitle: Row(
+                children: [
+                  Text('${(setting.area * 100).round()}%'),
+                  Expanded(
+                    child: Slider(
+                      min: 0.1,
+                      max: 1.0,
+                      value: setting.area,
+                      onChanged: (value) {
+                        onSettingChanged?.call(setting.copyWith(area: value));
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              title: Text(
+                context.tr('component.cap_video_player.danmaku_font_size'),
+              ),
+              subtitle: Row(
+                children: [
+                  Text('${(setting.fontSize).round()}'),
+                  Expanded(
+                    child: Slider(
+                      min: 10.0,
+                      max: 50.0,
+                      value: setting.fontSize,
+                      onChanged: (value) {
+                        onSettingChanged?.call(
+                          setting.copyWith(fontSize: value),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 抽屉
+  Widget _buildDrawer() {
+    if (_isEpisodeDrawerOpen) {
+      return _buildEpisodeDrawer();
+    } else if (_isSettingDrawerOpen) {
+      return _buildDanmakuSettingDrawer(
+        setting: _danmakuSetting,
+        onSettingChanged: (setting) => safeSetState(() {
+          _danmakuSetting = setting;
+        }),
+      );
+    } else if (_isInfoDrawerOpen && _isTablet) {
+      return _buildInfo();
+    } else {
+      return SizedBox.shrink();
+    }
   }
 
   @override
@@ -917,63 +1196,34 @@ class _PlayerScreenState extends State<PlayerScreen>
   Widget build(BuildContext context) {
     super.build(context);
     return _isTablet
+        // PC端，包含平板
         ? Scaffold(
-            key: _globalKey,
+            key: _globalScaffoldKey,
             resizeToAvoidBottomInset: false,
-            backgroundColor: _showInfo ? null : Colors.black,
-            endDrawer:
-                Platform.isLinux || Platform.isMacOS || Platform.isWindows
-                ? SizedBox(
-                    width: 400,
-                    child: Theme(data: Theme.of(context), child: _buildInfo()),
-                  )
-                : null,
+            onEndDrawerChanged: (isOpened) {
+              setState(() {
+                _enableAutoFocus = !isOpened;
+              });
+            },
+            endDrawer: Drawer(width: 400, child: _buildDrawer()),
             body: SafeArea(
-              child: Row(
-                children: [
-                  _buildPlayer(
-                    isFullScreen: true,
-                    onFullScreenChanged: (f) {
-                      if (Platform.isLinux ||
-                          Platform.isMacOS ||
-                          Platform.isWindows) {
-                        _globalKey.currentState?.openEndDrawer();
-                      } else {
-                        setState(() {
-                          _showInfo = f;
-                        });
-                      }
-                    },
-                    onBackPressed: () {
-                      context.pop();
-                    },
-                    onMsgTab: () {
-                      setState(() {
-                        _showInfo = true;
-                      });
-                    },
-                  ),
-                  if (Platform.isAndroid || Platform.isIOS)
-                    AnimatedSize(
-                      duration: Duration(milliseconds: 300),
-                      child: _showInfo
-                          ? SizedBox(
-                              width: 400,
-                              child: Theme(
-                                data: Theme.of(context),
-                                child: _buildInfo(),
-                              ),
-                            )
-                          : SizedBox(),
-                    ),
-                ],
+              child: _buildPlayer(
+                isFullScreen: true,
+                onFullScreenChanged: (isFullScreen) {
+                  setState(() {
+                    _isFullScreen = isFullScreen;
+                  });
+                  _toggleFullScreen(isFullScreen);
+                },
+                onBackPressed: () => context.pop(),
               ),
             ),
           )
-        // 移动端
+        // 移动端,不包含平板
         : Scaffold(
+            key: _globalScaffoldKey,
             resizeToAvoidBottomInset: false,
-            backgroundColor: _isFullScreen ? Colors.black : null,
+            endDrawer: Drawer(width: 300, child: _buildDrawer()),
             body: SafeArea(
               child: Center(
                 child: PopScope(
@@ -992,10 +1242,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                         onFullScreenChanged: (isFullScreen) {
                           setState(() {
                             _isTablet = false;
-                            _showInfo = false;
                             _isFullScreen = isFullScreen;
                             _toggleFullScreen(_isFullScreen);
-                            log('__isFullScreen:$_isFullScreen');
                           });
                         },
                         onBackPressed: () {

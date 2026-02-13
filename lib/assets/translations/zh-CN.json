@@ -43,10 +43,13 @@
     },
     "subscribe": {
         "title": "追番",
-        "tab_subs": "追番",
-        "tab_view": "播放记录",
+        "tab_subs_all": "全部",
+        "tab_subs_wish": "想看",
+        "tab_subs_watched": "看过",
+        "tab_subs_watching": "在看",
+        "tab_playback": "播放记录",
         "refresh_btn_subs": "暂无追番,点我刷新试试",
-        "refresh_btn_view": "暂无播放记录,点我刷新试试",
+        "refresh_btn_playback": "暂无播放记录,点我刷新试试",
         "empty_text": "暂无追番",
         "delete_failed": "删除失败",
         "fetch_subs_failed": "获取云端追番记录失败",
@@ -160,7 +163,7 @@
         "help": "如何使用",
         "how_to_deploy": "如何部署",
         "close": "关闭",
-        "help_content": "由于App不会存储任何有关用户的信息，如果想要保存自己的账号信息，在使用前请部署自己的服务器,点击查看如何部署",
+        "help_content": "由于App不会存储任何有关用户的信息，如果想要保存自己的账号信息，在使用前请部署自己的账号服务,点击查看如何部署",
         "app_bar_title": "欢迎回来"
     },
     "search": {
@@ -317,6 +320,7 @@
         "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分"
     },
     "common": {
+        "load_failed": "加载失败",
         "new_version": "发现新版本",
         "current_version": "当前版本",
         "latest_version": "最新版本",

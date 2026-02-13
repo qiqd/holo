@@ -43,10 +43,13 @@
     },
     "subscribe": {
         "title": "追番",
-        "tab_subs": "",
-        "tab_view": "播放記錄",
-        "refresh_btn_subs": "暫無追番,點我重新整理試試",
-        "refresh_btn_view": "暫無播放記錄,點我重新整理試試",
+        "tab_subs_all": "全部",
+        "tab_subs_wish": "想看",
+        "tab_subs_watched": "看過",
+        "tab_subs_watching": "在看",
+        "tab_playback": "播放記錄",
+        "refresh_btn_subs": "暫無追番,點我刷新試試",
+        "refresh_btn_playback": "暫無播放記錄,點我刷新試試",
         "empty_text": "暫無追番",
         "delete_failed": "刪除失敗",
         "fetch_subs_failed": "獲取雲端追番記錄失敗",
@@ -319,6 +322,7 @@
         "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分"
     },
     "common": {
+        "load_failed": "加載失敗",
         "new_version": "發現新版本",
         "current_version": "當前版本",
         "latest_version": "最新版本",

@@ -29,7 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final Logger _logger = Logger();
   int index = 0;
   Timer? _carouselTimer;
-  bool _loading = false;
+  bool _isLoading = false;
+  bool _isRefresh = false;
   String _msg = '';
   int _page = 1;
   List<Data> _rank = [];
@@ -43,8 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       exception: (e) {
         setState(() {
           _logger.e("home->fetch hot error: $e");
-          _msg = e.toString();
-          _loading = false;
+          _msg = context.tr("common.load_failed");
         });
       },
     );
@@ -55,11 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _fetchRank({int page = 1, bool loadMore = false}) async {
-    if (_loading) {
+    if (_isLoading) {
       return;
     }
     safeSetState(() {
-      _loading = true;
+      _isLoading = true;
     });
     final rank = await Api.bangumi.fetchRecommend(
       sort: "rank",
@@ -70,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
       exception: (e) {
         setState(() {
           _logger.e("home->fetch rank error: $e");
-          _msg = e.toString();
-          _loading = false;
+          _msg = context.tr("common.load_failed");
+          _isLoading = false;
         });
       },
     );
@@ -84,14 +84,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     LocalStore.setHomeRankCache(Subject(data: _rank));
     safeSetState(() {
-      _loading = false;
+      _isLoading = false;
     });
   }
 
   void _onScrollToBottom() {
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 100 &&
-        !_loading) {
+        !_isLoading) {
       _logger.i("load more page: $_page");
       _fetchRank(page: ++_page, loadMore: true);
     }
@@ -295,11 +295,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ? LoadingOrShowMsg(msg: _msg)
             : RefreshIndicator(
                 onRefresh: () async {
+                  setState(() {
+                    _isRefresh = true;
+                  });
                   await _fetchRank(page: ++_page, loadMore: false);
+                  setState(() {
+                    _isRefresh = false;
+                  });
                 },
                 child: Column(
                   children: [
-                    if (_loading) LinearProgressIndicator(),
+                    if (_isLoading && !_isRefresh) LinearProgressIndicator(),
                     Expanded(
                       child: Padding(
                         padding: .symmetric(horizontal: 12),

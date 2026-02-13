@@ -80,20 +80,8 @@ class LocalStore {
     var subs = subsStr
         .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
         .toList();
-    var firstWhere = subs.firstWhere(
-      (item) => item.subId == history.subId,
-      orElse: () => SubscribeHistory(
-        id: history.id,
-        subId: history.subId,
-        title: history.title,
-        imgUrl: history.imgUrl,
-        airDate: history.airDate,
-        createdAt: history.createdAt,
-        isSync: history.isSync,
-      ),
-    );
     subs.removeWhere((item) => item.subId == history.subId);
-    subs.add(firstWhere);
+    subs.add(history);
     subsStr = subs.map((item) => json.encode(item.toJson())).toList();
     _prefs!.setStringList("${_key}_subscribe", subsStr);
   }
@@ -239,11 +227,9 @@ class LocalStore {
   static void saveAppSetting(AppSetting appSetting) {
     if (_prefs == null) return;
     var appSettingStr = _prefs!.getString("${_key}_app_setting") ?? "";
-    var appSetting = appSettingStr.isEmpty
-        ? AppSetting()
-        : AppSetting.fromJson(json.decode(appSettingStr));
-    _prefs!.setString("${_key}_app_setting", json.encode(appSetting));
-    SettingApi.saveSetting(appSetting, (_) {});
+    var newSetting = appSettingStr.isEmpty ? AppSetting() : appSetting;
+    _prefs!.setString("${_key}_app_setting", json.encode(newSetting.toJson()));
+    SettingApi.saveSetting(newSetting, (_) {});
   }
 
   static List<Rule> getRules() {

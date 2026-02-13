@@ -7,7 +7,7 @@ import 'package:holo/api/subscribe_api.dart';
 import 'package:holo/entity/character.dart';
 import 'package:holo/entity/media.dart';
 import 'package:holo/entity/person.dart';
-import 'package:holo/entity/subject.dart' show Data, InfoBox;
+import 'package:holo/entity/subject.dart' show Data;
 import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:holo/service/api.dart';
@@ -50,6 +50,7 @@ class _DetailScreenState extends State<DetailScreen>
   Map<SourceService, List<Media>> source2Media = {};
   List<SourceService> sourceService = [];
   bool isLoading = false;
+  bool isCompleted = false;
   late TabController tabController = TabController(vsync: this, length: 4);
   late TabController subTabController = TabController(
     vsync: this,
@@ -61,7 +62,7 @@ class _DetailScreenState extends State<DetailScreen>
   bool isSubscribed = false;
   Timer? _syncTimer;
   Timer? _cancelSyncTimer;
-
+  int _viewingStatus = 0;
   void _fetchSubjec() async {
     if (data == null) {
       final res = await Api.bangumi.fetchSubjectSync(widget.id, (e) {
@@ -73,12 +74,13 @@ class _DetailScreenState extends State<DetailScreen>
         data = res;
       });
     }
-    _loadHistory();
+    _loadSubscribeHistory();
   }
 
   Future<void> _fetchMedia() async {
-    setState(() {
+    safeSetState(() {
       isLoading = true;
+      isCompleted = false;
     });
     final sources = Api.getSources();
     final future = sources.map((source) async {
@@ -140,6 +142,7 @@ class _DetailScreenState extends State<DetailScreen>
     safeSetState(() {
       sourceService = keys;
       isLoading = false;
+      isCompleted = true;
     });
   }
 
@@ -182,16 +185,17 @@ class _DetailScreenState extends State<DetailScreen>
     }
   }
 
-  void _loadHistory() {
+  void _loadSubscribeHistory() {
     final history = LocalStore.getSubscribeHistoryById(data!.id!);
     if (mounted && history != null) {
       setState(() {
         isSubscribed = true;
+        _viewingStatus = history.viewingStatus;
       });
     }
   }
 
-  void _storeLocalHistory() async {
+  void _storeSubscribeHistory() async {
     if (data == null) {
       return;
     }
@@ -201,6 +205,7 @@ class _DetailScreenState extends State<DetailScreen>
         title: data!.nameCn!,
         imgUrl: data!.images?.large ?? "",
         createdAt: DateTime.now(),
+        viewingStatus: _viewingStatus,
       );
       _syncSubscribeHistory(history);
       LocalStore.addSubscribeHistory(history);
@@ -214,16 +219,12 @@ class _DetailScreenState extends State<DetailScreen>
     setState(() {
       isSubscribed = !isSubscribed;
     });
-    _storeLocalHistory();
+    _storeSubscribeHistory();
   }
 
   void _cancelSync(int subId) {
-    _syncTimer?.cancel();
-
+    _cancelSyncTimer?.cancel();
     _cancelSyncTimer = Timer(Duration(seconds: 2), () {
-      if (isSubscribed) {
-        return;
-      }
       SubscribeApi.deleteSubscribeRecordBySubId(subId, () {}, (msg) {});
     });
   }
@@ -231,9 +232,6 @@ class _DetailScreenState extends State<DetailScreen>
   void _syncSubscribeHistory(SubscribeHistory history) async {
     _syncTimer?.cancel();
     _syncTimer = Timer(Duration(seconds: 2), () async {
-      if (!isSubscribed) {
-        return;
-      }
       SubscribeApi.saveSubscribeHistory(history, () {
         history.isSync = true;
       }, (e) {}).then((newSubscribe) {});
@@ -248,9 +246,141 @@ class _DetailScreenState extends State<DetailScreen>
     launchUrl(Uri.parse("https://bangumi.tv/subject/${data!.id}"));
   }
 
+  Widget _buildShimmerSkeleton() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        children: [
+          MediaCard(
+            id: "${widget.from}_${widget.id}",
+            imageUrl: widget.cover,
+            nameCn: "----------",
+            name: "---------",
+            genre: "---------",
+            airDate: "---------",
+            height: 250,
+            rating: 0.0,
+            showShimmer: true,
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 48,
+            child: Row(
+              mainAxisAlignment: .center,
+              children: List.generate(4, (index) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: 80,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // 内容区域骨架屏
+          Expanded(
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 8),
+                    child: Container(
+                      width: double.infinity,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Colors.white38,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCharacterDetail(Character character, BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      builder: (context) {
+        return Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.all(12),
+
+          child: Row(
+            spacing: 4,
+            children: [
+              Flexible(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    width: double.infinity,
+                    height: double.infinity,
+                    character.images?.large ?? '',
+                    fit: BoxFit.fitHeight,
+                    loadingBuilder: (context, child, loadingProgress) =>
+                        loadingProgress == null
+                        ? child
+                        : const Center(child: CircularProgressIndicator()),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Center(child: Icon(size: 70, Icons.error)),
+                  ),
+                ),
+              ),
+
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        character.name ?? "detail.unknown".tr(),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        'CV: ${character.actors?.map((e) => e.name).join('·') ?? ''}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      Text(
+                        character.relation ?? '',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+
+                      Text(
+                        character.summary ?? '',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
-    _storeLocalHistory();
+    _storeSubscribeHistory();
     subTabController.dispose();
     tabController.dispose();
     super.dispose();
@@ -309,7 +439,7 @@ class _DetailScreenState extends State<DetailScreen>
             context.pop(context);
           },
         ),
-        title: Text("detail.title".tr()),
+        //  title: Text("detail.title".tr()),
         actions: [
           IconButton(
             onPressed: _openBangumiUrl,
@@ -329,11 +459,12 @@ class _DetailScreenState extends State<DetailScreen>
             ),
           ),
           IconButton(
+            tooltip: 'All search results',
             onPressed: () {
-              if (isLoading) {
+              if (!isCompleted) {
                 return;
               }
-              setState(() {});
+
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
@@ -439,11 +570,9 @@ class _DetailScreenState extends State<DetailScreen>
                     ),
                   );
                 },
-              ).then((onValue) {
-                setState(() {});
-              });
+              );
             },
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.search_rounded),
           ),
         ],
       ),
@@ -457,13 +586,22 @@ class _DetailScreenState extends State<DetailScreen>
                     MediaCard(
                       id: "${widget.from}_${data!.id!}",
                       imageUrl: widget.cover,
-                      nameCn: data!.nameCn!,
+                      viewingStatus: isSubscribed ? _viewingStatus : null,
+                      nameCn: data!.nameCn!.isNotEmpty
+                          ? data!.nameCn!
+                          : data!.name!,
                       name: data!.name!,
                       genre: data!.metaTags?.join('/'),
                       episode: data!.eps ?? 0,
                       rating: data!.rating?.score,
                       height: 250,
                       airDate: data?.date,
+                      onViewingStatusChange: (status) {
+                        setState(() {
+                          _viewingStatus = status;
+                        });
+                        _storeSubscribeHistory();
+                      },
                     ),
                     Expanded(
                       child: Column(
@@ -619,138 +757,6 @@ class _DetailScreenState extends State<DetailScreen>
                 ),
               ),
       ),
-    );
-  }
-
-  Widget _buildShimmerSkeleton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        children: [
-          MediaCard(
-            id: "${widget.from}_${widget.id}",
-            imageUrl: widget.cover,
-            nameCn: "----------",
-            name: "---------",
-            genre: "---------",
-            airDate: "---------",
-            height: 250,
-            rating: 0.0,
-            showShimmer: true,
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 48,
-            child: Row(
-              mainAxisAlignment: .center,
-              children: List.generate(4, (index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    width: 80,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white38,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // 内容区域骨架屏
-          Expanded(
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: 8),
-                    child: Container(
-                      width: double.infinity,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showCharacterDetail(Character character, BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      builder: (context) {
-        return Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.all(12),
-
-          child: Row(
-            spacing: 4,
-            children: [
-              Flexible(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    width: double.infinity,
-                    height: double.infinity,
-                    character.images?.large ?? '',
-                    fit: BoxFit.fitHeight,
-                    loadingBuilder: (context, child, loadingProgress) =>
-                        loadingProgress == null
-                        ? child
-                        : const Center(child: CircularProgressIndicator()),
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Center(child: Icon(size: 70, Icons.error)),
-                  ),
-                ),
-              ),
-
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 4,
-                    children: [
-                      Text(
-                        character.name ?? "detail.unknown".tr(),
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(
-                        'CV: ${character.actors?.map((e) => e.name).join('·') ?? ''}',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      Text(
-                        character.relation ?? '',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-
-                      Text(
-                        character.summary ?? '',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

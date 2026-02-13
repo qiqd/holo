@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:holo/util/datetime_util.dart';
 import 'package:shimmer/shimmer.dart';
 
+/// 媒体卡片
 class MediaCard extends StatelessWidget {
   final String id;
   final String? name;
@@ -24,8 +25,10 @@ class MediaCard extends StatelessWidget {
   final bool showDeleteIcon;
   final bool showShimmer;
 
-  final Function(bool)? onLongPress;
-
+  /// 观看状态 0:无状态 1:想看 2:看过 3:在看
+  final int? viewingStatus;
+  final void Function(bool)? onLongPress;
+  final void Function(int status)? onViewingStatusChange;
   const MediaCard({
     super.key,
     required this.id,
@@ -45,7 +48,9 @@ class MediaCard extends StatelessWidget {
     this.showDeleteIcon = false,
     this.showShimmer = false,
 
+    this.viewingStatus,
     this.onLongPress,
+    this.onViewingStatusChange,
   });
 
   @override
@@ -60,6 +65,7 @@ class MediaCard extends StatelessWidget {
             width: double.infinity,
             height: height,
             child: Row(
+              spacing: 6,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Hero(
@@ -98,263 +104,260 @@ class MediaCard extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 3,
-                        children: [
-                          // 中文名称
-                          showShimmer
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    height: 20,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white38,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                )
-                              : Text(
-                                  nameCn.isEmpty
-                                      ? context.tr("component.title")
-                                      : nameCn,
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
-                                  maxLines: 5,
-                                  overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    mainAxisSize: .max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 3,
+                    children: [
+                      // 中文名称
+                      showShimmer
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 20,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white38,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-
-                          // 初始名称
-                          showShimmer
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    height: 20,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white38,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                )
-                              : (name != null && nameCn.isNotEmpty)
-                              ? Text(
-                                  name ?? "",
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 14,
-                                  ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                )
-                              : SizedBox.shrink(),
-
-                          // 匹配度
-                          showShimmer
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    height: 20,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white38,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                )
-                              : (score != 0)
-                              ? Text(
-                                  "${context.tr("component.media_card.score")}:${(score * 100).toStringAsFixed(1)}%",
-                                  style: const TextStyle(
-                                    color: Colors.orange,
-                                    fontSize: 12,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                )
-                              : SizedBox.shrink(),
-                          // 类型
-                          showShimmer
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    height: 20,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white38,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                )
-                              : (genre != null)
-                              ? Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        genre!,
-                                        style: const TextStyle(
-                                          color: Colors.blue,
-                                          fontSize: 12,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : SizedBox.shrink(),
-                          // 集数
-                          showShimmer
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    height: 20,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white38,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                )
-                              : (episode != null)
-                              ? Row(
-                                  spacing: 5,
-                                  children: [
-                                    const Icon(
-                                      Icons.info_outline,
-                                      color: Colors.grey,
-                                      size: 16,
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        episode == 0
-                                            ? context.tr(
-                                                "component.media_card.status",
-                                              )
-                                            : '${updateTo > 0
-                                                  ? updateTo <= (episode ?? 0)
-                                                        ? '更新至$updateTo话'
-                                                        : '已完结'
-                                                  : ''}/${context.tr("component.media_card.total_episode", args: [episode.toString()])}',
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : SizedBox.shrink(),
-                          //评分
-                          showShimmer
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    height: 20,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white38,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                )
-                              : (rating != null)
-                              ? Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.orange,
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      rating!.toStringAsFixed(1),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : SizedBox.shrink(),
-                          //上映时间
-                          showShimmer
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Container(
-                                    height: 20,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white38,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                )
-                              : (airDate != null)
-                              ? Row(
-                                  spacing: 5,
-                                  children: [
-                                    const Icon(
-                                      Icons.date_range,
-                                      color: Colors.grey,
-                                      size: 16,
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        airDate!,
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : SizedBox.shrink(),
-
-                          // 历史集数
-                          if (historyEpisode != null)
-                            Text(
-                              context.tr(
-                                "component.media_card.lastviewAtEpisode",
-                                args: [(historyEpisode! + 1).toString()],
                               ),
+                            )
+                          : Text(
+                              nameCn.isEmpty
+                                  ? context.tr("component.title")
+                                  : nameCn,
+                              style: Theme.of(context).textTheme.titleMedium,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+
+                      // 初始名称
+                      showShimmer
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 20,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white38,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            )
+                          : (name != null && nameCn.isNotEmpty)
+                          ? Text(
+                              name ?? "",
                               style: const TextStyle(
                                 color: Colors.grey,
-                                fontSize: 12,
+                                fontSize: 14,
                               ),
-                            ),
-                          if (lastViewAt != null)
-                            Text(
-                              context.tr(
-                                "component.media_card.lastviewAtTime",
-                                args: [formatTimeAgo(lastViewAt!, context)],
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : SizedBox.shrink(),
+
+                      // 匹配度
+                      showShimmer
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 20,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white38,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
+                            )
+                          : (score != 0)
+                          ? Text(
+                              "${context.tr("component.media_card.score")}:${(score * 100).toStringAsFixed(1)}%",
                               style: const TextStyle(
-                                color: Colors.grey,
+                                color: Colors.orange,
                                 fontSize: 12,
                               ),
-                            ),
-                        ],
-                      ),
-                    ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : SizedBox.shrink(),
+                      // 类型
+                      showShimmer
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 20,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white38,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            )
+                          : (genre != null)
+                          ? Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    genre!,
+                                    style: const TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 12,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : SizedBox.shrink(),
+                      // 集数
+                      showShimmer
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 20,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white38,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            )
+                          : (episode != null)
+                          ? Row(
+                              spacing: 5,
+                              children: [
+                                const Icon(
+                                  Icons.info_outline,
+                                  color: Colors.grey,
+                                  size: 16,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    episode == 0
+                                        ? context.tr(
+                                            "component.media_card.status",
+                                          )
+                                        : '${updateTo > 0
+                                              ? updateTo <= (episode ?? 0)
+                                                    ? '更新至$updateTo话'
+                                                    : '已完结'
+                                              : ''}/${context.tr("component.media_card.total_episode", args: [episode.toString()])}',
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : SizedBox.shrink(),
+                      //评分
+                      showShimmer
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 20,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white38,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            )
+                          : (rating != null)
+                          ? Row(
+                              children: [
+                                const Icon(
+                                  Icons.star,
+                                  color: Colors.orange,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  rating!.toStringAsFixed(1),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : SizedBox.shrink(),
+                      //上映时间
+                      showShimmer
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 20,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white38,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            )
+                          : (airDate != null)
+                          ? Row(
+                              spacing: 5,
+                              children: [
+                                const Icon(
+                                  Icons.date_range,
+                                  color: Colors.grey,
+                                  size: 16,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    airDate!,
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : SizedBox.shrink(),
+                      // 历史集数
+                      if (historyEpisode != null)
+                        Text(
+                          context.tr(
+                            "component.media_card.lastviewAtEpisode",
+                            args: [(historyEpisode! + 1).toString()],
+                          ),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      if (lastViewAt != null)
+                        Text(
+                          context.tr(
+                            "component.media_card.lastviewAtTime",
+                            args: [formatTimeAgo(lastViewAt!, context)],
+                          ),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      Spacer(),
+
+                      // 播放状态
+                    ],
                   ),
                 ),
               ],
             ),
           ),
         ),
+
         // 删除图标
         AnimatedPositioned(
           duration: const Duration(milliseconds: 100),
@@ -370,6 +373,33 @@ class MediaCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.delete, color: Colors.white, size: 20),
+            ),
+          ),
+        ),
+        AnimatedPositioned(
+          right: 0,
+          bottom: viewingStatus != null ? 0 : -50,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          child: SizedBox(
+            width: 240,
+            child: SegmentedButton(
+              style: ButtonStyle(
+                padding: WidgetStatePropertyAll(.zero),
+                iconSize: WidgetStatePropertyAll(12),
+              ),
+              emptySelectionAllowed: true,
+              segments: [
+                ButtonSegment(value: 1, label: Text('想看')),
+                ButtonSegment(value: 3, label: Text('在看')),
+                ButtonSegment(value: 2, label: Text('看过')),
+              ],
+              selected: {viewingStatus ?? 0},
+              onSelectionChanged: (Set<int> values) {
+                if (values.isNotEmpty) {
+                  onViewingStatusChange?.call(values.first);
+                }
+              },
             ),
           ),
         ),

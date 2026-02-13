@@ -31,6 +31,7 @@ DanmakuSetting _$DanmakuSettingFromJson(Map<String, dynamic> json) =>
       hideBottom: json['hideBottom'] as bool? ?? false,
       massiveMode: json['massiveMode'] as bool? ?? false,
       filterWords: json['filterWords'] as String? ?? '',
+      danmakuOffset: json['danmakuOffset'] as int? ?? 0,
     );
 
 Map<String, dynamic> _$DanmakuSettingToJson(DanmakuSetting instance) =>
@@ -43,4 +44,5 @@ Map<String, dynamic> _$DanmakuSettingToJson(DanmakuSetting instance) =>
       'hideBottom': instance.hideBottom,
       'massiveMode': instance.massiveMode,
       'filterWords': instance.filterWords,
+      'danmakuOffset': instance.danmakuOffset,
     };

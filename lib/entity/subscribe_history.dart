@@ -11,6 +11,9 @@ class SubscribeHistory {
   String? airDate;
   DateTime createdAt;
   bool isSync;
+
+  /// 观看状态 0:无状态 1:想看 2:看过 3:在看
+  int viewingStatus;
   SubscribeHistory({
     required this.subId,
     this.id,
@@ -19,6 +22,7 @@ class SubscribeHistory {
     required this.createdAt,
     required this.imgUrl,
     this.isSync = false,
+    this.viewingStatus = 0,
   });
 
   factory SubscribeHistory.fromJson(Map<String, dynamic> json) =>
