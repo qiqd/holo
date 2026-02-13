@@ -9,8 +9,7 @@ import 'package:shimmer/shimmer.dart';
 /// 媒体卡片
 class MediaCard extends StatelessWidget {
   final String id;
-  final String? name;
-  final String nameCn;
+  final String title;
   final String? genre;
   final int? episode;
   final int? historyEpisode;
@@ -20,6 +19,8 @@ class MediaCard extends StatelessWidget {
   final double? rating;
   final double height;
   final double score;
+  final bool largeTitle;
+  final bool isFavorite;
   final Function? onTap;
   final Function(int)? onDelete;
   final bool showDeleteIcon;
@@ -32,11 +33,10 @@ class MediaCard extends StatelessWidget {
   const MediaCard({
     super.key,
     required this.id,
+    required this.title,
     required this.imageUrl,
-    required this.nameCn,
     this.historyEpisode,
     this.lastViewAt,
-    this.name,
     this.genre,
     this.episode,
     this.airDate,
@@ -45,9 +45,10 @@ class MediaCard extends StatelessWidget {
     this.height = 200,
     this.onTap,
     this.onDelete,
+    this.isFavorite = false,
+    this.largeTitle = true,
     this.showDeleteIcon = false,
     this.showShimmer = false,
-
     this.viewingStatus,
     this.onLongPress,
     this.onViewingStatusChange,
@@ -109,13 +110,13 @@ class MediaCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 3,
                     children: [
-                      // 中文名称
+                      // 标题
                       showShimmer
                           ? Shimmer.fromColors(
                               baseColor: Colors.grey.shade300,
                               highlightColor: Colors.grey.shade100,
                               child: Container(
-                                height: 20,
+                                height: 40,
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                   color: Colors.white38,
@@ -124,39 +125,15 @@ class MediaCard extends StatelessWidget {
                               ),
                             )
                           : Text(
-                              nameCn.isEmpty
-                                  ? context.tr("component.title")
-                                  : nameCn,
-                              style: Theme.of(context).textTheme.titleMedium,
-                              maxLines: 3,
+                              title.isNotEmpty
+                                  ? title
+                                  : context.tr("component.title"),
+                              style: largeTitle
+                                  ? Theme.of(context).textTheme.titleLarge
+                                  : Theme.of(context).textTheme.titleMedium,
+                              maxLines: 5,
                               overflow: TextOverflow.ellipsis,
                             ),
-
-                      // 初始名称
-                      showShimmer
-                          ? Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Container(
-                                height: 20,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.white38,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            )
-                          : (name != null && nameCn.isNotEmpty)
-                          ? Text(
-                              name ?? "",
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14,
-                              ),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            )
-                          : SizedBox.shrink(),
 
                       // 匹配度
                       showShimmer
@@ -348,8 +325,30 @@ class MediaCard extends StatelessWidget {
                           ),
                         ),
                       Spacer(),
-
                       // 播放状态
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: viewingStatus == null
+                            ? SizedBox.shrink()
+                            : SegmentedButton(
+                                emptySelectionAllowed: true,
+                                style: ButtonStyle(
+                                  padding: WidgetStatePropertyAll(.zero),
+                                  iconSize: WidgetStatePropertyAll(12),
+                                ),
+                                segments: [
+                                  ButtonSegment(value: 1, label: Text('想看')),
+                                  ButtonSegment(value: 3, label: Text('在看')),
+                                  ButtonSegment(value: 2, label: Text('看过')),
+                                ],
+                                selected: {viewingStatus ?? 0},
+                                onSelectionChanged: (Set<int> values) {
+                                  if (values.isNotEmpty) {
+                                    onViewingStatusChange?.call(values.first);
+                                  }
+                                },
+                              ),
+                      ),
                     ],
                   ),
                 ),
@@ -376,33 +375,15 @@ class MediaCard extends StatelessWidget {
             ),
           ),
         ),
-        AnimatedPositioned(
-          right: 0,
-          bottom: viewingStatus != null ? 0 : -50,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          child: SizedBox(
-            width: 240,
-            child: SegmentedButton(
-              style: ButtonStyle(
-                padding: WidgetStatePropertyAll(.zero),
-                iconSize: WidgetStatePropertyAll(12),
-              ),
-              emptySelectionAllowed: true,
-              segments: [
-                ButtonSegment(value: 1, label: Text('想看')),
-                ButtonSegment(value: 3, label: Text('在看')),
-                ButtonSegment(value: 2, label: Text('看过')),
-              ],
-              selected: {viewingStatus ?? 0},
-              onSelectionChanged: (Set<int> values) {
-                if (values.isNotEmpty) {
-                  onViewingStatusChange?.call(values.first);
-                }
-              },
-            ),
-          ),
-        ),
+        // AnimatedPositioned(
+        //   duration: const Duration(milliseconds: 300),
+        //   curve: Curves.easeInOut,
+        //   bottom: viewingStatus != null ? 0 : -80,
+        //   right: 0,
+        //   child: SizedBox(
+        //     child:
+        //   ),
+        // ),
       ],
     );
   }

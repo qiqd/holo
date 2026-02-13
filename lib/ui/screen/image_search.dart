@@ -241,7 +241,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                         return MediaCard(
                           id: "image.search_${data?[index].id!}",
                           imageUrl: data?[index].images?.large ?? '',
-                          nameCn: nameCN!.isNotEmpty ? nameCN : name ?? '',
+                          title: nameCN!.isNotEmpty ? nameCN : name ?? '',
                           airDate: data?[index].date,
                           genre: data?[index].metaTags?.join('/') ?? '',
                           onTap: () {

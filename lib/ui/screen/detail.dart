@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/subscribe_api.dart';
@@ -13,6 +14,7 @@ import 'package:holo/entity/subscribe_history.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
+import 'package:holo/util/language_util.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_card.dart';
@@ -60,8 +62,6 @@ class _DetailScreenState extends State<DetailScreen>
   Media? defaultMedia;
   SourceService? defaultSource;
   bool isSubscribed = false;
-  Timer? _syncTimer;
-  Timer? _cancelSyncTimer;
   int _viewingStatus = 0;
   void _fetchSubjec() async {
     if (data == null) {
@@ -223,19 +223,13 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _cancelSync(int subId) {
-    _cancelSyncTimer?.cancel();
-    _cancelSyncTimer = Timer(Duration(seconds: 2), () {
-      SubscribeApi.deleteSubscribeRecordBySubId(subId, () {}, (msg) {});
-    });
+    SubscribeApi.deleteSubscribeRecordBySubId(subId, () {}, (msg) {});
   }
 
   void _syncSubscribeHistory(SubscribeHistory history) async {
-    _syncTimer?.cancel();
-    _syncTimer = Timer(Duration(seconds: 2), () async {
-      SubscribeApi.saveSubscribeHistory(history, () {
-        history.isSync = true;
-      }, (e) {}).then((newSubscribe) {});
-    });
+    SubscribeApi.saveSubscribeHistory(history, () {
+      history.isSync = true;
+    }, (e) {}).then((newSubscribe) {});
   }
 
   void _openBangumiUrl() {
@@ -254,11 +248,10 @@ class _DetailScreenState extends State<DetailScreen>
           MediaCard(
             id: "${widget.from}_${widget.id}",
             imageUrl: widget.cover,
-            nameCn: "----------",
-            name: "---------",
+            title: "---------",
             genre: "---------",
             airDate: "---------",
-            height: 250,
+            height: 200,
             rating: 0.0,
             showShimmer: true,
           ),
@@ -529,7 +522,7 @@ class _DetailScreenState extends State<DetailScreen>
                                                             score: m.score ?? 0,
                                                             imageUrl:
                                                                 m.coverUrl!,
-                                                            nameCn:
+                                                            title:
                                                                 m.title ??
                                                                 "detail.no_title"
                                                                     .tr(),
@@ -587,14 +580,11 @@ class _DetailScreenState extends State<DetailScreen>
                       id: "${widget.from}_${data!.id!}",
                       imageUrl: widget.cover,
                       viewingStatus: isSubscribed ? _viewingStatus : null,
-                      nameCn: data!.nameCn!.isNotEmpty
-                          ? data!.nameCn!
-                          : data!.name!,
-                      name: data!.name!,
+                      title: getTitle(data!),
                       genre: data!.metaTags?.join('/'),
                       episode: data!.eps ?? 0,
                       rating: data!.rating?.score,
-                      height: 250,
+                      height: 200,
                       airDate: data?.date,
                       onViewingStatusChange: (status) {
                         setState(() {

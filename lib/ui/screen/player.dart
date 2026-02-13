@@ -18,6 +18,7 @@ import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/cap_video_player_kit.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
+import 'package:holo/util/language_util.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -680,9 +681,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             child: MediaCard(
               id: "player_${subject.id!}",
               imageUrl: subject.images?.large!,
-              nameCn: subject.nameCn!.isNotEmpty
-                  ? subject.nameCn!
-                  : subject.name ?? '',
+              title: getTitle(subject),
               genre: subject.metaTags?.join('/'),
               episode: subject.eps ?? 0,
               rating: subject.rating?.score,
