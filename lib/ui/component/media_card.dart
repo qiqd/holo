@@ -336,6 +336,7 @@ class MediaCard extends StatelessWidget {
           right: 8,
           child: Checkbox(value: isChecked, onChanged: (_) => onTap?.call()),
         ),
+        // 评分
         if (rating != null && ratingCount != null)
           AnimatedPositioned(
             right: 0,
@@ -347,7 +348,7 @@ class MediaCard extends StatelessWidget {
                 Text(
                   rating!.toStringAsFixed(1),
                   style: TextStyle(
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 20,
                   ),
                 ),
