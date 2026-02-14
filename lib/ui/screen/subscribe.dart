@@ -108,6 +108,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
             default:
               s.viewingStatus = viewingStatus;
               LocalStore.addSubscribeHistory(s);
+              SubscribeApi.saveSubscribeHistory(s, () {}, (_) {});
           }
         });
     _checkedSubscribeIds.clear();
