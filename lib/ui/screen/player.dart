@@ -892,7 +892,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               ),
             ],
           ),
-          Flexible(
+          Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [_buildSummary(), _buildEpisode()],
@@ -1206,15 +1206,21 @@ class _PlayerScreenState extends State<PlayerScreen>
             },
             endDrawer: Drawer(width: 400, child: _buildDrawer()),
             body: SafeArea(
-              child: _buildPlayer(
-                isFullScreen: true,
-                onFullScreenChanged: (isFullScreen) {
-                  setState(() {
-                    _isFullScreen = isFullScreen;
-                  });
-                  _toggleFullScreen(isFullScreen);
-                },
-                onBackPressed: () => context.pop(),
+              child: SizedBox.expand(
+                child: Row(
+                  children: [
+                    _buildPlayer(
+                      isFullScreen: true,
+                      onFullScreenChanged: (isFullScreen) {
+                        setState(() {
+                          _isFullScreen = isFullScreen;
+                        });
+                        _toggleFullScreen(isFullScreen);
+                      },
+                      onBackPressed: () => context.pop(),
+                    ),
+                  ],
+                ),
               ),
             ),
           )
