@@ -29,9 +29,9 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   List<SubscribeHistory> wish = [];
   List<SubscribeHistory> watching = [];
   List<SubscribeHistory> watched = [];
-
-  final Set<int> _deletePlaybackIds = {};
-  final Set<int> _deleteSubscribeIds = {};
+  bool _isEditMode = false;
+  final Set<int> _checkedPlaybackIds = {};
+  final Set<int> _checkedSubscribeIds = {};
   bool _isUpdating = false;
   late final TabController _tabController = TabController(
     vsync: this,
@@ -88,84 +88,38 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     return LocalStore.getSubjectCacheAndSource(id);
   }
 
-  void _deletePlaybackHistory(int id) {
-    try {
+  void _deletePlaybackHistory() {
+    _checkedPlaybackIds.toList().forEach((id) {
       LocalStore.removePlaybackHistoryBySubId(id);
-      PlayBackApi.deletePlaybackRecordBySubId(
-        id,
-        () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(tr("subscribe.delete_view_success"))),
-          );
-        },
-        (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(tr("subscribe.delete_view_failed"))),
-          );
-        },
-      );
-
-      setState(() {
-        playback.removeWhere((item) => item.subId == id);
-        _deletePlaybackIds.remove(id);
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(tr("subscribe.delete_failed"))));
-    }
-  }
-
-  void _deleteSubscribeHistory(int id) {
-    try {
-      LocalStore.removeSubscribeHistoryBySubId(id);
-      SubscribeApi.deleteSubscribeRecordBySubId(
-        id,
-        () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(tr("subscribe.delete_subs_success"))),
-          );
-        },
-        (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(tr("subscribe.delete_subs_failed"))),
-          );
-        },
-      );
-
-      setState(() {
-        subscribe.removeWhere((item) => item.subId == id);
-        _deletePlaybackIds.remove(id);
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(tr("subscribe.delete_failed"))));
-    }
-  }
-
-  void _toggleDeleteMode(int id, bool isPlayback) {
-    setState(() {
-      if (isPlayback) {
-        if (_deletePlaybackIds.contains(id)) {
-          _deletePlaybackIds.remove(id);
-        } else {
-          _deletePlaybackIds.add(id);
-        }
-      } else {
-        if (_deleteSubscribeIds.contains(id)) {
-          _deleteSubscribeIds.remove(id);
-        } else {
-          _deleteSubscribeIds.add(id);
-        }
-      }
+      PlayBackApi.deletePlaybackRecordBySubId(id, () {}, (_) {});
     });
+    _loadHistory();
+  }
+
+  void _changeSubscribeHistory(int viewingStatus) {
+    subscribe
+        .where((item) => _checkedSubscribeIds.contains(item.subId))
+        .forEach((s) {
+          switch (viewingStatus) {
+            case -1:
+              LocalStore.removeSubscribeHistoryBySubId(s.subId);
+              SubscribeApi.deleteSubscribeRecordBySubId(s.subId, () {}, (_) {});
+              break;
+            default:
+              s.viewingStatus = viewingStatus;
+              LocalStore.addSubscribeHistory(s);
+          }
+        });
+    _checkedSubscribeIds.clear();
+    _loadHistory();
   }
 
   void initTabBarListener() {
     _tabController.addListener(() {
       setState(() {
-        _deletePlaybackIds.clear();
+        _isEditMode = false;
+        _checkedSubscribeIds.clear();
+        _checkedPlaybackIds.clear();
       });
     });
   }
@@ -188,6 +142,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   }) {
     return SizedBox.expand(
       child: s.isNotEmpty
+          // 订阅列表
           ? RefreshIndicator(
               child: GridView.builder(
                 padding: const EdgeInsets.all(8),
@@ -205,21 +160,28 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                     id: "subscribe_${item.subId}",
                     imageUrl: item.imgUrl,
                     title: item.title,
-                    showDeleteIcon: _deleteSubscribeIds.contains(item.subId),
-                    onLongPress: (_) => _toggleDeleteMode(item.subId, false),
-                    onDelete: _deleteSubscribeHistory,
+                    isChecked: _checkedSubscribeIds.contains(item.subId),
+                    showCheckBox: _isEditMode,
                     onTap: () {
-                      var cache = _getCacheBySubId(item.subId);
-                      context.push(
-                        '/detail',
-                        extra: {
-                          "id": item.subId,
-                          "keyword": item.title,
-                          "cover": item.imgUrl,
-                          "from": "subscribe",
-                          'subject': cache,
-                        },
-                      );
+                      if (_isEditMode) {
+                        setState(() {
+                          _checkedSubscribeIds.contains(item.subId)
+                              ? _checkedSubscribeIds.remove(item.subId)
+                              : _checkedSubscribeIds.add(item.subId);
+                        });
+                      } else {
+                        var cache = _getCacheBySubId(item.subId);
+                        context.push(
+                          '/detail',
+                          extra: {
+                            "id": item.subId,
+                            "keyword": item.title,
+                            "cover": item.imgUrl,
+                            "from": "subscribe",
+                            'subject': cache,
+                          },
+                        );
+                      }
                     },
                   );
                 },
@@ -228,6 +190,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 await _fetchSubscribeHistoryFromServer();
               },
             )
+          // 播放记录列表
           : RefreshIndicator(
               child: ListView.separated(
                 padding: const EdgeInsets.all(8),
@@ -248,22 +211,28 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                     id: "subscribe.history_${item.subId}",
                     imageUrl: item.imgUrl,
                     title: item.title,
-                    largeTitle: false,
-                    showDeleteIcon: _deletePlaybackIds.contains(item.subId),
-                    onLongPress: (_) => _toggleDeleteMode(item.subId, true),
-                    onDelete: _deletePlaybackHistory,
+                    isChecked: _checkedPlaybackIds.contains(item.subId),
+                    showCheckbox: _isEditMode,
                     onTap: () {
-                      var cache = _getCacheBySubId(item.subId);
-                      context.push(
-                        '/detail',
-                        extra: {
-                          "id": item.subId,
-                          "keyword": item.title,
-                          "cover": item.imgUrl,
-                          "from": "subscribe.history",
-                          'subject': cache,
-                        },
-                      );
+                      if (_isEditMode) {
+                        setState(() {
+                          _checkedPlaybackIds.contains(item.subId)
+                              ? _checkedPlaybackIds.remove(item.subId)
+                              : _checkedPlaybackIds.add(item.subId);
+                        });
+                      } else {
+                        var cache = _getCacheBySubId(item.subId);
+                        context.push(
+                          '/detail',
+                          extra: {
+                            "id": item.subId,
+                            "keyword": item.title,
+                            "cover": item.imgUrl,
+                            "from": "subscribe.history",
+                            'subject': cache,
+                          },
+                        );
+                      }
                     },
                   );
                 },
@@ -309,16 +278,41 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               icon: Icon(Icons.refresh_rounded),
             ),
           ],
-          if (_deletePlaybackIds.isNotEmpty || _deleteSubscribeIds.isNotEmpty)
+          if (_checkedSubscribeIds.isNotEmpty)
+            PopupMenuButton(
+              icon: Icon(Icons.menu_rounded),
+              itemBuilder: (context) => [
+                PopupMenuItem(value: 1, child: Text("想看")),
+                PopupMenuItem(value: 3, child: Text("在看")),
+                PopupMenuItem(value: 2, child: Text("看过")),
+                PopupMenuItem(value: -1, child: Text("取消")),
+              ],
+              onSelected: (value) {
+                _changeSubscribeHistory(value);
+              },
+            ),
+
+          if (_checkedPlaybackIds.isNotEmpty)
             IconButton(
-              icon: Icon(Icons.remove_done_rounded),
+              icon: Icon(Icons.delete),
               onPressed: () {
                 setState(() {
-                  _deletePlaybackIds.clear();
-                  _deleteSubscribeIds.clear();
+                  _deletePlaybackHistory();
                 });
               },
             ),
+          IconButton(
+            icon: Icon(_isEditMode ? Icons.done_all : Icons.edit_rounded),
+            onPressed: () {
+              setState(() {
+                _isEditMode = !_isEditMode;
+                if (!_isEditMode) {
+                  _checkedPlaybackIds.clear();
+                  _checkedSubscribeIds.clear();
+                }
+              });
+            },
+          ),
         ],
       ),
 

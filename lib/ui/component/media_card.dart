@@ -17,18 +17,18 @@ class MediaCard extends StatelessWidget {
   final String? airDate;
   final String? imageUrl;
   final double? rating;
+  final int? rank;
+  final int? ratingCount;
   final double height;
   final double score;
-  final bool largeTitle;
   final bool isFavorite;
   final Function? onTap;
-  final Function(int)? onDelete;
-  final bool showDeleteIcon;
   final bool showShimmer;
+  final bool isChecked;
+  final bool showCheckbox;
 
   /// 观看状态 0:无状态 1:想看 2:看过 3:在看
   final int? viewingStatus;
-  final void Function(bool)? onLongPress;
   final void Function(int status)? onViewingStatusChange;
   const MediaCard({
     super.key,
@@ -41,16 +41,19 @@ class MediaCard extends StatelessWidget {
     this.episode,
     this.airDate,
     this.rating,
+    this.rank,
+    this.ratingCount,
     this.score = 0,
     this.height = 200,
     this.onTap,
-    this.onDelete,
+
     this.isFavorite = false,
-    this.largeTitle = true,
-    this.showDeleteIcon = false,
+
     this.showShimmer = false,
+    this.showCheckbox = false,
+    this.isChecked = false,
     this.viewingStatus,
-    this.onLongPress,
+
     this.onViewingStatusChange,
   });
 
@@ -60,8 +63,7 @@ class MediaCard extends StatelessWidget {
     return Stack(
       children: [
         InkWell(
-          onLongPress: () => onLongPress?.call(true),
-          onTap: showDeleteIcon ? null : () => onTap?.call(),
+          onTap: () => onTap?.call(),
           child: SizedBox(
             width: double.infinity,
             height: height,
@@ -116,7 +118,7 @@ class MediaCard extends StatelessWidget {
                               baseColor: Colors.grey.shade300,
                               highlightColor: Colors.grey.shade100,
                               child: Container(
-                                height: 40,
+                                height: 20,
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                   color: Colors.white38,
@@ -128,10 +130,8 @@ class MediaCard extends StatelessWidget {
                               title.isNotEmpty
                                   ? title
                                   : context.tr("component.title"),
-                              style: largeTitle
-                                  ? Theme.of(context).textTheme.titleLarge
-                                  : Theme.of(context).textTheme.titleMedium,
-                              maxLines: 5,
+                              style: Theme.of(context).textTheme.titleMedium,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
 
@@ -184,7 +184,7 @@ class MediaCard extends StatelessWidget {
                                       color: Colors.blue,
                                       fontSize: 12,
                                     ),
-                                    maxLines: 2,
+                                    maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
@@ -234,38 +234,7 @@ class MediaCard extends StatelessWidget {
                               ],
                             )
                           : SizedBox.shrink(),
-                      //评分
-                      showShimmer
-                          ? Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Container(
-                                height: 20,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.white38,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            )
-                          : (rating != null)
-                          ? Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.orange,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  rating!.toStringAsFixed(1),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : SizedBox.shrink(),
+
                       //上映时间
                       showShimmer
                           ? Shimmer.fromColors(
@@ -328,26 +297,29 @@ class MediaCard extends StatelessWidget {
                       // 播放状态
                       Align(
                         alignment: Alignment.bottomRight,
-                        child: viewingStatus == null
-                            ? SizedBox.shrink()
-                            : SegmentedButton(
-                                emptySelectionAllowed: true,
-                                style: ButtonStyle(
-                                  padding: WidgetStatePropertyAll(.zero),
-                                  iconSize: WidgetStatePropertyAll(12),
-                                ),
-                                segments: [
-                                  ButtonSegment(value: 1, label: Text('想看')),
-                                  ButtonSegment(value: 3, label: Text('在看')),
-                                  ButtonSegment(value: 2, label: Text('看过')),
-                                ],
-                                selected: {viewingStatus ?? 0},
-                                onSelectionChanged: (Set<int> values) {
-                                  if (values.isNotEmpty) {
-                                    onViewingStatusChange?.call(values.first);
-                                  }
-                                },
-                              ),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: isFavorite
+                              ? SegmentedButton(
+                                  emptySelectionAllowed: true,
+                                  showSelectedIcon: false,
+                                  style: ButtonStyle(
+                                    padding: WidgetStatePropertyAll(.zero),
+                                  ),
+                                  segments: [
+                                    ButtonSegment(value: 1, label: Text('想看')),
+                                    ButtonSegment(value: 3, label: Text('在看')),
+                                    ButtonSegment(value: 2, label: Text('看过')),
+                                  ],
+                                  selected: {viewingStatus ?? 0},
+                                  onSelectionChanged: (Set<int> values) {
+                                    if (values.isNotEmpty) {
+                                      onViewingStatusChange?.call(values.first);
+                                    }
+                                  },
+                                )
+                              : SizedBox.shrink(),
+                        ),
                       ),
                     ],
                   ),
@@ -357,33 +329,37 @@ class MediaCard extends StatelessWidget {
           ),
         ),
 
-        // 删除图标
+        // 选中图标
         AnimatedPositioned(
           duration: const Duration(milliseconds: 100),
-          top: showDeleteIcon ? 8 : -30,
+          top: showCheckbox ? 8 : -40,
           right: 8,
-          child: GestureDetector(
-            onTap: () =>
-                onDelete?.call(int.parse(id.split('_').last)), // 调用删除回调
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.delete, color: Colors.white, size: 20),
+          child: Checkbox(value: isChecked, onChanged: (_) => onTap?.call()),
+        ),
+        if (rating != null && ratingCount != null)
+          AnimatedPositioned(
+            right: 0,
+            bottom: isFavorite ? 50 : 0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: Column(
+              children: [
+                Text(
+                  rating!.toStringAsFixed(1),
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 20,
+                  ),
+                ),
+                Text(
+                  context.tr(
+                    "component.media_card.rating_count",
+                    args: [ratingCount!.toString()],
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        // AnimatedPositioned(
-        //   duration: const Duration(milliseconds: 300),
-        //   curve: Curves.easeInOut,
-        //   bottom: viewingStatus != null ? 0 : -80,
-        //   right: 0,
-        //   child: SizedBox(
-        //     child:
-        //   ),
-        // ),
       ],
     );
   }

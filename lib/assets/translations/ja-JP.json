@@ -29,7 +29,8 @@
             "days_ago": "{}日前",
             "hours_ago": "{}時間前",
             "minutes_ago": "{}分前",
-            "just_now": "たった今"
+            "just_now": "たった今",
+            "rating_count": "{}人の評価"
         }
     },
     "home": {
@@ -76,7 +77,7 @@
             "logout": "アカウントからログアウト",
             "logout_description": "現在のアカウントからログアウトしますが、ローカルの履歴データは削除されません",
             "signout_dialog_title": "アカウントからログアウト",
-            "signout_dialog_content": "本当にアカウントを削除しますか？",
+            "signout_dialog_content": "本当にアカウントからログアウトしますか？",
             "signout_dialog_cancel": "キャンセル",
             "signout_dialog_confirm": "確認"
         },

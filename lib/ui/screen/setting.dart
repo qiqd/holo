@@ -103,235 +103,255 @@ class _SetttingScreenState extends State<SetttingScreen>
     });
   }
 
+  List<Widget> _buildAccountInfo() {
+    return [
+      _buildSectionHeader('setting.section.account_status'.tr()),
+      VisibilityDetector(
+        key: const Key('account_info_section'),
+        child: ListTile(
+          leading: const Icon(Icons.account_circle_rounded),
+          title: AnimatedSwitcher(
+            key: const ValueKey('account_animated_switcher_key'),
+            duration: const Duration(milliseconds: 300),
+            child: Container(
+              key: const ValueKey('account_status_container'),
+              alignment: Alignment.centerLeft,
+              child: (_email != null && _token != null)
+                  ? Text(_email!, key: const ValueKey<String>('logged_in'))
+                  : Text(
+                      'setting.account.logged_out'.tr(),
+                      key: const ValueKey<String>('logged_out'),
+                    ),
+            ),
+          ),
+          onTap: () {
+            if (_email == null || _token == null) {
+              context.push('/sign');
+            }
+          },
+        ),
+        onVisibilityChanged: (visibilityInfo) {
+          // log('Visibility: ${visibilityInfo.visibleFraction}');
+          if (visibilityInfo.visibleFraction > 0) {
+            setState(() {
+              _email = LocalStore.getEmail();
+              _token = LocalStore.getToken();
+            });
+          }
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.exit_to_app),
+        title: Text('setting.account.logout'.tr()),
+        subtitle: Text('setting.account.logout_description'.tr()),
+        onTap: () => _showSignoutAccountDialog(),
+      ),
+    ];
+  }
+
+  List<Widget> _buildAppInfo() {
+    return [
+      _buildSectionHeader('setting.section.app_info'.tr()),
+      AboutListTile(
+        icon: const Icon(Icons.info_outline),
+        applicationName: 'Holo',
+        applicationVersion: 'v$_version',
+        applicationIcon: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Image.asset('lib/images/launcher_round.png', width: 100),
+        ),
+        applicationLegalese: 'AGPL-3.0 license',
+        aboutBoxChildren: _buildAboutBoxChildren(),
+      ),
+      ListTile(
+        leading: AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          child: _checkVersioning
+              ? SizedBox(
+                  key: ValueKey('setting.app_info.check_version_loading'),
+                  width: 24,
+                  height: 24,
+                  child: const CircularProgressIndicator(padding: .zero),
+                )
+              : Icon(
+                  key: ValueKey('setting.app_info.check_version_icon'),
+                  Icons.update_rounded,
+                ),
+        ),
+        title: Text('setting.app_info.check_version'.tr()),
+        onTap: _checkVersion,
+      ),
+    ];
+  }
+
+  List<Widget> _buildLanguage() {
+    return [
+      _buildSectionHeader('setting.section.language'.tr()),
+      ListTile(
+        leading: const Icon(Icons.language),
+        title: Text('setting.language.change'.tr()),
+        // subtitle: Text('setting.language.change_description'.tr()),
+        trailing: PopupMenuButton(
+          child: Icon(Icons.menu_rounded),
+          onSelected: (value) {
+            context.setLocale(Locale(value.split('-')[0], value.split('-')[1]));
+            setState(() {});
+            log('Selected language: $value');
+          },
+          itemBuilder: (content) {
+            return [
+              PopupMenuItem(value: 'zh-CN', child: Text('中文简体')),
+              PopupMenuItem(value: 'zh-TW', child: Text('中文繁體')),
+              PopupMenuItem(value: 'en-US', child: Text('English')),
+              PopupMenuItem(value: 'ja-JP', child: Text('日本語')),
+            ];
+          },
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildDataManagement() {
+    return [
+      _buildSectionHeader('setting.section.data_management'.tr()),
+      // ListTile(
+      //   leading: const Icon(Icons.history),
+      //   title: Text('setting.data_management.clear_playback_history'.tr()),
+      //   subtitle: Text(
+      //     'setting.data_management.clear_playback_history_description'.tr(),
+      //   ),
+      //   onTap: () => _clearHistory(
+      //     true,
+      //     () => ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('setting.data_management.cloud_success'.tr()),
+      //       ),
+      //     ),
+      //     (msg) => ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('setting.data_management.cloud_failed'.tr() + msg),
+      //       ),
+      //     ),
+      //     () => ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('setting.data_management.local_success'.tr()),
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // ListTile(
+      //   leading: const Icon(Icons.favorite_border_rounded),
+      //   title: Text('setting.data_management.clear_subscribe_history'.tr()),
+      //   subtitle: Text(
+      //     'setting.data_management.clear_subscribe_history_description'.tr(),
+      //   ),
+      //   onTap: () => _clearHistory(
+      //     false,
+      //     () => ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('setting.data_management.cloud_success'.tr()),
+      //       ),
+      //     ),
+      //     (msg) => ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('setting.data_management.cloud_failed'.tr() + msg),
+      //       ),
+      //     ),
+      //     () => ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('setting.data_management.local_success'.tr()),
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // // ListTile(
+      //   leading: const Icon(Icons.favorite_outline),
+      //   title: const Text('清除收藏'),
+      //   subtitle: const Text('取消所有收藏'),
+      //   onTap: () => _clearFavorites(),
+      // ),
+      if (Platform.isAndroid || Platform.isIOS)
+        ListTile(
+          leading: const Icon(Icons.delete_outline),
+          title: Text('setting.data_management.clear_cache'.tr()),
+          subtitle: Text(
+            'setting.data_management.clear_cache_description'.tr(),
+          ),
+          onTap: () => _clearCache(),
+        ),
+      // 规则管理部分
+      ListTile(
+        leading: const Icon(Icons.rule_rounded),
+        title: Text('setting.data_management.rule_manager'.tr()),
+        subtitle: Text('setting.data_management.rule_manager_description'.tr()),
+        onTap: () => context.push('/rule_manager'),
+      ),
+    ];
+  }
+
+  List<Widget> _buildAppearance() {
+    return [
+      _buildSectionHeader('setting.section.appearance'.tr()),
+      ListTile(
+        leading: const Icon(Icons.palette),
+        title: Text('setting.appearance.theme_mode'.tr()),
+        subtitle: Text(_getThemeModeText()),
+        onTap: () => _showThemeModeDialog(),
+      ),
+      SwitchListTile(
+        secondary: Icon(Icons.colorize_rounded),
+        value: MyApp.useSystemColorNotifier.value,
+        title: Text('setting.appearance.use_system_color'.tr()),
+        subtitle: Text('setting.appearance.use_system_color_description'.tr()),
+        onChanged: (value) => setState(() {
+          _appSetting.useSystemColor = value;
+          LocalStore.saveAppSetting(_appSetting);
+        }),
+      ),
+    ];
+  }
+
+  List<Widget> _buildOpenSource() {
+    return [
+      _buildSectionHeader('setting.section.open_source'.tr()),
+      ListTile(
+        leading: const Icon(Icons.code),
+        title: Text('setting.open_source.source_code'.tr()),
+        subtitle: Text('setting.open_source.source_code_description'.tr()),
+        onTap: () => _openGitHub('https://github.com/qiqd/holo'),
+      ),
+      // ListTile(
+      //   leading: const Icon(Icons.bug_report),
+      //   title: Text('setting.open_source.report_issue'.tr()),
+      //   subtitle: Text('setting.open_source.report_issue_description'.tr()),
+      //   onTap: () => _openGitHub('https://github.com/qiqd/holo/issues'),
+      // ),
+      // ListTile(
+      //   leading: const Icon(Icons.star),
+      //   title: Text('setting.open_source.star_project'.tr()),
+      //   subtitle: Text('setting.open_source.star_project_description'.tr()),
+      //   onTap: () => _openGitHub('https://github.com/qiqd/holo'),
+      // ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
-    // var isLandscape =
-    //     MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(title: Text('setting.title'.tr())),
       body: ListView(
         children: [
-          _buildSectionHeader('setting.section.account_status'.tr()),
-          VisibilityDetector(
-            key: const Key('account_info_section'),
-            child: ListTile(
-              leading: const Icon(Icons.account_circle_rounded),
-              title: AnimatedSwitcher(
-                key: const ValueKey('account_animated_switcher_key'),
-                duration: const Duration(milliseconds: 300),
-                child: Container(
-                  key: const ValueKey('account_status_container'),
-                  alignment: Alignment.centerLeft,
-                  child: (_email != null && _token != null)
-                      ? Text(_email!, key: const ValueKey<String>('logged_in'))
-                      : Text(
-                          'setting.account.logged_out'.tr(),
-                          key: const ValueKey<String>('logged_out'),
-                        ),
-                ),
-              ),
-              onTap: () {
-                if (_email == null || _token == null) {
-                  context.push('/sign');
-                }
-              },
-            ),
-            onVisibilityChanged: (visibilityInfo) {
-              // log('Visibility: ${visibilityInfo.visibleFraction}');
-              if (visibilityInfo.visibleFraction > 0) {
-                setState(() {
-                  _email = LocalStore.getEmail();
-                  _token = LocalStore.getToken();
-                });
-              }
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: Text('setting.account.logout'.tr()),
-            subtitle: Text('setting.account.logout_description'.tr()),
-            onTap: () => _showSignoutAccountDialog(),
-          ),
+          ..._buildAccountInfo(),
           // 应用信息部分
-          _buildSectionHeader('setting.section.app_info'.tr()),
-          AboutListTile(
-            icon: const Icon(Icons.info_outline),
-            applicationName: 'Holo',
-            applicationVersion: 'v$_version',
-            applicationIcon: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: Image.asset('lib/images/launcher_round.png', width: 100),
-            ),
-            applicationLegalese: 'AGPL-3.0 license',
-            aboutBoxChildren: _buildAboutBoxChildren(),
-          ),
-          ListTile(
-            leading: AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              child: _checkVersioning
-                  ? SizedBox(
-                      key: ValueKey('setting.app_info.check_version_loading'),
-                      width: 24,
-                      height: 24,
-                      child: const CircularProgressIndicator(padding: .zero),
-                    )
-                  : Icon(
-                      key: ValueKey('setting.app_info.check_version_icon'),
-                      Icons.update_rounded,
-                    ),
-            ),
-            title: Text('setting.app_info.check_version'.tr()),
-            onTap: _checkVersion,
-          ),
+          ..._buildAppInfo(),
           // 切换语言部分
-          _buildSectionHeader('setting.section.language'.tr()),
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: Text('setting.language.change'.tr()),
-            // subtitle: Text('setting.language.change_description'.tr()),
-            trailing: PopupMenuButton(
-              child: Icon(Icons.menu_rounded),
-              onSelected: (value) {
-                context.setLocale(
-                  Locale(value.split('-')[0], value.split('-')[1]),
-                );
-                setState(() {});
-                log('Selected language: $value');
-              },
-              itemBuilder: (content) {
-                return [
-                  PopupMenuItem(value: 'zh-CN', child: Text('中文简体')),
-                  PopupMenuItem(value: 'zh-TW', child: Text('中文繁體')),
-                  PopupMenuItem(value: 'en-US', child: Text('English')),
-                  PopupMenuItem(value: 'ja-JP', child: Text('日本語')),
-                ];
-              },
-            ),
-          ),
-
+          ..._buildLanguage(),
           // 数据管理部分
-          _buildSectionHeader('setting.section.data_management'.tr()),
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: Text('setting.data_management.clear_playback_history'.tr()),
-            subtitle: Text(
-              'setting.data_management.clear_playback_history_description'.tr(),
-            ),
-            onTap: () => _clearHistory(
-              true,
-              () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('setting.data_management.cloud_success'.tr()),
-                ),
-              ),
-              (msg) => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'setting.data_management.cloud_failed'.tr() + msg,
-                  ),
-                ),
-              ),
-              () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('setting.data_management.local_success'.tr()),
-                ),
-              ),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.favorite_border_rounded),
-            title: Text('setting.data_management.clear_subscribe_history'.tr()),
-            subtitle: Text(
-              'setting.data_management.clear_subscribe_history_description'
-                  .tr(),
-            ),
-            onTap: () => _clearHistory(
-              false,
-              () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('setting.data_management.cloud_success'.tr()),
-                ),
-              ),
-              (msg) => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'setting.data_management.cloud_failed'.tr() + msg,
-                  ),
-                ),
-              ),
-              () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('setting.data_management.local_success'.tr()),
-                ),
-              ),
-            ),
-          ),
-          // ListTile(
-          //   leading: const Icon(Icons.favorite_outline),
-          //   title: const Text('清除收藏'),
-          //   subtitle: const Text('取消所有收藏'),
-          //   onTap: () => _clearFavorites(),
-          // ),
-          if (Platform.isAndroid || Platform.isIOS)
-            ListTile(
-              leading: const Icon(Icons.delete_outline),
-              title: Text('setting.data_management.clear_cache'.tr()),
-              subtitle: Text(
-                'setting.data_management.clear_cache_description'.tr(),
-              ),
-              onTap: () => _clearCache(),
-            ),
-          // 规则管理部分
-          ListTile(
-            leading: const Icon(Icons.rule_rounded),
-            title: Text('setting.data_management.rule_manager'.tr()),
-            subtitle: Text(
-              'setting.data_management.rule_manager_description'.tr(),
-            ),
-            onTap: () => context.push('/rule_manager'),
-          ),
-
+          ..._buildDataManagement(),
           // 外观设置部分
-          _buildSectionHeader('setting.section.appearance'.tr()),
-          ListTile(
-            leading: const Icon(Icons.palette),
-            title: Text('setting.appearance.theme_mode'.tr()),
-            subtitle: Text(_getThemeModeText()),
-            onTap: () => _showThemeModeDialog(),
-          ),
-          SwitchListTile(
-            secondary: Icon(Icons.colorize_rounded),
-            value: MyApp.useSystemColorNotifier.value,
-            title: Text('setting.appearance.use_system_color'.tr()),
-            subtitle: Text(
-              'setting.appearance.use_system_color_description'.tr(),
-            ),
-            onChanged: (value) => setState(() {
-              _appSetting.useSystemColor = value;
-              LocalStore.saveAppSetting(_appSetting);
-            }),
-          ),
-
+          ..._buildAppearance(),
           // 开源项目部分
-          _buildSectionHeader('setting.section.open_source'.tr()),
-          ListTile(
-            leading: const Icon(Icons.code),
-            title: Text('setting.open_source.source_code'.tr()),
-            subtitle: Text('setting.open_source.source_code_description'.tr()),
-            onTap: () => _openGitHub('https://github.com/qiqd/holo'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.bug_report),
-            title: Text('setting.open_source.report_issue'.tr()),
-            subtitle: Text('setting.open_source.report_issue_description'.tr()),
-            onTap: () => _openGitHub('https://github.com/qiqd/holo/issues'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.star),
-            title: Text('setting.open_source.star_project'.tr()),
-            subtitle: Text('setting.open_source.star_project_description'.tr()),
-            onTap: () => _openGitHub('https://github.com/qiqd/holo'),
-          ),
+          ..._buildOpenSource(),
         ],
       ),
     );

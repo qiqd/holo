@@ -29,7 +29,8 @@
             "days_ago": "{}天前",
             "hours_ago": "{}小时前",
             "minutes_ago": "{}分钟前",
-            "just_now": "刚刚"
+            "just_now": "刚刚",
+            "rating_count": "{}人评分"
         }
     },
     "home": {
@@ -76,7 +77,7 @@
             "logout": "退出账号",
             "logout_description": "退出当前账号,但是本地历史记录数据不会删除",
             "signout_dialog_title": "退出账号",
-            "signout_dialog_content": "确定删除当前账号吗？",
+            "signout_dialog_content": "确定退出当前账号吗？",
             "signout_dialog_cancel": "取消",
             "signout_dialog_confirm": "确定"
         },

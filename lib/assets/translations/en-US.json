@@ -29,7 +29,8 @@
             "days_ago": "{} days ago",
             "hours_ago": "{} hours ago",
             "minutes_ago": "{} minutes ago",
-            "just_now": "Just now"
+            "just_now": "Just now",
+            "rating_count": "{} ratings"
         }
     },
     "home": {
@@ -76,7 +77,7 @@
             "logout": "Log Out",
             "logout_description": "Log out of current account, but local history data will not be deleted",
             "signout_dialog_title": "Log Out",
-            "signout_dialog_content": "Are you sure you want to delete the current account?",
+            "signout_dialog_content": "Are you sure you want to log out of the current account?",
             "signout_dialog_cancel": "Cancel",
             "signout_dialog_confirm": "Confirm"
         },

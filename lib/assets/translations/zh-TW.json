@@ -29,7 +29,8 @@
             "days_ago": "{}天前",
             "hours_ago": "{}小時前",
             "minutes_ago": "{}分鐘前",
-            "just_now": "剛剛"
+            "just_now": "剛剛",
+            "rating_count": "{}人評分"
         }
     },
     "home": {
@@ -76,7 +77,7 @@
             "logout": "登出帳戶",
             "logout_description": "登出目前帳戶,但是本機歷史記錄資料不會刪除",
             "signout_dialog_title": "登出帳戶",
-            "signout_dialog_content": "確定刪除目前帳戶嗎？",
+            "signout_dialog_content": "確定登出目前帳戶嗎？",
             "signout_dialog_cancel": "取消",
             "signout_dialog_confirm": "確定"
         },

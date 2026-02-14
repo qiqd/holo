@@ -200,9 +200,10 @@ class _DetailScreenState extends State<DetailScreen>
       return;
     }
     if (isSubscribed) {
+      var title = getTitle(data!);
       SubscribeHistory history = SubscribeHistory(
         subId: data!.id!,
-        title: data!.nameCn!,
+        title: title,
         imgUrl: data!.images?.large ?? "",
         createdAt: DateTime.now(),
         viewingStatus: _viewingStatus,
@@ -584,6 +585,8 @@ class _DetailScreenState extends State<DetailScreen>
                       genre: data!.metaTags?.join('/'),
                       episode: data!.eps ?? 0,
                       rating: data!.rating?.score,
+                      isFavorite: isSubscribed,
+                      ratingCount: data!.rating?.total,
                       height: 200,
                       airDate: data?.date,
                       onViewingStatusChange: (status) {

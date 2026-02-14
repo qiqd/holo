@@ -11,10 +11,9 @@ class MediaGrid extends StatelessWidget {
   final Function? onTap;
   final bool showRating;
   final String? airDate;
-  final bool showDeleteIcon;
   final bool showAriTime;
-  final Function(int)? onDelete;
-  final Function(bool)? onLongPress;
+  final bool showCheckBox;
+  final bool isChecked;
 
   const MediaGrid({
     super.key,
@@ -25,10 +24,9 @@ class MediaGrid extends StatelessWidget {
     this.showRating = true,
     this.airDate,
     this.onTap,
-    this.showDeleteIcon = false,
     this.showAriTime = true,
-    this.onDelete,
-    this.onLongPress,
+    this.showCheckBox = false,
+    this.isChecked = false,
   });
 
   @override
@@ -46,8 +44,7 @@ class MediaGrid extends StatelessWidget {
     return Stack(
       children: [
         InkWell(
-          onLongPress: () => onLongPress?.call(true),
-          onTap: showDeleteIcon ? null : () => onTap?.call(), //
+          onTap: () => onTap?.call(), //
           borderRadius: BorderRadius.circular(10),
           child: Column(
             children: [
@@ -73,7 +70,7 @@ class MediaGrid extends StatelessWidget {
                       ),
                     ),
                     //评分
-                    if ((rating != null || updateAt != null) && !showDeleteIcon)
+                    if ((rating != null || updateAt != null))
                       Positioned(
                         right: 4,
                         top: 4,
@@ -150,22 +147,17 @@ class MediaGrid extends StatelessWidget {
           ),
         ),
 
-        // 删除图标
+        // 选中图标
         AnimatedPositioned(
           duration: const Duration(milliseconds: 100),
-          top: showDeleteIcon ? 8 : -30,
-          right: 8,
-          child: GestureDetector(
-            onTap: () =>
-                onDelete?.call(int.parse(id.split('_').last)), // 调用删除回调
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.delete, color: Colors.white, size: 20),
+          top: showCheckBox ? 0 : -60,
+          right: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(12),
             ),
+            child: Checkbox(value: isChecked, onChanged: (_) => onTap?.call()),
           ),
         ),
       ],
