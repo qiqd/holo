@@ -262,22 +262,6 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         actionsPadding: .symmetric(horizontal: 12),
         title: Text(tr("subscribe.title")),
         actions: [
-          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
-            IconButton(
-              tooltip: 'Refresh All',
-              onPressed: () async {
-                setState(() {
-                  _isUpdating = true;
-                });
-                await _fetchPlaybackHistoryFromServer();
-                await _fetchSubscribeHistoryFromServer();
-                setState(() {
-                  _isUpdating = false;
-                });
-              },
-              icon: Icon(Icons.refresh_rounded),
-            ),
-          ],
           if (_checkedSubscribeIds.isNotEmpty)
             PopupMenuButton(
               icon: Icon(Icons.menu_rounded),
@@ -313,6 +297,22 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               });
             },
           ),
+          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
+            IconButton(
+              tooltip: 'Refresh All',
+              onPressed: () async {
+                setState(() {
+                  _isUpdating = true;
+                });
+                await _fetchPlaybackHistoryFromServer();
+                await _fetchSubscribeHistoryFromServer();
+                setState(() {
+                  _isUpdating = false;
+                });
+              },
+              icon: Icon(Icons.refresh_rounded),
+            ),
+          ],
         ],
       ),
 

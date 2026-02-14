@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Logger _logger = Logger();
   int index = 0;
   Timer? _carouselTimer;
+  Timer? _autoSlideTimer;
   bool _isLoading = false;
   bool _isRefresh = false;
   String _msg = '';
@@ -148,6 +149,17 @@ class _HomeScreenState extends State<HomeScreen> {
       _fetchRank();
     }
     _scrollController.addListener(_onScrollToBottom);
+  }
+
+  void _refreshAutoSlideTimer() {
+    _autoSlideTimer?.cancel();
+    _autoSlideTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _carouselTimer?.cancel();
+      _carouselTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+        index = index.remainder(_hotNotifier.value.length);
+        _carouselController.animateToItem(index++);
+      });
+    });
   }
 
   // 热门推荐骨架屏（支持横竖屏）
@@ -280,6 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   dispose() {
     _carouselTimer?.cancel();
+    _autoSlideTimer?.cancel();
     _hotNotifier.dispose();
     super.dispose();
   }
@@ -316,157 +329,209 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           slivers: [
                             SliverToBoxAdapter(
-                              child: Row(
-                                spacing: 6,
-                                children: [
-                                  Text(
-                                    '热门推荐',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleLarge,
-                                  ),
-                                  if (isLandscape) ...[
-                                    IconButton(
-                                      onPressed: () {
-                                        if (index == 0) {
-                                          return;
-                                        }
-                                        _carouselController.animateToItem(
-                                          index--,
-                                        );
-                                      },
-                                      icon: Icon(Icons.navigate_before_rounded),
+                              child: MouseRegion(
+                                onExit: (_) {
+                                  _carouselTimer?.cancel();
+                                  _carouselTimer = Timer.periodic(
+                                    Duration(seconds: 3),
+                                    (timer) {
+                                      index = index.remainder(
+                                        _hotNotifier.value.length,
+                                      );
+                                      _carouselController.animateToItem(
+                                        index++,
+                                      );
+                                    },
+                                  );
+                                },
+                                onHover: (_) {
+                                  _carouselTimer?.cancel();
+                                },
+                                child: Row(
+                                  spacing: 6,
+                                  children: [
+                                    Text(
+                                      '热门推荐',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleLarge,
                                     ),
-                                    IconButton(
-                                      onPressed: () {
-                                        if (index >=
-                                            _hotNotifier.value.length - 1) {
-                                          return;
-                                        }
-                                        _carouselController.animateToItem(
-                                          index++,
-                                        );
-                                      },
-                                      icon: Icon(Icons.navigate_next_rounded),
-                                    ),
+                                    if (isLandscape) ...[
+                                      IconButton(
+                                        onPressed: () {
+                                          if (index == 0) {
+                                            return;
+                                          }
+                                          _carouselController.animateToItem(
+                                            index--,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Icons.navigate_before_rounded,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          if (index >=
+                                              _hotNotifier.value.length - 1) {
+                                            return;
+                                          }
+                                          _carouselController.animateToItem(
+                                            index++,
+                                          );
+                                        },
+                                        icon: Icon(Icons.navigate_next_rounded),
+                                      ),
+                                    ],
                                   ],
-                                ],
+                                ),
                               ),
                             ),
-
                             SliverToBoxAdapter(
-                              child: ValueListenableBuilder(
-                                valueListenable: _hotNotifier,
-                                builder: (context, hot, child) {
-                                  return hot.isEmpty
-                                      ? _buildHotSkeleton(isLandscape)
-                                      : SizedBox(
-                                          height: isLandscape ? 400 : 200,
-                                          width: double.infinity,
-                                          child: CarouselView.weighted(
-                                            controller: _carouselController,
-                                            itemSnapping: true,
-                                            onTap: (index) {
-                                              var name =
-                                                  hot[index].nameCn != null &&
-                                                      hot[index]
-                                                          .nameCn!
-                                                          .isNotEmpty
-                                                  ? hot[index].nameCn!
-                                                  : hot[index].name ?? "";
-                                              context.push(
-                                                '/detail',
-                                                extra: {
-                                                  'id': hot[index].id!,
-                                                  'subject': hot[index],
-                                                  'keyword': name,
-                                                  'cover':
-                                                      hot[index]
-                                                          .images
-                                                          ?.large ??
-                                                      '',
-                                                  'from': "home-hot",
+                              child: MouseRegion(
+                                onExit: (_) {
+                                  _carouselTimer?.cancel();
+                                  _carouselTimer = Timer.periodic(
+                                    Duration(seconds: 3),
+                                    (timer) {
+                                      index = index.remainder(
+                                        _hotNotifier.value.length,
+                                      );
+                                      _carouselController.animateToItem(
+                                        index++,
+                                      );
+                                    },
+                                  );
+                                },
+                                onHover: (_) => _carouselTimer?.cancel(),
+                                child: ValueListenableBuilder(
+                                  valueListenable: _hotNotifier,
+                                  builder: (context, hot, child) {
+                                    return hot.isEmpty
+                                        ? _buildHotSkeleton(isLandscape)
+                                        : SizedBox(
+                                            height: isLandscape ? 400 : 200,
+                                            width: double.infinity,
+                                            child: GestureDetector(
+                                              onPanDown: (_) {
+                                                _carouselTimer?.cancel();
+                                              },
+                                              onPanCancel: () {
+                                                _refreshAutoSlideTimer();
+                                              },
+                                              child: CarouselView.weighted(
+                                                controller: _carouselController,
+                                                itemSnapping: true,
+                                                onTap: (index) {
+                                                  var name =
+                                                      hot[index].nameCn !=
+                                                              null &&
+                                                          hot[index]
+                                                              .nameCn!
+                                                              .isNotEmpty
+                                                      ? hot[index].nameCn!
+                                                      : hot[index].name ?? "";
+                                                  context.push(
+                                                    '/detail',
+                                                    extra: {
+                                                      'id': hot[index].id!,
+                                                      'subject': hot[index],
+                                                      'keyword': name,
+                                                      'cover':
+                                                          hot[index]
+                                                              .images
+                                                              ?.large ??
+                                                          '',
+                                                      'from': "home-hot",
+                                                    },
+                                                  );
                                                 },
-                                              );
-                                            },
-                                            flexWeights: isLandscape
-                                                ? [1, 1, 1]
-                                                : [5, 1],
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            children: hot.map((e) {
-                                              return Stack(
-                                                children: [
-                                                  Hero(
-                                                    tag: 'home-hot_${e.id}',
-                                                    child: CachedNetworkImage(
-                                                      width: double.infinity,
-                                                      height: double.infinity,
-                                                      fit: BoxFit.cover,
-                                                      imageUrl:
-                                                          e.images?.large ?? "",
-                                                      errorWidget:
-                                                          (
-                                                            context,
-                                                            url,
-                                                            error,
-                                                          ) => const Icon(
-                                                            Icons.error,
-                                                          ),
-                                                      progressIndicatorBuilder:
-                                                          (
-                                                            context,
-                                                            url,
-                                                            progress,
-                                                          ) => const Center(
-                                                            child:
-                                                                CircularProgressIndicator(),
-                                                          ),
-                                                    ),
-                                                  ),
-                                                  Align(
-                                                    alignment: .bottomCenter,
-                                                    child: Container(
-                                                      width: double.infinity,
-                                                      padding: .symmetric(
-                                                        horizontal: 8,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        gradient: LinearGradient(
-                                                          begin: Alignment
-                                                              .bottomCenter,
-                                                          end: Alignment
-                                                              .topCenter,
-                                                          colors: [
-                                                            Colors.black
-                                                                .withOpacity(
-                                                                  0.5,
-                                                                ),
-                                                            Colors.transparent,
-                                                          ],
+                                                flexWeights: isLandscape
+                                                    ? [1, 1, 1]
+                                                    : [5, 1],
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                children: hot.map((e) {
+                                                  return Stack(
+                                                    children: [
+                                                      Hero(
+                                                        tag: 'home-hot_${e.id}',
+                                                        child: CachedNetworkImage(
+                                                          width:
+                                                              double.infinity,
+                                                          height:
+                                                              double.infinity,
+                                                          fit: BoxFit.cover,
+                                                          imageUrl:
+                                                              e.images?.large ??
+                                                              "",
+                                                          errorWidget:
+                                                              (
+                                                                context,
+                                                                url,
+                                                                error,
+                                                              ) => const Icon(
+                                                                Icons.error,
+                                                              ),
+                                                          progressIndicatorBuilder:
+                                                              (
+                                                                context,
+                                                                url,
+                                                                progress,
+                                                              ) => const Center(
+                                                                child:
+                                                                    CircularProgressIndicator(),
+                                                              ),
                                                         ),
                                                       ),
-                                                      child: Text(
-                                                        e.nameCn ?? "",
-                                                        maxLines: 2,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .titleMedium
-                                                            ?.copyWith(
-                                                              color:
-                                                                  Colors.white,
+                                                      Align(
+                                                        alignment:
+                                                            .bottomCenter,
+                                                        child: Container(
+                                                          width:
+                                                              double.infinity,
+                                                          padding: .symmetric(
+                                                            horizontal: 8,
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            gradient: LinearGradient(
+                                                              begin: Alignment
+                                                                  .bottomCenter,
+                                                              end: Alignment
+                                                                  .topCenter,
+                                                              colors: [
+                                                                Colors.black
+                                                                    .withOpacity(
+                                                                      0.5,
+                                                                    ),
+                                                                Colors
+                                                                    .transparent,
+                                                              ],
                                                             ),
+                                                          ),
+                                                          child: Text(
+                                                            e.nameCn ?? "",
+                                                            maxLines: 2,
+                                                            style: Theme.of(context)
+                                                                .textTheme
+                                                                .titleMedium
+                                                                ?.copyWith(
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            }).toList(),
-                                          ),
-                                        );
-                                },
+                                                    ],
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ),
+                                          );
+                                  },
+                                ),
                               ),
                             ),
                             SliverToBoxAdapter(

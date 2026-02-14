@@ -100,6 +100,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   Danmu? dammaku;
   bool isLoading = false;
   Timer? danmakuSettingTimer;
+  Timer? settingTimer;
   final List<DanmakuContentItem<double>> danmakuItems = [];
 
   /// 显示视频控制条定时器
@@ -302,7 +303,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     filterDanmakuItems();
     final appSetting = LocalStore.getAppSetting();
     appSetting.danmakuSetting = danmakuSetting ?? DanmakuSetting();
-    LocalStore.saveAppSetting(appSetting);
+    settingTimer?.cancel();
+    settingTimer = Timer(Duration(seconds: 5), () {
+      LocalStore.saveAppSetting(appSetting);
+    });
   }
 
   /// 过滤弹幕
@@ -489,6 +493,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     volumeAndBrightnessToastTimer?.cancel();
     videoTimer?.cancel();
     videoControlsTimer?.cancel();
+    settingTimer?.cancel();
     super.dispose();
   }
 
