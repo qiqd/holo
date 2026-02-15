@@ -13,7 +13,6 @@ import 'package:holo/util/local_store.dart';
 import 'package:holo/extension/safe_set_state.dart';
 import 'package:logger/logger.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -12,6 +12,7 @@ import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/util/local_store.dart';
+import 'package:logger/logger.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:video_player/video_player.dart';
@@ -71,7 +72,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     skipTraversal: true,
     descendantsAreTraversable: false,
   );
-  // final Logger _logger = Logger();
+  final Logger _logger = Logger();
   late final ScreenBrightness _brightnessController;
   DanmakuController<double>? _danmuController;
   String msgText = '';
@@ -428,6 +429,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   void _initListener() {
     widget.playerNotifier.addListener(() {
       var player = widget.playerNotifier.value;
+      _logger.w('player is null? ${player == null}');
       if (player == null) {
         safeSetState(() {
           position = .zero;
@@ -489,6 +491,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   @override
   void dispose() {
+    _logger.w('dispose');
+    widget.playerNotifier.value?.removeListener(() {});
     windowManager.setFullScreen(false);
     danmuTimer?.cancel();
     volumeAndBrightnessToastTimer?.cancel();

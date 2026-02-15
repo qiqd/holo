@@ -518,78 +518,73 @@ class _PlayerScreenState extends State<PlayerScreen>
         color: Colors.black,
         height: double.infinity,
         width: double.infinity,
-        child: ValueListenableBuilder(
-          valueListenable: _playerNotifier,
-          builder: (context, value, child) {
-            return Center(
-              child: CapVideoPlayerKit(
-                title: widget.nameCn,
-                subTitle: _episode?.data?[episodeIndex].nameCn,
-                isloading: isloading,
-                centerMsg: msg,
-                playerNotifier: _playerNotifier,
-                isFullScreen: isFullScreen,
-                currentEpisodeIndex: episodeIndex,
-                dammaku: _dammaku,
-                isTablet: _isTablet,
-                danmakuSetting: _danmakuSetting,
-                enableAutoFocus: _enableAutoFocus,
-                onEpisodeTab: () {
-                  if (_isTablet ||
-                      Platform.isWindows ||
-                      Platform.isMacOS ||
-                      Platform.isLinux) {
-                    setState(() {
-                      _isInfoDrawerOpen = true;
-                      _isEpisodeDrawerOpen = false;
-                      _isSettingDrawerOpen = false;
-                    });
-                  } else {
-                    setState(() {
-                      _isEpisodeDrawerOpen = true;
-                      _isInfoDrawerOpen = false;
-                      _isSettingDrawerOpen = false;
-                    });
-                  }
-                  _globalScaffoldKey.currentState?.openEndDrawer();
-                },
-                onSettingTab: () {
-                  setState(() {
-                    _isSettingDrawerOpen = true;
-                    _isEpisodeDrawerOpen = false;
-                    _isInfoDrawerOpen = false;
-                  });
-                  _globalScaffoldKey.currentState?.openEndDrawer();
-                },
-                onError: (error) => setState(() {
-                  msg = error.toString();
-                  isloading = false;
-                  _logger.e("player.error: $msg");
-                }),
+        child: Center(
+          child: CapVideoPlayerKit(
+            title: widget.nameCn,
+            subTitle: _episode?.data?[episodeIndex].nameCn,
+            isloading: isloading,
+            centerMsg: msg,
+            playerNotifier: _playerNotifier,
+            isFullScreen: isFullScreen,
+            currentEpisodeIndex: episodeIndex,
+            dammaku: _dammaku,
+            isTablet: _isTablet,
+            danmakuSetting: _danmakuSetting,
+            enableAutoFocus: _enableAutoFocus,
+            onEpisodeTab: () {
+              if (_isTablet ||
+                  Platform.isWindows ||
+                  Platform.isMacOS ||
+                  Platform.isLinux) {
+                setState(() {
+                  _isInfoDrawerOpen = true;
+                  _isEpisodeDrawerOpen = false;
+                  _isSettingDrawerOpen = false;
+                });
+              } else {
+                setState(() {
+                  _isEpisodeDrawerOpen = true;
+                  _isInfoDrawerOpen = false;
+                  _isSettingDrawerOpen = false;
+                });
+              }
+              _globalScaffoldKey.currentState?.openEndDrawer();
+            },
+            onSettingTab: () {
+              setState(() {
+                _isSettingDrawerOpen = true;
+                _isEpisodeDrawerOpen = false;
+                _isInfoDrawerOpen = false;
+              });
+              _globalScaffoldKey.currentState?.openEndDrawer();
+            },
+            onError: (error) => setState(() {
+              msg = error.toString();
+              isloading = false;
+              _logger.e("player.error: $msg");
+            }),
 
-                onNextTab: () {
-                  if (isloading ||
-                      episodeIndex + 1 >
-                          _detail!.lines![lineIndex].episodes!.length - 1) {
-                    return;
-                  }
-                  setState(() {
-                    ++episodeIndex;
-                  });
-                  _fetchViewInfo();
-                },
-                onFullScreenChanged: (f) {
-                  onFullScreenChanged(f);
-                },
-                onBackPressed: () {
-                  onBackPressed();
-                },
-                onPositionChanged: (p) {
-                  _position = p;
-                },
-              ),
-            );
-          },
+            onNextTab: () {
+              if (isloading ||
+                  episodeIndex + 1 >
+                      _detail!.lines![lineIndex].episodes!.length - 1) {
+                return;
+              }
+              setState(() {
+                ++episodeIndex;
+              });
+              _fetchViewInfo();
+            },
+            onFullScreenChanged: (f) {
+              onFullScreenChanged(f);
+            },
+            onBackPressed: () {
+              onBackPressed();
+            },
+            onPositionChanged: (p) {
+              _position = p;
+            },
+          ),
         ),
       ),
     );
@@ -1178,6 +1173,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void dispose() {
     _storeLocalHistory();
+    _logger.w('dispose');
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
