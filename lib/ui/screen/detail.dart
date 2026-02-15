@@ -233,12 +233,12 @@ class _DetailScreenState extends State<DetailScreen>
     }, (e) {}).then((newSubscribe) {});
   }
 
-  void _openBangumiUrl() {
+  Future<void> _openBangumiUrl() async {
     if (data == null) {
       return;
     }
 
-    launchUrl(Uri.parse("https://bangumi.tv/subject/${data!.id}"));
+    await launchUrl(Uri.parse("https://bangumi.tv/subject/${data!.id}"));
   }
 
   Widget _buildShimmerSkeleton() {

@@ -98,39 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _checkVersion() async {
-    final asset = await CheckVersion.checkVersion();
-    if (asset != null && mounted) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(context.tr("common.new_version")),
-          content: ListTile(
-            title: Text(
-              "${context.tr("common.current_version")}:v${asset.currentVersion}",
-            ),
-            subtitle: Text(
-              "${context.tr("common.latest_version")}:v${asset.latestVersion}",
-            ),
-          ),
-          actions: [
-            OutlinedButton(
-              onPressed: () => context.pop(),
-              child: Text(context.tr("common.dialog.cancel")),
-            ),
-            FilledButton(
-              onPressed: () =>
-                  launchUrl(Uri.parse(asset.browserDownloadUrl ?? "")),
-              child: Text(context.tr("common.dialog.update")),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
   void _homeScreenInit() {
-    _checkVersion();
+    CheckVersion.checkVersion(context);
     _hotNotifier.addListener(() {
       if (_hotNotifier.value.isNotEmpty) {
         _carouselTimer?.cancel();

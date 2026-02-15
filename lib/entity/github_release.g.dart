@@ -89,7 +89,7 @@ SimpleGitHubAsset _$SimpleGitHubAssetFromJson(Map<String, dynamic> json) =>
     SimpleGitHubAsset(
       currentVersion: json['currentVersion'] as String?,
       latestVersion: json['latestVersion'] as String?,
-      summary: json['summary'] as String?,
+      releaseLog: json['summary'] as String?,
       browserDownloadUrl: json['browserDownloadUrl'] as String?,
     );
 
@@ -97,6 +97,6 @@ Map<String, dynamic> _$SimpleGitHubAssetToJson(SimpleGitHubAsset instance) =>
     <String, dynamic>{
       'currentVersion': instance.currentVersion,
       'latestVersion': instance.latestVersion,
-      'summary': instance.summary,
+      'summary': instance.releaseLog,
       'browserDownloadUrl': instance.browserDownloadUrl,
     };

@@ -53,56 +53,6 @@ class _SetttingScreenState extends State<SetttingScreen>
     });
   }
 
-  Future<void> _checkVersion() async {
-    setState(() {
-      _checkVersioning = true;
-    });
-    final asset = await CheckVersion.checkVersion();
-    if (!mounted) {
-      return;
-    }
-    if (asset != null && mounted) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(context.tr("common.new_version")),
-          content: Column(
-            mainAxisSize: .min,
-            children: [
-              ListTile(
-                title: Text(
-                  "${context.tr("common.current_version")}:v${asset.currentVersion}",
-                ),
-                subtitle: Text(
-                  "${context.tr("common.latest_version")}:v${asset.latestVersion}",
-                ),
-              ),
-              Text(asset.summary ?? ""),
-            ],
-          ),
-          actions: [
-            OutlinedButton(
-              onPressed: () => context.pop(),
-              child: Text(context.tr("common.dialog.cancel")),
-            ),
-            FilledButton(
-              onPressed: () =>
-                  launchUrl(Uri.parse(asset.browserDownloadUrl ?? "")),
-              child: Text(context.tr("common.dialog.update")),
-            ),
-          ],
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.tr("common.no_update"))));
-    }
-    setState(() {
-      _checkVersioning = false;
-    });
-  }
-
   List<Widget> _buildAccountInfo() {
     return [
       _buildSectionHeader('setting.section.account_status'.tr()),
@@ -179,7 +129,11 @@ class _SetttingScreenState extends State<SetttingScreen>
                 ),
         ),
         title: Text('setting.app_info.check_version'.tr()),
-        onTap: _checkVersion,
+        onTap: () async {
+          setState(() => _checkVersioning = true);
+          await CheckVersion.checkVersion(context);
+          setState(() => _checkVersioning = false);
+        },
       ),
     ];
   }

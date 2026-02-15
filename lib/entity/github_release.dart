@@ -90,12 +90,12 @@ class GitHubAsset {
 class SimpleGitHubAsset {
   String? currentVersion;
   String? latestVersion;
-  String? summary;
+  String? releaseLog;
   String? browserDownloadUrl;
   SimpleGitHubAsset({
     this.currentVersion,
     this.latestVersion,
-    this.summary,
+    this.releaseLog,
     this.browserDownloadUrl,
   });
   factory SimpleGitHubAsset.fromJson(Map<String, dynamic> json) =>
