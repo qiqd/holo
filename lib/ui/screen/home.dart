@@ -332,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             return;
                                           }
                                           _carouselController.animateToItem(
-                                            index--,
+                                            --index,
                                           );
                                         },
                                         icon: Icon(
@@ -346,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             return;
                                           }
                                           _carouselController.animateToItem(
-                                            index++,
+                                            ++index,
                                           );
                                         },
                                         icon: Icon(Icons.navigate_next_rounded),

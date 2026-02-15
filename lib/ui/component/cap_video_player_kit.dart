@@ -81,7 +81,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   int jumpMs = 0;
   int dragOffset = 0;
   bool isLock = false;
-  int danmakuOffset = 0;
   Timer? volumeAndBrightnessToastTimer;
   Timer? videoControlsTimer;
   Timer? videoTimer;
@@ -290,7 +289,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
       danmakuItems
           .where((item) {
-            return item.extra?.toInt() == (position.inSeconds + danmakuOffset);
+            return item.extra?.toInt() ==
+                (position.inSeconds + widget.danmakuSetting.danmakuOffset);
           })
           .forEach((item) {
             _danmuController?.addDanmaku(item);
@@ -489,6 +489,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   @override
   void dispose() {
+    windowManager.setFullScreen(false);
     danmuTimer?.cancel();
     volumeAndBrightnessToastTimer?.cancel();
     videoTimer?.cancel();

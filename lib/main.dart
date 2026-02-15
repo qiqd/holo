@@ -33,7 +33,7 @@ void main() async {
   await LocalStore.init();
   await Bangumi.initDio();
   Api.initSources();
-  VideoPlayerMediaKit.ensureInitialized(windows: true);
+  VideoPlayerMediaKit.ensureInitialized(windows: true, linux: true);
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     if (!await FlutterSingleInstance().isFirstInstance()) {

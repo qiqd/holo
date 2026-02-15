@@ -60,6 +60,8 @@ class MediaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var updateTo = checkUpdateAt(airDate);
+    var isLanscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Stack(
       children: [
         InkWell(
@@ -302,7 +304,7 @@ class MediaCard extends StatelessWidget {
                           child: isFavorite
                               ? SegmentedButton(
                                   emptySelectionAllowed: true,
-                                  showSelectedIcon: false,
+                                  showSelectedIcon: isLanscape ? true : false,
                                   style: ButtonStyle(
                                     padding: WidgetStatePropertyAll(.zero),
                                   ),

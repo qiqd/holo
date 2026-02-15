@@ -463,81 +463,6 @@ class _PlayerScreenState extends State<PlayerScreen>
     });
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      setState(() {
-        _isActive = false;
-      });
-      _storeLocalHistory();
-    }
-    if (state == AppLifecycleState.resumed) {
-      setState(() {
-        _isActive = true;
-      });
-    }
-    if (state == AppLifecycleState.inactive) {
-      _storeLocalHistory();
-    }
-    super.didChangeAppLifecycleState(state);
-  }
-
-  @override
-  void didChangeDependencies() {
-    _storeLocalHistory();
-    if (Platform.isAndroid || Platform.isIOS) {
-      var info = MediaQuery.of(context);
-      setState(() {
-        _isTablet =
-            Device.get().isTablet && info.orientation == Orientation.landscape;
-      });
-    }
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      setState(() {
-        _isTablet = true;
-        _isFullScreen = true;
-      });
-    }
-    if (_isTablet) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    }
-    super.didChangeDependencies();
-  }
-
-  @override
-  void initState() {
-    _loadDanmakuSetting();
-    _loadHistory();
-    _fetchEpisode();
-    _isTablet = Device.get().isTablet;
-    WidgetsBinding.instance.addObserver(this);
-    _fetchMediaEpisode().then(
-      (value) => _fetchViewInfo(position: historyPosition),
-    );
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _storeLocalHistory();
-    WidgetsBinding.instance.removeObserver(this);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    // _controller?.dispose();
-    _playerNotifier.value?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Future<AppExitResponse> didRequestAppExit() {
-    _logger.d("didRequestAppExit");
-    _storeLocalHistory();
-    return super.didRequestAppExit();
-  }
-
   Widget _buildFadeEpisodeSection() {
     return GridView.builder(
       padding: EdgeInsets.all(10),
@@ -1027,21 +952,25 @@ class _PlayerScreenState extends State<PlayerScreen>
                   ),
                 ],
               ),
+              // 弹幕偏移量
               subtitle: Text(
                 context.tr(
-                  'component.cap_video_player.current_offset',
-                  args: [setting.danmakuOffset.toString()],
-                ),
+                      'component.cap_video_player.current_offset',
+                      args: [''],
+                    ) +
+                    setting.danmakuOffset.toString(),
               ),
-
+              // 调整弹幕偏移量+1
               leading: IconButton(
                 onPressed: () {
+                  _logger.d('current offset:${setting.danmakuOffset}');
                   onSettingChanged?.call(
                     setting.copyWith(danmakuOffset: setting.danmakuOffset - 1),
                   );
                 },
                 icon: const Icon(Icons.exposure_neg_1),
               ),
+              // 调整弹幕偏移量-1
               trailing: IconButton(
                 onPressed: () {
                   onSettingChanged?.call(
@@ -1191,6 +1120,82 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      setState(() {
+        _isActive = false;
+      });
+      _storeLocalHistory();
+    }
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        _isActive = true;
+      });
+    }
+    if (state == AppLifecycleState.inactive) {
+      _storeLocalHistory();
+    }
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void didChangeDependencies() {
+    _storeLocalHistory();
+    if (Platform.isAndroid || Platform.isIOS) {
+      var info = MediaQuery.of(context);
+      setState(() {
+        _isTablet =
+            Device.get().isTablet && info.orientation == Orientation.landscape;
+      });
+    }
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      setState(() {
+        _isTablet = true;
+        _isFullScreen = true;
+      });
+    }
+    if (_isTablet) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
+  void initState() {
+    _loadDanmakuSetting();
+    _loadHistory();
+    _fetchEpisode();
+    _isTablet = Device.get().isTablet;
+    WidgetsBinding.instance.addObserver(this);
+    _fetchMediaEpisode().then(
+      (value) => _fetchViewInfo(position: historyPosition),
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _storeLocalHistory();
+    WidgetsBinding.instance.removeObserver(this);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    // _controller?.dispose();
+    _playerNotifier.value?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Future<AppExitResponse> didRequestAppExit() {
+    _logger.d("didRequestAppExit");
+    _storeLocalHistory();
+    return super.didRequestAppExit();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -1204,6 +1209,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                 _enableAutoFocus = !isOpened;
               });
             },
+            endDrawerEnableOpenDragGesture: false,
             endDrawer: Drawer(width: 400, child: _buildDrawer()),
             body: SafeArea(
               child: SizedBox.expand(
@@ -1229,6 +1235,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             key: _globalScaffoldKey,
             resizeToAvoidBottomInset: false,
             endDrawer: Drawer(width: 300, child: _buildDrawer()),
+            endDrawerEnableOpenDragGesture: false,
             body: SafeArea(
               child: Center(
                 child: PopScope(

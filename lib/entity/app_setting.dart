@@ -33,7 +33,7 @@ class DanmakuSetting {
   final bool hideScroll;
   final bool hideBottom;
   final bool massiveMode;
-  final danmakuOffset = 0;
+  final int danmakuOffset;
 
   /// 过滤词，英文逗号分隔
   final String filterWords;
@@ -46,7 +46,7 @@ class DanmakuSetting {
     this.hideBottom = false,
     this.massiveMode = false,
     this.filterWords = '',
-    danmakuOffset = 0,
+    this.danmakuOffset = 0,
   });
   DanmakuSetting copyWith({
     double? opacity,
