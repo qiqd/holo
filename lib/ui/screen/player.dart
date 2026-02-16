@@ -704,6 +704,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
+              selectedTileColor: Theme.of(context).colorScheme.primaryContainer,
               selected: episodeIndex == index,
               onTap: () {
                 if (episodeIndex == index || isloading) {
@@ -801,9 +802,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                         ],
                       ),
                       onTap: () {
-                        if (index == lineIndex || isloading) {
-                          return;
-                        }
                         _onLineSelected(index);
                       },
                     ),

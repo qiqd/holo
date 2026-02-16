@@ -86,8 +86,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   Timer? videoControlsTimer;
   Timer? videoTimer;
   Timer? danmuTimer;
-  double currentVolume = 0;
-  double currentBrightness = 0;
+  double currentVolume = 0.0;
+  double currentBrightness = 0.0;
   bool showDanmaku = true;
   bool showVolume = false;
   bool showBrightness = false;
@@ -439,8 +439,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         return;
       }
       safeSetState(() {
-        currentVolume = player.value.volume;
+        currentVolume = currentVolume == 0.0
+            ? player.value.volume
+            : currentVolume;
       });
+      player.setVolume(currentVolume);
       player.addListener(() {
         widget.onPositionChanged?.call(player.value.position);
         safeSetState(() {
@@ -599,15 +602,13 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         child: Align(
           alignment: Alignment.centerLeft,
           child: IconButton(
+            color: Colors.white,
             onPressed: () {
               setState(() {
                 isLock = !isLock;
               });
             },
-            icon: Icon(
-              isLock ? Icons.lock_rounded : Icons.lock_open_rounded,
-              color: Colors.white,
-            ),
+            icon: Icon(isLock ? Icons.lock_rounded : Icons.lock_open_rounded),
           ),
         ),
       ),
@@ -661,10 +662,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               ),
             ),
             child: ListTile(
-              horizontalTitleGap: 0,
+              horizontalTitleGap: 6,
               titleAlignment: ListTileTitleAlignment.center,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                color: Colors.white,
+                icon: const Icon(Icons.arrow_back_ios_new_rounded),
                 onPressed: () {
                   showVideoControlsTimer();
                   onBackPressed?.call();
@@ -691,25 +693,21 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                               Platform.isWindows ||
                               Platform.isMacOS)
                             IconButton(
+                              color: Colors.white,
                               tooltip: 'keyboard shortcuts',
                               onPressed: () {
                                 showKeyboardShortcuts();
                               },
-                              icon: const Icon(
-                                Icons.help_outline_rounded,
-                                color: Colors.white,
-                              ),
+                              icon: const Icon(Icons.help_outline_rounded),
                             ),
                           IconButton(
+                            color: Colors.white,
                             tooltip: 'Setting',
                             onPressed: () {
                               onSettingTab?.call();
                               showVideoControlsTimer();
                             },
-                            icon: const Icon(
-                              Icons.settings_rounded,
-                              color: Colors.white,
-                            ),
+                            icon: const Icon(Icons.settings_rounded),
                           ),
                         ],
                       ),
@@ -823,6 +821,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         curve: Curves.easeInOut,
         duration: const Duration(milliseconds: 100),
         child: Container(
+          padding: .symmetric(horizontal: 16),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -860,6 +859,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               Row(
                 children: [
                   IconButton(
+                    color: Colors.white,
                     onPressed: () {
                       showVideoControlsTimer();
                       setState(() {
@@ -871,19 +871,16 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       isPlaying
                           ? Icons.pause_rounded
                           : Icons.play_arrow_rounded,
-                      color: Colors.white,
                     ),
                   ),
                   // 下一集
                   IconButton(
+                    color: Colors.white,
                     onPressed: () {
                       showVideoControlsTimer();
                       onNextTab?.call();
                     },
-                    icon: const Icon(
-                      Icons.skip_next_rounded,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.skip_next_rounded),
                   ),
 
                   //进度
@@ -905,7 +902,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   //弹幕开关按钮
                   IconButton(
                     tooltip: 'Danmaku Switch',
-                    splashColor: Colors.transparent,
                     color: Colors.white,
                     onPressed: () {
                       setState(() {
@@ -917,33 +913,29 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       alignment: Alignment.center,
                       children: [
                         Text('弹', style: TextStyle(color: Colors.white)),
-                        if (!showDanmaku)
-                          Icon(Icons.block_rounded, color: Colors.white),
+                        if (!showDanmaku) Icon(Icons.block_rounded),
                       ],
                     ),
                   ),
                   //剧集列表按钮
                   if (widget.isFullScreen) ...[
                     IconButton(
+                      color: Colors.white,
                       tooltip: 'Episode List',
                       onPressed: () {
                         widget.onEpisodeTab?.call();
                         showVideoControlsTimer();
                       },
-                      icon: Icon(
-                        Icons.format_list_bulleted_rounded,
-                        color: Colors.white,
-                      ),
+                      icon: Icon(Icons.format_list_bulleted_rounded),
                     ),
                     PopupMenuButton(
                       tooltip: 'Playback Speed',
                       padding: .zero,
-                      icon: Badge(
-                        backgroundColor: Colors.transparent,
-                        textColor: Colors.white,
-                        label: Text(rate.toStringAsFixed(1)),
+                      color: Colors.white,
+                      icon: Text(
+                        rate.toStringAsFixed(1),
+                        style: TextStyle(color: Colors.white),
                       ),
-
                       onSelected: (value) {
                         setRate?.call(value);
                       },
@@ -964,6 +956,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       Platform.isLinux) ...[
                     IconButton(
                       tooltip: 'Volume',
+                      color: Colors.white,
                       onPressed: () {
                         setState(() {
                           currentVolume = 0;
@@ -974,7 +967,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         currentVolume > 0
                             ? Icons.volume_up_rounded
                             : Icons.volume_off_rounded,
-                        color: Colors.white,
                       ),
                     ),
                     SizedBox(
@@ -997,6 +989,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
                   // 全屏按钮
                   IconButton(
+                    color: Colors.white,
                     onPressed: () async {
                       showVideoControlsTimer();
                       if (Platform.isWindows ||
@@ -1012,7 +1005,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       widget.isFullScreen
                           ? Icons.fullscreen_exit_rounded
                           : Icons.fullscreen_rounded,
-                      color: Colors.white,
                     ),
                   ),
                 ],

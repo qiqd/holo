@@ -107,38 +107,11 @@ class _DetailScreenState extends State<DetailScreen>
       source2Media[source] = res;
     });
     await Future.wait(future);
-    // Media? target;
-    double tempScore = 0;
-    for (var entity in source2Media.entries) {
-      var value = entity.value;
-      for (var m in value) {
-        double s = JaroWinklerSimilarity.apply(widget.keyword, m.title!);
-        m.score = s;
-        if (defaultMedia == null && s > tempScore) {
-          tempScore = s;
-          //target = m;
-          defaultMedia = m;
-          defaultSource = entity.key;
-        }
-      }
-    }
     for (var value in source2Media.values) {
       value.sort((a, b) => b.score!.compareTo(a.score!));
     }
     final keys = source2Media.keys.toList();
     keys.sort((a, b) => b.delay.compareTo(a.delay));
-    var sourceName = widget.subject?.sourceName;
-    if (sourceName != null && sourceName.isNotEmpty) {
-      defaultSource = sources.firstWhere(
-        (element) => element.getName() == sourceName,
-        orElse: () => keys.first,
-      );
-      defaultMedia = source2Media[defaultSource]!.isEmpty
-          ? null
-          : source2Media[defaultSource]!.first;
-    }
-
-    //defaultSource = keys.first;
     safeSetState(() {
       sourceService = keys;
       isLoading = false;
