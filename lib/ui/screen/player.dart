@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
+import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/entity/app_setting.dart';
@@ -139,6 +140,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             },
           );
         }
+        _playerNotifier.value?.pause();
         _playerNotifier.value?.dispose();
         _playerNotifier.value = null;
         final newUrl = await source.fetchPlaybackUrl(
@@ -150,16 +152,23 @@ class _PlayerScreenState extends State<PlayerScreen>
             onComplete?.call(msg);
           }),
         );
+        if (newUrl == null || newUrl.isEmpty) {
+          safeSetState(() {
+            msg = "player.playback_error".tr();
+            isloading = false;
+            onComplete?.call(msg);
+          });
+          return;
+        }
         playUrl = newUrl;
-        _logger.i('new url: $newUrl');
-        _logger.i('seek to: $position');
         final newController = VideoPlayerController.networkUrl(
-          Uri.parse(newUrl ?? ""),
+          Uri.parse(newUrl),
         );
         await newController.initialize();
+
+        _playerNotifier.value = newController;
         safeSetState(() {
           msg = '';
-          _playerNotifier.value = newController;
         });
         _playerNotifier.value?.seekTo(Duration(seconds: position));
         _isActive
@@ -548,7 +557,11 @@ class _PlayerScreenState extends State<PlayerScreen>
                   _isSettingDrawerOpen = false;
                 });
               }
-              _globalScaffoldKey.currentState?.openEndDrawer();
+              if (_globalScaffoldKey.currentState?.isEndDrawerOpen ?? false) {
+                _globalScaffoldKey.currentState?.closeEndDrawer();
+              } else {
+                _globalScaffoldKey.currentState?.openEndDrawer();
+              }
             },
             onSettingTab: () {
               setState(() {
@@ -556,7 +569,11 @@ class _PlayerScreenState extends State<PlayerScreen>
                 _isEpisodeDrawerOpen = false;
                 _isInfoDrawerOpen = false;
               });
-              _globalScaffoldKey.currentState?.openEndDrawer();
+              if (_globalScaffoldKey.currentState?.isEndDrawerOpen ?? false) {
+                _globalScaffoldKey.currentState?.closeEndDrawer();
+              } else {
+                _globalScaffoldKey.currentState?.openEndDrawer();
+              }
             },
             onError: (error) => setState(() {
               msg = error.toString();
@@ -625,16 +642,18 @@ class _PlayerScreenState extends State<PlayerScreen>
                 source.getName(),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              leading: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 100),
-                child: Image.network(
-                  width: double.infinity,
-                  source.getLogoUrl().contains('http')
-                      ? source.getLogoUrl()
-                      : 'https://${source.getLogoUrl()}',
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(Icons.error);
-                  },
+              leading: SizedBox(
+                width: 100,
+                child: Center(
+                  child: Image.network(
+                    width: double.infinity,
+                    source.getLogoUrl().contains('http')
+                        ? source.getLogoUrl()
+                        : 'https://${source.getLogoUrl()}',
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.error);
+                    },
+                  ),
                 ),
               ),
             ),
@@ -1217,7 +1236,14 @@ class _PlayerScreenState extends State<PlayerScreen>
                         });
                         _toggleFullScreen(isFullScreen);
                       },
-                      onBackPressed: () => context.pop(),
+                      onBackPressed: () {
+                        if (Platform.isWindows ||
+                            Platform.isMacOS ||
+                            Platform.isLinux) {
+                          windowManager.setFullScreen(false);
+                        }
+                        context.pop();
+                      },
                     ),
                   ],
                 ),
@@ -1255,8 +1281,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                         onBackPressed: () {
                           if (_isFullScreen) {
                             setState(() {
-                              _isFullScreen = false;
                               _toggleFullScreen(false);
+                              _isFullScreen = false;
                             });
                           } else {
                             context.pop();
