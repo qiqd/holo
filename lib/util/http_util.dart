@@ -64,6 +64,8 @@ class HttpUtil {
     return dio;
   }
 
+  /// 创建带拦截器的配置好的Dio实例,
+  /// 并在请求头中添加User-Agent,Authorization,Content-Type请求头
   static Dio createDioWithInterceptor() {
     final dio = createDio();
     dio.options.contentType = "application/json";

@@ -7,14 +7,14 @@ import 'package:easy_localization/easy_localization.dart';
 
 enum AuthMode { login, register, reset }
 
-class SignScreen extends StatefulWidget {
-  const SignScreen({super.key});
+class AccountScreen extends StatefulWidget {
+  const AccountScreen({super.key});
 
   @override
-  State<SignScreen> createState() => _SignScreenState();
+  State<AccountScreen> createState() => _AccountScreenState();
 }
 
-class _SignScreenState extends State<SignScreen> {
+class _AccountScreenState extends State<AccountScreen> {
   final _formKey = GlobalKey<FormState>();
   final _serverUrlController = TextEditingController();
   final _emailController = TextEditingController();

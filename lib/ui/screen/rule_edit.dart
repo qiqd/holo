@@ -142,7 +142,15 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
           if (widget.rule != null && !_isTablet)
             IconButton(
               icon: Text('Test'),
-              onPressed: () => context.push('/rule_test', extra: _service!),
+              onPressed: () {
+                if (_service == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('未检测到数据源实例,请在规则管理页面刷新试试')),
+                  );
+                  return;
+                }
+                context.push('/rule_test', extra: _service!);
+              },
             ),
           IconButton(
             tooltip: 'Save Rule To Local',

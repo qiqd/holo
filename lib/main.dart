@@ -169,7 +169,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       GoRoute(
         path: '/sign',
         builder: (context, state) {
-          return SignScreen();
+          return AccountScreen();
         },
       ),
 

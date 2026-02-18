@@ -191,8 +191,8 @@ class _RuleManagerState extends State<RuleManager> {
                       );
                     },
                     leading: SizedBox(
-                      width: 40,
-                      height: 40,
+                      width: 60,
+                      height: 60,
                       child: Image.network(
                         'https://${_rules[index].logoUrl}',
                         errorBuilder: (context, error, stackTrace) {
