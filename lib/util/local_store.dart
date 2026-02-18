@@ -224,12 +224,12 @@ class LocalStore {
     return (AppSetting.fromJson(json.decode(appSettingStr)));
   }
 
-  static void saveAppSetting(AppSetting appSetting) {
+  static void saveAppSetting(AppSetting appSetting, {bool isSync = true}) {
     if (_prefs == null) return;
-    var appSettingStr = _prefs!.getString("${_key}_app_setting") ?? "";
-    var newSetting = appSettingStr.isEmpty ? AppSetting() : appSetting;
-    _prefs!.setString("${_key}_app_setting", json.encode(newSetting.toJson()));
-    SettingApi.saveSetting(newSetting, (_) {});
+    _prefs!.setString("${_key}_app_setting", json.encode(appSetting.toJson()));
+    if (isSync) {
+      SettingApi.saveSetting(appSetting, (_) {});
+    }
   }
 
   static List<Rule> getRules() {

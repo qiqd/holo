@@ -28,7 +28,7 @@ class SettingApi {
       if (response.statusCode != 200) {
         exceptionHandler.call("Fetch setting failed");
       } else {
-        return AppSetting.fromJson(json.decode(response.data));
+        return AppSetting.fromJson(response.data);
       }
     } catch (e) {
       log("Setting fetchSetting error: $e");

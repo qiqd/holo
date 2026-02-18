@@ -16,7 +16,7 @@ import 'package:holo/ui/screen/rule_edit.dart';
 import 'package:holo/ui/screen/rule_manager.dart';
 import 'package:holo/ui/screen/rule_repository.dart';
 import 'package:holo/ui/screen/rule_test.dart';
-import 'package:holo/ui/screen/sign.dart';
+import 'package:holo/ui/screen/account.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/screen/calendar.dart';
 import 'package:holo/ui/screen/detail.dart';
@@ -74,6 +74,19 @@ class MyApp extends StatefulWidget {
     appSetting.useSystemColor,
   );
   const MyApp({super.key});
+  static Future<void> initAppSetting() async {
+    final setting = await SettingApi.fetchSetting((msg) {});
+    if (setting != null) {
+      LocalStore.saveAppSetting(setting, isSync: false);
+    }
+    var appSetting = setting ?? LocalStore.getAppSetting();
+    MyApp.appSetting = appSetting;
+    MyApp.useSystemColorNotifier.value = appSetting.useSystemColor;
+    MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
+      (element) => element.index == appSetting.themeMode,
+      orElse: () => ThemeMode.system,
+    );
+  }
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -220,24 +233,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
   }
 
-  void initAppSetting() async {
-    final setting = await SettingApi.fetchSetting((msg) {});
-    if (setting != null) {
-      LocalStore.saveAppSetting(setting);
-    }
-    var appSetting = setting ?? LocalStore.getAppSetting();
-    MyApp.appSetting = appSetting;
-    MyApp.useSystemColorNotifier.value = appSetting.useSystemColor;
-    MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
-      (element) => element.index == appSetting.themeMode,
-      orElse: () => ThemeMode.system,
-    );
-  }
-
   @override
   void initState() {
     super.initState();
-    initAppSetting();
+    MyApp.initAppSetting();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateSystemNavigationBarColor(MediaQuery.platformBrightnessOf(context));

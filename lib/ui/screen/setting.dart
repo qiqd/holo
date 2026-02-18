@@ -252,16 +252,19 @@ class _SetttingScreenState extends State<SetttingScreen>
         subtitle: Text(_getThemeModeText()),
         onTap: () => _showThemeModeDialog(),
       ),
-      SwitchListTile(
-        secondary: Icon(Icons.colorize_rounded),
-        value: MyApp.useSystemColorNotifier.value,
-        title: Text('setting.appearance.use_system_color'.tr()),
-        subtitle: Text('setting.appearance.use_system_color_description'.tr()),
-        onChanged: (value) => setState(() {
-          _appSetting.useSystemColor = value;
-          LocalStore.saveAppSetting(_appSetting);
-        }),
-      ),
+      if (Platform.isAndroid || Platform.isIOS)
+        SwitchListTile(
+          secondary: Icon(Icons.colorize_rounded),
+          value: _appSetting.useSystemColor,
+          title: Text('setting.appearance.use_system_color'.tr()),
+          subtitle: Text(
+            'setting.appearance.use_system_color_description'.tr(),
+          ),
+          onChanged: (v) => setState(() {
+            _appSetting.useSystemColor = v;
+            LocalStore.saveAppSetting(_appSetting);
+          }),
+        ),
     ];
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/account_api.dart';
+import 'package:holo/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -80,6 +81,7 @@ class _SignScreenState extends State<SignScreen> {
           _authMode = AuthMode.login;
           _isLoading = false;
         });
+        MyApp.initAppSetting();
         if (_authMode == AuthMode.login) {
           context.go('/home');
         }
