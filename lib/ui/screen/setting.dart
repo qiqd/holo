@@ -7,7 +7,6 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
-import 'package:holo/main.dart';
 import 'package:holo/util/check_version.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';

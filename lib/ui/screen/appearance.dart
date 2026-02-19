@@ -238,8 +238,6 @@ class _AppearanceState extends State<Appearance> {
 
   ///颜色主题选择器，包括取色盘
   List<Widget> _buildPrimaryColorTile() {
-    var color = Theme.of(context).colorScheme.primary;
-
     return [
       // 预设颜色网格
       Card(
