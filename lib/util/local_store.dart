@@ -163,18 +163,6 @@ class LocalStore {
     }
   }
 
-  // static void deleteHistoryById(int id) {
-  //   if (_prefs == null) return;
-  //   var histories = _prefs!.getStringList(_key) ?? [];
-  //   List<History> historyList = histories
-  //       .map((jsonStr) => History.fromJson(json.decode(jsonStr)))
-  //       .toList();
-  //   historyList.removeWhere((history) => history.id == id);
-  //   List<String> updatedHistories = historyList
-  //       .map((item) => json.encode(item.toJson()))
-  //       .toList();
-  //   _prefs!.setStringList(_key, updatedHistories);
-  // }
   static void updateSubscribeHistory(List<SubscribeHistory> histories) {
     if (_prefs == null) return;
     clearHistory(clearPlayback: false);
@@ -365,6 +353,16 @@ class LocalStore {
     if (homeCache == null) return null;
     log("home->getHomeRankCache: get cache ok");
     return Subject.fromJson(json.decode(homeCache));
+  }
+
+  static String getBackgroundImagePath() {
+    if (_prefs == null) return "";
+    return _prefs!.getString("${_key}_background_image_path") ?? "";
+  }
+
+  static void setBackgroundImagePath(String path) {
+    if (_prefs == null) return;
+    _prefs!.setString("${_key}_background_image_path", path);
   }
 
   static bool getBool(String key, {bool defaultValue = false}) {

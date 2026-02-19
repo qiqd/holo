@@ -14,11 +14,30 @@ class AppSetting {
   /// 1: 浅色主题
   /// 2: 深色主题
   int themeMode;
+
+  /// 主颜色
+  int colorSeed;
+
   AppSetting({
     this.danmakuSetting = const DanmakuSetting(),
     this.useSystemColor = false,
     this.themeMode = 0,
+    this.colorSeed = 0xffd08b57,
   });
+  AppSetting copyWith({
+    DanmakuSetting? danmakuSetting,
+    bool? useSystemColor,
+    int? themeMode,
+    int? colorSeed,
+  }) {
+    return AppSetting(
+      danmakuSetting: danmakuSetting ?? this.danmakuSetting,
+      useSystemColor: useSystemColor ?? this.useSystemColor,
+      themeMode: themeMode ?? this.themeMode,
+      colorSeed: colorSeed ?? this.colorSeed,
+    );
+  }
+
   Map<String, dynamic> toJson() => _$AppSettingToJson(this);
   factory AppSetting.fromJson(Map<String, dynamic> json) =>
       _$AppSettingFromJson(json);

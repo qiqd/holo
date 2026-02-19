@@ -1068,7 +1068,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   if (player != null)
                     Center(
                       child: AspectRatio(
-                        aspectRatio: 16 / 9,
+                        aspectRatio: player.value.aspectRatio,
                         child: VideoPlayer(player),
                       ),
                     ),

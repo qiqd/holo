@@ -67,7 +67,7 @@
             "account_status": "账户状态",
             "app_info": "应用信息",
             "data_management": "数据管理",
-            "appearance": "外观设置",
+            "appearance": "主题",
             "open_source": "开源项目",
             "language": "语言"
         },
@@ -120,17 +120,6 @@
             "rule_manager": "规则管理",
             "rule_manager_description": "管理自定义规则"
         },
-        "appearance": {
-            "theme_mode": "主题模式",
-            "theme_mode_system": "跟随系统",
-            "theme_mode_light": "浅色",
-            "theme_mode_dark": "深色",
-            "theme_dialog_title": "选择主题模式",
-            "theme_dialog_cancel": "取消",
-            "theme_dialog_confirm": "确定",
-            "use_system_color": "使用系统颜色",
-            "use_system_color_description": "开启后将使用系统颜色主题"
-        },
         "open_source": {
             "source_code": "源代码",
             "source_code_description": "在GitHub上查看源代码",
@@ -139,6 +128,24 @@
             "star_project": "给项目点赞",
             "star_project_description": "在GitHub上为项目点星"
         }
+    },
+    "appearance": {
+        "appbar_title": "外观设置",
+        "theme_mode": "主题模式",
+        "theme_mode_system": "跟随系统",
+        "theme_mode_light": "浅色",
+        "theme_mode_dark": "深色",
+        "theme_dialog_title": "选择主题模式",
+        "theme_dialog_cancel": "取消",
+        "theme_dialog_confirm": "确定",
+        "use_system_color": "使用系统颜色",
+        "use_system_color_description": "开启后将使用系统颜色主题",
+        "primary_color": "主题颜色",
+        "custom_color": "自定义颜色",
+        "preset_colors": "预设颜色",
+        "recent_colors": "最近使用的颜色",
+        "confirm": "确认",
+        "cancel": "取消"
     },
     "sign": {
         "title": "欢迎回来",

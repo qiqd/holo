@@ -67,7 +67,7 @@
             "account_status": "Account Status",
             "app_info": "App Information",
             "data_management": "Data Management",
-            "appearance": "Appearance",
+            "appearance": "Theme",
             "open_source": "Open Source",
             "language": "Language"
         },
@@ -120,17 +120,6 @@
             "rule_manager": "Rule Manager",
             "rule_manager_description": "Manage custom rules"
         },
-        "appearance": {
-            "theme_mode": "Theme Mode",
-            "theme_mode_system": "Follow System",
-            "theme_mode_light": "Light",
-            "theme_mode_dark": "Dark",
-            "theme_dialog_title": "Select Theme Mode",
-            "theme_dialog_cancel": "Cancel",
-            "theme_dialog_confirm": "Confirm",
-            "use_system_color": "Use System Colors",
-            "use_system_color_description": "Use system theme colors"
-        },
         "open_source": {
             "source_code": "Source Code",
             "source_code_description": "View source code on GitHub",
@@ -139,6 +128,24 @@
             "star_project": "Star Project",
             "star_project_description": "Star the project on GitHub"
         }
+    },
+    "appearance": {
+        "appbar_title": "Appearance Settings",
+        "theme_mode": "Theme Mode",
+        "theme_mode_system": "Follow System",
+        "theme_mode_light": "Light",
+        "theme_mode_dark": "Dark",
+        "theme_dialog_title": "Select Theme Mode",
+        "theme_dialog_cancel": "Cancel",
+        "theme_dialog_confirm": "OK",
+        "use_system_color": "Use System Color",
+        "use_system_color_description": "Use system color theme when enabled",
+        "primary_color": "Theme Color",
+        "custom_color": "Custom Color",
+        "preset_colors": "Preset Colors",
+        "recent_colors": "Recent Colors",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
     },
     "sign": {
         "title": "Welcome Back",

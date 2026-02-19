@@ -67,7 +67,7 @@
             "account_status": "アカウント状態",
             "app_info": "アプリ情報",
             "data_management": "データ管理",
-            "appearance": "外観設定",
+            "appearance": "テーマ設定",
             "open_source": "オープンソース",
             "language": "言語"
         },
@@ -120,17 +120,6 @@
             "rule_manager": "ルール管理",
             "rule_manager_description": "カスタムルールを管理"
         },
-        "appearance": {
-            "theme_mode": "テーマモード",
-            "theme_mode_system": "システムに従う",
-            "theme_mode_light": "ライト",
-            "theme_mode_dark": "ダーク",
-            "theme_dialog_title": "テーマモードを選択",
-            "theme_dialog_cancel": "キャンセル",
-            "theme_dialog_confirm": "確認",
-            "use_system_color": "システムテーマを使用",
-            "use_system_color_description": "システムのテーマ設定に従う"
-        },
         "open_source": {
             "source_code": "ソースコード",
             "source_code_description": "GitHubでソースコードを見る",
@@ -139,6 +128,24 @@
             "star_project": "プロジェクトにスターを付ける",
             "star_project_description": "GitHubでプロジェクトにスターを付ける"
         }
+    },
+    "appearance": {
+        "appbar_title": "外観設定",
+        "theme_mode": "テーマモード",
+        "theme_mode_system": "システムに連動",
+        "theme_mode_light": "ライト",
+        "theme_mode_dark": "ダーク",
+        "theme_dialog_title": "テーマモードを選択",
+        "theme_dialog_cancel": "キャンセル",
+        "theme_dialog_confirm": "確定",
+        "use_system_color": "システムカラーを使用",
+        "use_system_color_description": "オンにするとシステムカラーテーマを使用します",
+        "primary_color": "テーマカラー",
+        "custom_color": "カスタムカラー",
+        "preset_colors": "プリセットカラー",
+        "recent_colors": "最近使用した色",
+        "confirm": "確定",
+        "cancel": "キャンセル"
     },
     "sign": {
         "title": "お帰りなさい",

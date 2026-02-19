@@ -12,6 +12,7 @@ AppSetting _$AppSettingFromJson(Map<String, dynamic> json) => AppSetting(
       : DanmakuSetting.fromJson(json['danmakuSetting'] as Map<String, dynamic>),
   useSystemColor: json['useSystemColor'] as bool? ?? false,
   themeMode: (json['themeMode'] as num?)?.toInt() ?? 0,
+  colorSeed: (json['primaryColor'] as num?)?.toInt() ?? 0xffd08b57,
 );
 
 Map<String, dynamic> _$AppSettingToJson(AppSetting instance) =>
@@ -19,6 +20,7 @@ Map<String, dynamic> _$AppSettingToJson(AppSetting instance) =>
       'danmakuSetting': instance.danmakuSetting.toJson(),
       'useSystemColor': instance.useSystemColor,
       'themeMode': instance.themeMode,
+      'primaryColor': instance.colorSeed,
     };
 
 DanmakuSetting _$DanmakuSettingFromJson(Map<String, dynamic> json) =>

@@ -5,11 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/setting_api.dart';
+import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/subject.dart' show Data;
 import 'package:holo/service/api.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/source_service.dart';
+import 'package:holo/ui/screen/appearance.dart';
 import 'package:holo/ui/screen/image_search.dart';
 import 'package:holo/ui/screen/player.dart';
 import 'package:holo/ui/screen/rule_edit.dart';
@@ -24,6 +26,7 @@ import 'package:holo/ui/screen/home.dart';
 import 'package:holo/ui/screen/search.dart';
 import 'package:holo/ui/screen/setting.dart';
 import 'package:holo/ui/screen/subscribe.dart';
+import 'package:logger/logger.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -68,10 +71,8 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  static var appSetting = LocalStore.getAppSetting();
-  static final themeNotifier = ValueNotifier<ThemeMode>(ThemeMode.system);
-  static final useSystemColorNotifier = ValueNotifier<bool>(
-    appSetting.useSystemColor,
+  static final appSettingNotifier = ValueNotifier<AppSetting>(
+    LocalStore.getAppSetting(),
   );
   const MyApp({super.key});
   static Future<void> initAppSetting() async {
@@ -80,12 +81,7 @@ class MyApp extends StatefulWidget {
       LocalStore.saveAppSetting(setting, isSync: false);
     }
     var appSetting = setting ?? LocalStore.getAppSetting();
-    MyApp.appSetting = appSetting;
-    MyApp.useSystemColorNotifier.value = appSetting.useSystemColor;
-    MyApp.themeNotifier.value = ThemeMode.values.firstWhere(
-      (element) => element.index == appSetting.themeMode,
-      orElse: () => ThemeMode.system,
-    );
+    MyApp.appSettingNotifier.value = appSetting;
   }
 
   @override
@@ -208,6 +204,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           return RuleTestScreen(source: state.extra as SourceService);
         },
       ),
+      GoRoute(
+        path: '/appearence',
+        builder: (context, state) {
+          return Appearance();
+        },
+      ),
     ],
   );
   void initSource() async {
@@ -258,35 +260,50 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      key: ValueKey('main_theme_mode_notifier'),
-      valueListenable: MyApp.themeNotifier,
-      builder: (context, themeMode, child) {
-        return ValueListenableBuilder<bool>(
-          key: ValueKey('main_color_notifier'),
-          valueListenable: MyApp.useSystemColorNotifier,
-          builder: (context, useSystemColor, child) {
-            return MaterialApp.router(
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: context.locale,
-              debugShowCheckedModeBanner: false,
-              routerConfig: _router,
-              themeMode: themeMode,
-              theme: ThemeData(
-                useSystemColors: useSystemColor,
-                brightness: Brightness.light,
-                colorSchemeSeed: const Color(0xffd08b57),
-                useMaterial3: true,
-              ),
-              darkTheme: ThemeData(
-                useSystemColors: useSystemColor,
-                colorSchemeSeed: const Color(0xffd08b57),
-                brightness: Brightness.dark,
-                useMaterial3: true,
-              ),
-            );
-          },
+    return ValueListenableBuilder(
+      valueListenable: MyApp.appSettingNotifier,
+      builder: (context, setting, child) {
+        return MaterialApp.router(
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
+          debugShowCheckedModeBanner: false,
+          routerConfig: _router,
+          themeMode: ThemeMode.values.firstWhere(
+            (element) => element.index == setting.themeMode,
+            orElse: () => ThemeMode.system,
+          ),
+          builder: LocalStore.getBackgroundImagePath().isEmpty
+              ? null
+              : (context, child) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: FileImage(
+                          File(LocalStore.getBackgroundImagePath()),
+                        ),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: child,
+                  );
+                },
+          theme: ThemeData(
+            useSystemColors: setting.useSystemColor,
+            brightness: Brightness.light,
+            colorSchemeSeed: setting.useSystemColor
+                ? null
+                : Color(setting.colorSeed),
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            useSystemColors: setting.useSystemColor,
+            colorSchemeSeed: setting.useSystemColor
+                ? null
+                : Color(setting.colorSeed),
+            brightness: Brightness.dark,
+            useMaterial3: true,
+          ),
         );
       },
     );

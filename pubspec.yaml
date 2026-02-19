@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.12+34
+version: 1.1.12+36
 
 environment:
   sdk: ^3.10.3
@@ -43,6 +43,7 @@ dependencies:
   flutter_single_instance: ^1.7.0
   device_info_plus: ^12.3.0
   logger: ^2.6.2
+  flex_color_picker: ^3.8.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

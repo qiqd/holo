@@ -67,7 +67,7 @@
             "account_status": "帳戶狀態",
             "app_info": "應用程式資訊",
             "data_management": "資料管理",
-            "appearance": "外觀設定",
+            "appearance": "主題設定",
             "open_source": "開源專案",
             "language": "語言"
         },
@@ -120,17 +120,6 @@
             "rule_manager": "規則管理",
             "rule_manager_description": "管理自定義規則"
         },
-        "appearance": {
-            "theme_mode": "主題模式",
-            "theme_mode_system": "跟隨系統",
-            "theme_mode_light": "淺色",
-            "theme_mode_dark": "深色",
-            "theme_dialog_title": "選擇主題模式",
-            "theme_dialog_cancel": "取消",
-            "theme_dialog_confirm": "確定",
-            "use_system_color": "使用系統顏色",
-            "use_system_color_description": "開啟後將使用系統顏色主題"
-        },
         "open_source": {
             "source_code": "原始碼",
             "source_code_description": "在GitHub上檢視原始碼",
@@ -139,6 +128,24 @@
             "star_project": "給專案按讚",
             "star_project_description": "在GitHub上為專案點星"
         }
+    },
+    "appearance": {
+        "appbar_title": "外觀設定",
+        "theme_mode": "主題模式",
+        "theme_mode_system": "跟隨系統",
+        "theme_mode_light": "淺色",
+        "theme_mode_dark": "深色",
+        "theme_dialog_title": "選擇主題模式",
+        "theme_dialog_cancel": "取消",
+        "theme_dialog_confirm": "確定",
+        "use_system_color": "使用系統顏色",
+        "use_system_color_description": "開啟後將使用系統顏色主題",
+        "primary_color": "主題顏色",
+        "custom_color": "自訂顏色",
+        "preset_colors": "預設顏色",
+        "recent_colors": "最近使用的顏色",
+        "confirm": "確定",
+        "cancel": "取消"
     },
     "sign": {
         "title": "歡迎回來",

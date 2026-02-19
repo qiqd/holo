@@ -29,7 +29,6 @@ class _SetttingScreenState extends State<SetttingScreen>
   String? _email;
   String? _token;
   bool _checkVersioning = false;
-  final _appSetting = MyApp.appSetting;
 
   @override
   void initState() {
@@ -40,7 +39,6 @@ class _SetttingScreenState extends State<SetttingScreen>
 
   @override
   void dispose() {
-    LocalStore.saveAppSetting(_appSetting);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -59,7 +57,7 @@ class _SetttingScreenState extends State<SetttingScreen>
       VisibilityDetector(
         key: const Key('account_info_section'),
         child: ListTile(
-          leading: const Icon(Icons.account_circle_rounded),
+          leading: const Icon(Icons.account_circle_outlined),
           title: AnimatedSwitcher(
             key: const ValueKey('account_animated_switcher_key'),
             duration: const Duration(milliseconds: 300),
@@ -247,24 +245,11 @@ class _SetttingScreenState extends State<SetttingScreen>
     return [
       _buildSectionHeader('setting.section.appearance'.tr()),
       ListTile(
-        leading: const Icon(Icons.palette),
-        title: Text('setting.appearance.theme_mode'.tr()),
-        subtitle: Text(_getThemeModeText()),
-        onTap: () => _showThemeModeDialog(),
+        leading: const Icon(Icons.palette_outlined),
+        title: Text('appearance.appbar_title'.tr()),
+        subtitle: Text('调整App的主题模式，包括主题色以及背景图'),
+        onTap: () => context.push('/appearence'),
       ),
-      if (Platform.isAndroid || Platform.isIOS)
-        SwitchListTile(
-          secondary: Icon(Icons.colorize_rounded),
-          value: _appSetting.useSystemColor,
-          title: Text('setting.appearance.use_system_color'.tr()),
-          subtitle: Text(
-            'setting.appearance.use_system_color_description'.tr(),
-          ),
-          onChanged: (v) => setState(() {
-            _appSetting.useSystemColor = v;
-            LocalStore.saveAppSetting(_appSetting);
-          }),
-        ),
     ];
   }
 
@@ -477,90 +462,6 @@ class _SetttingScreenState extends State<SetttingScreen>
         );
       }
     }
-  }
-
-  String _getThemeModeText() {
-    final themeMode = MyApp.themeNotifier.value;
-    switch (themeMode) {
-      case ThemeMode.system:
-        return 'setting.appearance.theme_mode_system'.tr();
-      case ThemeMode.light:
-        return 'setting.appearance.theme_mode_light'.tr();
-      case ThemeMode.dark:
-        return 'setting.appearance.theme_mode_dark'.tr();
-    }
-  }
-
-  void _showThemeModeDialog() {
-    ThemeMode? currentTheme = MyApp.themeNotifier.value;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('setting.appearance.theme_dialog_title'.tr()),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RadioListTile<ThemeMode>(
-                  title: Text('setting.appearance.theme_mode_system'.tr()),
-                  value: ThemeMode.system,
-                  groupValue: currentTheme,
-                  onChanged: (ThemeMode? value) {
-                    if (value != null) {
-                      setState(() {
-                        currentTheme = value;
-                      });
-                    }
-                  },
-                ),
-                RadioListTile<ThemeMode>(
-                  title: Text('setting.appearance.theme_mode_light'.tr()),
-                  value: ThemeMode.light,
-                  groupValue: currentTheme,
-                  onChanged: (ThemeMode? value) {
-                    if (value != null) {
-                      setState(() {
-                        currentTheme = value;
-                      });
-                    }
-                  },
-                ),
-                RadioListTile<ThemeMode>(
-                  title: Text('setting.appearance.theme_mode_dark'.tr()),
-                  value: ThemeMode.dark,
-                  groupValue: currentTheme,
-                  onChanged: (ThemeMode? value) {
-                    if (value != null) {
-                      setState(() {
-                        currentTheme = value;
-                      });
-                    }
-                  },
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('setting.appearance.theme_dialog_cancel'.tr()),
-          ),
-          FilledButton(
-            onPressed: () {
-              MyApp.themeNotifier.value = currentTheme ?? ThemeMode.system;
-              _appSetting.themeMode = currentTheme?.index ?? 0;
-              LocalStore.saveAppSetting(_appSetting);
-              Navigator.pop(context);
-              setState(() {});
-            },
-            child: Text('setting.appearance.theme_dialog_confirm'.tr()),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showSignoutAccountDialog() {

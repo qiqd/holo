@@ -103,13 +103,6 @@ class _RuleManagerState extends State<RuleManager> {
               _clipboardRulesToJson();
             },
           ),
-          if (LocalStore.getRuleRepositoryUrl().isNotEmpty)
-            IconButton(
-              onPressed: () {
-                // TODO规则更新逻辑待完成
-              },
-              icon: Icon(Icons.update_rounded),
-            ),
           IconButton(
             tooltip: "Import Rules From Repository",
             icon: const Icon(Icons.inventory_2_rounded),
