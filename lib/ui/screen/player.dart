@@ -973,12 +973,12 @@ class _PlayerScreenState extends State<PlayerScreen>
                     ) +
                     _danmakuOffset.toString(),
               ),
-              // 调整弹幕偏移量+1
+              // 调整弹幕偏移量-1
               leading: IconButton(
                 onPressed: () {
                   _logger.d('current offset:${setting.danmakuOffset}');
                   safeSetState(() {
-                    _danmakuOffset++;
+                    _danmakuOffset--;
                   });
                   onSettingChanged?.call(
                     setting.copyWith(danmakuOffset: _danmakuOffset),
@@ -986,11 +986,11 @@ class _PlayerScreenState extends State<PlayerScreen>
                 },
                 icon: const Icon(Icons.exposure_neg_1),
               ),
-              // 调整弹幕偏移量-1
+              // 调整弹幕偏移量+1
               trailing: IconButton(
                 onPressed: () {
                   safeSetState(() {
-                    _danmakuOffset--;
+                    _danmakuOffset++;
                   });
                   onSettingChanged?.call(
                     setting.copyWith(danmakuOffset: _danmakuOffset),
