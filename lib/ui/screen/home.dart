@@ -65,8 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
       sort: "rank",
       page: page,
       size: Platform.isWindows || Platform.isLinux || Platform.isMacOS
-          ? 10
-          : 30,
+          ? 30
+          : 10,
       exception: (e) {
         setState(() {
           _logger.e("home->fetch rank error: $e");

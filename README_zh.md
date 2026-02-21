@@ -2,6 +2,10 @@
   [<a href="README.md">English</a>] | [<a href="README_zh.md">简体中文</a>]
 </div>
 
+<div align="center">
+  <img src="screenshot/launcher_round.png" alt="Holo Logo" width="20%"/>
+</div>
+
 # Holo
 
 一个使用 Flutter 构建的开源看番 APP，支持 Windows,macOS, Android、iOS 平台。
@@ -12,7 +16,7 @@
 - 📅 **更新日历**：随时了解最新动漫更新
 - 🔍 **搜索功能**：快速高效地查找动漫
 - 💾 **观看历史**：跟踪您的观看进度
-- 💬 **弹幕功能**：支持实时弹幕互动体验
+- 💬 **弹幕功能**：支持弹幕显示，增强观看体验
 - 🌍 **多语言支持**：支持多种语言的国际化界面
 - 🌐 **多平台支持**：覆盖 Windows,macOS, Android、iOS
 - 🖼️ **以图搜番**：支持通过图片搜索相关动漫
@@ -20,19 +24,9 @@
 ## App Screenshots
 
 <div align="center">
-  <img src="screenshot/home.png" alt="Home Screen" width="30%"/>
-  <img src="screenshot/detail.png" alt="Detail Screen" width="30%"/>
-  <img src="screenshot/player1.png" alt="Player Screen" width="30%"/>
-</div>
-
-<div align="center">
-  <img src="screenshot/player2.png" alt="Player Screen with Danmaku" width="30%"/>
-  <img src="screenshot/weekly.png" alt="Weekly Schedule" width="30%"/>
-  <img src="screenshot/setting.png" alt="Settings" width="30%"/>
-</div>
-
-<div align="center">
-  <img src="screenshot/Subscribe.png" alt="Subscribe Page" width="30%"/>
+  <img src="screenshot/mobile-home.png" alt="Home Screen" width="25%"/>
+  <img src="screenshot/desktop-home.png" alt="Detail Screen" width="57%"/>
+  
 </div>
 
 ## 特别感谢

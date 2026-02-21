@@ -2,6 +2,10 @@
   [<a href="README.md">English</a>] | [<a href="README_zh.md">简体中文</a>]
 </div>
 
+<div align="center">
+  <img src="screenshot/launcher_round.png" alt="Holo Logo" width="20%"/>
+</div>
+
 # Holo
 
 An open-source anime streaming application built with Flutter, Supports Windows, macOS, Android and iOS platforms.
@@ -12,7 +16,7 @@ An open-source anime streaming application built with Flutter, Supports Windows,
 - 📅 **Calendar**: Stay updated with the latest anime releases
 - 🔍 **Search**: Find anime quickly and efficiently
 - 💾 **History**: Keep track of your watching progress
-- 💬 **Danmaku Support**: Real-time interactive bullet chat experience
+- 💬 **Danmaku Support**: Display danmaku to enhance viewing experience
 - 🌍 **Multi-language Support**: Internationalized interface supporting multiple languages
 - 🌐 **Multi-platform**: Supports Windows, macOS, Android and iOS
 - 🖼️ **Image Search**: Search for anime by uploading images
@@ -20,22 +24,12 @@ An open-source anime streaming application built with Flutter, Supports Windows,
 ## App Screenshots
 
 <div align="center">
-  <img src="screenshot/home.png" alt="Home Screen" width="30%"/>
-  <img src="screenshot/detail.png" alt="Detail Screen" width="30%"/>
-  <img src="screenshot/player1.png" alt="Player Screen" width="30%"/>
+  <img src="screenshot/mobile-home.png" alt="Home Screen" width="25%"/>
+  <img src="screenshot/desktop-home.png" alt="Detail Screen" width="57%"/>
+  
 </div>
 
-<div align="center">
-  <img src="screenshot/player2.png" alt="Player Screen with Danmaku" width="30%"/>
-  <img src="screenshot/weekly.png" alt="Weekly Schedule" width="30%"/>
-  <img src="screenshot/setting.png" alt="Settings" width="30%"/>
-</div>
-
-<div align="center">
-  <img src="screenshot/Subscribe.png" alt="Subscribe Page" width="30%"/>
-</div>
-
-## Acknowledgments for System Functions
+## Acknowledgments
 
 - **Danmaku API Library**: [canvas_danmaku](https://github.com/huangxd-/danmu_api)
 - **Anime Metainfo Provider**: [bangumi/api](https://github.com/bangumi/api)
@@ -53,7 +47,6 @@ lib/
 ├── ui/              # UI components and screens
 │   ├── component/   # Reusable components
 │   └── screen/      # Application screens
-├── util/            # Utility classes
 └── main.dart        # Application entry point
 ```
 
@@ -96,12 +89,12 @@ lib/
 - Android
 
   ```bash
-  flutter build apk --dart-define=DAMMAKU_SERVER_URL=your_danmaku_server_url
+  flutter build apk
   ```
 
 - iOS
   ```bash
-  flutter build ios --dart-define=DAMMAKU_SERVER_URL=your_danmaku_server_url
+  flutter build ios
   ```
 
 ## Contributing
@@ -111,7 +104,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE) file for details.
-
-```
-
-```
