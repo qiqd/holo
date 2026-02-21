@@ -2,9 +2,12 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'rule.g.dart';
 
+/// 默认用户代理
 const defaultUserAgent =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0';
 
+/// 规则类
+/// 包含动画源网站的爬取规则配置
 @JsonSerializable(explicitToJson: true)
 class Rule {
   /// 规则名称(通常为网站名称)
@@ -16,10 +19,10 @@ class Rule {
   /// 规则logoUrl(通常是网站的logo)
   String logoUrl;
 
-  ///是否使用webview
+  /// 是否使用webview
   bool useWebView;
 
-  ///规则版本号
+  /// 规则版本号
   String version;
 
   /// 搜索Url(通常是网站的搜索页面)
@@ -31,7 +34,7 @@ class Rule {
   /// 搜索请求体(通常是网站的搜索页面的请求体)
   Map<String, String> searchRequestBody;
 
-  ///搜索请求头部(通常是网站的搜索页面的请求头部)
+  /// 搜索请求头部(通常是网站的搜索页面的请求头部)
   Map<String, String> searchRequestHeaders;
 
   /// 是否是完整的搜索Url(如果是,则不与 baseUrl 拼接,否则拼接)
@@ -106,18 +109,55 @@ class Rule {
   /// 是否等待视频元素加载完成(如果是,则等待视频元素加载完成,否则立即返回)
   bool waitForMediaElement;
 
-  ///视频url截取,通常是从params参数中截取视频url,比如params=videoUrl=xxxx,则截取xxxx,如果是null,则直接返回匹配的url
+  /// 视频url截取,通常是从params参数中截取视频url,比如params=videoUrl=xxxx,则截取xxxx,如果是null,则直接返回匹配的url
   String? videoUrlSubsChar;
 
   /// 规则更新时间
   DateTime updateAt;
 
-  //规则是否启用
+  /// 规则是否启用
   bool isEnabled;
 
-  //是否是本地规则
+  /// 是否是本地规则
   bool isLocal;
 
+  /// 构造函数
+  /// [name] 规则名称，默认为空字符串
+  /// [logoUrl] 规则logoUrl，默认为空字符串
+  /// [useWebView] 是否使用webview，默认为false
+  /// [searchUrl] 搜索Url，默认为空字符串
+  /// [detailUrl] 详情Url，默认为空字符串
+  /// [playerUrl] 播放页面Url，默认为空字符串
+  /// [searchSelector] 搜索选择器，默认为空字符串
+  /// [lineSelector] 路线选择器，默认为空字符串
+  /// [episodeSelector] 剧集选择器，默认为空字符串
+  /// [playerVideoSelector] 播放视频选择器，默认为空字符串
+  /// [itemImgSelector] 搜索图片选择器，默认为空字符串
+  /// [itemTitleSelector] 搜索标题选择器，默认为空字符串
+  /// [itemIdSelector] MediaId选择器，默认为空字符串
+  /// [baseUrl] 规则baseUrl，默认为空字符串
+  /// [fullSearchUrl] 是否是完整的搜索Url，默认为false
+  /// [fullPlayerUrl] 是否是完整的播放Url，默认为false
+  /// [fullDetailUrl] 是否是完整的详情Url，默认为false
+  /// [itemImgFromSrc] 是否是图片选择器中的src属性，默认为true
+  /// [waitForMediaElement] 是否等待视频元素加载完成，默认为true
+  /// [searchRequestHeaders] 搜索请求头部，默认为带有默认用户代理的Map
+  /// [detailRequestHeaders] 详情请求头部，默认为带有默认用户代理的Map
+  /// [playerRequestHeaders] 播放页面请求头部，默认为带有默认用户代理的Map
+  /// [searchRequestBody] 搜索请求体，默认为空Map
+  /// [detailRequestBody] 详情请求体，默认为空Map
+  /// [playerRequestBody] 播放页面请求体，默认为空Map
+  /// [videoElementAttribute] 视频元素属性，默认为null
+  /// [version] 规则版本号，默认为'1.0'
+  /// [isEnabled] 规则是否启用，默认为true
+  /// [timeout] 超时时间，默认为5
+  /// [isLocal] 是否是本地规则，默认为true
+  /// [searchRequestMethod] 搜索请求方法，默认为RequestMethod.get
+  /// [detailRequestMethod] 详情请求方法，默认为RequestMethod.get
+  /// [playerRequestMethod] 播放页面请求方法，默认为RequestMethod.get
+  /// [embedVideoSelector] 嵌入视频选择器，默认为null
+  /// [itemGenreSelector] 搜索类型选择器，默认为null
+  /// [videoUrlSubsChar] 视频url截取，默认为null
   Rule({
     this.name = '',
     this.logoUrl = '',
@@ -157,14 +197,20 @@ class Rule {
     this.videoUrlSubsChar,
   }) : updateAt = DateTime.now();
 
+  /// 从JSON格式创建Rule实例
   factory Rule.fromJson(Map<String, dynamic> json) => _$RuleFromJson(json);
 
+  /// 转换为JSON格式
   Map<String, dynamic> toJson() => _$RuleToJson(this);
 }
 
+/// 请求方法枚举
 enum RequestMethod {
+  /// GET请求
   @JsonValue('get')
   get,
+
+  /// POST请求
   @JsonValue('post')
   post,
 }

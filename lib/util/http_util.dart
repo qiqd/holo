@@ -3,7 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+/// HTTP 工具类
+/// 用于创建和配置 Dio 实例，模拟浏览器请求
 class HttpUtil {
+  /// 用户代理列表，用于随机选择模拟不同浏览器
   static final List<String> userAgents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.6613.138 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.6613.138 Safari/537.36",
@@ -17,10 +20,8 @@ class HttpUtil {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.127 Safari/537.36",
   ];
 
-  /// 创建配置好的Dio实例，模拟浏览器请求
-  ///
-  /// @param url 请求URL
-  /// @return 配置好的Dio实例
+  /// 创建配置好的 Dio 实例，模拟浏览器请求
+  /// 返回配置好的 Dio 实例
   static Dio createDio() {
     final dio = Dio();
     // 基础配置
@@ -36,6 +37,9 @@ class HttpUtil {
     return dio;
   }
 
+  /// 创建带有自定义 User-Agent 的 Dio 实例
+  /// [timeout]: 超时时间，默认为 20 秒
+  /// 返回配置好的 Dio 实例
   static Future<Dio> createDioWithUserAgent({
     Duration timeout = const Duration(seconds: 20),
   }) async {
@@ -53,19 +57,18 @@ class HttpUtil {
     return dio;
   }
 
-  /// 创建带Referer的配置好的Dio实例
-  ///
-  /// @param url 请求URL
-  /// @param referer Referer头
-  /// @return 配置好的Dio实例
+  /// 创建带 Referer 的配置好的 Dio 实例
+  /// [referer]: Referer 头
+  /// 返回配置好的 Dio 实例
   static Dio createDioWithReferer(String referer) {
     final dio = createDio();
     dio.options.headers['Referer'] = referer;
     return dio;
   }
 
-  /// 创建带拦截器的配置好的Dio实例,
-  /// 并在请求头中添加User-Agent,Authorization,Content-Type请求头
+  /// 创建带拦截器的配置好的 Dio 实例
+  /// 并在请求头中添加 User-Agent, Authorization, Content-Type 请求头
+  /// 返回配置好的 Dio 实例
   static Dio createDioWithInterceptor() {
     final dio = createDio();
     dio.options.contentType = "application/json";
@@ -74,7 +77,12 @@ class HttpUtil {
   }
 }
 
+/// 请求拦截器类
+/// 用于在请求头中添加服务器 URL 和认证令牌
 class RequestInterceptor extends Interceptor {
+  /// 拦截请求并添加必要的头信息
+  /// [options]: 请求选项
+  /// [handler]: 拦截器处理器
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     var serverUrl = LocalStore.getServerUrl();

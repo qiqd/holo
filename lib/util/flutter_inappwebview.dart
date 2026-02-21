@@ -6,15 +6,27 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:html/parser.dart' as html_parser;
 
+/// Flutter InAppWebView 工具类
+/// 用于抓取网页内容，支持 JavaScript 执行和媒体元素检测
 class FlutterInappwebview {
+  /// 无头 WebView 实例
   HeadlessInAppWebView? _headlessWebView;
+  /// WebView 控制器
   InAppWebViewController? _webViewController;
+  /// 当前请求的完成器
   Completer<String>? _currentCompleter;
+
+  /// 检查字符串是否包含 Unicode 字符
+  /// [str]: 要检查的字符串
+  /// 返回是否包含 Unicode 字符
   bool containsUnicode(String str) {
     return !RegExp(r'^[\x00-\x7F]*$').hasMatch(str);
   }
 
-  // 处理 \\uXXXX 和 \uXXXX
+  /// 处理 Unicode 转义序列
+  /// 支持 \uXXXX 和 \uXXXX 格式
+  /// [input]: 包含转义序列的字符串
+  /// 返回解码后的字符串
   String unescapeUnicodeString(String input) {
     String result = input;
 
@@ -36,7 +48,9 @@ class FlutterInappwebview {
     return result;
   }
 
-  /// 检查HTML内容是否包含有效媒体元素（iframe或video）
+  /// 检查 HTML 内容是否包含有效媒体元素（iframe 或 video）
+  /// [htmlContent]: HTML 内容字符串
+  /// 返回是否包含有效媒体元素
   bool hasValidMediaElements(String htmlContent) {
     try {
       final doc = html_parser.parse(htmlContent);
@@ -60,6 +74,16 @@ class FlutterInappwebview {
     }
   }
 
+  /// 获取网页 HTML 内容
+  /// [url]: 要访问的 URL
+  /// [requestMethod]: 请求方法，默认为 GET
+  /// [isPlayerPage]: 是否为播放器页面
+  /// [waitForMediaElement]: 是否等待媒体元素加载
+  /// [timeout]: 超时时间，默认为 15 秒
+  /// [headers]: 请求头
+  /// [requestBody]: 请求体，仅用于 POST 请求
+  /// [onError]: 错误回调
+  /// 返回获取的 HTML 内容
   Future<String> fetchHtml(
     String url, {
     RequestMethod requestMethod = RequestMethod.get,
@@ -215,6 +239,7 @@ class FlutterInappwebview {
   }
 
   /// 清理资源
+  /// 释放 WebView 实例和相关资源
   void dispose() {
     log('释放 WebviewUtilFlutter 资源');
     _currentCompleter?.completeError('实例已释放');

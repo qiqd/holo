@@ -997,7 +997,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             if (_isTablet)
               Flexible(
                 fit: FlexFit.tight,
-                child: widget.rule == null
+                child: widget.rule == null || _service == null
                     ? Center(child: Text('保存规则后即可测试'))
                     : RuleTestScreen(source: _service!, showNavBtn: false),
               ),

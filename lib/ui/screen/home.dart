@@ -14,6 +14,7 @@ import 'package:holo/extension/safe_set_state.dart';
 import 'package:logger/logger.dart';
 import 'package:shimmer/shimmer.dart';
 
+/// 首页屏幕组件
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -21,23 +22,48 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+/// 首页屏幕状态管理类
 class _HomeScreenState extends State<HomeScreen> {
+  /// 滚动控制器
   final ScrollController _scrollController = ScrollController();
+
+  /// 轮播图控制器
   final CarouselController _carouselController = CarouselController();
+
+  /// 热门推荐数据通知器
   final ValueNotifier<List<Data>> _hotNotifier = ValueNotifier([]);
+
+  /// 日志记录器
   final Logger _logger = Logger();
+
+  /// 轮播图当前索引
   int index = 0;
+
+  /// 轮播图定时器
   Timer? _carouselTimer;
+
+  /// 自动滑动定时器
   Timer? _autoSlideTimer;
+
+  /// 是否正在加载
   bool _isLoading = false;
+
+  /// 是否正在刷新
   bool _isRefresh = false;
+
+  /// 错误信息
   String _msg = '';
+
+  /// 当前页码
   int _page = 1;
+
+  /// 排行榜数据
   List<Data> _rank = [];
+
+  /// 获取热门推荐数据
   Future<void> _fetchHot() async {
     final hot = await Api.bangumi.fetchRecommend(
       year: DateTime.now().year,
-      // month: DateTime.now().month,
       sort: "rank",
       page: _page,
       size: 10,
@@ -51,9 +77,13 @@ class _HomeScreenState extends State<HomeScreen> {
     safeSetState(() {
       _hotNotifier.value = hot?.data ?? [];
     });
+    // 缓存热门推荐数据
     LocalStore.setHomeHotCache(Subject(data: hot?.data));
   }
 
+  /// 获取排行榜数据
+  /// [page] 页码
+  /// [loadMore] 是否加载更多
   Future<void> _fetchRank({int page = 1, bool loadMore = false}) async {
     if (_isLoading) {
       return;
@@ -82,12 +112,14 @@ class _HomeScreenState extends State<HomeScreen> {
         _rank = rank?.data ?? [];
       }
     });
+    // 缓存排行榜数据
     LocalStore.setHomeRankCache(Subject(data: _rank));
     safeSetState(() {
       _isLoading = false;
     });
   }
 
+  /// 滚动到底部加载更多
   void _onScrollToBottom() {
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 100 &&
@@ -97,8 +129,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// 首页初始化
   void _homeScreenInit() {
+    // 检查版本更新
     CheckVersion.checkVersion(context);
+    // 监听热门推荐数据变化
     _hotNotifier.addListener(() {
       if (_hotNotifier.value.isNotEmpty) {
         _carouselTimer?.cancel();
@@ -108,17 +143,21 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+    // 从缓存加载数据
     _hotNotifier.value = LocalStore.getHomeHotCache()?.data ?? [];
     _rank = LocalStore.getHomeRankCache()?.data ?? [];
+    // 每3小时更新一次数据或数据为空时更新
     if (DateTime.now().hour % 3 == 0 || _hotNotifier.value.isEmpty) {
       _fetchHot();
     }
     if (DateTime.now().hour % 3 == 0 || _rank.isEmpty) {
       _fetchRank();
     }
+    // 添加滚动监听器
     _scrollController.addListener(_onScrollToBottom);
   }
 
+  /// 刷新自动滑动定时器
   void _refreshAutoSlideTimer() {
     _autoSlideTimer?.cancel();
     _autoSlideTimer = Timer.periodic(const Duration(seconds: 10), (_) {
@@ -130,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // 热门推荐骨架屏（支持横竖屏）
+  /// 热门推荐骨架屏（支持横竖屏）
   Widget _buildHotSkeleton(bool isLandscape) {
     return SizedBox(
       height: isLandscape ? 400 : 200,
@@ -138,7 +177,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: CarouselView.weighted(
         controller: _carouselController,
         itemSnapping: true,
-
         flexWeights: isLandscape ? [1, 1, 1] : [5, 1],
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         children: [1, 2, 3, 4].map((e) {
@@ -152,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // 高分推荐骨架屏（支持横竖屏）
+  /// 高分推荐骨架屏（支持横竖屏）
   Widget _buildRankSkeleton(bool isLandscape) {
     return SliverGrid.builder(
       key: ValueKey('home_rank_grid'),
@@ -178,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _homeScreenInit();
   }
 
+  /// 构建应用栏
   Widget _buildAppBar() {
     return AppBar(
       titleSpacing: 0,
@@ -215,6 +254,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// 构建网格布局
+  /// [items] 数据列表
+  /// [isLandscape] 是否为横屏
+  /// [heroKey] Hero动画标签
   Widget _buildSliverGrid(
     List<Data> items, {
     required bool isLandscape,
@@ -228,7 +271,6 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisSpacing: 6,
         childAspectRatio: 0.6,
       ),
-
       itemCount: items.length,
       itemBuilder: (context, index) {
         var item = items[index];
@@ -237,8 +279,6 @@ class _HomeScreenState extends State<HomeScreen> {
             : item.name ?? "";
         return MediaGrid(
           id: '${heroKey}_${item.id}',
-          // airDate: item.date,
-          // rating: item.rating?.score,
           showRating: false,
           imageUrl: item.images?.large ?? "",
           title: name,
@@ -259,8 +299,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   dispose() {
+    // 取消定时器
     _carouselTimer?.cancel();
     _autoSlideTimer?.cancel();
+    // 释放资源
     _hotNotifier.dispose();
     super.dispose();
   }

@@ -10,20 +10,31 @@ import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/service/meta_service.dart';
 import 'package:holo/util/http_util.dart';
 
+/// Bangumi 元数据服务类
+/// 实现了 MetaService 接口，提供 Bangumi 网站的元数据服务
 class Bangumi implements MetaService {
   @override
+  /// 获取服务名称
   String get name => "Bangumi";
 
   @override
+  /// 获取网站基础地址
   String get baseUrl => "https://api.bgm.tv";
 
   @override
+  /// 获取网站logo地址
   String get logoUrl => "https://bangumi.tv/img/logo_riff.png";
+
+  /// Dio 实例
   static Dio? _dio;
+
+  /// 初始化 Dio 实例
   static Future<void> initDio() async {
     _dio = await HttpUtil.createDioWithUserAgent();
   }
 
+  /// 获取日历详细信息
+  /// 返回 subjectId 和播出时间的映射
   Future<Map<String, DateTime>> _fetchCalenderDetail() async {
     try {
       final rs = await HttpUtil.createDio().get(
@@ -55,7 +66,6 @@ class Bangumi implements MetaService {
         var dateTime = DateTime.parse(time);
         dateTime = dateTime.add(const Duration(hours: 8));
         result[subjectId] = dateTime;
-        // log('subjectId: $subjectId, time: $time, dateTime: $dateTime');
       }
       return result;
     } catch (e) {
@@ -65,15 +75,21 @@ class Bangumi implements MetaService {
   }
 
   @override
+  /// 获取日历信息
+  /// [exception] 异常处理器
+  /// 返回日历列表
   Future<List<Calendar>> fetchCalendar(
     void Function(Exception) exception,
   ) async {
     try {
+      // 获取日历详细信息
       var calenderDetail = await _fetchCalenderDetail();
+      // 发起获取日历的请求
       final response = await _dio!.get("$baseUrl/calendar");
       if (response.data != null) {
         var data = response.data as List<dynamic>;
         var result = data.map((e) => Calendar.fromJson(e)).toList();
+        // 补充播出时间信息
         if (calenderDetail.isNotEmpty) {
           for (var item in result) {
             for (var subject in item.items!) {
@@ -95,11 +111,16 @@ class Bangumi implements MetaService {
   }
 
   @override
+  /// 获取角色信息
+  /// [subjectId] 媒体ID
+  /// [exception] 异常处理器
+  /// 返回角色列表
   Future<List<Character>> fetchCharacter(
     int subjectId,
     void Function(Exception) exception,
   ) async {
     try {
+      // 发起获取角色信息的请求
       final response = await _dio!.get(
         "$baseUrl/v0/subjects/$subjectId/characters",
       );
@@ -115,11 +136,16 @@ class Bangumi implements MetaService {
   }
 
   @override
+  /// 获取人物信息
+  /// [subjectId] 媒体ID
+  /// [exception] 异常处理器
+  /// 返回人物列表
   Future<List<Person>> fetchPerson(
     int subjectId,
     void Function(Exception) exception,
   ) async {
     try {
+      // 发起获取人物信息的请求
       final response = await _dio!.get(
         "$baseUrl/v0/subjects/$subjectId/persons",
       );
@@ -135,6 +161,14 @@ class Bangumi implements MetaService {
   }
 
   @override
+  /// 获取推荐媒体
+  /// [page] 页码
+  /// [size] 每页数量
+  /// [year] 年份
+  /// [month] 月份
+  /// [sort] 排序方式
+  /// [exception] 异常处理器
+  /// 返回推荐结果
   Future<Subject?> fetchRecommend({
     int page = 1,
     int size = 10,
@@ -143,6 +177,7 @@ class Bangumi implements MetaService {
     String sort = "date",
     void Function(Exception)? exception,
   }) async {
+    // 构建请求参数
     var param = Map.from({
       "type": 2,
       "cat": 1,
@@ -152,8 +187,10 @@ class Bangumi implements MetaService {
       "offset": (page - 1) * size,
       "year": year,
     });
+    // 移除空值参数
     param.removeWhere((key, value) => value == null);
     try {
+      // 发起获取推荐的请求
       final response = await _dio!.get(
         "$baseUrl/v0/subjects",
         queryParameters: Map.from(param),
@@ -169,11 +206,16 @@ class Bangumi implements MetaService {
   }
 
   @override
+  /// 搜索媒体
+  /// [keyword] 搜索关键词
+  /// [exception] 异常处理器
+  /// 返回搜索结果
   Future<Subject?> fetchSearch(
     String keyword,
     void Function(dynamic) exception,
   ) async {
     try {
+      // 发起搜索请求
       final response = await _dio!.post(
         "$baseUrl/v0/search/subjects",
         data: {
@@ -196,11 +238,16 @@ class Bangumi implements MetaService {
   }
 
   @override
+  /// 获取媒体关联信息
+  /// [subjectId] 媒体ID
+  /// [exception] 异常处理器
+  /// 返回关联媒体列表
   Future<List<SubjectRelation>> fetchSubjectRelation(
     int subjectId,
     void Function(Exception) exception,
   ) async {
     try {
+      // 发起获取关联媒体的请求
       final response = await _dio!.get(
         "$baseUrl/v0/subjects/$subjectId/subjects",
       );
@@ -216,11 +263,16 @@ class Bangumi implements MetaService {
   }
 
   @override
+  /// 获取媒体详情
+  /// [subjectId] 媒体ID
+  /// [exception] 异常处理器
+  /// 返回媒体详情
   Future<Data?> fetchSubjectSync(
     int subjectId,
     void Function(Exception) exception,
   ) async {
     try {
+      // 发起获取媒体详情的请求
       final response = await _dio!.get("$baseUrl/v0/subjects/$subjectId");
       if (response.data != null) {
         return Data.fromJson(response.data);
@@ -233,11 +285,16 @@ class Bangumi implements MetaService {
   }
 
   @override
+  /// 获取剧集信息
+  /// [subjectId] 媒体ID
+  /// [exception] 异常处理器
+  /// 返回剧集信息
   Future<Episode?> fethcEpisode(
     int subjectId,
     void Function(Exception) exception,
   ) async {
     try {
+      // 发起获取剧集信息的请求
       final response = await _dio!.get(
         "$baseUrl/v0/episodes",
         queryParameters: {"subject_id": subjectId},

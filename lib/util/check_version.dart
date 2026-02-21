@@ -9,10 +9,18 @@ import 'package:holo/entity/github_release.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// 版本检查类
+/// 用于检查应用程序的版本更新，获取最新版本信息并提示用户更新
 class CheckVersion {
+  /// 匹配的安装包名称
   static String matchName = '';
+  /// 设备支持的 ABI
   static String supportedAbi = '';
+  /// 设备信息插件实例
   static final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+  /// 获取最新版本信息
+  /// 返回简化的 GitHub 资产信息，若没有新版本则返回 null
   static Future<SimpleGitHubAsset?> _fetchLatestRelease() async {
     final latestRelease = await UpdateApi.getLatestRelease();
     if (latestRelease == null) {
@@ -73,6 +81,9 @@ class CheckVersion {
     return null;
   }
 
+  /// 检查版本更新
+  /// [context]: 上下文
+  /// 如果有新版本，显示更新对话框
   static Future<void> checkVersion(BuildContext context) async {
     final asset = await _fetchLatestRelease();
     if (asset != null && context.mounted) {

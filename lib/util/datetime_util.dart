@@ -1,4 +1,6 @@
 /// 把 [dateTime] 转成“多久以前”的短文本
+/// [dateTime]: 要格式化的日期时间对象
+/// 返回格式化后的时间字符串
 String formatTimeAgo(DateTime dateTime) {
   final now = DateTime.now();
   final diff = now.difference(dateTime);
@@ -28,6 +30,8 @@ String formatTimeAgo(DateTime dateTime) {
 }
 
 /// 检查 [airDate] 距离现在有多少周
+/// [airDate]: 播出日期字符串
+/// 返回距离现在的周数，若解析失败则返回 -1
 int checkUpdateAt(String? airDate) {
   try {
     var airTime = airDate != null ? DateTime.parse(airDate) : DateTime.now();
