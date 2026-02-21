@@ -77,6 +77,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   bool _isSettingDrawerOpen = false;
   bool _isInfoDrawerOpen = false;
   bool _enableAutoFocus = true;
+  int _danmakuOffset = 0;
   late final String nameCn = widget.nameCn;
   late final String mediaId = widget.mediaId;
   late final SourceService source = widget.source;
@@ -970,14 +971,17 @@ class _PlayerScreenState extends State<PlayerScreen>
                       'component.cap_video_player.current_offset',
                       args: [''],
                     ) +
-                    setting.danmakuOffset.toString(),
+                    _danmakuOffset.toString(),
               ),
               // 调整弹幕偏移量+1
               leading: IconButton(
                 onPressed: () {
                   _logger.d('current offset:${setting.danmakuOffset}');
+                  safeSetState(() {
+                    _danmakuOffset++;
+                  });
                   onSettingChanged?.call(
-                    setting.copyWith(danmakuOffset: setting.danmakuOffset - 1),
+                    setting.copyWith(danmakuOffset: _danmakuOffset),
                   );
                 },
                 icon: const Icon(Icons.exposure_neg_1),
@@ -985,8 +989,11 @@ class _PlayerScreenState extends State<PlayerScreen>
               // 调整弹幕偏移量-1
               trailing: IconButton(
                 onPressed: () {
+                  safeSetState(() {
+                    _danmakuOffset--;
+                  });
                   onSettingChanged?.call(
-                    setting.copyWith(danmakuOffset: setting.danmakuOffset + 1),
+                    setting.copyWith(danmakuOffset: _danmakuOffset),
                   );
                 },
                 icon: const Icon(Icons.exposure_plus_1),
@@ -1190,7 +1197,6 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void dispose() {
     _storeLocalHistory();
-    _logger.w('dispose');
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

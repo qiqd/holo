@@ -3,6 +3,7 @@ import 'package:holo/entity/media.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/flutter_inappwebview.dart';
+import 'package:holo/util/http_util.dart';
 import 'package:html/parser.dart';
 
 class Common extends SourceService {
@@ -14,7 +15,9 @@ class Common extends SourceService {
   final RegExp reg = RegExp(r'\{[^}]*\}');
   final FlutterInappwebview _webviewUtil = FlutterInappwebview();
   Common({required this.rule}) {
-    _webviewUtil.fetchHtml(rule.baseUrl);
+    if (rule.useWebView) {
+      _webviewUtil.fetchHtml(rule.baseUrl);
+    }
   }
   factory Common.build(Rule rule) => Common(rule: rule);
   @override
@@ -42,16 +45,25 @@ class Common extends SourceService {
   ) async {
     try {
       var detailUrl = rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId);
-      final htmlStr = await _webviewUtil.fetchHtml(
-        mediaId.contains('http') ? mediaId : detailUrl,
-        requestMethod: rule.detailRequestMethod,
-        timeout: Duration(seconds: rule.timeout),
-        headers: rule.detailRequestHeaders,
-        requestBody: rule.detailRequestBody.map(
-          (key, value) => MapEntry(key, value.replaceAll('{mediaId}', mediaId)),
+      final htmlStr = switch (rule.useWebView) {
+        true => await _webviewUtil.fetchHtml(
+          mediaId.contains('http') ? mediaId : detailUrl,
+          requestMethod: rule.detailRequestMethod,
+          timeout: Duration(seconds: rule.timeout),
+          headers: rule.detailRequestHeaders,
+          requestBody: rule.detailRequestBody.map(
+            (key, value) =>
+                MapEntry(key, value.replaceAll('{mediaId}', mediaId)),
+          ),
+          onError: exceptionHandler,
         ),
-        onError: exceptionHandler,
-      );
+        false =>
+          (await HttpUtil.createDio().get(
+                mediaId.contains('http') ? mediaId : detailUrl,
+              )).data
+              as String,
+      };
+
       //log("detail-htmlStr:$htmlStr");
       var doc = parse(htmlStr);
       var lines = doc.querySelectorAll(rule.lineSelector).map((line) {
@@ -78,16 +90,24 @@ class Common extends SourceService {
   }) async {
     try {
       var searchUrl = rule.baseUrl + rule.searchUrl.replaceAll(reg, keyword);
-      final htmlStr = await _webviewUtil.fetchHtml(
-        keyword.contains('http') ? keyword : searchUrl,
-        requestMethod: rule.searchRequestMethod,
-        requestBody: rule.searchRequestBody.map(
-          (key, value) => MapEntry(key, value.replaceAll('{keyword}', keyword)),
+      final htmlStr = switch (rule.useWebView) {
+        true => await _webviewUtil.fetchHtml(
+          keyword.contains('http') ? keyword : searchUrl,
+          requestMethod: rule.searchRequestMethod,
+          requestBody: rule.searchRequestBody.map(
+            (key, value) =>
+                MapEntry(key, value.replaceAll('{keyword}', keyword)),
+          ),
+          timeout: Duration(seconds: rule.timeout),
+          headers: rule.searchRequestHeaders,
+          onError: exceptionHandler,
         ),
-        timeout: Duration(seconds: rule.timeout),
-        headers: rule.searchRequestHeaders,
-        onError: exceptionHandler,
-      );
+        false =>
+          (await HttpUtil.createDio().get(
+                keyword.contains('http') ? keyword : searchUrl,
+              )).data
+              as String,
+      };
       // log("htmlStr:$htmlStr");
       var doc = parse(htmlStr);
       var imgAttrs = ['data-original', 'data-src'];
@@ -107,7 +127,7 @@ class Common extends SourceService {
           }
         }
         imgUrl = imgUrl.contains('http') ? imgUrl : rule.baseUrl + imgUrl;
-
+        imgUrl = imgUrl.contains("http") ? imgUrl : ('https://$imgUrl');
         return Media(
           id: e.querySelector(rule.itemIdSelector)?.attributes['href'] ?? '',
           title: e.querySelector(rule.itemTitleSelector)?.text ?? '',
@@ -133,19 +153,26 @@ class Common extends SourceService {
   ) async {
     try {
       var viewUrl = rule.baseUrl + rule.playerUrl.replaceAll(reg, episodeId);
-      final htmlStr = await _webviewUtil.fetchHtml(
-        episodeId.contains('http') ? episodeId : viewUrl,
-        timeout: Duration(seconds: rule.timeout),
-        requestMethod: rule.playerRequestMethod,
-        requestBody: rule.playerRequestBody.map(
-          (key, value) =>
-              MapEntry(key, value.replaceAll('{episodeId}', episodeId)),
+      final htmlStr = switch (rule.useWebView) {
+        true => await _webviewUtil.fetchHtml(
+          episodeId.contains('http') ? episodeId : viewUrl,
+          timeout: Duration(seconds: rule.timeout),
+          requestMethod: rule.playerRequestMethod,
+          requestBody: rule.playerRequestBody.map(
+            (key, value) =>
+                MapEntry(key, value.replaceAll('{episodeId}', episodeId)),
+          ),
+          isPlayerPage: true,
+          headers: rule.playerRequestHeaders,
+          waitForMediaElement: rule.waitForMediaElement,
+          onError: exceptionHandler,
         ),
-        isPlayerPage: true,
-        headers: rule.playerRequestHeaders,
-        waitForMediaElement: rule.waitForMediaElement,
-        onError: exceptionHandler,
-      );
+        false =>
+          (await HttpUtil.createDio().get(
+                episodeId.contains('http') ? episodeId : viewUrl,
+              )).data
+              as String,
+      };
       // log("htmlStr:$htmlStr");
       var doc = parse(htmlStr);
       //如果是嵌入式视频，需要获取最终的播放网页
@@ -154,13 +181,22 @@ class Common extends SourceService {
         var embedSelectors = rule.embedVideoSelector!.split(',');
         for (var selector in embedSelectors) {
           var tempUrl = doc.querySelector(selector)?.attributes['src'] ?? '';
-          var tempHtmlStr = await _webviewUtil.fetchHtml(
-            tempUrl,
-            isPlayerPage: true,
-            headers: rule.playerRequestHeaders,
-            waitForMediaElement: rule.waitForMediaElement,
-            timeout: Duration(seconds: rule.timeout),
-          );
+          var tempHtmlStr = switch (rule.useWebView) {
+            true => await _webviewUtil.fetchHtml(
+              tempUrl.contains('http') ? tempUrl : (rule.baseUrl + tempUrl),
+              isPlayerPage: true,
+              headers: rule.playerRequestHeaders,
+              waitForMediaElement: rule.waitForMediaElement,
+              timeout: Duration(seconds: rule.timeout),
+            ),
+            false =>
+              (await HttpUtil.createDio().get(
+                    tempUrl.contains('http')
+                        ? tempUrl
+                        : (rule.baseUrl + tempUrl),
+                  )).data
+                  as String,
+          };
           doc = parse(tempHtmlStr);
           log(
             'embed selector==${DateTime.now().millisecond}==}:$selector, tempUrl:$tempUrl',
@@ -180,7 +216,7 @@ class Common extends SourceService {
                 .querySelector(rule.playerVideoSelector)
                 ?.attributes[rule.videoElementAttribute!] ??
             '';
-        videoUrl = videoUrl.contains('m3u8')
+        videoUrl = (videoUrl.contains('m3u8') || videoUrl.contains('mp4'))
             ? pattern.firstMatch(videoUrl)?.group(0) ?? ''
             : videoUrl;
       } else {

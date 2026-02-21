@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:holo/api/rule_api.dart';
 import 'package:holo/entity/rule.dart';
@@ -12,6 +14,8 @@ class RuleRepository extends StatefulWidget {
 }
 
 class _RuleRepositoryState extends State<RuleRepository> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   List<Rule> _rules = [];
   List<Rule> _localRules = LocalStore.getRules();
   bool _isLoading = false;
@@ -66,48 +70,58 @@ class _RuleRepositoryState extends State<RuleRepository> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("规则仓库"),
+        actionsPadding: .symmetric(horizontal: 12),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () => _getRules(),
-          ),
+          if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
+            IconButton(
+              icon: const Icon(Icons.refresh_rounded),
+              onPressed: () => _getRules(),
+            ),
         ],
       ),
-      body: SizedBox.expand(
-        child: Column(
-          children: [
-            if (_isLoading) const Center(child: LinearProgressIndicator()),
-            Flexible(
-              child: ListView.builder(
-                padding: .symmetric(horizontal: 12, vertical: 6),
-                itemCount: _rules.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: Image.network(
-                        'https://${_rules[index].logoUrl}',
-                        loadingBuilder: (context, child, loadingProgress) =>
-                            loadingProgress == null
-                            ? child
-                            : const Center(child: CircularProgressIndicator()),
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(child: Icon(Icons.error_rounded)),
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _getRules,
+        child: SizedBox.expand(
+          child: Column(
+            children: [
+              if (_isLoading &&
+                  (Platform.isWindows || Platform.isMacOS || Platform.isLinux))
+                const Center(child: LinearProgressIndicator()),
+              Flexible(
+                child: ListView.builder(
+                  padding: .symmetric(horizontal: 12, vertical: 6),
+                  itemCount: _rules.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: Image.network(
+                          _rules[index].logoUrl,
+                          loadingBuilder: (context, child, loadingProgress) =>
+                              loadingProgress == null
+                              ? child
+                              : const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Center(child: Icon(Icons.error_rounded)),
+                        ),
                       ),
-                    ),
-                    title: Text(_rules[index].name),
-                    subtitle: Text(_rules[index].version),
-                    trailing: _buildTileTrailing(_rules[index]),
-                  );
-                },
+                      title: Text(_rules[index].name),
+                      subtitle: Text(_rules[index].version),
+                      trailing: _buildTileTrailing(_rules[index]),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

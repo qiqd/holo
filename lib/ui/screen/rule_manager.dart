@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
+import 'package:holo/extension/safe_set_state.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/util/local_store.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -44,13 +45,13 @@ class _RuleManagerState extends State<RuleManager> {
   }
 
   Future<void> _refreshRulesAndSourceService() async {
-    setState(() {
+    safeSetState(() {
       _isUpdating = true;
     });
     _rules = LocalStore.getRules();
     Api.initSources();
     await Api.delayTest();
-    setState(() {
+    safeSetState(() {
       _isUpdating = false;
     });
   }
@@ -165,8 +166,12 @@ class _RuleManagerState extends State<RuleManager> {
         },
         child: Column(
           children: [
-            if (_isUpdating)
-              Padding(padding: .only(top: 4), child: LinearProgressIndicator()),
+            if (_isUpdating &&
+                (Platform.isWindows || Platform.isMacOS || Platform.isLinux))
+              const Padding(
+                padding: .only(top: 4),
+                child: LinearProgressIndicator(),
+              ),
             Expanded(
               child: ListView.builder(
                 itemCount: _rules.length,
@@ -187,7 +192,7 @@ class _RuleManagerState extends State<RuleManager> {
                       width: 60,
                       height: 60,
                       child: Image.network(
-                        'https://${_rules[index].logoUrl}',
+                        _rules[index].logoUrl,
                         errorBuilder: (context, error, stackTrace) {
                           return Center(
                             child: Icon(

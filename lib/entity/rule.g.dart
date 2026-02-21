@@ -9,6 +9,7 @@ part of 'rule.dart';
 Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   name: json['name'] as String? ?? '',
   logoUrl: json['logoUrl'] as String? ?? '',
+  useWebView: json['useWebView'] as bool? ?? false,
   searchUrl: json['searchUrl'] as String? ?? '',
   detailUrl: json['detailUrl'] as String? ?? '',
   playerUrl: json['playerUrl'] as String? ?? '',
@@ -87,6 +88,7 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'name': instance.name,
   'baseUrl': instance.baseUrl,
   'logoUrl': instance.logoUrl,
+  'useWebView': instance.useWebView,
   'version': instance.version,
   'searchUrl': instance.searchUrl,
   'searchRequestMethod': _$RequestMethodEnumMap[instance.searchRequestMethod]!,

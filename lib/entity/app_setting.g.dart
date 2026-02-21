@@ -12,7 +12,7 @@ AppSetting _$AppSettingFromJson(Map<String, dynamic> json) => AppSetting(
       : DanmakuSetting.fromJson(json['danmakuSetting'] as Map<String, dynamic>),
   useSystemColor: json['useSystemColor'] as bool? ?? false,
   themeMode: (json['themeMode'] as num?)?.toInt() ?? 0,
-  colorSeed: (json['primaryColor'] as num?)?.toInt() ?? 0xffd08b57,
+  colorSeed: (json['colorSeed'] as num?)?.toInt() ?? 0xffd08b57,
 );
 
 Map<String, dynamic> _$AppSettingToJson(AppSetting instance) =>
@@ -20,7 +20,7 @@ Map<String, dynamic> _$AppSettingToJson(AppSetting instance) =>
       'danmakuSetting': instance.danmakuSetting.toJson(),
       'useSystemColor': instance.useSystemColor,
       'themeMode': instance.themeMode,
-      'primaryColor': instance.colorSeed,
+      'colorSeed': instance.colorSeed,
     };
 
 DanmakuSetting _$DanmakuSettingFromJson(Map<String, dynamic> json) =>
@@ -33,7 +33,7 @@ DanmakuSetting _$DanmakuSettingFromJson(Map<String, dynamic> json) =>
       hideBottom: json['hideBottom'] as bool? ?? false,
       massiveMode: json['massiveMode'] as bool? ?? false,
       filterWords: json['filterWords'] as String? ?? '',
-      danmakuOffset: json['danmakuOffset'] as int? ?? 0,
+      danmakuOffset: (json['danmakuOffset'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$DanmakuSettingToJson(DanmakuSetting instance) =>
@@ -45,6 +45,6 @@ Map<String, dynamic> _$DanmakuSettingToJson(DanmakuSetting instance) =>
       'hideScroll': instance.hideScroll,
       'hideBottom': instance.hideBottom,
       'massiveMode': instance.massiveMode,
-      'filterWords': instance.filterWords,
       'danmakuOffset': instance.danmakuOffset,
+      'filterWords': instance.filterWords,
     };

@@ -16,6 +16,9 @@ class Rule {
   /// 规则logoUrl(通常是网站的logo)
   String logoUrl;
 
+  ///是否使用webview
+  bool useWebView;
+
   ///规则版本号
   String version;
 
@@ -118,6 +121,7 @@ class Rule {
   Rule({
     this.name = '',
     this.logoUrl = '',
+    this.useWebView = false,
     this.searchUrl = '',
     this.detailUrl = '',
     this.playerUrl = '',

@@ -228,7 +228,7 @@ class _SetttingScreenState extends State<SetttingScreen>
           subtitle: Text(
             'setting.data_management.clear_cache_description'.tr(),
           ),
-          onTap: () => _clearCache(),
+          onTap: () => _showClearCacheDialog(),
         ),
       // 规则管理部分
       ListTile(
@@ -404,33 +404,26 @@ class _SetttingScreenState extends State<SetttingScreen>
     );
   }
 
-  void _clearCache() {
-    try {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('setting.data_management.clear_dialog_title'.tr()),
-          content: Text('setting.data_management.cache_dialog_content'.tr()),
-          actions: [
-            OutlinedButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('setting.data_management.clear_dialog_cancel'.tr()),
-            ),
-            FilledButton(
-              onPressed: () {
-                // 清除缓存逻辑
-                DefaultCacheManager().emptyCache();
-                log('应用缓存已清除');
-                Navigator.pop(context);
-              },
-              child: Text('setting.data_management.clear_dialog_confirm'.tr()),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      log('清除缓存失败: $e');
-    }
+  void _showClearCacheDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('setting.data_management.clear_dialog_title'.tr()),
+        content: Text('setting.data_management.cache_dialog_content'.tr()),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('setting.data_management.clear_dialog_cancel'.tr()),
+          ),
+          FilledButton(
+            onPressed: () {
+              DefaultCacheManager().emptyCache();
+            },
+            child: Text('setting.data_management.clear_dialog_confirm'.tr()),
+          ),
+        ],
+      ),
+    );
   }
 
   void _openGitHub(String link) async {

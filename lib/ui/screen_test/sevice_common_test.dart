@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/common.dart';
+import 'package:holo/util/flutter_inappwebview.dart';
+import 'package:logger/logger.dart';
 
 void main() {
   runApp(const SeviceCommonTest());
@@ -47,6 +48,21 @@ class _SeviceCommonTestState extends State<SeviceCommonTest> {
   String _keyword = '';
   String _mediaId = '';
   String _episodeId = '';
+  final Logger _logger = Logger();
+  final FlutterInappwebview _webviewUtil = FlutterInappwebview();
+  void _fetchHTML() async {
+    final res = await _webviewUtil.fetchHtml(
+      'https://player.gugu3.com/?url=vwnet-c64cf37de43ce4a854f35f19d6ab7a26&next=//www.gugu3.com/index.php/vod/play/id/4878/sid/2/nid/3.html',
+      timeout: Duration(seconds: 30),
+      headers: {'referer': 'https://www.gugu3.com/'},
+
+      onError: (e) {
+        log('fetchHtml error:$e');
+      },
+    );
+    _logger.i('fetchHtml res:$res');
+  }
+
   void _search() async {
     final res = await _sourceService.fetchSearch(_keyword, 1, 1, (e) {
       log(e.toString());
@@ -84,6 +100,10 @@ class _SeviceCommonTestState extends State<SeviceCommonTest> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              FilledButton(
+                onPressed: () => _fetchHTML(),
+                child: Text('fetch html'),
+              ),
               TextField(
                 onChanged: (value) {
                   setState(() {

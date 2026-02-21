@@ -31,6 +31,7 @@ class CapVideoPlayerKit extends StatefulWidget {
   final bool enableAutoFocus;
   final DanmakuSetting danmakuSetting;
   final String centerMsg;
+  final double? aspectRatio;
   final void Function(bool)? onFullScreenChanged;
   final void Function(String)? onError;
   final void Function()? onNextTab;
@@ -50,6 +51,7 @@ class CapVideoPlayerKit extends StatefulWidget {
     this.subTitle,
     this.danmakuSetting = const DanmakuSetting(),
     this.enableAutoFocus = true,
+    this.aspectRatio,
     this.dammaku,
     this.onFullScreenChanged,
     this.onNextTab,
@@ -484,7 +486,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   @override
   void dispose() {
-    _logger.w('dispose');
     widget.playerNotifier.value?.removeListener(() {});
     danmuTimer?.cancel();
     volumeAndBrightnessToastTimer?.cancel();
@@ -1049,61 +1050,55 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Theme(
-        data: ThemeData(
-          brightness: Brightness.light,
-          colorSchemeSeed: Theme.of(context).colorScheme.primary,
-        ),
-        child: KeyboardListener(
-          focusNode: _focusNode,
-          autofocus: true,
-          onKeyEvent: _handleKeyEvent,
-          child: ValueListenableBuilder(
-            valueListenable: widget.playerNotifier,
-            builder: (context, player, child) {
-              return Stack(
-                children: [
-                  //播放器层
-                  if (player != null)
-                    Center(
-                      child: AspectRatio(
-                        aspectRatio: player.value.aspectRatio,
-                        child: VideoPlayer(player),
-                      ),
-                    ),
-                  if (widget.centerMsg.isNotEmpty)
-                    LoadingOrShowMsg(msg: widget.centerMsg),
-                  // 弹幕层
-                  widget.dammaku != null ? _buildDanmaku() : SizedBox.shrink(),
-                  // 加载中或缓冲中
-                  if ((player?.value.isBuffering ?? false) || widget.isloading)
-                    LoadingOrShowMsg(msg: null),
-                  //亮度或者音量或者拖拽进度显示 can
-                  _buildToast(),
-
-                  //视频控制层-中间
-                  SizedBox(
-                    height: double.infinity,
-                    width: double.infinity,
-                    child: _buildCenter(player: player),
+    return KeyboardListener(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKeyEvent: _handleKeyEvent,
+      child: ValueListenableBuilder(
+        valueListenable: widget.playerNotifier,
+        builder: (context, player, child) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              //播放器层
+              if (player != null)
+                Center(
+                  child: AspectRatio(
+                    aspectRatio: widget.aspectRatio ?? player.value.aspectRatio,
+                    //aspectRatio: 4 / 3,
+                    child: VideoPlayer(player),
                   ),
-                  // 锁定
-                  _buildLock(),
-                  // 时间
-                  _buildTime(),
-                  //视频控制层-头部
-                  _buildHeader(),
-                  //视频控制层-底部
-                  _buildBottom(player: player),
+                ),
+              if (widget.centerMsg.isNotEmpty)
+                LoadingOrShowMsg(msg: widget.centerMsg),
+              // 弹幕层
+              widget.dammaku != null ? _buildDanmaku() : SizedBox.shrink(),
+              // 加载中或缓冲中
+              if ((player?.value.isBuffering ?? false) || widget.isloading)
+                LoadingOrShowMsg(msg: null),
+              //亮度或者音量或者拖拽进度显示 can
+              _buildToast(),
 
-                  //鼠标悬停显示视频控制条
-                  _buildMouseHover(),
-                ],
-              );
-            },
-          ),
-        ),
+              //视频控制层-中间
+              SizedBox(
+                height: double.infinity,
+                width: double.infinity,
+                child: _buildCenter(player: player),
+              ),
+              // 锁定
+              _buildLock(),
+              // 时间
+              _buildTime(),
+              //视频控制层-头部
+              _buildHeader(),
+              //视频控制层-底部
+              _buildBottom(player: player),
+
+              //鼠标悬停显示视频控制条
+              _buildMouseHover(),
+            ],
+          );
+        },
       ),
     );
   }
