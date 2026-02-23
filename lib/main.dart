@@ -6,8 +6,11 @@ import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/setting_api.dart';
 import 'package:holo/entity/app_setting.dart';
+import 'package:holo/entity/character.dart';
+import 'package:holo/entity/person.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/subject.dart' show Data;
+import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/source_service.dart';
@@ -44,7 +47,7 @@ void main() async {
   Api.initSources();
   // 确保视频播放器已初始化（Windows和Linux平台）
   VideoPlayerMediaKit.ensureInitialized(windows: true, linux: true);
-  
+
   // 桌面平台特殊处理
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     // 初始化窗口管理器
@@ -69,7 +72,7 @@ void main() async {
       await windowManager.focus();
     });
   }
-  
+
   // 运行应用
   runApp(
     EasyLocalization(
@@ -96,10 +99,10 @@ class MyApp extends StatefulWidget {
   static final appSettingNotifier = ValueNotifier<AppSetting>(
     LocalStore.getAppSetting(),
   );
-  
+
   /// 构造函数
   const MyApp({super.key});
-  
+
   /// 初始化应用设置
   /// 从服务器获取设置，如果获取失败则使用本地存储的设置
   static Future<void> initAppSetting() async {
@@ -190,6 +193,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             source: map['source'] as SourceService,
             nameCn: map['nameCn'] as String,
             isLove: map['isLove'] as bool,
+            person: map['person'] ?? [] as List<Person>,
+            character: map['character'] ?? [] as List<Character>,
+            relation: map['relation'] ?? [] as List<SubjectRelation>,
           );
         },
       ),
@@ -257,7 +263,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ),
     ],
   );
-  
+
   /// 初始化动画源服务并测试延迟
   void initSource() async {
     await Api.delayTest();
@@ -380,7 +386,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 class ScaffoldWithNavBar extends StatefulWidget {
   /// 导航外壳，用于管理导航状态
   final StatefulNavigationShell navigationShell;
-  
+
   /// 构造函数
   /// [navigationShell] 导航外壳实例
   const ScaffoldWithNavBar({super.key, required this.navigationShell});

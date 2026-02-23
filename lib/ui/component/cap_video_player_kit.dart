@@ -473,28 +473,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     }
   }
 
-  @override
-  void initState() {
-    _initListener();
-
-    initTimerForDanmu();
-    dammaku = widget.dammaku;
-    VolumeController.instance.showSystemUI = false;
-    _brightnessController = ScreenBrightness.instance;
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    widget.playerNotifier.value?.removeListener(() {});
-    danmuTimer?.cancel();
-    volumeAndBrightnessToastTimer?.cancel();
-    videoTimer?.cancel();
-    videoControlsTimer?.cancel();
-    settingTimer?.cancel();
-    super.dispose();
-  }
-
   ///弹幕层
   Widget _buildDanmaku() {
     var danmakuSetting = widget.danmakuSetting;
@@ -1040,6 +1018,29 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       });
     }
     super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void initState() {
+    _initListener();
+
+    initTimerForDanmu();
+    dammaku = widget.dammaku;
+    VolumeController.instance.showSystemUI = false;
+    _brightnessController = ScreenBrightness.instance;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    ScreenBrightness.instance.resetApplicationScreenBrightness();
+    widget.playerNotifier.value?.removeListener(() {});
+    danmuTimer?.cancel();
+    volumeAndBrightnessToastTimer?.cancel();
+    videoTimer?.cancel();
+    videoControlsTimer?.cancel();
+    settingTimer?.cancel();
+    super.dispose();
   }
 
   @override

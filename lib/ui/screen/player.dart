@@ -8,15 +8,19 @@ import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/entity/app_setting.dart';
+import 'package:holo/entity/character.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode.dart';
 import 'package:holo/entity/logvar_episode.dart';
 import 'package:holo/entity/media.dart' as holo_media;
+import 'package:holo/entity/person.dart';
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject.dart';
+import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/cap_video_player_kit.dart';
+import 'package:holo/ui/component/circle_avatar_with_text.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/util/language_util.dart';
@@ -27,6 +31,7 @@ import 'package:holo/extension/safe_set_state.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -35,6 +40,9 @@ class PlayerScreen extends StatefulWidget {
   final SourceService source;
   final String nameCn;
   final bool isLove;
+  final List<Person> person;
+  final List<Character> character;
+  final List<SubjectRelation> relation;
   const PlayerScreen({
     super.key,
     required this.mediaId,
@@ -42,6 +50,9 @@ class PlayerScreen extends StatefulWidget {
     required this.source,
     required this.nameCn,
     this.isLove = false,
+    this.person = const [],
+    this.character = const [],
+    this.relation = const [],
   });
 
   @override
@@ -353,7 +364,9 @@ class _PlayerScreenState extends State<PlayerScreen>
       return;
     }
     final danmu = await Api.logvar.fetchDammakuSync(
-      _bestMatch!.episodes![episodeIndex].episodeId!,
+      _bestMatch!
+          .episodes![episodeIndex.remainder(_episode?.total ?? 0)]
+          .episodeId!,
       (e) {
         hasError = true;
         if (mounted) {
@@ -383,7 +396,9 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   void _loadDanmakuSetting() {
     setState(() {
-      _danmakuSetting = LocalStore.getAppSetting().danmakuSetting;
+      _danmakuSetting = LocalStore.getAppSetting().danmakuSetting.copyWith(
+        danmakuOffset: 0,
+      );
     });
   }
 
@@ -471,6 +486,105 @@ class _PlayerScreenState extends State<PlayerScreen>
         _enableAutoFocus = true;
       });
     });
+  }
+
+  void _showPersonDetail({
+    required String image,
+    required String name,
+    required String role,
+    required int bangumiId,
+    bool isCharacter = true,
+    String cv = '',
+    String summary = '',
+  }) {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      builder: (context) {
+        return Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.all(12),
+          child: Stack(
+            children: [
+              Row(
+                spacing: 4,
+                children: [
+                  Flexible(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        width: double.infinity,
+                        height: double.infinity,
+                        image,
+                        fit: BoxFit.fitHeight,
+                        loadingBuilder: (context, child, loadingProgress) =>
+                            loadingProgress == null
+                            ? child
+                            : const Center(child: CircularProgressIndicator()),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(child: Icon(size: 70, Icons.error)),
+                      ),
+                    ),
+                  ),
+
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 4,
+                        children: [
+                          if (name.isNotEmpty)
+                            Text(
+                              name,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          if (cv.isNotEmpty)
+                            Text(
+                              'CV: $cv',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          if (role.isNotEmpty)
+                            Text(
+                              role,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+
+                          if (summary.isNotEmpty)
+                            Text(
+                              summary,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Positioned(
+                right:
+                    MediaQuery.of(context).orientation == Orientation.landscape
+                    ? 20
+                    : 6,
+                top: 6,
+                child: IconButton(
+                  tooltip: "Link to Bangumi",
+                  onPressed: () async {
+                    await launchUrl(
+                      Uri.parse(
+                        'https://bangumi.tv/${isCharacter ? 'character' : 'person'}/$bangumiId',
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.link_rounded),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildFadeEpisodeSection() {
@@ -623,6 +737,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               genre: subject.metaTags?.join('/'),
               episode: subject.eps ?? 0,
               rating: subject.rating?.score,
+              ratingCount: subject.rating?.total,
               height: 180,
               airDate: subject.date,
             ),
@@ -695,6 +810,44 @@ class _PlayerScreenState extends State<PlayerScreen>
                     ),
             ),
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          // 角色
+          if (widget.character.isNotEmpty)
+            _buildPersonGrid(
+              title: "角色",
+              name2Image: {
+                for (var e in widget.character)
+                  e.name ?? '': e.images?.large ?? "",
+              },
+              onTap: (index) => _showPersonDetail(
+                bangumiId: widget.character[index].id!,
+                image: widget.character[index].images?.large ?? "",
+                name: widget.character[index].name ?? "",
+                role: widget.character[index].relation ?? "",
+                summary: widget.character[index].summary ?? "",
+                cv:
+                    widget.character[index].actors
+                        ?.map((a) => a.name ?? "")
+                        .join('·') ??
+                    "",
+              ),
+            ),
+          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          // 角色
+          if (widget.person.isNotEmpty)
+            _buildPersonGrid(
+              title: "人物",
+              name2Image: {
+                for (var e in widget.person)
+                  e.name ?? '': e.images?.large ?? "",
+              },
+              onTap: (index) => _showPersonDetail(
+                bangumiId: widget.person[index].id!,
+                image: widget.person[index].images?.large ?? "",
+                name: widget.person[index].name ?? "",
+                role: widget.person[index].relation ?? "",
+              ),
+            ),
         ],
       ),
     );
@@ -720,45 +873,54 @@ class _PlayerScreenState extends State<PlayerScreen>
               mainAxisSpacing: 5,
               crossAxisSpacing: 5,
             ),
-            itemBuilder: (context, index) => ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              selectedTileColor: Theme.of(context).colorScheme.primaryContainer,
-              selected: episodeIndex == index,
-              onTap: () {
-                if (episodeIndex == index || isloading) {
-                  return;
-                }
-                _onEpisodeSelected(index);
-              },
-              subtitle: Text(
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-                _episode?.data?[index].nameCn ?? "player.no_episode_name".tr(),
-              ),
-              title: Row(
-                children: [
-                  Text('${index + 1}'),
-                  SizedBox(width: 10),
-                  if (episodeIndex == index)
-                    ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                        Theme.of(context).colorScheme.primary,
-                        BlendMode.srcATop,
+            itemBuilder: (context, index) => Material(
+              clipBehavior: .antiAlias,
+              color: Colors.transparent,
+              child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+
+                selectedTileColor: Theme.of(
+                  context,
+                ).colorScheme.primaryContainer,
+                selected: episodeIndex == index,
+                onTap: () {
+                  if (episodeIndex == index || isloading) {
+                    return;
+                  }
+                  _onEpisodeSelected(index);
+                },
+                subtitle: Text(
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                  _episode?.data?[index].nameCn ??
+                      "player.no_episode_name".tr(),
+                ),
+                title: Row(
+                  children: [
+                    Text('${index + 1}'),
+                    SizedBox(width: 10),
+                    if (episodeIndex == index)
+                      ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.primary,
+                          BlendMode.srcATop,
+                        ),
+                        child: LottieBuilder.asset(
+                          "lib/assets/lottie/playing.json",
+                          repeat: true,
+                          width: 40,
+                        ),
                       ),
-                      child: LottieBuilder.asset(
-                        "lib/assets/lottie/playing.json",
-                        repeat: true,
-                        width: 40,
-                      ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
   }
 
+  /// 剧集信息
   Widget _buildInfo() {
     return SizedBox(
       child: Column(
@@ -1137,6 +1299,57 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  /// 角色/人物网格
+  SliverToBoxAdapter _buildPersonGrid({
+    required String title,
+    Map<String, String> name2Image = const {},
+    void Function(int index)? onTap,
+  }) {
+    return SliverToBoxAdapter(
+      child: Card(
+        child: Container(
+          padding: .all(6),
+          height: 120,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.labelLarge),
+              Expanded(
+                child: ScrollConfiguration(
+                  behavior: ScrollBehavior().copyWith(
+                    scrollbars: !(Platform.isAndroid || Platform.isIOS),
+                    dragDevices: {
+                      PointerDeviceKind.touch,
+                      PointerDeviceKind.mouse,
+                    },
+                  ),
+                  child: GridView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: name2Image.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 4 / 3,
+                    ),
+                    itemBuilder: (context, index) {
+                      return CircleAvatarWithText(
+                        imageUrl: name2Image.values.elementAt(index),
+                        username: name2Image.keys.elementAt(index),
+                        onTap: () {
+                          onTap?.call(index);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   bool get wantKeepAlive => true;
 
@@ -1191,6 +1404,13 @@ class _PlayerScreenState extends State<PlayerScreen>
     _fetchMediaEpisode().then(
       (value) => _fetchViewInfo(position: historyPosition),
     );
+    // 设置播放器页面的状态栏样式（深色模式）
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarIconBrightness: Brightness.light, // 浅色图标
+        statusBarBrightness: Brightness.dark, // 深色状态栏
+      ),
+    );
     super.initState();
   }
 
@@ -1203,6 +1423,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
     // _controller?.dispose();
     _playerNotifier.value?.dispose();
     super.dispose();
@@ -1260,6 +1481,12 @@ class _PlayerScreenState extends State<PlayerScreen>
         : Scaffold(
             key: _globalScaffoldKey,
             resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              backgroundColor: Colors.black,
+              automaticallyImplyActions: false,
+              automaticallyImplyLeading: false,
+              toolbarHeight: 0,
+            ),
             endDrawer: Drawer(width: 300, child: _buildDrawer()),
             endDrawerEnableOpenDragGesture: false,
             body: SafeArea(

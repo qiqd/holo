@@ -345,6 +345,28 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
+  void _goToPlayer() {
+    if (defaultMedia == null || defaultSource == null || isLoading) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("detail.no_source_found".tr())));
+      return;
+    }
+    context.push(
+      "/player",
+      extra: {
+        "mediaId": defaultMedia!.id!,
+        "subject": data!,
+        "source": defaultSource!,
+        "nameCn": defaultMedia!.title!,
+        "isLove": isSubscribed,
+        'person': person,
+        'character': character,
+        'relation': relation,
+      },
+    );
+  }
+
   @override
   void dispose() {
     _storeSubscribeHistory();
@@ -368,24 +390,7 @@ class _DetailScreenState extends State<DetailScreen>
     return Scaffold(
       //浮动播放按钮
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (defaultMedia == null || defaultSource == null || isLoading) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("detail.no_source_found".tr())),
-            );
-            return;
-          }
-          context.push(
-            "/player",
-            extra: {
-              "mediaId": defaultMedia!.id!,
-              "subject": data!,
-              "source": defaultSource!,
-              "nameCn": defaultMedia!.title!,
-              "isLove": isSubscribed,
-            },
-          );
-        },
+        onPressed: _goToPlayer,
         child: AnimatedSwitcher(
           duration: Duration(milliseconds: 500),
           child: isLoading
