@@ -23,12 +23,8 @@ class CircleAvatarWithText extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 30,
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              width: 60,
-              height: 60,
-            ),
+            foregroundImage: NetworkImage(imageUrl),
+            onForegroundImageError: (_, _) => const Icon(Icons.error),
           ),
 
           Text(username, maxLines: 1, overflow: TextOverflow.ellipsis),

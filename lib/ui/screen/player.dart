@@ -817,7 +817,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               title: "角色",
               name2Image: {
                 for (var e in widget.character)
-                  e.name ?? '': e.images?.large ?? "",
+                  e.name ?? '': e.images?.grid ?? "",
               },
               onTap: (index) => _showPersonDetail(
                 bangumiId: widget.character[index].id!,
@@ -838,8 +838,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             _buildPersonGrid(
               title: "人物",
               name2Image: {
-                for (var e in widget.person)
-                  e.name ?? '': e.images?.large ?? "",
+                for (var e in widget.person) e.name ?? '': e.images?.grid ?? "",
               },
               onTap: (index) => _showPersonDetail(
                 bangumiId: widget.person[index].id!,
