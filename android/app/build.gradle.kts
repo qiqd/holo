@@ -58,8 +58,8 @@ android {
     }
     buildTypes {
         release {
-            // Use release signing config, which will fallback to debug if key.properties doesn't exist
-            signingConfig = signingConfigs.getByName("release")
+            // Use debug signing config for release
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
