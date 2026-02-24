@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/subscribe_api.dart';
@@ -358,7 +357,7 @@ class _DetailScreenState extends State<DetailScreen>
         "mediaId": defaultMedia!.id!,
         "subject": data!,
         "source": defaultSource!,
-        "nameCn": defaultMedia!.title!,
+        "nameCn": defaultMedia?.title ?? "detail.no_title".tr(),
         "isLove": isSubscribed,
         'person': person,
         'character': character,
@@ -508,22 +507,9 @@ class _DetailScreenState extends State<DetailScreen>
                                                             genre: m.type,
                                                             height: 150,
                                                             onTap: () {
-                                                              context.push(
-                                                                "/player",
-                                                                extra: {
-                                                                  "isLove":
-                                                                      isSubscribed,
-                                                                  "mediaId":
-                                                                      m.id!,
-                                                                  "subject":
-                                                                      data,
-                                                                  "source": e,
-                                                                  "nameCn":
-                                                                      m.title ??
-                                                                      "detail.no_title"
-                                                                          .tr(),
-                                                                },
-                                                              );
+                                                              defaultMedia = m;
+                                                              defaultSource = e;
+                                                              _goToPlayer();
                                                             },
                                                           ),
                                                           Divider(height: 5),
@@ -619,7 +605,7 @@ class _DetailScreenState extends State<DetailScreen>
                                           return ListTile(
                                             leading: p.images != null
                                                 ? Image.network(
-                                                    p.images!.medium!,
+                                                    p.images!.grid!,
                                                     // width: 70,
                                                     // height: 70,
                                                     fit: BoxFit.fill,
@@ -656,7 +642,7 @@ class _DetailScreenState extends State<DetailScreen>
                                             leading: c.images != null
                                                 ? Image.network(
                                                     fit: BoxFit.fill,
-                                                    c.images!.medium!,
+                                                    c.images!.grid!,
                                                     // color: Colors.limeAccent,
                                                     errorBuilder:
                                                         (
