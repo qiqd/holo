@@ -413,10 +413,12 @@ class _DetailScreenState extends State<DetailScreen>
         //  title: Text("detail.title".tr()),
         actions: [
           IconButton(
+            tooltip: "Link to Bangumi",
             onPressed: _openBangumiUrl,
             icon: Icon(Icons.link_rounded),
           ),
           IconButton(
+            tooltip: "Subscribe/Unsubscribe",
             onPressed: () {
               if (data == null) {
                 return;

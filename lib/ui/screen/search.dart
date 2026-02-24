@@ -92,15 +92,16 @@ class _SearchScreenState extends State<SearchScreen> {
         actions: [
           if (Device.get().isTablet)
             IconButton(
+              tooltip: "Image Search",
               onPressed: () => context.push('/image_search'),
               icon: Icon(Icons.image_search_rounded),
             ),
           IconButton(
+            tooltip: "search.delete_search_history".tr(),
             onPressed: () {
               _showDeleteDialog();
             },
             icon: Icon(Icons.delete_forever_rounded),
-            tooltip: "search.delete_search_history".tr(),
           ),
         ],
         leading: IconButton(
@@ -149,6 +150,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ? SingleChildScrollView(
                         padding: EdgeInsets.all(12),
                         child: Column(
+                          spacing: 6,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(

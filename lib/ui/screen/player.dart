@@ -30,6 +30,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:holo/extension/safe_set_state.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
@@ -1395,6 +1396,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void initState() {
+    windowManager.setTitle(widget.nameCn);
     _loadDanmakuSetting();
     _loadHistory();
     _fetchEpisode();
@@ -1415,6 +1417,9 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void dispose() {
+    PackageInfo.fromPlatform().then((info) {
+      windowManager.setTitle(info.appName);
+    });
     _storeLocalHistory();
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([

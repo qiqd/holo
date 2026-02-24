@@ -265,6 +265,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         actions: [
           if (_checkedSubscribeIds.isNotEmpty)
             PopupMenuButton(
+              tooltip: "Change Subscribe Status",
               icon: Icon(Icons.menu_rounded),
               itemBuilder: (context) => [
                 PopupMenuItem(value: 1, child: Text("想看")),
@@ -279,6 +280,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
           if (_checkedPlaybackIds.isNotEmpty)
             IconButton(
+              tooltip: "Delete Playback History",
               icon: Icon(Icons.delete),
               onPressed: () {
                 setState(() {
@@ -287,6 +289,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               },
             ),
           IconButton(
+            tooltip: "Toggle Edit Mode",
             icon: Icon(_isEditMode ? Icons.done_all : Icons.edit_rounded),
             onPressed: () {
               setState(() {
