@@ -312,6 +312,7 @@
         "episode_selector_label": "劇集列表選擇器",
         "episode_selector_hint": "例如：ul.episodes 或 .episode-list",
         "episode_selector_validator": "請輸入劇集列表選擇器",
+        "episode_reverse_label": "是否反轉劇集列表",
         "player_page_rules": "播放頁面規則",
         "player_url_label": "播放頁面路徑",
         "player_request_header_label": "播放請求頭,用英文逗號分隔,可選",

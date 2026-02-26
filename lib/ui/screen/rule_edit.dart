@@ -538,6 +538,15 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               'rule_edit.detail_page_rules'.tr(),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            SwitchListTile(
+              title: Text('rule_edit.episode_reverse_label'.tr()),
+              value: _rule.episodeReverse,
+              onChanged: (value) {
+                setState(() {
+                  _rule.episodeReverse = value;
+                });
+              },
+            ),
             TextFormField(
               enabled: widget.isEditMode,
               initialValue: widget.rule?.detailUrl,
@@ -669,6 +678,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 return null;
               },
             ),
+
             //  详情页请求头Referer
             TextFormField(
               enabled: widget.isEditMode,

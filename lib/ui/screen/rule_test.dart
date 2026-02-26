@@ -72,15 +72,15 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         ).showSnackBar(SnackBar(content: Text('video url is null')));
         return;
       }
-      videoController = VideoPlayerController.networkUrl(Uri.parse(url ?? ''));
-      await videoController!.initialize();
-      await videoController!.setLooping(true);
-      await videoController!.play();
 
       setState(() {
         _playUrl = url;
         _isloading = false;
       });
+      videoController = VideoPlayerController.networkUrl(Uri.parse(url ?? ''));
+      await videoController?.initialize();
+      await videoController?.setLooping(true);
+      await videoController?.play();
     } catch (e) {
       if (mounted) {
         setState(() {

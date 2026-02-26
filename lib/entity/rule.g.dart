@@ -26,21 +26,22 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   fullDetailUrl: json['fullDetailUrl'] as bool? ?? false,
   itemImgFromSrc: json['itemImgFromSrc'] as bool? ?? true,
   waitForMediaElement: json['waitForMediaElement'] as bool? ?? true,
+  episodeReverse: json['episodeReverse'] as bool? ?? false,
   searchRequestHeaders:
       (json['searchRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      const {'User-Agent': defaultUserAgent},
+      defaultHeaders,
   detailRequestHeaders:
       (json['detailRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      const {'User-Agent': defaultUserAgent},
+      defaultHeaders,
   playerRequestHeaders:
       (json['playerRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      const {'User-Agent': defaultUserAgent},
+      defaultHeaders,
   searchRequestBody:
       (json['searchRequestBody'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
@@ -109,6 +110,7 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'fullDetailUrl': instance.fullDetailUrl,
   'lineSelector': instance.lineSelector,
   'episodeSelector': instance.episodeSelector,
+  'episodeReverse': instance.episodeReverse,
   'playerUrl': instance.playerUrl,
   'playerRequestMethod': _$RequestMethodEnumMap[instance.playerRequestMethod]!,
   'playerRequestBody': instance.playerRequestBody,

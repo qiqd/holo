@@ -227,21 +227,18 @@ class Common extends SourceService {
         var embedSelectors = rule.embedVideoSelector!.split(',');
         for (var selector in embedSelectors) {
           var tempUrl = doc.querySelector(selector)?.attributes['src'] ?? '';
+          tempUrl = tempUrl.contains('http')
+              ? tempUrl
+              : (rule.baseUrl + tempUrl);
           var tempHtmlStr = switch (rule.useWebView) {
             true => await _webviewUtil.fetchHtml(
-              tempUrl.contains('http') ? tempUrl : (rule.baseUrl + tempUrl),
+              tempUrl,
               isPlayerPage: true,
               headers: rule.playerRequestHeaders,
               waitForMediaElement: rule.waitForMediaElement,
               timeout: Duration(seconds: rule.timeout),
             ),
-            false =>
-              (await HttpUtil.createDio().get(
-                    tempUrl.contains('http')
-                        ? tempUrl
-                        : (rule.baseUrl + tempUrl),
-                  )).data
-                  as String,
+            false => (await HttpUtil.createDio().get(tempUrl)).data as String,
           };
           doc = parse(tempHtmlStr);
           log(

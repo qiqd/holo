@@ -11,8 +11,10 @@ import 'package:html/parser.dart' as html_parser;
 class FlutterInappwebview {
   /// 无头 WebView 实例
   HeadlessInAppWebView? _headlessWebView;
+
   /// WebView 控制器
   InAppWebViewController? _webViewController;
+
   /// 当前请求的完成器
   Completer<String>? _currentCompleter;
 
@@ -90,7 +92,10 @@ class FlutterInappwebview {
     bool isPlayerPage = false,
     bool waitForMediaElement = false,
     Duration timeout = const Duration(seconds: 15),
-    Map<String, String> headers = const {},
+    Map<String, String> headers = const {
+      "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    },
     Map<String, String> requestBody = const {},
     Function(String error)? onError,
   }) async {
@@ -198,7 +203,7 @@ class FlutterInappwebview {
             _currentCompleter = null;
           },
           onConsoleMessage: (controller, consoleMessage) {
-            log('JS Console: ${consoleMessage.message}');
+            //log('JS Console: ${consoleMessage.message}');
           },
         );
 

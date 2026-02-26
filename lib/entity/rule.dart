@@ -3,8 +3,12 @@ import 'package:json_annotation/json_annotation.dart';
 part 'rule.g.dart';
 
 /// 默认用户代理
-const defaultUserAgent =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0';
+
+const defaultHeaders = {
+  "User-Agent":
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0',
+  "sec-ch-ua-platform": "Windows",
+};
 
 /// 规则类
 /// 包含动画源网站的爬取规则配置
@@ -81,6 +85,9 @@ class Rule {
 
   /// 剧集选择器(每一条线路下对应的剧集,一般是一个a标签)
   String episodeSelector;
+
+  /// 剧集是否反转
+  bool episodeReverse;
 
   /// 播放页面Url(通常是网站的播放页面的视频播放地址)
   String playerUrl;
@@ -178,9 +185,10 @@ class Rule {
     this.fullDetailUrl = false,
     this.itemImgFromSrc = true,
     this.waitForMediaElement = true,
-    this.searchRequestHeaders = const {'User-Agent': defaultUserAgent},
-    this.detailRequestHeaders = const {'User-Agent': defaultUserAgent},
-    this.playerRequestHeaders = const {'User-Agent': defaultUserAgent},
+    this.episodeReverse = false,
+    this.searchRequestHeaders = defaultHeaders,
+    this.detailRequestHeaders = defaultHeaders,
+    this.playerRequestHeaders = defaultHeaders,
     this.searchRequestBody = const {},
     this.detailRequestBody = const {},
     this.playerRequestBody = const {},

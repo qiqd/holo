@@ -312,6 +312,7 @@
         "episode_selector_label": "エピソードリストセレクタ",
         "episode_selector_hint": "例：ul.episodes または .episode-list",
         "episode_selector_validator": "エピソードリストセレクタを入力してください",
+        "episode_reverse_label": "エピソードリストを反転",
         "player_page_rules": "プレーヤーページルール",
         "player_url_label": "プレーヤーページパス",
         "player_request_header_label": "プレーヤー請求ヘッダー, コンマ区切り, 任意",

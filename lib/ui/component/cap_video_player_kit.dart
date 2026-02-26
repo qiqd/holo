@@ -357,7 +357,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 subtitle: Text('Left Arrow'),
               ),
               ListTile(
-                leading: Icon(Icons.list_rounded),
+                leading: Icon(Icons.list),
                 title: Text('Show Episode List'),
                 subtitle: Text('E'),
               ),

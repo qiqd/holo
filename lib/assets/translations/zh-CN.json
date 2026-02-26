@@ -312,6 +312,7 @@
         "episode_selector_label": "episodeId选择器",
         "episode_selector_hint": "例如：li>a",
         "episode_selector_validator": "请输入episodeId选择器",
+        "episode_reverse_label": "是否反转episodeId列表",
         "player_page_rules": "播放页面规则",
         "player_url_label": "播放页面路径",
         "player_url_hint": "例如：/play/{episodeId}",

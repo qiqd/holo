@@ -312,6 +312,7 @@
         "episode_selector_label": "Episode List Selector",
         "episode_selector_hint": "Example: ul.episodes or .episode-list",
         "episode_selector_validator": "Please enter the episode list selector",
+        "episode_reverse_label": "Reverse Episode List",
         "player_page_rules": "Play Page Rules",
         "player_url_label": "Play Page Path",
         "player_request_header_label": "Play Request Header, comma-separated, optional",
