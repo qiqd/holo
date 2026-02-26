@@ -65,7 +65,8 @@ class _PlayerScreenState extends State<PlayerScreen>
         SingleTickerProviderStateMixin,
         WidgetsBindingObserver,
         AutomaticKeepAliveClientMixin {
-  final _globalScaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _globalScaffoldKey =
+      GlobalKey<ScaffoldState>();
   final Logger _logger = Logger();
   late Data subject = widget.subject;
   bool _isFullScreen = false;
@@ -79,7 +80,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   String? playUrl;
   bool _isActive = true;
   List<LogvarEpisode>? _danmakuList;
-  LogvarEpisode? _bestMatch;
+  LogvarEpisode? _bestDanmakuSourceMatch;
   Danmu? _dammaku;
   bool _isDanmakuLoading = false;
   bool _isTablet = false;
@@ -349,11 +350,11 @@ class _PlayerScreenState extends State<PlayerScreen>
         if (temp > score && mounted) {
           score = temp;
           setState(() {
-            _bestMatch = element;
+            _bestDanmakuSourceMatch = element;
           });
         }
       }
-      if (_bestMatch == null && mounted) {
+      if (_bestDanmakuSourceMatch == null && mounted) {
         setState(() {
           _isDanmakuLoading = false;
           onComplete?.call("player.danmaku_not_exist".tr());
@@ -361,13 +362,21 @@ class _PlayerScreenState extends State<PlayerScreen>
         return;
       }
     }
-    if (hasError || _bestMatch == null) {
+    if (hasError || _bestDanmakuSourceMatch == null) {
+      return;
+    }
+    var remainder = episodeIndex.remainder(_episode?.total ?? 0);
+    if (remainder >= (_bestDanmakuSourceMatch?.episodes?.length ?? 0)) {
+      safeSetState(() {
+        _isDanmakuLoading = false;
+        onComplete?.call(
+          "${_bestDanmakuSourceMatch?.animeTitle ?? ""} - ${"player.danmaku_not_exist".tr()}",
+        );
+      });
       return;
     }
     final danmu = await Api.logvar.fetchDammakuSync(
-      _bestMatch!
-          .episodes![episodeIndex.remainder(_episode?.total ?? 0)]
-          .episodeId!,
+      _bestDanmakuSourceMatch!.episodes![remainder].episodeId!,
       (e) {
         hasError = true;
         if (mounted) {
@@ -386,13 +395,21 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _onDanmakuSourceChange(LogvarEpisode e) {
-    if (e.animeId == _bestMatch?.animeId) {
+    if (e.animeId == _bestDanmakuSourceMatch?.animeId) {
       return;
     }
     setState(() {
-      _bestMatch = e;
+      _bestDanmakuSourceMatch = e;
     });
-    _loadDanmaku(isFirstLoad: false, keyword: nameCn);
+    _loadDanmaku(
+      isFirstLoad: false,
+      keyword: nameCn,
+      onComplete: (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
+      },
+    );
   }
 
   void _loadDanmakuSetting() {
@@ -413,7 +430,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, s) {
             return Column(
               children: [
                 Container(
@@ -439,9 +456,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                         if (value.isEmpty) {
                           return;
                         }
-                        setState(() {});
+                        s(() {});
                         await _loadDanmaku(isFirstLoad: true, keyword: value);
-                        setState(() {});
+                        s(() {});
                       },
                     ),
                   ),
@@ -461,7 +478,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                           itemBuilder: (context, index) {
                             return ListTile(
                               selected:
-                                  _bestMatch?.animeId ==
+                                  _bestDanmakuSourceMatch?.animeId ==
                                   _danmakuList?[index].animeId,
                               title: Text(
                                 _danmakuList?[index].animeTitle ?? '',
@@ -1396,7 +1413,9 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void initState() {
-    windowManager.setTitle(widget.nameCn);
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      windowManager.setTitle(widget.nameCn);
+    }
     _loadDanmakuSetting();
     _loadHistory();
     _fetchEpisode();
@@ -1417,9 +1436,11 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void dispose() {
-    PackageInfo.fromPlatform().then((info) {
-      windowManager.setTitle(info.appName);
-    });
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      PackageInfo.fromPlatform().then((info) {
+        windowManager.setTitle(info.appName);
+      });
+    }
     _storeLocalHistory();
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
@@ -1428,6 +1449,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       DeviceOrientation.landscapeRight,
     ]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     // _controller?.dispose();
     _playerNotifier.value?.dispose();
     super.dispose();
