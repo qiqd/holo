@@ -57,7 +57,7 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
         (k, e) => MapEntry(k, e as String),
       ) ??
       const {},
-  videoElementAttribute: json['videoElementAttribute'] as String?,
+  videoElementAttribute: json['videoElementAttribute'] as String? ?? '',
   version: json['version'] as String? ?? '1.0',
   isEnabled: json['isEnabled'] as bool? ?? true,
   timeout: (json['timeout'] as num?)?.toInt() ?? 5,
@@ -80,9 +80,9 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
         json['playerRequestMethod'],
       ) ??
       RequestMethod.get,
-  embedVideoSelector: json['embedVideoSelector'] as String?,
-  itemGenreSelector: json['itemGenreSelector'] as String?,
-  videoUrlSubsChar: json['videoUrlSubsChar'] as String?,
+  embedVideoSelector: json['embedVideoSelector'] as String? ?? '',
+  itemGenreSelector: json['itemGenreSelector'] as String? ?? '',
+  videoUrlSubsChar: json['videoUrlSubsChar'] as String? ?? '',
 )..updateAt = DateTime.parse(json['updateAt'] as String);
 
 Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{

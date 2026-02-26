@@ -6,8 +6,7 @@ part 'rule.g.dart';
 
 const defaultHeaders = {
   "User-Agent":
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0',
-  "sec-ch-ua-platform": "Windows",
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
 };
 
 /// 规则类
@@ -108,16 +107,16 @@ class Rule {
   String playerVideoSelector;
 
   /// 视频元素属性(通常是视频标签的src属性,比如video标签的src属性)
-  String? videoElementAttribute;
+  String videoElementAttribute;
 
   /// 嵌入视频选择器,英文逗号分隔(通常是播放页面的嵌入视频标签,比如iframe等)
-  String? embedVideoSelector;
+  String embedVideoSelector;
 
   /// 是否等待视频元素加载完成(如果是,则等待视频元素加载完成,否则立即返回)
   bool waitForMediaElement;
 
   /// 视频url截取,通常是从params参数中截取视频url,比如params=videoUrl=xxxx,则截取xxxx,如果是null,则直接返回匹配的url
-  String? videoUrlSubsChar;
+  String videoUrlSubsChar;
 
   /// 规则更新时间
   DateTime updateAt;
@@ -192,7 +191,7 @@ class Rule {
     this.searchRequestBody = const {},
     this.detailRequestBody = const {},
     this.playerRequestBody = const {},
-    this.videoElementAttribute,
+    this.videoElementAttribute = '',
     this.version = '1.0',
     this.isEnabled = true,
     this.timeout = 5,
@@ -200,9 +199,9 @@ class Rule {
     this.searchRequestMethod = RequestMethod.get,
     this.detailRequestMethod = RequestMethod.get,
     this.playerRequestMethod = RequestMethod.get,
-    this.embedVideoSelector,
-    this.itemGenreSelector,
-    this.videoUrlSubsChar,
+    this.embedVideoSelector = '',
+    this.itemGenreSelector = '',
+    this.videoUrlSubsChar = '',
   }) : updateAt = DateTime.now();
 
   /// 从JSON格式创建Rule实例

@@ -92,10 +92,7 @@ class FlutterInappwebview {
     bool isPlayerPage = false,
     bool waitForMediaElement = false,
     Duration timeout = const Duration(seconds: 15),
-    Map<String, String> headers = const {
-      "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
-    },
+    Map<String, String> headers = const {},
     Map<String, String> requestBody = const {},
     Function(String error)? onError,
   }) async {
@@ -105,22 +102,35 @@ class FlutterInappwebview {
     try {
       final webUri = WebUri(url.startsWith('http') ? url : 'https://$url');
 
+      // 准备请求头和请求体
+      Map<String, String> finalHeaders = Map.from(headers);
+      Uint8List? requestBodyBytes;
+
+      if (requestMethod == RequestMethod.post && requestBody.isNotEmpty) {
+        // 构建表单数据
+        final formData = requestBody.entries
+            .map(
+              (e) =>
+                  '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+            )
+            .join('&');
+
+        requestBodyBytes = Uint8List.fromList(utf8.encode(formData));
+
+        // 确保有正确的 Content-Type
+        if (!finalHeaders.containsKey('Content-Type')) {
+          finalHeaders['Content-Type'] = 'application/x-www-form-urlencoded';
+        }
+
+        log('POST 请求体: $formData');
+        log('POST 请求头: $finalHeaders');
+      }
+
       final urlRequest = URLRequest(
         url: webUri,
         method: requestMethod == RequestMethod.get ? 'GET' : 'POST',
-        headers: headers,
-        body: requestBody.isNotEmpty
-            ? Uint8List.fromList(
-                utf8.encode(
-                  requestBody.entries
-                      .map(
-                        (e) =>
-                            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
-                      )
-                      .join('&'),
-                ),
-              )
-            : null,
+        headers: finalHeaders,
+        body: requestBodyBytes,
       );
 
       // 首次初始化
@@ -204,6 +214,19 @@ class FlutterInappwebview {
           },
           onConsoleMessage: (controller, consoleMessage) {
             //log('JS Console: ${consoleMessage.message}');
+          },
+          onPermissionRequest: (controller, request) async {
+            log(
+              '收到权限请求: origin=${request.origin}, resources=${request.resources}',
+            );
+            // Windows 平台必须处理权限请求，否则会导致闪退
+            // 默认拒绝所有权限请求，避免安全问题
+            //request.deny();
+            //log('权限请求已拒绝: ${request.origin}');
+            return PermissionResponse(
+              resources: request.resources,
+              action: PermissionResponseAction.DENY,
+            );
           },
         );
 

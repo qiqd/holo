@@ -222,9 +222,8 @@ class Common extends SourceService {
       // 解析HTML文档
       var doc = parse(htmlStr);
       // 处理嵌入式视频
-      if (rule.embedVideoSelector != null &&
-          rule.embedVideoSelector!.isNotEmpty) {
-        var embedSelectors = rule.embedVideoSelector!.split(',');
+      if (rule.embedVideoSelector.isNotEmpty) {
+        var embedSelectors = rule.embedVideoSelector.split(',');
         for (var selector in embedSelectors) {
           var tempUrl = doc.querySelector(selector)?.attributes['src'] ?? '';
           tempUrl = tempUrl.contains('http')
@@ -251,12 +250,11 @@ class Common extends SourceService {
       var videoAttributes = videoElement?.attributes ?? {};
       var videoUrl = '';
       // 如果规则中指定了视频元素属性，直接从属性中获取URL
-      if (rule.videoElementAttribute != null &&
-          rule.videoElementAttribute!.isNotEmpty) {
+      if (rule.videoElementAttribute.isNotEmpty) {
         videoUrl =
             doc
                 .querySelector(rule.playerVideoSelector)
-                ?.attributes[rule.videoElementAttribute!] ??
+                ?.attributes[rule.videoElementAttribute] ??
             '';
         videoUrl = (videoUrl.contains('m3u8') || videoUrl.contains('mp4'))
             ? pattern.firstMatch(videoUrl)?.group(0) ?? ''

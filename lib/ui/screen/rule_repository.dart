@@ -25,9 +25,11 @@ class _RuleRepositoryState extends State<RuleRepository> {
     });
     var r = await RuleApi.getRules(
       onError: (error) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error)));
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error)));
+        }
       },
     );
     safeSetState(() {
@@ -98,6 +100,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
                   itemCount: _rules.length,
                   itemBuilder: (context, index) {
                     return ListTile(
+                      onTap: () {},
                       leading: SizedBox(
                         width: 60,
                         height: 60,

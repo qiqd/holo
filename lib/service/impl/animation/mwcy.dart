@@ -83,7 +83,12 @@ class Mwcy implements SourceService {
                   .querySelector("div.detail-info.rel.flex-auto.lightSpeedIn a")
                   ?.attributes["href"] ??
               "";
-          return Media(id: id, type: status, title: nameCn, coverUrl: cover);
+          return Media(
+            id: id,
+            type: status,
+            title: nameCn,
+            coverUrl: cover.replaceFirst('//', 'https://'),
+          );
         }).toList();
         return medias;
       }
