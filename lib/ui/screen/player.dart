@@ -811,7 +811,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                     ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+
           // 角色
           if (widget.character.isNotEmpty)
             _buildPersonGrid(
@@ -833,8 +833,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                     "",
               ),
             ),
-          const SliverToBoxAdapter(child: SizedBox(height: 6)),
-          // 角色
+
+          // 人物
           if (widget.person.isNotEmpty)
             _buildPersonGrid(
               title: "人物",
