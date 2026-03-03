@@ -14,8 +14,10 @@ import 'package:url_launcher/url_launcher.dart';
 class CheckVersion {
   /// 匹配的安装包名称
   static String matchName = '';
+
   /// 设备支持的 ABI
   static String supportedAbi = '';
+
   /// 设备信息插件实例
   static final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
@@ -95,10 +97,10 @@ class CheckVersion {
             child: Column(
               children: [
                 ListTile(
-                  title: Text(
+                  subtitle: Text(
                     "${context.tr("common.current_version")}:v${asset.currentVersion}",
                   ),
-                  subtitle: Text(
+                  title: Text(
                     "${context.tr("common.latest_version")}:v${asset.latestVersion}",
                   ),
                 ),

@@ -683,6 +683,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                   _isEpisodeDrawerOpen = false;
                   _isSettingDrawerOpen = false;
                 });
+                _tabController.animateTo(1);
               } else {
                 setState(() {
                   _isEpisodeDrawerOpen = true;
@@ -863,6 +864,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                 image: widget.person[index].images?.large ?? "",
                 name: widget.person[index].name ?? "",
                 role: widget.person[index].relation ?? "",
+                isCharacter: false,
               ),
             ),
         ],
