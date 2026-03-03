@@ -23,8 +23,8 @@ class _CalendarScreenState extends State<CalendarScreen>
   List<Calendar> _calendar = [];
   String? _msg;
   List<String> _weekdays = tr("calendar.week").split(',');
-  void _fetchCalendar() async {
-    if (_calendar.isNotEmpty && DateTime.now().hour % 3 != 0) {
+  void _fetchCalendar({bool refresh = false}) async {
+    if (_calendar.isNotEmpty && DateTime.now().hour % 3 != 0 && !refresh) {
       return;
     }
     setState(() {
@@ -78,7 +78,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
             IconButton(
               tooltip: 'Refresh Calendar',
-              onPressed: _fetchCalendar,
+              onPressed: () => _fetchCalendar(refresh: true),
               icon: Icon(Icons.refresh_rounded),
             ),
           ],
