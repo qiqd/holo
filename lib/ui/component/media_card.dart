@@ -129,13 +129,18 @@ class MediaCard extends StatelessWidget {
                                 ),
                               ),
                             )
-                          : Text(
-                              title.isNotEmpty
+                          : Tooltip(
+                              message: title.isNotEmpty
                                   ? title
                                   : context.tr("component.title"),
-                              style: Theme.of(context).textTheme.titleMedium,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                              child: Text(
+                                title.isNotEmpty
+                                    ? title
+                                    : context.tr("component.title"),
+                                style: Theme.of(context).textTheme.titleMedium,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
 
                       // 匹配度
@@ -181,14 +186,17 @@ class MediaCard extends StatelessWidget {
                           ? Row(
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    genre!,
-                                    style: const TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 12,
+                                  child: Tooltip(
+                                    message: genre,
+                                    child: Text(
+                                      genre!,
+                                      style: const TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 12,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
