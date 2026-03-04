@@ -1450,7 +1450,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     // _controller?.dispose();
     _playerNotifier.value?.dispose();
