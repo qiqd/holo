@@ -7,7 +7,7 @@ import 'package:logger/web.dart';
 /// 提供规则的获取功能
 class RuleApi {
   /// 带有拦截器的Dio实例
-  static Dio dio = HttpUtil.createDioWithInterceptor();
+  static Dio dio = HttpUtil.createDio();
 
   /// 日志记录器
   static final Logger _logger = Logger();
@@ -18,7 +18,10 @@ class RuleApi {
   static Future<List<Rule>> getRules({Function(String error)? onError}) async {
     try {
       // 发起获取规则的请求
-      final response = await dio.get("/rule");
+      const String ruleRepositoryUrl = String.fromEnvironment(
+        "RULE_REPOSITORY_URL",
+      );
+      final response = await dio.get("$ruleRepositoryUrl/api/rule");
       if (response.statusCode == 200) {
         // 解析响应数据
         final rules = (response.data as List)

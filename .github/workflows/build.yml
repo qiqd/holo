@@ -47,7 +47,7 @@ jobs:
 
       - name: Build Android APKs for all architectures
         run: |
-          flutter build apk --${{ github.event.inputs.build_type }} --split-per-abi --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
+          flutter build apk --${{ github.event.inputs.build_type }} --split-per-abi --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}} --dart-define=RULE_REPOSITORY_URL=${{secrets.RULE_REPOSITORY_URL}}
 
       - name: List built APKs
         run: ls -la build/app/outputs/flutter-apk/
@@ -78,7 +78,7 @@ jobs:
 
       - name: Build iOS IPA
         run: |
-          flutter build ios --${{ github.event.inputs.build_type }} --no-codesign --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
+          flutter build ios --${{ github.event.inputs.build_type }} --no-codesign --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}} --dart-define=RULE_REPOSITORY_URL=${{secrets.RULE_REPOSITORY_URL}}
           mkdir -p build/ios/ipa
           cd build/ios
           zip -r ipa/Runner.ipa Release-iphoneos/Runner.app
@@ -118,7 +118,7 @@ jobs:
 
       - name: Build Windows executable
         run: |
-          flutter build windows --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
+          flutter build windows --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}} --dart-define=RULE_REPOSITORY_URL=${{secrets.RULE_REPOSITORY_URL}}
 
       - name: List built Windows artifacts
         run: Get-ChildItem -Path build\windows\x64\runner\${{ github.event.inputs.build_type }}\
@@ -159,7 +159,7 @@ jobs:
 
       - name: Build macOS app
         run: |
-          flutter build macos --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
+          flutter build macos --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}} --dart-define=RULE_REPOSITORY_URL=${{secrets.RULE_REPOSITORY_URL}}
 
       - name: List built macOS artifacts
         run: ls -la build/macos/Build/Products/Release/
@@ -206,7 +206,7 @@ jobs:
 
       - name: Build Linux app
         run: |
-          flutter build linux --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}}
+          flutter build linux --${{ github.event.inputs.build_type }} --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}} --dart-define=RULE_REPOSITORY_URL=${{secrets.RULE_REPOSITORY_URL}}
 
       - name: List built Linux artifacts
         run: ls -la build/linux/x64/release/bundle/
