@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/main.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Appearance extends StatefulWidget {
@@ -127,7 +127,7 @@ class _AppearanceState extends State<Appearance> {
               MyApp.appSettingNotifier.value = appSetting.copyWith(
                 themeMode: currentTheme?.index,
               );
-              LocalStore.saveAppSetting(MyApp.appSettingNotifier.value);
+              LocalStorage.saveAppSetting(MyApp.appSettingNotifier.value);
               Navigator.pop(context);
             },
             child: Text('appearance.theme_dialog_confirm'.tr()),
@@ -195,7 +195,7 @@ class _AppearanceState extends State<Appearance> {
     MyApp.appSettingNotifier.value = appSetting.copyWith(
       colorSeed: color.value,
     );
-    LocalStore.saveAppSetting(MyApp.appSettingNotifier.value);
+    LocalStorage.saveAppSetting(MyApp.appSettingNotifier.value);
   }
 
   /// 显示图片选择器
@@ -224,7 +224,7 @@ class _AppearanceState extends State<Appearance> {
             MyApp.appSettingNotifier.value = appSetting.copyWith(
               useSystemColor: v,
             );
-            LocalStore.saveAppSetting(MyApp.appSettingNotifier.value);
+            LocalStorage.saveAppSetting(MyApp.appSettingNotifier.value);
           }),
         ),
       ListTile(

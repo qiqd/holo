@@ -2,12 +2,15 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/util/http_util.dart';
+import 'package:holo/util/local_storage.dart';
 
 /// 设置相关API服务类
 /// 提供设置的保存和获取功能
 class SettingApi {
   /// 带有拦截器的Dio实例
-  static Dio dio = HttpUtil.createDioWithInterceptor();
+  static Dio dio = HttpUtil.createDioWithInterceptor(
+    LocalStorage.getServerUrl() ?? '',
+  );
 
   /// 保存应用设置
   /// [appSetting] 应用设置对象

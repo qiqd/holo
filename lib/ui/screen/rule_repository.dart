@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:holo/api/rule_api.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/extension/safe_set_state.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 
 class RuleRepository extends StatefulWidget {
   const RuleRepository({super.key});
@@ -17,7 +17,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   List<Rule> _rules = [];
-  List<Rule> _localRules = LocalStore.getRules();
+  List<Rule> _localRules = LocalStorage.getRules();
   bool _isLoading = false;
   Future<void> _getRules() async {
     safeSetState(() {
@@ -39,7 +39,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
   }
 
   void _saveRule(Rule rule) {
-    LocalStore.saveRules([rule]);
+    LocalStorage.saveRules([rule]);
   }
 
   Widget _buildTileTrailing(Rule rule) {
@@ -51,7 +51,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
         onPressed: () {
           safeSetState(() {
             _saveRule(rule);
-            _localRules = LocalStore.getRules();
+            _localRules = LocalStorage.getRules();
           });
         },
         icon: const Icon(Icons.download_rounded),

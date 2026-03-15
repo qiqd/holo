@@ -7,12 +7,25 @@ part 'character.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Character {
+  /// 角色图片
   final Image? images;
+
+  /// 角色名称
   final String? name;
+
+  /// 角色关系
   final String? relation;
+
+  /// 角色演员
   final List<Actor>? actors;
+
+  /// 角色类型
   final int? type;
+
+  /// 角色ID
   final int? id;
+
+  /// 角色简介
   final String? summary;
   const Character({
     this.images,

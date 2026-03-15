@@ -44,6 +44,7 @@ dependencies:
   device_info_plus: ^12.3.0
   logger: ^2.6.2
   flex_color_picker: ^3.8.0
+  app_links: ^7.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

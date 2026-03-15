@@ -3,13 +3,15 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:holo/util/http_util.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 
 /// 订阅相关API服务类
 /// 提供订阅历史的查询、删除和保存功能
 class SubscribeApi {
   /// 带有拦截器的Dio实例
-  static Dio dio = HttpUtil.createDioWithInterceptor();
+  static Dio dio = HttpUtil.createDioWithInterceptor(
+    LocalStorage.getServerUrl() ?? '',
+  );
 
   /// 获取所有订阅历史
   /// [exceptionHandler] 异常回调
@@ -19,7 +21,7 @@ class SubscribeApi {
   ) async {
     try {
       // 检查是否配置了服务器地址
-      if (LocalStore.getServerUrl() == null) {
+      if (LocalStorage.getServerUrl() == null) {
         return [];
       }
       // 发起获取订阅历史的请求
@@ -49,7 +51,7 @@ class SubscribeApi {
   ) async {
     try {
       // 检查是否配置了服务器地址
-      if (LocalStore.getServerUrl() == null) {
+      if (LocalStorage.getServerUrl() == null) {
         return null;
       }
       // 发起获取指定订阅历史的请求
@@ -75,7 +77,7 @@ class SubscribeApi {
   ) async {
     try {
       // 检查是否配置了服务器地址
-      if (LocalStore.getServerUrl() == null) {
+      if (LocalStorage.getServerUrl() == null) {
         return;
       }
       // 发起删除所有订阅记录的请求
@@ -102,7 +104,7 @@ class SubscribeApi {
   ) async {
     try {
       // 检查是否配置了服务器地址
-      if (LocalStore.getServerUrl() == null) {
+      if (LocalStorage.getServerUrl() == null) {
         return;
       }
       // 发起删除指定订阅记录的请求
@@ -130,7 +132,7 @@ class SubscribeApi {
   ) async {
     try {
       // 检查是否配置了服务器地址
-      if (LocalStore.getServerUrl() == null) {
+      if (LocalStorage.getServerUrl() == null) {
         return null;
       }
       // 发起保存订阅历史的请求

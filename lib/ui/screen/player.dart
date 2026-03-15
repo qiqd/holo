@@ -10,12 +10,12 @@ import 'package:holo/api/playback_api.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/character.dart';
 import 'package:holo/entity/danmu.dart';
-import 'package:holo/entity/episode.dart';
+import 'package:holo/entity/episode_item.dart';
 import 'package:holo/entity/logvar_episode.dart';
 import 'package:holo/entity/media.dart' as holo_media;
 import 'package:holo/entity/person.dart';
 import 'package:holo/entity/playback_history.dart';
-import 'package:holo/entity/subject.dart';
+import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
@@ -23,8 +23,7 @@ import 'package:holo/ui/component/cap_video_player_kit.dart';
 import 'package:holo/ui/component/circle_avatar_with_text.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
-import 'package:holo/util/language_util.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:holo/extension/safe_set_state.dart';
@@ -37,7 +36,7 @@ import 'package:video_player/video_player.dart';
 
 class PlayerScreen extends StatefulWidget {
   final String mediaId;
-  final Data subject;
+  final SubjectItem subject;
   final SourceService source;
   final String nameCn;
   final bool isLove;
@@ -68,14 +67,14 @@ class _PlayerScreenState extends State<PlayerScreen>
   final GlobalKey<ScaffoldState> _globalScaffoldKey =
       GlobalKey<ScaffoldState>();
   final Logger _logger = Logger();
-  late Data subject = widget.subject;
+  late SubjectItem subject = widget.subject;
   bool _isFullScreen = false;
   String msg = "";
   int episodeIndex = 0;
   int lineIndex = 0;
-  Episode? _episode;
+  List<Episode> _episode = [];
   holo_media.Detail? _detail;
-  bool isloading = false;
+  bool isLoading = false;
   int historyPosition = 0;
   String? playUrl;
   bool _isActive = true;
@@ -102,7 +101,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   );
 
   Future<void> _fetchMediaEpisode() async {
-    isloading = true;
+    isLoading = true;
     try {
       final res = await source.fetchDetail(
         mediaId,
@@ -123,7 +122,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         msg = e.toString();
       });
     } finally {
-      isloading = false;
+      isLoading = false;
     }
   }
 
@@ -134,7 +133,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }) async {
     safeSetState(() {
       msg = "";
-      isloading = true;
+      isLoading = true;
     });
     try {
       if (_detail != null) {
@@ -162,14 +161,14 @@ class _PlayerScreenState extends State<PlayerScreen>
           (e) => safeSetState(() {
             _logger.e("fetchView error: $e");
             msg = "player.playback_error".tr();
-            isloading = false;
+            isLoading = false;
             onComplete?.call(msg);
           }),
         );
         if (newUrl == null || newUrl.isEmpty) {
           safeSetState(() {
             msg = "player.playback_error".tr();
-            isloading = false;
+            isLoading = false;
             onComplete?.call(msg);
           });
           return;
@@ -197,7 +196,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       });
     } finally {
       safeSetState(() {
-        isloading = false;
+        isLoading = false;
       });
     }
   }
@@ -231,7 +230,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _loadHistory() async {
-    final history = LocalStore.getPlaybackHistoryById(widget.subject.id!);
+    final history = LocalStorage.getPlaybackHistoryById(widget.subject.id);
     if (history != null && mounted) {
       setState(() {
         episodeIndex = history.episodeIndex;
@@ -242,8 +241,8 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   void _fetchEpisode() async {
-    final res = await Api.bangumi.fethcEpisode(
-      widget.subject.id!,
+    final res = await Api.bangumi.fetchEpisode(
+      widget.subject.id,
       (e) => setState(() {
         _logger.e("fetchEpisode error: $e");
         msg = e.toString();
@@ -266,7 +265,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       return;
     }
     PlaybackHistory history = PlaybackHistory(
-      subId: widget.subject.id!,
+      subId: widget.subject.id,
       title: nameCn,
       episodeIndex: episodeIndex,
       lineIndex: lineIndex,
@@ -274,13 +273,12 @@ class _PlayerScreenState extends State<PlayerScreen>
       createdAt: DateTime.now(),
       // position: _controller?.value.position.inSeconds ?? 0,
       position: p,
-      imgUrl: widget.subject.images?.large ?? "",
+      imgUrl: widget.subject.images.large ?? "",
     );
     _syncPlaybackHistory(history);
     var data = widget.subject;
-    data.sourceName = source.getName();
-    LocalStore.setSubjectCacheAndSource(data);
-    LocalStore.addPlaybackHistory(history);
+    LocalStorage.setSubjectCache(data);
+    LocalStorage.addPlaybackHistory(history);
   }
 
   void _toggleFullScreen(bool isFullScreen) async {
@@ -327,7 +325,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     });
     if (isFirstLoad) {
       var data = await Api.logvar.fetchEpisodeFromLogvar(
-        keyword ?? subject.nameCn ?? "",
+        keyword ?? subject.title,
         (e) {
           hasError = true;
           if (mounted) {
@@ -365,7 +363,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (hasError || _bestDanmakuSourceMatch == null) {
       return;
     }
-    var remainder = episodeIndex.remainder(_episode?.total ?? 0);
+    var remainder = episodeIndex.remainder(_episode.length);
     if (remainder >= (_bestDanmakuSourceMatch?.episodes?.length ?? 0)) {
       safeSetState(() {
         _isDanmakuLoading = false;
@@ -414,7 +412,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   void _loadDanmakuSetting() {
     setState(() {
-      _danmakuSetting = LocalStore.getAppSetting().danmakuSetting.copyWith(
+      _danmakuSetting = LocalStorage.getAppSetting().danmakuSetting.copyWith(
         danmakuOffset: 0,
       );
     });
@@ -663,8 +661,8 @@ class _PlayerScreenState extends State<PlayerScreen>
         child: Center(
           child: CapVideoPlayerKit(
             title: widget.nameCn,
-            subTitle: _episode?.data?[episodeIndex].nameCn,
-            isloading: isloading,
+            subTitle: _episode[episodeIndex].title,
+            isLoading: isLoading,
             centerMsg: msg,
             playerNotifier: _playerNotifier,
             isFullScreen: isFullScreen,
@@ -711,12 +709,12 @@ class _PlayerScreenState extends State<PlayerScreen>
             },
             onError: (error) => setState(() {
               msg = error.toString();
-              isloading = false;
+              isLoading = false;
               _logger.e("player.error: $msg");
             }),
 
             onNextTab: () {
-              if (isloading ||
+              if (isLoading ||
                   episodeIndex + 1 >
                       _detail!.lines![lineIndex].episodes!.length - 1) {
                 return;
@@ -750,15 +748,15 @@ class _PlayerScreenState extends State<PlayerScreen>
           // 简介卡片
           SliverToBoxAdapter(
             child: MediaCard(
-              id: "player_${subject.id!}",
-              imageUrl: subject.images?.large!,
-              title: getTitle(subject),
-              genre: subject.metaTags?.join('/'),
-              episode: subject.eps ?? 0,
-              rating: subject.rating?.score,
-              ratingCount: subject.rating?.total,
+              id: "player_${subject.id}",
+              imageUrl: subject.images.large!,
+              title: subject.title,
+              genre: subject.metaTags.join('/'),
+              episode: subject.totalEpisodes,
+              rating: subject.rating,
+              ratingCount: subject.ratingCount,
               height: 180,
-              airDate: subject.date,
+              airDate: subject.airDate,
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 6)),
@@ -881,12 +879,10 @@ class _PlayerScreenState extends State<PlayerScreen>
               _fetchViewInfo();
             },
           )
-        : _episode == null
-        ? _buildFadeEpisodeSection()
         : GridView.builder(
             key: PageStorageKey("player_episodes"),
             padding: EdgeInsets.all(10),
-            itemCount: _episode?.data?.length ?? 0,
+            itemCount: _episode.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               mainAxisSpacing: 5,
@@ -905,7 +901,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                 ).colorScheme.primaryContainer,
                 selected: episodeIndex == index,
                 onTap: () {
-                  if (episodeIndex == index || isloading) {
+                  if (episodeIndex == index || isLoading) {
                     return;
                   }
                   _onEpisodeSelected(index);
@@ -913,8 +909,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                 subtitle: Text(
                   maxLines: 4,
                   overflow: TextOverflow.ellipsis,
-                  _episode?.data?[index].nameCn ??
-                      "player.no_episode_name".tr(),
+                  _episode[index].title.isNotEmpty
+                      ? _episode[index].title
+                      : "player.no_episode_name".tr(),
                 ),
                 title: Row(
                   children: [
@@ -1022,45 +1019,12 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  Widget _buildGenre() {
-    bool isSelected = false;
-    bool isFilterSelected = false;
-    return Wrap(
-      children: [
-        InputChip(label: Text('input_chip')),
-        ChoiceChip(
-          label: Text('choineChip'),
-          selected: isSelected,
-          onSelected: (bool value) {
-            setState(() {
-              isSelected = value;
-            });
-          },
-        ),
-        FilterChip(
-          label: Text('filterChip'),
-          onSelected: (bool value) {
-            setState(() {
-              isFilterSelected = value;
-            });
-          },
-        ),
-        ActionChip(
-          label: Text('actionChip'),
-          onPressed: () {
-            _logger.d("actionChip pressed");
-          },
-        ),
-      ],
-    );
-  }
-
   Widget _buildEpisodeDrawer() {
-    final eps = _episode?.data;
+    final eps = _episode;
     return SizedBox.expand(
       child: ListView.builder(
         key: const PageStorageKey("player_episodes_list"),
-        itemCount: eps?.length ?? 0,
+        itemCount: eps.length,
         itemBuilder: (context, index) {
           return ListTile(
             selected: index == episodeIndex,
@@ -1069,7 +1033,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               (index + 1).toString(),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            title: Text(eps?[index].nameCn ?? ""),
+            title: Text(eps[index].title),
             trailing: episodeIndex == index
                 ? Container(
                     constraints: BoxConstraints(maxWidth: 80),

@@ -79,9 +79,11 @@ jobs:
       - name: Build iOS IPA
         run: |
           flutter build ios --${{ github.event.inputs.build_type }} --no-codesign --obfuscate --split-debug-info=debug-info/ --dart-define=DAMMAKU_SERVER_URL=${{secrets.DAMMAKU_SERVER_URL}} --dart-define=RULE_REPOSITORY_URL=${{secrets.RULE_REPOSITORY_URL}}
-          mkdir -p build/ios/ipa
+          mkdir -p build/ios/ipa/Payload
           cd build/ios
-          zip -r ipa/Runner.ipa Release-iphoneos/Runner.app
+          cp -R Release-iphoneos/Runner.app ipa/Payload/
+          cd ipa
+          zip -r Runner.ipa Payload/
 
       - name: List built IPA
         run: ls -la build/ios/ipa/

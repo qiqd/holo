@@ -4,9 +4,10 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/subject.dart';
+import 'package:holo/entity/subject_item.dart';
+import 'package:holo/extension/safe_set_state.dart';
 import 'package:holo/service/api.dart';
-import 'package:holo/ui/component/media_card.dart';
+import 'package:holo/ui/component/media_grid.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageSearchScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class ImageSearchScreen extends StatefulWidget {
 
 class _ImageSearchScreenState extends State<ImageSearchScreen> {
   List<Map<String, dynamic>>? _searchResult;
-  Subject? _subject;
+  List<SubjectItem> _subject = [];
   XFile? _image;
   bool _isLoading = false;
   final ImagePicker _picker = ImagePicker();
@@ -26,10 +27,10 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
     if (_isLoading) {
       return;
     }
-    setState(() {
+    safeSetState(() {
       _isLoading = true;
       _searchResult = null;
-      _subject = null;
+      _subject = [];
     });
     var result = await Api.animeTrace.findAnimeFromImage(
       image: _image!,
@@ -49,11 +50,11 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
           SnackBar(content: Text(tr('image_search.subject_search_error'))),
         );
       });
-      setState(() {
+      safeSetState(() {
         _subject = res;
       });
-    } else {}
-    setState(() {
+    }
+    safeSetState(() {
       _searchResult = result;
       _isLoading = false;
     });
@@ -127,7 +128,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                             setState(() {
                               _image = null;
                               _searchResult = null;
-                              _subject = null;
+                              _subject = [];
                             });
                           },
                           child: Text(
@@ -228,36 +229,35 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
             ),
             // 显示搜索结果
             Expanded(
-              child: _subject == null
-                  ? Center(child: Text(tr('image_search.no_work')))
-                  : ListView.separated(
-                      itemCount: _subject?.data?.length ?? 0,
-                      padding: EdgeInsets.symmetric(vertical: 6),
-                      separatorBuilder: (context, index) => SizedBox(height: 8),
-                      itemBuilder: (context, index) {
-                        var data = _subject?.data;
-                        var nameCN = data?[index].nameCn!;
-                        var name = data?[index].name!;
-                        return MediaCard(
-                          id: "image.search_${data?[index].id!}",
-                          imageUrl: data?[index].images?.large ?? '',
-                          title: nameCN!.isNotEmpty ? nameCN : name ?? '',
-                          airDate: data?[index].date,
-                          genre: data?[index].metaTags?.join('/') ?? '',
-                          onTap: () {
-                            context.push(
-                              '/detail',
-                              extra: {
-                                "id": data?[index].id ?? 0,
-                                "keyword": data?[index].nameCn ?? '',
-                                "cover": data?[index].images?.large ?? '',
-                                "from": "image.search",
-                              },
-                            );
-                          },
-                        );
-                      },
-                    ),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 6,
+                  crossAxisSpacing: 6,
+                ),
+                itemCount: _subject.length,
+                padding: EdgeInsets.symmetric(vertical: 6),
+                itemBuilder: (context, index) {
+                  var data = _subject[index];
+                  return MediaGrid(
+                    id: "image.search_${data.id}",
+                    imageUrl: data.images.large ?? '',
+                    title: data.title,
+                    airDate: data.airDate,
+                    onTap: () {
+                      context.push(
+                        '/detail',
+                        extra: {
+                          "id": data.id,
+                          "keyword": data.title,
+                          "cover": data.images.large ?? '',
+                          "from": "image.search",
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/extension/safe_set_state.dart';
 import 'package:holo/service/api.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class RuleManager extends StatefulWidget {
@@ -19,7 +19,7 @@ class RuleManager extends StatefulWidget {
 }
 
 class _RuleManagerState extends State<RuleManager> {
-  List<Rule> _rules = LocalStore.getRules();
+  List<Rule> _rules = LocalStorage.getRules();
   String _rulesStr = '';
   bool _isUpdating = false;
   void _importRulesFromJson() {
@@ -30,9 +30,9 @@ class _RuleManagerState extends State<RuleManager> {
       var rules = (json.decode(_rulesStr) as List)
           .map((e) => Rule.fromJson(e))
           .toList();
-      LocalStore.saveRules(rules);
+      LocalStorage.saveRules(rules);
       setState(() {
-        _rules = LocalStore.getRules();
+        _rules = LocalStorage.getRules();
       });
       Api.initSources();
       Api.delayTest();
@@ -48,7 +48,7 @@ class _RuleManagerState extends State<RuleManager> {
     safeSetState(() {
       _isUpdating = true;
     });
-    _rules = LocalStore.getRules();
+    _rules = LocalStorage.getRules();
     Api.initSources();
     await Api.delayTest();
     safeSetState(() {
@@ -79,7 +79,7 @@ class _RuleManagerState extends State<RuleManager> {
           onVisibilityChanged: (info) {
             if (info.visibleFraction > 0) {
               setState(() {
-                _rules = LocalStore.getRules();
+                _rules = LocalStorage.getRules();
               });
             }
           },
@@ -215,7 +215,9 @@ class _RuleManagerState extends State<RuleManager> {
                             icon: const Icon(Icons.delete_rounded),
                             onPressed: () {
                               setState(() {
-                                LocalStore.removeRuleByName(_rules[index].name);
+                                LocalStorage.removeRuleByName(
+                                  _rules[index].name,
+                                );
                                 _rules.removeAt(index);
                               });
                             },
@@ -227,7 +229,7 @@ class _RuleManagerState extends State<RuleManager> {
                             onChanged: (value) {
                               setState(() {
                                 _rules[index].isEnabled = value;
-                                LocalStore.updateRule(_rules[index]);
+                                LocalStorage.updateRule(_rules[index]);
                               });
                             },
                           ),

@@ -2,17 +2,18 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:holo/api/setting_api.dart';
 import 'package:holo/entity/app_setting.dart';
-import 'package:holo/entity/calendar.dart';
+import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/entity/subject.dart';
+import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 本地存储管理类，使用 SharedPreferences 进行数据持久化
-class LocalStore {
+class LocalStorage {
   /// 存储键前缀
   static const String _key = "holo_local_store";
+
   /// SharedPreferences 实例
   static SharedPreferences? _prefs;
 
@@ -37,15 +38,29 @@ class LocalStore {
 
   /// 获取认证令牌
   /// 返回存储的令牌，若不存在则返回 null
-  static String? getToken() {
+  static String? getAccessToken() {
     return _prefs!.getString("${_key}_token");
   }
 
   /// 设置认证令牌
   /// [token]: 认证令牌字符串
-  static void setToken(String token) {
+  static void setAccessToken(String token) {
     if (_prefs == null) return;
     _prefs!.setString("${_key}_token", token);
+  }
+
+  /// 设置刷新令牌
+  /// [refreshToken]: 刷新令牌字符串
+  static void setRefreshToken(String refreshToken) {
+    if (_prefs == null) return;
+    _prefs!.setString("${_key}_refresh_token", refreshToken);
+  }
+
+  /// 设置刷新令牌
+  /// [refreshToken]: 刷新令牌字符串
+  static String? getRefreshToken() {
+    if (_prefs == null) return null;
+    return _prefs!.getString("${_key}_refresh_token");
   }
 
   /// 获取用户邮箱
@@ -352,14 +367,14 @@ class LocalStore {
     return _prefs!.getString("${_key}_rule_repository_url") ?? "";
   }
 
-  /// 保存主题缓存和数据源
-  /// [data]: 主题数据对象
+  /// 保存条目缓存和数据源
+  /// [data]: 条目数据对象
   /// 返回操作是否成功
-  static bool setSubjectCacheAndSource(Data data) {
+  static bool setSubjectCache(SubjectItem data) {
     if (_prefs == null) return false;
-    var dataListStr = _prefs!.getStringList("${_key}_data_source") ?? [];
+    var dataListStr = _prefs!.getStringList("${_key}_subject_cache") ?? [];
     var dataList = dataListStr
-        .map((item) => Data.fromJson(json.decode(item)))
+        .map((item) => SubjectItem.fromJson(json.decode(item)))
         .toList();
     dataList.add(data);
     var dataMap = {};
@@ -369,76 +384,87 @@ class LocalStore {
     dataListStr = dataMap.values
         .map((item) => json.encode(item.toJson()))
         .toList();
-    _prefs!.setStringList("${_key}_data_cache", dataListStr);
+    _prefs!.setStringList("${_key}_subject_cache", dataListStr);
     return true;
   }
 
   /// 根据订阅 ID 获取主题缓存和数据源
   /// [subId]: 订阅 ID
   /// 返回主题数据对象，若不存在则返回 null
-  static Data? getSubjectCacheAndSource(int subId) {
+  static SubjectItem? getSubjectCache(int subId) {
     if (_prefs == null) return null;
-    var dataListStr = _prefs!.getStringList("${_key}_data_cache") ?? [];
+    var dataListStr = _prefs!.getStringList("${_key}_subject_cache") ?? [];
     if (dataListStr.isEmpty) {
       return null;
     }
     var dataList = dataListStr
-        .map((item) => Data.fromJson(json.decode(item)))
+        .map((item) => SubjectItem.fromJson(json.decode(item)))
         .toList();
     return dataList.where((item) => item.id == subId).firstOrNull;
   }
 
   /// 保存日历缓存
   /// [calendars]: 日历对象列表
-  static void setCalendarCache(List<Calendar> calendars) {
+  static void setDailyBroadcastCache(List<DailyBroadcast> dailyBroadcasts) {
     if (_prefs == null) return;
-    var calendarsStr = _prefs!.getStringList("${_key}_calendar_cache") ?? [];
-    calendarsStr.addAll(calendars.map((item) => json.encode(item.toJson())));
-    _prefs!.setStringList("${_key}_calendar_cache", calendarsStr);
+    var dailyBroadcastsStr =
+        _prefs!.getStringList("${_key}_daily_broadcast_cache") ?? [];
+    dailyBroadcastsStr.addAll(
+      dailyBroadcasts.map((item) => json.encode(item.toJson())),
+    );
+    _prefs!.setStringList("${_key}_daily_broadcast_cache", dailyBroadcastsStr);
   }
 
   /// 获取日历缓存
   /// 返回日历对象列表
-  static List<Calendar> getCalendarCache() {
+  static List<DailyBroadcast> getDailyBroadcastCache() {
     if (_prefs == null) return [];
-    var calendarsStr = _prefs!.getStringList("${_key}_calendar_cache") ?? [];
-    return calendarsStr
-        .map((item) => Calendar.fromJson(json.decode(item)))
+    var dailyBroadcastsStr =
+        _prefs!.getStringList("${_key}_daily_broadcast_cache") ?? [];
+    return dailyBroadcastsStr
+        .map((item) => DailyBroadcast.fromJson(json.decode(item)))
         .toList();
   }
 
   /// 保存首页热门缓存
-  /// [s]: 主题对象
-  static void setHomeHotCache(Subject s) {
+  static void setHomeHotCache(List<SubjectItem> hot) {
     if (_prefs == null) return;
-    _prefs!.setString("${_key}_home_hot_cache", json.encode(s.toJson()));
+    _prefs!.setStringList(
+      "${_key}_home_hot_cache",
+      hot.map((item) => json.encode(item.toJson())).toList(),
+    );
   }
 
   /// 获取首页热门缓存
-  /// 返回主题对象，若不存在则返回 null
-  static Subject? getHomeHotCache() {
-    if (_prefs == null) return null;
-    var homeCache = _prefs!.getString("${_key}_home_hot_cache");
-    if (homeCache == null) return null;
+  /// 返回主题对象列表，若不存在则返回空列表
+  static List<SubjectItem> getHomeHotCache() {
+    if (_prefs == null) return [];
+    var homeCache = _prefs!.getStringList("${_key}_home_hot_cache");
+    if (homeCache == null) return [];
     log("home->getHomeCache: get cache ok");
-    return Subject.fromJson(json.decode(homeCache));
+    return homeCache
+        .map((item) => SubjectItem.fromJson(json.decode(item)))
+        .toList();
   }
 
   /// 保存首页排行榜缓存
-  /// [s]: 主题对象
-  static void setHomeRankCache(Subject s) {
+  static void setHomeRankCache(List<SubjectItem> rank) {
     if (_prefs == null) return;
-    _prefs!.setString("${_key}_home_rank_cache", json.encode(s.toJson()));
+    _prefs!.setStringList(
+      "${_key}_home_rank_cache",
+      rank.map((item) => json.encode(item.toJson())).toList(),
+    );
   }
 
   /// 获取首页排行榜缓存
-  /// 返回主题对象，若不存在则返回 null
-  static Subject? getHomeRankCache() {
-    if (_prefs == null) return null;
-    var homeCache = _prefs!.getString("${_key}_home_rank_cache");
-    if (homeCache == null) return null;
+  static List<SubjectItem> getHomeRankCache() {
+    if (_prefs == null) return [];
+    var homeCache = _prefs!.getStringList("${_key}_home_rank_cache");
+    if (homeCache == null) return [];
     log("home->getHomeRankCache: get cache ok");
-    return Subject.fromJson(json.decode(homeCache));
+    return homeCache
+        .map((item) => SubjectItem.fromJson(json.decode(item)))
+        .toList();
   }
 
   /// 获取背景图片路径

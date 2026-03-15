@@ -77,6 +77,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           ),
         );
+        MyApp.initAppSetting();
         setState(() {
           _authMode = AuthMode.login;
           _isLoading = false;

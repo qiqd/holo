@@ -1,9 +1,8 @@
-import 'package:holo/entity/calendar.dart';
 import 'package:holo/entity/character.dart';
-import 'package:holo/entity/episode.dart';
+import 'package:holo/entity/daily_broadcast.dart';
+import 'package:holo/entity/episode_item.dart';
 import 'package:holo/entity/person.dart';
-import 'package:holo/entity/subject.dart' show Data, Subject;
-
+import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
 
 /// 元数据服务抽象类
@@ -22,7 +21,7 @@ abstract class MetaService {
   /// [keyword] 搜索关键词
   /// [exception] 异常处理器
   /// 返回搜索结果
-  Future<Subject?> fetchSearch(
+  Future<List<SubjectItem>> fetchSearch(
     String keyword,
     void Function(dynamic) exception,
   );
@@ -35,7 +34,7 @@ abstract class MetaService {
   /// [sort] 排序方式
   /// [exception] 异常处理器
   /// 返回推荐结果
-  Future<Subject?> fetchRecommend({
+  Future<List<SubjectItem>> fetchRecommend({
     int page = 1,
     int size = 10,
     int year = 2019,
@@ -47,13 +46,15 @@ abstract class MetaService {
   /// 获取日历信息
   /// [exception] 异常处理器
   /// 返回日历列表
-  Future<List<Calendar>> fetchCalendar(void Function(dynamic) exception);
+  Future<List<DailyBroadcast>> fetchDailyBroadcast(
+    void Function(dynamic) exception,
+  );
 
   /// 获取媒体详情
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回媒体详情
-  Future<Data?> fetchSubjectSync(
+  Future<SubjectItem?> fetchSubjectById(
     int subjectId,
     void Function(dynamic) exception,
   );
@@ -89,7 +90,7 @@ abstract class MetaService {
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回剧集信息
-  Future<Episode?> fethcEpisode(
+  Future<List<Episode>> fetchEpisode(
     int subjectId,
     void Function(dynamic) exception,
   );

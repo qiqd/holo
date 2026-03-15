@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
 import 'package:holo/entity/playback_history.dart';
-import 'package:holo/entity/subject.dart';
+import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:holo/extension/safe_set_state.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/media_card.dart';
@@ -47,7 +47,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
       setState(() {
         playback = records;
         playback.sort((a, b) => b.lastPlaybackAt.compareTo(a.lastPlaybackAt));
-        LocalStore.updatePlaybackHistory(records);
+        LocalStorage.updatePlaybackHistory(records);
       });
     }
   }
@@ -65,14 +65,14 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         wish = records.where((item) => item.viewingStatus == 1).toList();
         watching = records.where((item) => item.viewingStatus == 3).toList();
         watched = records.where((item) => item.viewingStatus == 2).toList();
-        LocalStore.updateSubscribeHistory(records);
+        LocalStorage.updateSubscribeHistory(records);
       });
     }
   }
 
   void _loadHistory() {
-    final playbackHistory = LocalStore.getPlaybackHistory();
-    final subscribeHistory = LocalStore.getSubscribeHistory();
+    final playbackHistory = LocalStorage.getPlaybackHistory();
+    final subscribeHistory = LocalStorage.getSubscribeHistory();
     safeSetState(() {
       playback = playbackHistory;
       subscribe = subscribeHistory;
@@ -84,13 +84,13 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     });
   }
 
-  Data? _getCacheBySubId(int id) {
-    return LocalStore.getSubjectCacheAndSource(id);
+  SubjectItem? _getCacheBySubId(int id) {
+    return LocalStorage.getSubjectCache(id);
   }
 
   void _deletePlaybackHistory() {
     _checkedPlaybackIds.toList().forEach((id) {
-      LocalStore.removePlaybackHistoryBySubId(id);
+      LocalStorage.removePlaybackHistoryBySubId(id);
       PlayBackApi.deletePlaybackRecordBySubId(id, () {}, (_) {});
     });
     _loadHistory();
@@ -102,12 +102,12 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         .forEach((s) {
           switch (viewingStatus) {
             case -1:
-              LocalStore.removeSubscribeHistoryBySubId(s.subId);
+              LocalStorage.removeSubscribeHistoryBySubId(s.subId);
               SubscribeApi.deleteSubscribeRecordBySubId(s.subId, () {}, (_) {});
               break;
             default:
               s.viewingStatus = viewingStatus;
-              LocalStore.addSubscribeHistory(s);
+              LocalStorage.addSubscribeHistory(s);
               SubscribeApi.saveSubscribeHistory(s, () {}, (_) {});
           }
         });
@@ -157,7 +157,6 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 itemBuilder: (context, index) {
                   final item = s[index];
                   return MediaGrid(
-                    showRating: false,
                     id: "subscribe_${item.subId}",
                     imageUrl: item.imgUrl,
                     title: item.title,
@@ -330,6 +329,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         child: Column(
           children: [
             TabBar(
+              isScrollable: true,
               tabAlignment: .center,
               dividerHeight: 0,
               controller: _tabController,

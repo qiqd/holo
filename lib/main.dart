@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
@@ -9,7 +10,7 @@ import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/character.dart';
 import 'package:holo/entity/person.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/entity/subject.dart' show Data;
+import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
@@ -22,7 +23,7 @@ import 'package:holo/ui/screen/rule_manager.dart';
 import 'package:holo/ui/screen/rule_repository.dart';
 import 'package:holo/ui/screen/rule_test.dart';
 import 'package:holo/ui/screen/account.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:holo/ui/screen/calendar.dart';
 import 'package:holo/ui/screen/detail.dart';
 import 'package:holo/ui/screen/home.dart';
@@ -40,9 +41,9 @@ void main() async {
   // 初始化国际化
   await EasyLocalization.ensureInitialized();
   // 初始化本地存储
-  await LocalStore.init();
-  // 初始化Bangumi服务的Dio实例
-  await Bangumi.initDio();
+  await LocalStorage.init();
+
+  await Bangumi.init(code: PlatformDispatcher.instance.locale.languageCode);
   // 初始化动画源服务
   Api.initSources();
   // 确保视频播放器已初始化（Windows和Linux平台）
@@ -97,7 +98,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   /// 应用设置变更通知器
   static final appSettingNotifier = ValueNotifier<AppSetting>(
-    LocalStore.getAppSetting(),
+    LocalStorage.getAppSetting(),
   );
 
   /// 构造函数
@@ -108,9 +109,9 @@ class MyApp extends StatefulWidget {
   static Future<void> initAppSetting() async {
     final setting = await SettingApi.fetchSetting((msg) {});
     if (setting != null) {
-      LocalStore.saveAppSetting(setting, isSync: false);
+      LocalStorage.saveAppSetting(setting, isSync: false);
     }
-    var appSetting = setting ?? LocalStore.getAppSetting();
+    var appSetting = setting ?? LocalStorage.getAppSetting();
     MyApp.appSettingNotifier.value = appSetting;
   }
 
@@ -177,7 +178,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             keyword: map['keyword'] as String,
             cover: map['cover'] as String,
             from: map['from'] as String,
-            subject: map['subject'] as Data?,
+            subject: map['subject'] as SubjectItem?,
           );
         },
       ),
@@ -189,7 +190,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           final map = state.extra as Map<String, dynamic>;
           return PlayerScreen(
             mediaId: map['mediaId'] as String,
-            subject: map['subject'] as Data,
+            subject: map['subject'] as SubjectItem,
             source: map['source'] as SourceService,
             nameCn: map['nameCn'] as String,
             isLove: map['isLove'] as bool,
@@ -343,14 +344,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             orElse: () => ThemeMode.system,
           ),
           // 背景图片构建器
-          builder: LocalStore.getBackgroundImagePath().isEmpty
+          builder: LocalStorage.getBackgroundImagePath().isEmpty
               ? null
               : (context, child) {
                   return Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: FileImage(
-                          File(LocalStore.getBackgroundImagePath()),
+                          File(LocalStorage.getBackgroundImagePath()),
                         ),
                         fit: BoxFit.cover,
                       ),

@@ -13,7 +13,7 @@ void main() {
       print(json.encode(res));
     });
     test("fetchSubjectSync", () async {
-      var res = await bangumi.fetchSubjectSync(16235, (e) {
+      var res = await bangumi.fetchSubjectById(16235, (e) {
         print(e);
       });
       print(json.encode(res));

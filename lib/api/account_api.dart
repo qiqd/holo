@@ -1,7 +1,7 @@
 import 'dart:developer' show log;
 
 import 'package:dio/dio.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 
 /// 账户相关API服务类
 /// 提供登录和注册功能
@@ -32,8 +32,8 @@ class AccountApi {
         );
         if (response.statusCode == 200) {
           // 保存邮箱和服务器地址
-          LocalStore.setEmail(email);
-          LocalStore.setServerUrl(serverUrl);
+          LocalStorage.setEmail(email);
+          LocalStorage.setServerUrl(serverUrl);
           // 调用成功回调
           successHandler.call();
           return;
@@ -49,9 +49,9 @@ class AccountApi {
         if (response.statusCode == 200) {
           // 获取并保存token
           final token = response.data as String;
-          LocalStore.setToken(token);
-          LocalStore.setEmail(email);
-          LocalStore.setServerUrl(serverUrl);
+          LocalStorage.setAccessToken(token);
+          LocalStorage.setEmail(email);
+          LocalStorage.setServerUrl(serverUrl);
           // 调用成功回调
           successHandler.call();
           return;

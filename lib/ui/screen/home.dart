@@ -4,13 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/subject.dart';
+import 'package:holo/entity/subject_item.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/util/check_version.dart';
-import 'package:holo/util/local_store.dart';
 import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final CarouselController _carouselController = CarouselController();
 
   /// 热门推荐数据通知器
-  final ValueNotifier<List<Data>> _hotNotifier = ValueNotifier([]);
+  final ValueNotifier<List<SubjectItem>> _hotNotifier = ValueNotifier([]);
 
   /// 日志记录器
   final Logger _logger = Logger();
@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _page = 1;
 
   /// 排行榜数据
-  List<Data> _rank = [];
+  List<SubjectItem> _rank = [];
 
   /// 获取热门推荐数据
   Future<void> _fetchHot() async {
@@ -75,10 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
     safeSetState(() {
-      _hotNotifier.value = hot?.data ?? [];
+      _hotNotifier.value = hot;
     });
     // 缓存热门推荐数据
-    LocalStore.setHomeHotCache(Subject(data: hot?.data));
+    LocalStorage.setHomeHotCache(_hotNotifier.value);
   }
 
   /// 获取排行榜数据
@@ -107,13 +107,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     safeSetState(() {
       if (loadMore) {
-        _rank.addAll(rank?.data ?? []);
+        _rank.addAll(rank);
       } else {
-        _rank = rank?.data ?? [];
+        _rank = rank;
       }
     });
     // 缓存排行榜数据
-    LocalStore.setHomeRankCache(Subject(data: _rank));
+    LocalStorage.setHomeRankCache(_rank);
     safeSetState(() {
       _isLoading = false;
     });
@@ -144,8 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     // 从缓存加载数据
-    _hotNotifier.value = LocalStore.getHomeHotCache()?.data ?? [];
-    _rank = LocalStore.getHomeRankCache()?.data ?? [];
+    _hotNotifier.value = LocalStorage.getHomeHotCache();
+    _rank = LocalStorage.getHomeRankCache();
     // 每3小时更新一次数据或数据为空时更新
     if (DateTime.now().hour % 3 == 0 || _hotNotifier.value.isEmpty) {
       _fetchHot();
@@ -259,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// [isLandscape] 是否为横屏
   /// [heroKey] Hero动画标签
   Widget _buildSliverGrid(
-    List<Data> items, {
+    List<SubjectItem> items, {
     required bool isLandscape,
     required String heroKey,
   }) {
@@ -274,21 +274,18 @@ class _HomeScreenState extends State<HomeScreen> {
       itemCount: items.length,
       itemBuilder: (context, index) {
         var item = items[index];
-        var name = item.nameCn != null && item.nameCn!.isNotEmpty
-            ? item.nameCn!
-            : item.name ?? "";
+
         return MediaGrid(
           id: '${heroKey}_${item.id}',
-          showRating: false,
-          imageUrl: item.images?.large ?? "",
-          title: name,
+          imageUrl: item.images.large ?? "",
+          title: item.title,
           onTap: () => context.push(
             '/detail',
             extra: {
-              'id': item.id!,
-              'keyword': name,
+              'id': item.id,
+              'keyword': item.title,
               'subject': item,
-              'cover': item.images?.large ?? '',
+              'cover': item.images.large ?? '',
               'from': heroKey,
             },
           ),
@@ -433,24 +430,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 controller: _carouselController,
                                                 itemSnapping: true,
                                                 onTap: (index) {
-                                                  var name =
-                                                      hot[index].nameCn !=
-                                                              null &&
-                                                          hot[index]
-                                                              .nameCn!
-                                                              .isNotEmpty
-                                                      ? hot[index].nameCn!
-                                                      : hot[index].name ?? "";
                                                   context.push(
                                                     '/detail',
                                                     extra: {
-                                                      'id': hot[index].id!,
+                                                      'id': hot[index].id,
                                                       'subject': hot[index],
-                                                      'keyword': name,
+                                                      'keyword':
+                                                          hot[index].title,
                                                       'cover':
                                                           hot[index]
                                                               .images
-                                                              ?.large ??
+                                                              .large ??
                                                           '',
                                                       'from': "home-hot",
                                                     },
@@ -475,7 +465,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               double.infinity,
                                                           fit: BoxFit.cover,
                                                           imageUrl:
-                                                              e.images?.large ??
+                                                              e.images.large ??
                                                               "",
                                                           errorWidget:
                                                               (
@@ -522,7 +512,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ),
                                                           ),
                                                           child: Text(
-                                                            e.nameCn ?? "",
+                                                            e.title,
                                                             maxLines: 2,
                                                             style: Theme.of(context)
                                                                 .textTheme

@@ -157,8 +157,8 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                     itemBuilder: (context, index) {
                       return MediaGrid(
                         id: _mediaList[index].id!,
-                        title: _mediaList[index].title,
-                        imageUrl: _mediaList[index].coverUrl,
+                        title: _mediaList[index].title!,
+                        imageUrl: _mediaList[index].coverUrl!,
                       );
                     },
                   ),

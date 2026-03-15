@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
@@ -21,7 +21,7 @@ import 'package:holo/extension/safe_set_state.dart';
 
 class CapVideoPlayerKit extends StatefulWidget {
   final ValueNotifier<VideoPlayerController?> playerNotifier;
-  final bool isloading;
+  final bool isLoading;
   final String? title;
   final String? subTitle;
   final bool isFullScreen;
@@ -43,7 +43,7 @@ class CapVideoPlayerKit extends StatefulWidget {
   const CapVideoPlayerKit({
     super.key,
     required this.playerNotifier,
-    required this.isloading,
+    required this.isLoading,
     this.isTablet = false,
     this.isFullScreen = false,
     this.currentEpisodeIndex = 0,
@@ -274,7 +274,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         safeSetState(() {});
       }
       if (_danmuController == null ||
-          widget.isloading ||
+          widget.isLoading ||
           !(widget.playerNotifier.value?.value.isPlaying ?? false) ||
           (widget.playerNotifier.value?.value.isBuffering ?? true)) {
         _danmuController?.pause();
@@ -300,11 +300,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   /// 保存弹幕设置
   void saveDanmuSetting({DanmakuSetting? danmakuSetting}) {
     filterDanmakuItems();
-    final appSetting = LocalStore.getAppSetting();
+    final appSetting = LocalStorage.getAppSetting();
     appSetting.danmakuSetting = danmakuSetting ?? DanmakuSetting();
     settingTimer?.cancel();
     settingTimer = Timer(Duration(seconds: 5), () {
-      LocalStore.saveAppSetting(appSetting);
+      LocalStorage.saveAppSetting(appSetting);
     });
   }
 
@@ -1075,7 +1075,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               // 弹幕层
               widget.dammaku != null ? _buildDanmaku() : SizedBox.shrink(),
               // 加载中或缓冲中
-              if ((player?.value.isBuffering ?? false) || widget.isloading)
+              if ((player?.value.isBuffering ?? false) || widget.isLoading)
                 LoadingOrShowMsg(msg: null),
               //亮度或者音量或者拖拽进度显示 can
               _buildToast(),

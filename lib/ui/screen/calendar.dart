@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/calendar.dart';
+import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -20,7 +20,7 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tabController = TabController(vsync: this, length: 7);
-  List<Calendar> _calendar = [];
+  List<DailyBroadcast> _calendar = [];
   String? _msg;
   List<String> _weekdays = tr("calendar.week").split(',');
   void _fetchCalendar({bool refresh = false}) async {
@@ -30,15 +30,15 @@ class _CalendarScreenState extends State<CalendarScreen>
     setState(() {
       _calendar = [];
     });
-    final calendar = await Api.bangumi.fetchCalendar(
+    final dailyBroadcast = await Api.bangumi.fetchDailyBroadcast(
       (e) => setState(() {
         _msg = e.toString();
       }),
     );
     setState(() {
-      _calendar = calendar;
+      _calendar = dailyBroadcast;
     });
-    LocalStore.setCalendarCache(calendar);
+    LocalStorage.setDailyBroadcastCache(dailyBroadcast);
   }
 
   @override
@@ -52,7 +52,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   @override
   void initState() {
-    _calendar = LocalStore.getCalendarCache();
+    _calendar = LocalStorage.getDailyBroadcastCache();
     _fetchCalendar();
     WidgetsBinding.instance.addObserver(this);
     _tabController.animateTo(DateTime.now().weekday - 1);
@@ -101,7 +101,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                     ? const ShimmerSkeleton()
                     : GridView.builder(
                         padding: const EdgeInsets.all(8),
-                        itemCount: _calendar[index].items?.length ?? 0,
+                        itemCount: _calendar[index].items.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: isLandscape ? 6 : 3,
                           mainAxisSpacing: 8,
@@ -110,22 +110,18 @@ class _CalendarScreenState extends State<CalendarScreen>
                         ),
                         itemBuilder: (context, itemIndex) {
                           final item = _calendar[index].items;
-                          var nameCN = item?[itemIndex].nameCn ?? '';
-                          var name = item?[itemIndex].name ?? "";
+
                           return MediaGrid(
-                            id: "calendar_${item![itemIndex].id ?? 0}",
-                            imageUrl: item[itemIndex].images?.large ?? '',
-                            title: nameCN.isNotEmpty ? nameCN : name,
+                            id: "calendar_${item[itemIndex].id}",
+                            imageUrl: item[itemIndex].images.large ?? '',
+                            title: item[itemIndex].title,
                             airDate: item[itemIndex].airDate,
                             onTap: () => context.push(
                               '/detail',
                               extra: {
-                                'id': item[itemIndex].id!,
-                                'keyword':
-                                    item[itemIndex].nameCn ??
-                                    item[itemIndex].name ??
-                                    "",
-                                'cover': item[itemIndex].images?.large ?? '',
+                                'id': item[itemIndex].id,
+                                'keyword': item[itemIndex].title,
+                                'cover': item[itemIndex].images.large ?? '',
                                 'from': "calendar",
                               },
                             ),

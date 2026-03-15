@@ -10,7 +10,7 @@ import 'package:holo/service/impl/meta/logvar.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/dio_timing_extension.dart';
 import 'package:holo/util/http_util.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 
 /// API服务管理类
 /// 负责管理各种元数据服务和动画源服务
@@ -35,7 +35,7 @@ class Api {
     // 添加内置动画源
     _sources.addAll([AAfun(), Senfen(), Girugiru(), Mwcy(), Mengdao()]);
     // 获取用户规则
-    var ruleList = LocalStore.getRules();
+    var ruleList = LocalStorage.getRules();
     // 构建启用的规则源
     var commonSources = ruleList
         .where((rule) => rule.isEnabled)

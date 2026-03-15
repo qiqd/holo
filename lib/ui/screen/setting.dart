@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
 import 'package:holo/util/check_version.dart';
-import 'package:holo/util/local_store.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -81,8 +81,8 @@ class _SetttingScreenState extends State<SetttingScreen>
           // log('Visibility: ${visibilityInfo.visibleFraction}');
           if (visibilityInfo.visibleFraction > 0) {
             setState(() {
-              _email = LocalStore.getEmail();
-              _token = LocalStore.getToken();
+              _email = LocalStorage.getEmail();
+              _token = LocalStorage.getAccessToken();
             });
           }
         },
@@ -394,7 +394,7 @@ class _SetttingScreenState extends State<SetttingScreen>
                   onCloudSuccess();
                 }, (e) => onCloudfaild(e));
               }
-              LocalStore.clearHistory(clearPlayback: isPlayback);
+              LocalStorage.clearHistory(clearPlayback: isPlayback);
               onLocalSuccess();
             },
             child: Text('setting.data_management.clear_dialog_confirm'.tr()),
@@ -472,7 +472,7 @@ class _SetttingScreenState extends State<SetttingScreen>
               setState(() {
                 _email = null;
               });
-              LocalStore.removeLocalAccount();
+              LocalStorage.removeLocalAccount();
               Navigator.pop(context);
             },
             child: Text('setting.account.signout_dialog_confirm'.tr()),

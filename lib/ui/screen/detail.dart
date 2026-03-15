@@ -7,17 +7,16 @@ import 'package:holo/api/subscribe_api.dart';
 import 'package:holo/entity/character.dart';
 import 'package:holo/entity/media.dart';
 import 'package:holo/entity/person.dart';
-import 'package:holo/entity/subject.dart' show Data;
+import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/entity/subscribe_history.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
-import 'package:holo/util/language_util.dart';
-import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:holo/extension/safe_set_state.dart';
@@ -27,7 +26,7 @@ class DetailScreen extends StatefulWidget {
   final String keyword;
   final String cover;
   final String from;
-  final Data? subject;
+  final SubjectItem? subject;
   const DetailScreen({
     super.key,
     required this.id,
@@ -44,10 +43,10 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen>
     with TickerProviderStateMixin {
   late String keyword = widget.keyword;
-  late Data? data = widget.subject;
+  late SubjectItem? subject = widget.subject;
   List<Person> person = [];
   List<Character> character = [];
-  List<SubjectRelation>? relation;
+  List<SubjectRelation> relation = [];
   Map<SourceService, List<Media>> source2Media = {};
   List<SourceService> sourceService = [];
   bool isLoading = false;
@@ -63,14 +62,14 @@ class _DetailScreenState extends State<DetailScreen>
   bool isSubscribed = false;
   int _viewingStatus = 0;
   void _fetchSubjec() async {
-    if (data == null) {
-      final res = await Api.bangumi.fetchSubjectSync(widget.id, (e) {
+    if (subject == null) {
+      final res = await Api.bangumi.fetchSubjectById(widget.id, (e) {
         setState(() {
           _msg = e.toString();
         });
       });
       setState(() {
-        data = res;
+        subject = res;
       });
     }
     _loadSubscribeHistory();
@@ -158,7 +157,10 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _loadSubscribeHistory() {
-    final history = LocalStore.getSubscribeHistoryById(data!.id!);
+    if (subject == null) {
+      return;
+    }
+    final history = LocalStorage.getSubscribeHistoryById(subject!.id);
     if (mounted && history != null) {
       setState(() {
         isSubscribed = true;
@@ -168,23 +170,22 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _storeSubscribeHistory() async {
-    if (data == null) {
+    if (subject == null) {
       return;
     }
     if (isSubscribed) {
-      var title = getTitle(data!);
       SubscribeHistory history = SubscribeHistory(
-        subId: data!.id!,
-        title: title,
-        imgUrl: data!.images?.large ?? "",
+        subId: subject!.id,
+        title: subject!.title,
+        imgUrl: subject!.images.large ?? "",
         createdAt: DateTime.now(),
         viewingStatus: _viewingStatus,
       );
       _syncSubscribeHistory(history);
-      LocalStore.addSubscribeHistory(history);
+      LocalStorage.addSubscribeHistory(history);
     } else {
-      _cancelSync(data!.id!);
-      LocalStore.removeSubscribeHistoryBySubId(data!.id!);
+      _cancelSync(subject!.id);
+      LocalStorage.removeSubscribeHistoryBySubId(subject!.id);
     }
   }
 
@@ -206,11 +207,10 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Future<void> _openBangumiUrl() async {
-    if (data == null) {
+    if (subject == null) {
       return;
     }
-
-    await launchUrl(Uri.parse("https://bangumi.tv/subject/${data!.id}"));
+    await launchUrl(Uri.parse("https://bangumi.tv/subject/${subject!.id}"));
   }
 
   Widget _buildShimmerSkeleton() {
@@ -355,7 +355,7 @@ class _DetailScreenState extends State<DetailScreen>
       "/player",
       extra: {
         "mediaId": defaultMedia!.id!,
-        "subject": data!,
+        "subject": subject!,
         "source": defaultSource!,
         "nameCn": defaultMedia?.title ?? "detail.no_title".tr(),
         "isLove": isSubscribed,
@@ -420,7 +420,7 @@ class _DetailScreenState extends State<DetailScreen>
           IconButton(
             tooltip: "Subscribe/Unsubscribe",
             onPressed: () {
-              if (data == null) {
+              if (subject == null) {
                 return;
               }
               subscribeHandle();
@@ -537,24 +537,24 @@ class _DetailScreenState extends State<DetailScreen>
         ],
       ),
       body: SafeArea(
-        child: data == null
+        child: subject == null
             ? _buildShimmerSkeleton()
             : Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Column(
                   children: [
                     MediaCard(
-                      id: "${widget.from}_${data!.id!}",
+                      id: "${widget.from}_${subject!.id}",
                       imageUrl: widget.cover,
                       viewingStatus: isSubscribed ? _viewingStatus : null,
-                      title: getTitle(data!),
-                      genre: data!.metaTags?.join('/'),
-                      episode: data!.eps ?? 0,
-                      rating: data!.rating?.score,
+                      title: subject!.title,
+                      genre: subject!.metaTags.join('/'),
+                      episode: subject!.totalEpisodes,
+                      rating: subject!.rating,
                       isFavorite: isSubscribed,
-                      ratingCount: data!.rating?.total,
+                      ratingCount: subject!.ratingCount,
                       height: 200,
-                      airDate: data?.date,
+                      airDate: subject!.airDate,
                       onViewingStatusChange: (status) {
                         setState(() {
                           _viewingStatus = status;
@@ -566,6 +566,7 @@ class _DetailScreenState extends State<DetailScreen>
                       child: Column(
                         children: [
                           TabBar(
+                            isScrollable: true,
                             tabAlignment: .center,
                             controller: tabController,
                             tabs: [
@@ -580,17 +581,15 @@ class _DetailScreenState extends State<DetailScreen>
                               controller: tabController,
                               children: [
                                 // 简介板块
-                                data?.summary != null &&
-                                        data!.summary!.isNotEmpty
+                                subject?.summary.isNotEmpty == true
                                     ? SizedBox(
                                         width: double.infinity,
                                         child: SingleChildScrollView(
                                           padding: EdgeInsets.only(top: 8),
                                           child: Text(
-                                            data?.summary == null ||
-                                                    data!.summary!.isEmpty
+                                            subject?.summary.isEmpty == true
                                                 ? "detail.no_summary".tr()
-                                                : data!.summary!,
+                                                : subject!.summary,
                                           ),
                                         ),
                                       )
@@ -673,39 +672,33 @@ class _DetailScreenState extends State<DetailScreen>
                                           "detail.no_relation_data".tr(),
                                         ),
                                       ),
-                                relation != null
-                                    ? ListView.builder(
-                                        itemCount: relation?.length ?? 0,
-                                        itemBuilder: (context, index) {
-                                          final r = relation![index];
-                                          return ListTile(
-                                            leading: r.images != null
-                                                ? Image.network(
-                                                    r.images!.medium!,
-                                                    fit: BoxFit.cover,
-                                                    errorBuilder:
-                                                        (
-                                                          context,
-                                                          error,
-                                                          stackTrace,
-                                                        ) => const Icon(
-                                                          size: 70,
-                                                          Icons.error,
-                                                        ),
-                                                  )
-                                                : const Icon(Icons.person),
-                                            title: Text(
-                                              r.nameCn ?? "detail.unknown".tr(),
-                                            ),
-                                            subtitle: Text(r.relation ?? ''),
-                                          );
-                                        },
-                                      )
-                                    : Center(
-                                        child: Text(
-                                          "detail.no_related_works_data".tr(),
-                                        ),
+                                ListView.builder(
+                                  itemCount: relation.length,
+                                  itemBuilder: (context, index) {
+                                    final r = relation[index];
+                                    return ListTile(
+                                      leading: r.images != null
+                                          ? Image.network(
+                                              r.images!.medium!,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => const Icon(
+                                                    size: 70,
+                                                    Icons.error,
+                                                  ),
+                                            )
+                                          : const Icon(Icons.person),
+                                      title: Text(
+                                        r.nameCn ?? "detail.unknown".tr(),
                                       ),
+                                      subtitle: Text(r.relation ?? ''),
+                                    );
+                                  },
+                                ),
                               ],
                             ),
                           ),

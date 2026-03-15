@@ -1,11 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/subject.dart';
+import 'package:holo/entity/subject_item.dart';
 import 'package:holo/service/api.dart';
-import 'package:holo/util/local_store.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:holo/util/local_storage.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -15,7 +17,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  Subject? _recommended;
+  List<SubjectItem> _searchResult = [];
   bool _loading = false;
 
   List<String> _searchHistory = [];
@@ -26,7 +28,7 @@ class _SearchScreenState extends State<SearchScreen> {
       _searchHistory.remove(keyword);
     }
     _searchHistory.insert(0, keyword);
-    LocalStore.saveSearchHistory(_searchHistory);
+    LocalStorage.saveSearchHistory(_searchHistory);
     setState(() {
       _loading = true;
     });
@@ -39,14 +41,14 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     setState(() {
       _loading = false;
-      _recommended = result;
+      _searchResult = result;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _searchHistory = LocalStore.getSearchHistory();
+    _searchHistory = LocalStorage.getSearchHistory();
   }
 
   @override
@@ -68,7 +70,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           TextButton(
             onPressed: () {
-              LocalStore.removeAllSearchHistory();
+              LocalStorage.removeAllSearchHistory();
               setState(() {
                 _searchHistory.clear();
               });
@@ -127,7 +129,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ? IconButton(
                     icon: Icon(Icons.clear_rounded),
                     onPressed: () => setState(() {
-                      _recommended = null;
+                      _searchResult = [];
                       _controller.clear();
                     }),
                   )
@@ -146,7 +148,7 @@ class _SearchScreenState extends State<SearchScreen> {
             if (_loading) LinearProgressIndicator(),
             Expanded(
               child: SizedBox(
-                child: _recommended == null
+                child: _searchResult.isEmpty
                     ? SingleChildScrollView(
                         padding: EdgeInsets.all(12),
                         child: Column(
@@ -181,7 +183,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         onDeleted: () {
                                           setState(() {
                                             _searchHistory.remove(historyItem);
-                                            LocalStore.saveSearchHistory(
+                                            LocalStorage.saveSearchHistory(
                                               _searchHistory,
                                             );
                                           });
@@ -196,7 +198,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       )
                     : GridView.builder(
-                        itemCount: _recommended!.data!.length,
+                        itemCount: _searchResult.length,
                         padding: EdgeInsets.symmetric(horizontal: 12),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           mainAxisSpacing: 6,
@@ -205,23 +207,21 @@ class _SearchScreenState extends State<SearchScreen> {
                           childAspectRatio: 0.6,
                         ),
                         itemBuilder: (context, index) {
-                          final item = _recommended!.data![index];
-                          var nameCN = item.nameCn ?? '';
-                          var name = item.name ?? "";
+                          final item = _searchResult[index];
                           return MediaGrid(
-                            id: "search_${item.id!}",
-                            imageUrl: item.images?.medium,
-                            title: nameCN.isNotEmpty ? nameCN : name,
-                            rating: item.rating?.score?.toStringAsFixed(1),
-                            airDate: item.date,
-                            showAriTime: false,
+                            id: "search_${item.id}",
+                            imageUrl: item.images.medium!,
+                            title: item.title,
+                            rating: item.rating,
+                            airDate: item.airDate,
                             onTap: () {
                               context.push(
                                 '/detail',
                                 extra: {
-                                  'id': item.id!,
-                                  'keyword': item.nameCn ?? item.name ?? "",
-                                  'cover': item.images?.large ?? '',
+                                  'id': item.id,
+                                  'keyword': item.title,
+                                  'cover': item.images.large ?? '',
+                                  'subject': item,
                                   'from': "search",
                                 },
                               );

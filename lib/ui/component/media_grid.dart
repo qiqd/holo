@@ -1,46 +1,35 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:holo/util/datetime_util.dart';
 
 class MediaGrid extends StatelessWidget {
   final String id;
-  final String? imageUrl;
-  final String? title;
-  final String? rating;
+  final String imageUrl;
+  final String title;
+  final double? rating;
   final Function? onTap;
-  final bool showRating;
   final String? airDate;
-  final bool showAriTime;
+  final String? airTime;
   final bool showCheckBox;
   final bool isChecked;
+  final int? currentEpisode;
 
   const MediaGrid({
     super.key,
     required this.id,
-    this.imageUrl,
-    this.title,
+    required this.imageUrl,
+    required this.title,
     this.rating,
-    this.showRating = true,
     this.airDate,
+    this.airTime,
     this.onTap,
-    this.showAriTime = true,
+    this.currentEpisode,
     this.showCheckBox = false,
     this.isChecked = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    var updatedTo = -1;
-    String? updateAt;
-
-    if (airDate?.contains('/') ?? false) {
-      updatedTo = checkUpdateAt(airDate!.split('/').first);
-      updateAt = airDate!.split('/').last;
-    } else if (airDate != null) {
-      updatedTo = checkUpdateAt(airDate!);
-    }
-
     return Stack(
       children: [
         InkWell(
@@ -61,7 +50,7 @@ class MediaGrid extends StatelessWidget {
                           fit: BoxFit.fitHeight,
                           memCacheHeight: 1000,
                           memCacheWidth: 800,
-                          imageUrl: imageUrl!,
+                          imageUrl: imageUrl,
                           placeholder: (context, url) =>
                               Center(child: CircularProgressIndicator()),
                           errorWidget: (context, url, error) =>
@@ -70,7 +59,7 @@ class MediaGrid extends StatelessWidget {
                       ),
                     ),
                     //评分
-                    if ((rating != null || updateAt != null))
+                    if (rating != null)
                       Positioned(
                         right: 4,
                         top: 4,
@@ -85,21 +74,43 @@ class MediaGrid extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              if (rating != null)
-                                const Icon(
-                                  Icons.star_rounded,
-                                  color: Colors.yellow,
-                                  size: 14,
-                                ),
+                              const Icon(
+                                Icons.star_rounded,
+                                color: Colors.yellow,
+                                size: 14,
+                              ),
                               const SizedBox(width: 2),
                               Text(
-                                rating ?? updateAt ?? '',
+                                rating!.toStringAsFixed(1),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                      ),
+                    //更新时间
+                    if (airTime != null)
+                      Positioned(
+                        right: 4,
+                        top: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            airDate!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
@@ -118,9 +129,9 @@ class MediaGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            showAriTime
-                                ? (updatedTo > 0
-                                      ? '更新至第${updatedTo.toString()}话'
+                            currentEpisode != null
+                                ? (currentEpisode! > 0
+                                      ? '更新至第${currentEpisode.toString()}话'
                                       : '暂未更新')
                                 : airDate ?? '',
                             style: const TextStyle(
@@ -135,9 +146,7 @@ class MediaGrid extends StatelessWidget {
               ),
               SizedBox(
                 child: Text(
-                  title == null || title!.isEmpty
-                      ? context.tr("component.title")
-                      : title!,
+                  title.isEmpty ? context.tr("component.title") : title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 14),
