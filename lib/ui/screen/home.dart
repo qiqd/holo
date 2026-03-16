@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
       year: DateTime.now().year,
       sort: "rank",
       page: _page,
-      size: 10,
+      size: 20,
       exception: (e) {
         setState(() {
           _logger.e("home->fetch hot error: $e");
@@ -204,7 +204,12 @@ class _HomeScreenState extends State<HomeScreen> {
         return Shimmer.fromColors(
           baseColor: Colors.grey[300]!,
           highlightColor: Colors.grey[100]!,
-          child: Container(color: Colors.white38),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white38,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
         );
       },
     );
@@ -267,8 +272,8 @@ class _HomeScreenState extends State<HomeScreen> {
       key: ValueKey('home_rank_grid_$heroKey'),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: isLandscape ? 6 : 3,
-        mainAxisSpacing: 6,
-        crossAxisSpacing: 6,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
         childAspectRatio: 0.6,
       ),
       itemCount: items.length,
@@ -328,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (_isLoading && !_isRefresh) LinearProgressIndicator(),
                     Expanded(
                       child: Padding(
-                        padding: .symmetric(horizontal: 12),
+                        padding: .symmetric(horizontal: 6),
                         child: CustomScrollView(
                           controller: _scrollController,
                           physics: BouncingScrollPhysics(
@@ -358,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   spacing: 6,
                                   children: [
                                     Text(
-                                      '热门推荐',
+                                      tr('home.recommend_hot'),
                                       style: Theme.of(
                                         context,
                                       ).textTheme.titleLarge,
@@ -536,11 +541,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             SliverToBoxAdapter(
                               child: Text(
-                                '高分推荐',
+                                tr('home.recommend_hight_score'),
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                             ),
                             SliverToBoxAdapter(child: SizedBox(height: 6)),
+                            //_buildRankSkeleton(isLandscape),
                             _rank.isEmpty
                                 ? _buildRankSkeleton(isLandscape)
                                 : _buildSliverGrid(

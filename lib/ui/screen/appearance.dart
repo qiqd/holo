@@ -227,12 +227,12 @@ class _AppearanceState extends State<Appearance> {
             LocalStorage.saveAppSetting(MyApp.appSettingNotifier.value);
           }),
         ),
-      ListTile(
-        leading: const Icon(Icons.image_outlined),
-        title: Text('图片选择'),
-        subtitle: Text('选择图片作为App的背景'),
-        onTap: () => _showImagePicker(),
-      ),
+      // ListTile(
+      //   leading: const Icon(Icons.image_outlined),
+      //   title: Text('图片选择'),
+      //   subtitle: Text('选择图片作为App的背景'),
+      //   onTap: () => _showImagePicker(),
+      // ),
     ];
   }
 

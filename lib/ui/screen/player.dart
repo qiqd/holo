@@ -440,7 +440,10 @@ class _PlayerScreenState extends State<PlayerScreen>
                       textInputAction: .search,
                       initialValue: _danmakuKeyword,
                       decoration: InputDecoration(
-                        hintText: 'player.danmaku_search_hint'.tr(),
+                        hint: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text('player.danmaku_search_hint'.tr()),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -661,7 +664,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         child: Center(
           child: CapVideoPlayerKit(
             title: widget.nameCn,
-            subTitle: _episode[episodeIndex].title,
+            subTitle: _episode.isNotEmpty ? _episode[episodeIndex].title : '',
             isLoading: isLoading,
             centerMsg: msg,
             playerNotifier: _playerNotifier,
@@ -831,7 +834,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           // 角色
           if (widget.character.isNotEmpty)
             _buildPersonGrid(
-              title: "角色",
+              title: "player.character".tr(),
               name2Image: {
                 for (var e in widget.character)
                   e.name ?? '': e.images?.grid ?? "",
@@ -853,7 +856,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           // 人物
           if (widget.person.isNotEmpty)
             _buildPersonGrid(
-              title: "人物",
+              title: "player.person".tr(),
               name2Image: {
                 for (var e in widget.person) e.name ?? '': e.images?.grid ?? "",
               },
@@ -958,19 +961,17 @@ class _PlayerScreenState extends State<PlayerScreen>
               ),
               IconButton(
                 tooltip: "player.danmaku_selection".tr(),
+                color: Colors.grey,
                 onPressed: () {
                   _showDanmakuBottomSheet();
                 },
-                icon: Icon(Icons.subtitles_rounded, color: Colors.grey),
+                icon: Icon(Icons.subtitles_rounded),
               ),
               // 路线选择
               PopupMenuButton(
                 tooltip: 'player.route_selection'.tr(),
-                borderRadius: BorderRadius.circular(50),
-                child: IconButton(
-                  onPressed: null,
-                  icon: Icon(Icons.source_rounded),
-                ),
+                iconColor: Colors.grey,
+                icon: Icon(Icons.source_rounded),
                 itemBuilder: (context) => [
                   ...List.generate(
                     _detail?.lines?.length ?? 1,

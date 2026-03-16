@@ -233,8 +233,8 @@ class MediaCard extends StatelessWidget {
                                           )
                                         : '${updateTo > 0
                                               ? updateTo <= (episode ?? 0)
-                                                    ? '更新至$updateTo话'
-                                                    : '已完结'
+                                                    ? context.tr("component.media_card.current_episode", args: [updateTo.toString()])
+                                                    : context.tr("component.media_card.completed")
                                               : ''}/${context.tr("component.media_card.total_episode", args: [episode.toString()])}',
                                     style: const TextStyle(
                                       color: Colors.grey,
@@ -318,9 +318,39 @@ class MediaCard extends StatelessWidget {
                                     padding: WidgetStatePropertyAll(.zero),
                                   ),
                                   segments: [
-                                    ButtonSegment(value: 1, label: Text('想看')),
-                                    ButtonSegment(value: 3, label: Text('在看')),
-                                    ButtonSegment(value: 2, label: Text('看过')),
+                                    ButtonSegment(
+                                      value: 1,
+                                      label: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          context.tr(
+                                            "component.media_card.wish",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    ButtonSegment(
+                                      value: 3,
+                                      label: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          context.tr(
+                                            "component.media_card.watching",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    ButtonSegment(
+                                      value: 2,
+                                      label: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          context.tr(
+                                            "component.media_card.watched",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                   selected: {viewingStatus ?? 0},
                                   onSelectionChanged: (Set<int> values) {

@@ -30,13 +30,20 @@
             "hours_ago": "{}小時前",
             "minutes_ago": "{}分鐘前",
             "just_now": "剛剛",
-            "rating_count": "{}人評分"
+            "rating_count": "{}人評分",
+            "current_episode": "更新至{}話",
+            "completed": "已完结",
+            "wish": "想看",
+            "watched": "看過",
+            "watching": "在看"
         }
     },
     "home": {
         "title": "首頁",
         "hint_text": "搜尋",
-        "recommand_text": "推薦"
+        "recommend_text": "推薦",
+        "recommend_hot": "熱門推薦",
+        "recommend_hight_score": "高分推薦"
     },
     "calendar": {
         "title": "週更表",
@@ -97,7 +104,8 @@
             "check_version": "檢查更新"
         },
         "language": {
-            "change": "切換語言"
+            "change": "切換語言",
+            "change_description": "切換語言後需要重新啟動應用才能生效"
         },
         "data_management": {
             "clear_playback_history": "清除觀看歷史",
@@ -205,6 +213,8 @@
     "player": {
         "summary": "簡介",
         "episodes": "選集",
+        "character": "角色",
+        "person": "人物",
         "route_selection": "路線選擇",
         "route_number": "路線{}",
         "no_comments": "暫無評論",

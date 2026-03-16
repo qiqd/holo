@@ -267,10 +267,22 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               tooltip: "Change Subscribe Status",
               icon: Icon(Icons.menu_rounded),
               itemBuilder: (context) => [
-                PopupMenuItem(value: 1, child: Text("想看")),
-                PopupMenuItem(value: 3, child: Text("在看")),
-                PopupMenuItem(value: 2, child: Text("看过")),
-                PopupMenuItem(value: -1, child: Text("取消")),
+                PopupMenuItem(
+                  value: 1,
+                  child: Text('subscribe.tab_subs_wish'.tr()),
+                ),
+                PopupMenuItem(
+                  value: 3,
+                  child: Text('subscribe.tab_subs_watching'.tr()),
+                ),
+                PopupMenuItem(
+                  value: 2,
+                  child: Text('subscribe.tab_subs_watched'.tr()),
+                ),
+                PopupMenuItem(
+                  value: -1,
+                  child: Text('common.dialog.cancel'.tr()),
+                ),
               ],
               onSelected: (value) {
                 _changeSubscribeHistory(value);

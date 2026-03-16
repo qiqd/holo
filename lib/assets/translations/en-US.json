@@ -30,13 +30,20 @@
             "hours_ago": "{} hours ago",
             "minutes_ago": "{} minutes ago",
             "just_now": "Just now",
-            "rating_count": "{} ratings"
+            "rating_count": "{} ratings",
+            "current_episode": "Current episode: {}",
+            "completed": "Completed",
+            "wish": "Wish",
+            "watched": "Watched",
+            "watching": "Watching"
         }
     },
     "home": {
         "title": "Home",
         "hint_text": "Search",
-        "recommand_text": "Recommended"
+        "recommend_text": "Recommended",
+        "recommend_hot": "Hot Recommendations",
+        "recommend_hight_score": "High Rating Recommendations"
     },
     "calendar": {
         "title": "Weekly Schedule",
@@ -97,7 +104,8 @@
             "check_version": "Check Version"
         },
         "language": {
-            "change": "Change Language"
+            "change": "Change Language",
+            "change_description": "Change language and restart app to apply"
         },
         "data_management": {
             "clear_playback_history": "Clear Playback History",
@@ -205,6 +213,8 @@
     "player": {
         "summary": "Summary",
         "episodes": "Episodes",
+        "character": "Character",
+        "person": "Person",
         "route_selection": "Source Selection",
         "route_number": "Source {}",
         "no_comments": "No comments",

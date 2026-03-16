@@ -30,13 +30,20 @@
             "hours_ago": "{}時間前",
             "minutes_ago": "{}分前",
             "just_now": "たった今",
-            "rating_count": "{}人の評価"
+            "rating_count": "{}人の評価",
+            "current_episode": "現在の話: {}",
+            "completed": "完了",
+            "wish": "想見る",
+            "watched": "見た",
+            "watching": "見ている"
         }
     },
     "home": {
         "title": "ホーム",
         "hint_text": "検索",
-        "recommand_text": "おすすめ"
+        "recommend_text": "おすすめ",
+        "recommend_hot": "ホット推薦",
+        "recommend_hight_score": "高評価推薦"
     },
     "calendar": {
         "title": "週間更新表",
@@ -97,7 +104,8 @@
             "check_version": "バージョンチェック"
         },
         "language": {
-            "change": "言語切替"
+            "change": "言語切替",
+            "change_description": "言語を切り替えると、アプリを再起動する必要があります"
         },
         "data_management": {
             "clear_playback_history": "視聴履歴をクリア",
@@ -205,6 +213,8 @@
     "player": {
         "summary": "概要",
         "episodes": "エピソード",
+        "character": "キャラクター",
+        "person": "人物",
         "route_selection": "ルート選択",
         "route_number": "ルート{}",
         "no_comments": "コメントなし",

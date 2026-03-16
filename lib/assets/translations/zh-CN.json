@@ -30,13 +30,20 @@
             "hours_ago": "{}小时前",
             "minutes_ago": "{}分钟前",
             "just_now": "刚刚",
-            "rating_count": "{}人评分"
+            "rating_count": "{}人评分",
+            "current_episode": "更新至{}话",
+            "completed": "已完结",
+            "wish": "想看",
+            "watched": "看过",
+            "watching": "在看"
         }
     },
     "home": {
         "title": "首页",
         "hint_text": "搜索",
-        "recommand_text": "推荐"
+        "recommend_text": "推荐",
+        "recommend_hot": "热门推荐",
+        "recommend_hight_score": "高分推荐"
     },
     "calendar": {
         "title": "周更表",
@@ -97,7 +104,8 @@
             "check_version": "检查更新"
         },
         "language": {
-            "change": "切换语言"
+            "change": "切换语言",
+            "change_description": "变更后需要重启应用才能生效"
         },
         "data_management": {
             "clear_playback_history": "清除观看历史",
@@ -205,6 +213,8 @@
     "player": {
         "summary": "简介",
         "episodes": "选集",
+        "character": "角色",
+        "person": "人物",
         "route_selection": "路线选择",
         "route_number": "路线{}",
         "no_comments": "暂无评论",

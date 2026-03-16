@@ -141,7 +141,7 @@ class _SetttingScreenState extends State<SetttingScreen>
       ListTile(
         leading: const Icon(Icons.language),
         title: Text('setting.language.change'.tr()),
-        // subtitle: Text('setting.language.change_description'.tr()),
+        subtitle: Text('setting.language.change_description'.tr()),
         trailing: PopupMenuButton(
           child: Icon(Icons.menu_rounded),
           onSelected: (value) {
@@ -246,7 +246,6 @@ class _SetttingScreenState extends State<SetttingScreen>
       ListTile(
         leading: const Icon(Icons.palette_outlined),
         title: Text('appearance.appbar_title'.tr()),
-        subtitle: Text('调整App的主题模式，包括主题色以及背景图'),
         onTap: () => context.push('/appearence'),
       ),
     ];

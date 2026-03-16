@@ -61,7 +61,7 @@ class _DetailScreenState extends State<DetailScreen>
   SourceService? defaultSource;
   bool isSubscribed = false;
   int _viewingStatus = 0;
-  void _fetchSubjec() async {
+  void _fetchSubject() async {
     if (subject == null) {
       final res = await Api.bangumi.fetchSubjectById(widget.id, (e) {
         setState(() {
@@ -377,7 +377,7 @@ class _DetailScreenState extends State<DetailScreen>
   @override
   void initState() {
     super.initState();
-    _fetchSubjec();
+    _fetchSubject();
     _fetchPerson();
     _fetchCharacter();
     _fetchRelation();
@@ -453,7 +453,10 @@ class _DetailScreenState extends State<DetailScreen>
                                 textInputAction: TextInputAction.search,
                                 textAlign: TextAlign.center,
                                 decoration: InputDecoration(
-                                  hintText: "detail.search_hint".tr(),
+                                  hint: FittedBox(
+                                    fit: .scaleDown,
+                                    child: Text("detail.search_hint".tr()),
+                                  ),
                                   hintStyle: Theme.of(
                                     context,
                                   ).textTheme.bodySmall,
