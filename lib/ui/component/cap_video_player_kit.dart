@@ -97,6 +97,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   Danmu? dammaku;
   Timer? danmakuSettingTimer;
   Timer? settingTimer;
+  bool isLandscape = false;
   final List<DanmakuContentItem<double>> danmakuItems = [];
 
   /// 显示视频控制条定时器
@@ -909,9 +910,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     ),
                   ],
                   //音量调整,只在桌面端显示
-                  if (Platform.isWindows ||
-                      Platform.isMacOS ||
-                      Platform.isLinux) ...[
+                  if (isLandscape &&
+                      (Platform.isWindows ||
+                          Platform.isMacOS ||
+                          Platform.isLinux)) ...[
                     IconButton(
                       tooltip: 'Volume',
                       color: Colors.white,
@@ -1046,6 +1048,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   @override
   void didChangeDependencies() {
     showVideoControlsTimer();
+    safeSetState(() {
+      isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    });
     super.didChangeDependencies();
   }
 

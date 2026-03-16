@@ -62,7 +62,7 @@ void main() async {
     // 配置窗口选项
     WindowOptions windowOptions = WindowOptions(
       size: Size(1000, 800),
-      minimumSize: Size(800, 600),
+      //minimumSize: Size(800, 600),
       center: true,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,

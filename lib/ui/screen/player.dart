@@ -95,6 +95,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   late final SourceService source = widget.source;
   final _playerNotifier = ValueNotifier<VideoPlayerController?>(null);
   Duration _position = .zero;
+  Timer? _playbackHistorySyncTimer;
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
@@ -255,7 +256,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  void _storeLocalHistory() async {
+  void _storeLocalHistory({bool syncNow = false}) async {
     if (playUrl == null) {
       return;
     }
@@ -275,7 +276,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       position: p,
       imgUrl: widget.subject.images.large ?? "",
     );
-    _syncPlaybackHistory(history);
+    _syncPlaybackHistory(history, syncNow: syncNow);
     var data = widget.subject;
     LocalStorage.setSubjectCache(data);
     LocalStorage.addPlaybackHistory(history);
@@ -298,16 +299,24 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  void _syncPlaybackHistory(PlaybackHistory history) {
-    PlayBackApi.savePlaybackHistory(
-      history,
-      () {
-        history.isSync = true;
-      },
-      (e) {
-        _logger.e("savePlaybackHistory error: $e");
-      },
-    );
+  void _syncPlaybackHistory(PlaybackHistory history, {bool syncNow = false}) {
+    if (syncNow) {
+      PlayBackApi.savePlaybackHistory(
+        history,
+        () {
+          history.isSync = true;
+        },
+        (e) {
+          _logger.e("savePlaybackHistory error: $e");
+        },
+      );
+    } else {
+      _playbackHistorySyncTimer?.cancel();
+      _playbackHistorySyncTimer = Timer.periodic(
+        const Duration(seconds: 3),
+        (timer) => _syncPlaybackHistory(history),
+      );
+    }
   }
 
   Future<void> _loadDanmaku({
@@ -1343,7 +1352,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       setState(() {
         _isActive = false;
       });
-      _storeLocalHistory();
+      _storeLocalHistory(syncNow: true);
     }
     if (state == AppLifecycleState.resumed) {
       setState(() {
@@ -1351,7 +1360,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       });
     }
     if (state == AppLifecycleState.inactive) {
-      _storeLocalHistory();
+      _storeLocalHistory(syncNow: true);
     }
     super.didChangeAppLifecycleState(state);
   }
@@ -1408,7 +1417,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         windowManager.setTitle(info.appName);
       });
     }
-    _storeLocalHistory();
+    _storeLocalHistory(syncNow: true);
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -1425,7 +1434,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   Future<AppExitResponse> didRequestAppExit() {
     _logger.d("didRequestAppExit");
-    _storeLocalHistory();
+    _storeLocalHistory(syncNow: true);
     return super.didRequestAppExit();
   }
 
