@@ -130,7 +130,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   Future<void> _fetchViewInfo({
     int position = 0,
     bool loadDanmaku = true,
-    Function(String e)? onComplete,
+    void Function(String e)? onComplete,
   }) async {
     safeSetState(() {
       msg = "";

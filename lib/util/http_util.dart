@@ -18,7 +18,10 @@ class HttpUtil {
   ];
 
   /// 创建配置好的 Dio 实例，模拟浏览器请求
-  static Dio createDio() {
+  static Dio createDio({
+    Duration timeout = const Duration(seconds: 20),
+    String referer = "",
+  }) {
     final dio = Dio();
     // 基础配置
     dio.options
@@ -26,9 +29,12 @@ class HttpUtil {
         'User-Agent': userAgents[Random().nextInt(userAgents.length)],
         'Accept': '*/*',
       }
-      ..connectTimeout = const Duration(seconds: 20)
-      ..receiveTimeout = const Duration(seconds: 20)
-      ..sendTimeout = const Duration(seconds: 20);
+      ..connectTimeout = timeout
+      ..receiveTimeout = timeout
+      ..sendTimeout = timeout;
+    if (referer.isNotEmpty) {
+      dio.options.headers['Referer'] = referer;
+    }
 
     return dio;
   }
