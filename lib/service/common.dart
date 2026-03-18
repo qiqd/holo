@@ -98,6 +98,9 @@ class Common extends SourceService {
         var episodes = episode.map((e) {
           return e.attributes['href'] ?? '';
         }).toList();
+        if (rule.episodeReverse) {
+          episodes = episodes.reversed.toList();
+        }
         return Line(episodes: episodes);
       }).toList();
       return Detail(lines: lines);

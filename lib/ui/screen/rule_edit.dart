@@ -524,7 +524,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   }
 
   /// 详情页规则
-  Widget _buildDetalRuleCard() {
+  Widget _buildDetailRuleCard() {
     return Card(
       margin: EdgeInsets.all(10),
       child: Padding(
@@ -995,7 +995,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       children: [
                         _buildBasicCard(),
                         _buildSearchRuleCard(),
-                        _buildDetalRuleCard(),
+                        _buildDetailRuleCard(),
                         _buildPlayerRuleCard(),
                       ],
                     ),
