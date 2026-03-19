@@ -18,6 +18,12 @@ class FlutterInappwebview {
   /// 当前请求的完成器
   Completer<String>? _currentCompleter;
 
+  /// 当前请求是否为播放器页面
+  bool _currentIsPlayerPage = false;
+
+  /// 当前请求是否等待媒体元素
+  bool _currentWaitForMediaElement = false;
+
   /// 检查字符串是否包含 Unicode 字符
   /// [str]: 要检查的字符串
   /// 返回是否包含 Unicode 字符
@@ -98,6 +104,10 @@ class FlutterInappwebview {
   }) async {
     final completer = Completer<String>();
     _currentCompleter = completer;
+    _currentIsPlayerPage = isPlayerPage;
+    _currentWaitForMediaElement = waitForMediaElement;
+    _currentIsPlayerPage = isPlayerPage;
+    _currentWaitForMediaElement = waitForMediaElement;
 
     try {
       final webUri = WebUri(url.startsWith('http') ? url : 'https://$url');
@@ -173,7 +183,7 @@ class FlutterInappwebview {
               }
 
               // 如果需要等待媒体元素
-              if (isPlayerPage && waitForMediaElement) {
+              if (_currentIsPlayerPage && _currentWaitForMediaElement) {
                 int count = 0;
                 const maxWait = 30; // 最多等待 30 秒
 
