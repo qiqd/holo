@@ -74,7 +74,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
         title: const Text("规则仓库"),
         actionsPadding: .symmetric(horizontal: 12),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
