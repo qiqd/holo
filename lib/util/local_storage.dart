@@ -90,50 +90,71 @@ class LocalStorage {
   /// [subId]: 订阅 ID
   static void removeSubscribeHistoryBySubId(int subId) {
     if (_prefs == null) return;
-    var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
-    var subs = subsStr
-        .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
-        .toList();
-    subs.removeWhere((item) => item.subId == subId);
-    subsStr = subs.map((item) => json.encode(item.toJson())).toList();
-    _prefs!.setStringList("${_key}_subscribe", subsStr);
+    try {
+      var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
+      var subs = subsStr
+          .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
+          .toList();
+      subs.removeWhere((item) => item.subId == subId);
+      subsStr = subs.map((item) => json.encode(item.toJson())).toList();
+      _prefs!.setStringList("${_key}_subscribe", subsStr);
+    } catch (e) {
+      log("Error in removeSubscribeHistoryBySubId: $e");
+      _prefs!.remove("${_key}_subscribe");
+    }
   }
 
   /// 根据订阅 ID 移除播放历史
   /// [subId]: 订阅 ID
   static void removePlaybackHistoryBySubId(int subId) {
     if (_prefs == null) return;
-    var playStr = _prefs!.getStringList("${_key}_playback") ?? [];
-    var subs = playStr
-        .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
-        .toList();
-    subs.removeWhere((item) => item.subId == subId);
-    playStr = subs.map((item) => json.encode(item.toJson())).toList();
-    _prefs!.setStringList("${_key}_playback", playStr);
+    try {
+      var playStr = _prefs!.getStringList("${_key}_playback") ?? [];
+      var subs = playStr
+          .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
+          .toList();
+      subs.removeWhere((item) => item.subId == subId);
+      playStr = subs.map((item) => json.encode(item.toJson())).toList();
+      _prefs!.setStringList("${_key}_playback", playStr);
+    } catch (e) {
+      log("Error in removePlaybackHistoryBySubId: $e");
+      _prefs!.remove("${_key}_playback");
+    }
   }
 
   /// 添加订阅历史
   /// [history]: 订阅历史对象
   static void addSubscribeHistory(SubscribeHistory history) {
     if (_prefs == null) return;
-    var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
-    var subs = subsStr
-        .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
-        .toList();
-    subs.removeWhere((item) => item.subId == history.subId);
-    subs.add(history);
-    subsStr = subs.map((item) => json.encode(item.toJson())).toList();
-    _prefs!.setStringList("${_key}_subscribe", subsStr);
+    try {
+      var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
+      var subs = subsStr
+          .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
+          .toList();
+      subs.removeWhere((item) => item.subId == history.subId);
+      subs.add(history);
+      subsStr = subs.map((item) => json.encode(item.toJson())).toList();
+      _prefs!.setStringList("${_key}_subscribe", subsStr);
+    } catch (e) {
+      log("Error in addSubscribeHistory: $e");
+      _prefs!.remove("${_key}_subscribe");
+    }
   }
 
   /// 获取所有订阅历史
   /// 返回订阅历史列表
   static List<SubscribeHistory> getSubscribeHistory() {
     if (_prefs == null) return [];
-    var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
-    return subsStr
-        .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
-        .toList();
+    try {
+      var subsStr = _prefs!.getStringList("${_key}_subscribe") ?? [];
+      return subsStr
+          .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
+          .toList();
+    } catch (e) {
+      log("Error in getSubscribeHistory: $e");
+      _prefs!.remove("${_key}_subscribe");
+      return [];
+    }
   }
 
   /// 添加播放历史
@@ -141,45 +162,57 @@ class LocalStorage {
   /// 返回操作是否成功
   static bool addPlaybackHistory(PlaybackHistory history) {
     if (_prefs == null) return false;
-    var playbackStr = _prefs!.getStringList("${_key}_playback") ?? [];
-    var playback = playbackStr
-        .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
-        .toList();
-    var firstWhere = playback.firstWhere(
-      (item) => item.subId == history.subId,
-      orElse: () => PlaybackHistory(
-        id: history.id,
-        subId: history.subId,
-        position: history.position,
-        title: history.title,
-        imgUrl: history.imgUrl,
-        airDate: history.airDate,
-        createdAt: history.createdAt,
-        lastPlaybackAt: history.lastPlaybackAt,
-        isSync: history.isSync,
-        episodeIndex: history.episodeIndex,
-        lineIndex: history.lineIndex,
-      ),
-    );
-    playback.removeWhere((item) => item.subId == history.subId);
-    firstWhere.position = history.position;
-    firstWhere.episodeIndex = history.episodeIndex;
-    firstWhere.lineIndex = history.lineIndex;
-    firstWhere.lastPlaybackAt = history.lastPlaybackAt;
-    playback.add(firstWhere);
-    playbackStr = playback.map((item) => json.encode(item.toJson())).toList();
-    _prefs!.setStringList("${_key}_playback", playbackStr);
-    return true;
+    try {
+      var playbackStr = _prefs!.getStringList("${_key}_playback") ?? [];
+      var playback = playbackStr
+          .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
+          .toList();
+      var firstWhere = playback.firstWhere(
+        (item) => item.subId == history.subId,
+        orElse: () => PlaybackHistory(
+          id: history.id,
+          subId: history.subId,
+          position: history.position,
+          title: history.title,
+          imgUrl: history.imgUrl,
+          airDate: history.airDate,
+          createdAt: history.createdAt,
+          lastPlaybackAt: history.lastPlaybackAt,
+          isSync: history.isSync,
+          episodeIndex: history.episodeIndex,
+          lineIndex: history.lineIndex,
+        ),
+      );
+      playback.removeWhere((item) => item.subId == history.subId);
+      firstWhere.position = history.position;
+      firstWhere.episodeIndex = history.episodeIndex;
+      firstWhere.lineIndex = history.lineIndex;
+      firstWhere.lastPlaybackAt = history.lastPlaybackAt;
+      playback.add(firstWhere);
+      playbackStr = playback.map((item) => json.encode(item.toJson())).toList();
+      _prefs!.setStringList("${_key}_playback", playbackStr);
+      return true;
+    } catch (e) {
+      log("Error in addPlaybackHistory: $e");
+      _prefs!.remove("${_key}_playback");
+      return false;
+    }
   }
 
   /// 获取所有播放历史
   /// 返回播放历史列表
   static List<PlaybackHistory> getPlaybackHistory() {
     if (_prefs == null) return [];
-    var playbackStr = _prefs!.getStringList("${_key}_playback") ?? [];
-    return playbackStr
-        .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
-        .toList();
+    try {
+      var playbackStr = _prefs!.getStringList("${_key}_playback") ?? [];
+      return playbackStr
+          .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
+          .toList();
+    } catch (e) {
+      log("Error in getPlaybackHistory: $e");
+      _prefs!.remove("${_key}_playback");
+      return [];
+    }
   }
 
   /// 根据 ID 获取订阅历史
@@ -188,13 +221,19 @@ class LocalStorage {
   static SubscribeHistory? getSubscribeHistoryById(int id) {
     if (_prefs == null) return null;
     final key = "${_key}_subscribe";
-    var histories = _prefs!.getStringList(key) ?? [];
-    List<SubscribeHistory> historyList = histories
-        .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
-        .toList();
     try {
-      return historyList.firstWhere((history) => history.subId == id);
+      var histories = _prefs!.getStringList(key) ?? [];
+      List<SubscribeHistory> historyList = histories
+          .map((jsonStr) => SubscribeHistory.fromJson(json.decode(jsonStr)))
+          .toList();
+      try {
+        return historyList.firstWhere((history) => history.subId == id);
+      } catch (e) {
+        return null;
+      }
     } catch (e) {
+      log("Error in getSubscribeHistoryById: $e");
+      _prefs!.remove(key);
       return null;
     }
   }
@@ -205,13 +244,19 @@ class LocalStorage {
   static PlaybackHistory? getPlaybackHistoryById(int id) {
     if (_prefs == null) return null;
     final key = "${_key}_playback";
-    var histories = _prefs!.getStringList(key) ?? [];
-    List<PlaybackHistory> historyList = histories
-        .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
-        .toList();
     try {
-      return historyList.firstWhere((history) => history.subId == id);
+      var histories = _prefs!.getStringList(key) ?? [];
+      List<PlaybackHistory> historyList = histories
+          .map((jsonStr) => PlaybackHistory.fromJson(json.decode(jsonStr)))
+          .toList();
+      try {
+        return historyList.firstWhere((history) => history.subId == id);
+      } catch (e) {
+        return null;
+      }
     } catch (e) {
+      log("Error in getPlaybackHistoryById: $e");
+      _prefs!.remove(key);
       return null;
     }
   }
@@ -220,20 +265,32 @@ class LocalStorage {
   /// [histories]: 新的订阅历史列表
   static void updateSubscribeHistory(List<SubscribeHistory> histories) {
     if (_prefs == null) return;
-    clearHistory(clearPlayback: false);
-    var subsStr = histories.map((item) => json.encode(item.toJson())).toList();
-    _prefs!.setStringList("${_key}_subscribe", subsStr);
+    try {
+      clearHistory(clearPlayback: false);
+      var subsStr = histories
+          .map((item) => json.encode(item.toJson()))
+          .toList();
+      _prefs!.setStringList("${_key}_subscribe", subsStr);
+    } catch (e) {
+      log("Error in updateSubscribeHistory: $e");
+      _prefs!.remove("${_key}_subscribe");
+    }
   }
 
   /// 更新播放历史列表
   /// [histories]: 新的播放历史列表
   static void updatePlaybackHistory(List<PlaybackHistory> histories) {
     if (_prefs == null) return;
-    clearHistory(clearPlayback: true);
-    var playbackStr = histories
-        .map((item) => json.encode(item.toJson()))
-        .toList();
-    _prefs!.setStringList("${_key}_playback", playbackStr);
+    try {
+      clearHistory(clearPlayback: true);
+      var playbackStr = histories
+          .map((item) => json.encode(item.toJson()))
+          .toList();
+      _prefs!.setStringList("${_key}_playback", playbackStr);
+    } catch (e) {
+      log("Error in updatePlaybackHistory: $e");
+      _prefs!.remove("${_key}_playback");
+    }
   }
 
   /// 清除历史记录
@@ -272,11 +329,17 @@ class LocalStorage {
   /// 返回应用设置对象，若不存在则返回默认设置
   static AppSetting getAppSetting() {
     if (_prefs == null) return AppSetting();
-    var appSettingStr = _prefs!.getString("${_key}_app_setting") ?? "";
-    if (appSettingStr.isEmpty) {
+    try {
+      var appSettingStr = _prefs!.getString("${_key}_app_setting") ?? "";
+      if (appSettingStr.isEmpty) {
+        return AppSetting();
+      }
+      return (AppSetting.fromJson(json.decode(appSettingStr)));
+    } catch (e) {
+      log("Error in getAppSetting: $e");
+      _prefs!.remove("${_key}_app_setting");
       return AppSetting();
     }
-    return (AppSetting.fromJson(json.decode(appSettingStr)));
   }
 
   /// 保存应用设置
@@ -284,9 +347,17 @@ class LocalStorage {
   /// [isSync]: 是否同步到服务器，默认为 true
   static void saveAppSetting(AppSetting appSetting, {bool isSync = true}) {
     if (_prefs == null) return;
-    _prefs!.setString("${_key}_app_setting", json.encode(appSetting.toJson()));
-    if (isSync) {
-      SettingApi.saveSetting(appSetting, (_) {});
+    try {
+      _prefs!.setString(
+        "${_key}_app_setting",
+        json.encode(appSetting.toJson()),
+      );
+      if (isSync) {
+        SettingApi.saveSetting(appSetting, (_) {});
+      }
+    } catch (e) {
+      log("Error in saveAppSetting: $e");
+      _prefs!.remove("${_key}_app_setting");
     }
   }
 
@@ -294,10 +365,16 @@ class LocalStorage {
   /// 返回规则对象列表
   static List<Rule> getRules() {
     if (_prefs == null) return [];
-    var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
-    return rulesStr
-        .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
-        .toList();
+    try {
+      var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
+      return rulesStr
+          .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
+          .toList();
+    } catch (e) {
+      log("Error in getRules: $e");
+      _prefs!.remove("${_key}_rules");
+      return [];
+    }
   }
 
   /// 保存规则列表
@@ -305,52 +382,67 @@ class LocalStorage {
   /// 会自动去重，保留最新的规则
   static void saveRules(List<Rule> rules) {
     if (_prefs == null) return;
-    var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
-    var ruleList = rulesStr
-        .map((item) => Rule.fromJson(json.decode(item)))
-        .toList();
-    ruleList.addAll(rules);
-    // 去重,根据name,保留最新的
-    var ruleMap = <String, Rule>{};
-    for (var rule in ruleList) {
-      if (ruleMap[rule.name] != null) {
-        if (ruleMap[rule.name]!.updateAt.isAfter(rule.updateAt)) {
-          continue;
+    try {
+      var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
+      var ruleList = rulesStr
+          .map((item) => Rule.fromJson(json.decode(item)))
+          .toList();
+      ruleList.addAll(rules);
+      // 去重,根据name,保留最新的
+      var ruleMap = <String, Rule>{};
+      for (var rule in ruleList) {
+        if (ruleMap[rule.name] != null) {
+          if (ruleMap[rule.name]!.updateAt.isAfter(rule.updateAt)) {
+            continue;
+          }
         }
+        ruleMap[rule.name] = rule;
       }
-      ruleMap[rule.name] = rule;
+      rulesStr = ruleMap.values
+          .map((item) => json.encode(item.toJson()))
+          .toList();
+      _prefs!.setStringList("${_key}_rules", rulesStr);
+    } catch (e) {
+      log("Error in saveRules: $e");
+      _prefs!.remove("${_key}_rules");
     }
-    rulesStr = ruleMap.values
-        .map((item) => json.encode(item.toJson()))
-        .toList();
-    _prefs!.setStringList("${_key}_rules", rulesStr);
   }
 
   /// 根据名称移除规则
   /// [name]: 规则名称
   static void removeRuleByName(String name) {
     if (_prefs == null) return;
-    var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
-    var rules = rulesStr
-        .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
-        .toList();
-    rules.removeWhere((item) => item.name == name);
-    rulesStr = rules.map((item) => json.encode(item.toJson())).toList();
-    _prefs!.setStringList("${_key}_rules", rulesStr);
+    try {
+      var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
+      var rules = rulesStr
+          .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
+          .toList();
+      rules.removeWhere((item) => item.name == name);
+      rulesStr = rules.map((item) => json.encode(item.toJson())).toList();
+      _prefs!.setStringList("${_key}_rules", rulesStr);
+    } catch (e) {
+      log("Error in removeRuleByName: $e");
+      _prefs!.remove("${_key}_rules");
+    }
   }
 
   /// 更新规则
   /// [rule]: 规则对象
   static void updateRule(Rule rule) {
     if (_prefs == null) return;
-    var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
-    var rules = rulesStr
-        .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
-        .toList();
-    rules.removeWhere((item) => item.name == rule.name);
-    rules.add(rule);
-    rulesStr = rules.map((item) => json.encode(item.toJson())).toList();
-    _prefs!.setStringList("${_key}_rules", rulesStr);
+    try {
+      var rulesStr = _prefs!.getStringList("${_key}_rules") ?? [];
+      var rules = rulesStr
+          .map((jsonStr) => Rule.fromJson(json.decode(jsonStr)))
+          .toList();
+      rules.removeWhere((item) => item.name == rule.name);
+      rules.add(rule);
+      rulesStr = rules.map((item) => json.encode(item.toJson())).toList();
+      _prefs!.setStringList("${_key}_rules", rulesStr);
+    } catch (e) {
+      log("Error in updateRule: $e");
+      _prefs!.remove("${_key}_rules");
+    }
   }
 
   /// 保存规则仓库 URL
@@ -372,20 +464,26 @@ class LocalStorage {
   /// 返回操作是否成功
   static bool setSubjectCache(SubjectItem data) {
     if (_prefs == null) return false;
-    var dataListStr = _prefs!.getStringList("${_key}_subject_cache") ?? [];
-    var dataList = dataListStr
-        .map((item) => SubjectItem.fromJson(json.decode(item)))
-        .toList();
-    dataList.add(data);
-    var dataMap = {};
-    for (var item in dataList) {
-      dataMap[item.id] = item;
+    try {
+      var dataListStr = _prefs!.getStringList("${_key}_subject_cache") ?? [];
+      var dataList = dataListStr
+          .map((item) => SubjectItem.fromJson(json.decode(item)))
+          .toList();
+      dataList.add(data);
+      var dataMap = {};
+      for (var item in dataList) {
+        dataMap[item.id] = item;
+      }
+      dataListStr = dataMap.values
+          .map((item) => json.encode(item.toJson()))
+          .toList();
+      _prefs!.setStringList("${_key}_subject_cache", dataListStr);
+      return true;
+    } catch (e) {
+      log("Error in setSubjectCache: $e");
+      _prefs!.remove("${_key}_subject_cache");
+      return false;
     }
-    dataListStr = dataMap.values
-        .map((item) => json.encode(item.toJson()))
-        .toList();
-    _prefs!.setStringList("${_key}_subject_cache", dataListStr);
-    return true;
   }
 
   /// 根据订阅 ID 获取主题缓存和数据源
@@ -393,78 +491,120 @@ class LocalStorage {
   /// 返回主题数据对象，若不存在则返回 null
   static SubjectItem? getSubjectCache(int subId) {
     if (_prefs == null) return null;
-    var dataListStr = _prefs!.getStringList("${_key}_subject_cache") ?? [];
-    if (dataListStr.isEmpty) {
+    try {
+      var dataListStr = _prefs!.getStringList("${_key}_subject_cache") ?? [];
+      if (dataListStr.isEmpty) {
+        return null;
+      }
+      var dataList = dataListStr
+          .map((item) => SubjectItem.fromJson(json.decode(item)))
+          .toList();
+      return dataList.where((item) => item.id == subId).firstOrNull;
+    } catch (e) {
+      log("Error in getSubjectCache: $e");
+      _prefs!.remove("${_key}_subject_cache");
       return null;
     }
-    var dataList = dataListStr
-        .map((item) => SubjectItem.fromJson(json.decode(item)))
-        .toList();
-    return dataList.where((item) => item.id == subId).firstOrNull;
   }
 
   /// 保存日历缓存
   /// [calendars]: 日历对象列表
   static void setDailyBroadcastCache(List<DailyBroadcast> dailyBroadcasts) {
     if (_prefs == null) return;
-    var dailyBroadcastsStr =
-        _prefs!.getStringList("${_key}_daily_broadcast_cache") ?? [];
-    dailyBroadcastsStr.addAll(
-      dailyBroadcasts.map((item) => json.encode(item.toJson())),
-    );
-    _prefs!.setStringList("${_key}_daily_broadcast_cache", dailyBroadcastsStr);
+    try {
+      var dailyBroadcastsStr =
+          _prefs!.getStringList("${_key}_daily_broadcast_cache") ?? [];
+      dailyBroadcastsStr.addAll(
+        dailyBroadcasts.map((item) => json.encode(item.toJson())),
+      );
+      _prefs!.setStringList(
+        "${_key}_daily_broadcast_cache",
+        dailyBroadcastsStr,
+      );
+    } catch (e) {
+      log("Error in setDailyBroadcastCache: $e");
+      _prefs!.remove("${_key}_daily_broadcast_cache");
+    }
   }
 
   /// 获取日历缓存
   /// 返回日历对象列表
   static List<DailyBroadcast> getDailyBroadcastCache() {
     if (_prefs == null) return [];
-    var dailyBroadcastsStr =
-        _prefs!.getStringList("${_key}_daily_broadcast_cache") ?? [];
-    return dailyBroadcastsStr
-        .map((item) => DailyBroadcast.fromJson(json.decode(item)))
-        .toList();
+    try {
+      var dailyBroadcastsStr =
+          _prefs!.getStringList("${_key}_daily_broadcast_cache") ?? [];
+      return dailyBroadcastsStr
+          .map((item) => DailyBroadcast.fromJson(json.decode(item)))
+          .toList();
+    } catch (e) {
+      log("Error in getDailyBroadcastCache: $e");
+      _prefs!.remove("${_key}_daily_broadcast_cache");
+      return [];
+    }
   }
 
   /// 保存首页热门缓存
   static void setHomeHotCache(List<SubjectItem> hot) {
     if (_prefs == null) return;
-    _prefs!.setStringList(
-      "${_key}_home_hot_cache",
-      hot.map((item) => json.encode(item.toJson())).toList(),
-    );
+    try {
+      _prefs!.setStringList(
+        "${_key}_home_hot_cache",
+        hot.map((item) => json.encode(item.toJson())).toList(),
+      );
+    } catch (e) {
+      log("Error in setHomeHotCache: $e");
+      _prefs!.remove("${_key}_home_hot_cache");
+    }
   }
 
   /// 获取首页热门缓存
   /// 返回主题对象列表，若不存在则返回空列表
   static List<SubjectItem> getHomeHotCache() {
     if (_prefs == null) return [];
-    var homeCache = _prefs!.getStringList("${_key}_home_hot_cache");
-    if (homeCache == null) return [];
-    log("home->getHomeCache: get cache ok");
-    return homeCache
-        .map((item) => SubjectItem.fromJson(json.decode(item)))
-        .toList();
+    try {
+      var homeCache = _prefs!.getStringList("${_key}_home_hot_cache");
+      if (homeCache == null) return [];
+      log("home->getHomeCache: get cache ok");
+      return homeCache
+          .map((item) => SubjectItem.fromJson(json.decode(item)))
+          .toList();
+    } catch (e) {
+      log("Error in getHomeHotCache: $e");
+      _prefs!.remove("${_key}_home_hot_cache");
+      return [];
+    }
   }
 
   /// 保存首页排行榜缓存
   static void setHomeRankCache(List<SubjectItem> rank) {
     if (_prefs == null) return;
-    _prefs!.setStringList(
-      "${_key}_home_rank_cache",
-      rank.map((item) => json.encode(item.toJson())).toList(),
-    );
+    try {
+      _prefs!.setStringList(
+        "${_key}_home_rank_cache",
+        rank.map((item) => json.encode(item.toJson())).toList(),
+      );
+    } catch (e) {
+      log("Error in setHomeRankCache: $e");
+      _prefs!.remove("${_key}_home_rank_cache");
+    }
   }
 
   /// 获取首页排行榜缓存
   static List<SubjectItem> getHomeRankCache() {
     if (_prefs == null) return [];
-    var homeCache = _prefs!.getStringList("${_key}_home_rank_cache");
-    if (homeCache == null) return [];
-    log("home->getHomeRankCache: get cache ok");
-    return homeCache
-        .map((item) => SubjectItem.fromJson(json.decode(item)))
-        .toList();
+    try {
+      var homeCache = _prefs!.getStringList("${_key}_home_rank_cache");
+      if (homeCache == null) return [];
+      log("home->getHomeRankCache: get cache ok");
+      return homeCache
+          .map((item) => SubjectItem.fromJson(json.decode(item)))
+          .toList();
+    } catch (e) {
+      log("Error in getHomeRankCache: $e");
+      _prefs!.remove("${_key}_home_rank_cache");
+      return [];
+    }
   }
 
   /// 获取背景图片路径
