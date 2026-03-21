@@ -30,7 +30,6 @@ import 'package:holo/extension/safe_set_state.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
@@ -615,49 +614,6 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  Widget _buildFadeEpisodeSection() {
-    return GridView.builder(
-      padding: EdgeInsets.all(10),
-      itemCount: 12,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 5,
-        crossAxisSpacing: 5,
-      ),
-      itemBuilder: (context, index) => Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: ListTile(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          title: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              height: 16,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-          subtitle: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              height: 14,
-              width: double.infinity * 0.8,
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildPlayer({
     required bool isFullScreen,
     required void Function(bool isFullScreen) onFullScreenChanged,
@@ -1092,8 +1048,13 @@ class _PlayerScreenState extends State<PlayerScreen>
                     'component.cap_video_player.danmaku_filter_keywords',
                   ),
                   hintStyle: TextStyle(fontSize: 10),
-                  hintText: context.tr(
-                    'component.cap_video_player.danmaku_filter_hint',
+                  hint: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      context.tr(
+                        'component.cap_video_player.danmaku_filter_hint',
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -109,7 +109,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
     );
   }
 
-  List<Widget> _buildAppbarActions() {
+  List<Widget> _buildAppBarActions() {
     return [
       if (widget.rule != null && !_isTablet)
         IconButton(
@@ -159,7 +159,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.name,
               decoration: InputDecoration(
                 labelText: 'rule_edit.rule_name_label'.tr(),
-                hintText: 'rule_edit.rule_name_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.rule_name_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -183,7 +186,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.baseUrl,
               decoration: InputDecoration(
                 labelText: 'rule_edit.base_url_label'.tr(),
-                hintText: 'rule_edit.base_url_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.base_url_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -209,7 +215,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.logoUrl,
               decoration: InputDecoration(
                 labelText: 'rule_edit.logo_url_label'.tr(),
-                hintText: 'rule_edit.logo_url_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.logo_url_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -236,7 +245,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'rule_edit.timeout_label'.tr(),
-                hintText: 'rule_edit.timeout_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.timeout_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -282,7 +294,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.searchUrl,
               decoration: InputDecoration(
                 labelText: 'rule_edit.search_url_label'.tr(),
-                hintText: 'rule_edit.search_url_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.search_url_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -333,7 +348,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           .join(','),
                       decoration: InputDecoration(
                         labelText: '请求体'.tr(),
-                        hintText: 'key与value用=隔开,多个用英文逗号隔开'.tr(),
+                        hint: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text('key与value用=隔开,多个用英文逗号隔开'.tr()),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
@@ -368,7 +386,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.searchSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.search_selector_label'.tr(),
-                hintText: 'rule_edit.search_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.search_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -391,7 +412,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.itemImgSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.item_img_selector_label'.tr(),
-                hintText: 'rule_edit.item_img_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.item_img_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -427,7 +451,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.itemTitleSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.item_title_selector_label'.tr(),
-                hintText: 'rule_edit.item_title_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.item_title_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -450,7 +477,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.itemIdSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.item_id_selector_label'.tr(),
-                hintText: 'rule_edit.item_id_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.item_id_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -473,7 +503,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.itemGenreSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.item_genre_selector_label'.tr(),
-                hintText: 'rule_edit.item_genre_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.item_genre_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -551,7 +584,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.detailUrl,
               decoration: InputDecoration(
                 labelText: 'rule_edit.detail_url_label'.tr(),
-                hintText: 'rule_edit.detail_url_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.detail_url_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -602,7 +638,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           .join(','),
                       decoration: InputDecoration(
                         labelText: '请求体'.tr(),
-                        hintText: 'key与value用=隔开,多个用英文逗号隔开'.tr(),
+                        hint: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text('key与value用=隔开,多个用英文逗号隔开'.tr()),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
@@ -637,7 +676,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.lineSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.line_selector_label'.tr(),
-                hintText: 'rule_edit.line_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.line_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -660,7 +702,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.episodeSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.episode_selector_label'.tr(),
-                hintText: 'rule_edit.episode_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.episode_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -737,7 +782,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.playerUrl,
               decoration: InputDecoration(
                 labelText: 'rule_edit.player_url_label'.tr(),
-                hintText: 'rule_edit.player_url_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.player_url_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -788,7 +836,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           .join(','),
                       decoration: InputDecoration(
                         labelText: '请求体'.tr(),
-                        hintText: 'key与value用=隔开,多个用英文逗号隔开'.tr(),
+                        hint: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text('key与value用=隔开,多个用英文逗号隔开'.tr()),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
@@ -823,7 +874,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.playerVideoSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.player_video_selector_label'.tr(),
-                hintText: 'rule_edit.player_video_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.player_video_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -846,7 +900,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.videoElementAttribute,
               decoration: InputDecoration(
                 labelText: 'rule_edit.video_element_attribute_label'.tr(),
-                hintText: 'rule_edit.video_element_attribute_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.video_element_attribute_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -876,7 +933,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               initialValue: widget.rule?.embedVideoSelector,
               decoration: InputDecoration(
                 labelText: 'rule_edit.embed_video_selector_label'.tr(),
-                hintText: 'rule_edit.embed_video_selector_hint'.tr(),
+                hint: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('rule_edit.embed_video_selector_hint'.tr()),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 ),
@@ -975,7 +1035,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
       appBar: AppBar(
         actionsPadding: .symmetric(horizontal: 12),
         titleSpacing: 0,
-        actions: _buildAppbarActions(),
+        actions: _buildAppBarActions(),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => context.pop(),

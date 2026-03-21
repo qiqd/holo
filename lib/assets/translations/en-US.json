@@ -295,6 +295,7 @@
         "search_url_hint": "Example: /search or /search?keyword={keyword}",
         "search_url_validator": "Please enter the search page path",
         "search_selector_label": "Search Result List Selector",
+        "request_method_label": "Request Method",
         "search_selector_hint": "Example: div.search-results or ul.list-items",
         "search_selector_validator": "Please enter the search result list selector",
         "item_img_selector_label": "Search Result Image Selector",

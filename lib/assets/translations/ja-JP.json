@@ -295,6 +295,7 @@
         "search_url_hint": "例：/search または /search?keyword={keyword}",
         "search_url_validator": "検索ページパスを入力してください",
         "search_selector_label": "検索結果リストセレクタ",
+        "request_method_label": "請求方法",
         "search_selector_hint": "例：div.search-results または ul.list-items",
         "search_selector_validator": "検索結果リストセレクタを入力してください",
         "item_img_selector_label": "検索結果画像セレクタ",

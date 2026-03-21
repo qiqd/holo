@@ -295,6 +295,7 @@
         "search_url_hint": "例如：/search 或 /search?keyword={keyword}",
         "search_url_validator": "請輸入搜尋頁面路徑",
         "search_selector_label": "搜尋結果列表選擇器",
+        "request_method_label": "請求方法",
         "search_selector_hint": "例如：div.search-results 或 ul.list-items",
         "search_selector_validator": "請輸入搜尋結果列表選擇器",
         "item_img_selector_label": "搜尋結果圖片選擇器",

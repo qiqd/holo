@@ -75,7 +75,7 @@ class _RuleManagerState extends State<RuleManager> {
         actionsPadding: .symmetric(horizontal: 12),
         title: VisibilityDetector(
           key: Key('rule_manager_title'),
-          child: Text('rule_manager.title'.tr()),
+          child: Text('rule_manager.title'.tr(), maxLines: 2),
           onVisibilityChanged: (info) {
             if (info.visibleFraction > 0) {
               setState(() {
