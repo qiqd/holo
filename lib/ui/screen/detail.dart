@@ -50,6 +50,7 @@ class _DetailScreenState extends State<DetailScreen>
   Map<SourceService, List<Media>> source2Media = {};
   List<SourceService> sourceService = [];
   bool isLoading = false;
+  bool _isFetched = false;
   bool isCompleted = false;
   late TabController tabController = TabController(vsync: this, length: 4);
   late TabController subTabController = TabController(
@@ -78,6 +79,7 @@ class _DetailScreenState extends State<DetailScreen>
   Future<void> _fetchMedia() async {
     safeSetState(() {
       isLoading = true;
+      _isFetched = true;
       isCompleted = false;
     });
     final sources = Api.getSources();
@@ -113,6 +115,7 @@ class _DetailScreenState extends State<DetailScreen>
     safeSetState(() {
       sourceService = keys;
       isLoading = false;
+      _isFetched = false;
       isCompleted = true;
     });
   }
@@ -278,8 +281,8 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  void _showCharacterDetail(Character character, BuildContext context) {
-    showModalBottomSheet(
+  Future<void> _showCharacterDetail(Character character, BuildContext context) {
+    return showModalBottomSheet(
       context: context,
       useSafeArea: true,
       builder: (context) {
@@ -338,6 +341,101 @@ class _DetailScreenState extends State<DetailScreen>
                 ),
               ),
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _buildSearchResults() {
+    return showModalBottomSheet<void>(
+      context: context,
+      builder: (context) {
+        return SizedBox(
+          width: double.infinity,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    TextField(
+                      textInputAction: TextInputAction.search,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        hint: FittedBox(
+                          fit: .scaleDown,
+                          child: Text("detail.search_hint".tr()),
+                        ),
+                        hintStyle: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      onSubmitted: (value) async {
+                        setState(() {
+                          keyword = value;
+                          isLoading = true;
+                        });
+                        await _fetchMedia();
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                    ),
+
+                    TabBar(
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
+                      controller: subTabController,
+                      tabs: sourceService
+                          .map((e) => Tab(text: e.getName()))
+                          .toList(),
+                    ),
+                    Expanded(
+                      child: source2Media.isEmpty
+                          ? LoadingOrShowMsg(
+                              msg: "detail.no_search_results".tr(),
+                            )
+                          : Padding(
+                              padding: EdgeInsets.only(top: 6),
+                              child: TabBarView(
+                                controller: subTabController,
+                                children: sourceService.map((e) {
+                                  final item = source2Media[e] ?? [];
+                                  return isLoading
+                                      ? LoadingOrShowMsg(msg: _msg)
+                                      : ListView.builder(
+                                          itemCount: item.length,
+                                          itemBuilder: (context, index) {
+                                            final m = item[index];
+                                            return Column(
+                                              children: [
+                                                MediaCard(
+                                                  id: " ${Random().nextInt(10000)}_${m.id!}",
+                                                  score: m.score ?? 0,
+                                                  imageUrl: m.coverUrl!,
+                                                  title:
+                                                      m.title ??
+                                                      "detail.no_title".tr(),
+                                                  genre: m.type,
+                                                  height: 150,
+                                                  onTap: () {
+                                                    defaultMedia = m;
+                                                    defaultSource = e;
+                                                    _goToPlayer();
+                                                  },
+                                                ),
+                                                Divider(height: 5),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                }).toList(),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
@@ -437,105 +535,27 @@ class _DetailScreenState extends State<DetailScreen>
               if (!isCompleted) {
                 return;
               }
-
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: StatefulBuilder(
-                      builder: (context, setState) {
-                        return Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Column(
-                            children: [
-                              TextField(
-                                textInputAction: TextInputAction.search,
-                                textAlign: TextAlign.center,
-                                decoration: InputDecoration(
-                                  hint: FittedBox(
-                                    fit: .scaleDown,
-                                    child: Text("detail.search_hint".tr()),
-                                  ),
-                                  hintStyle: Theme.of(
-                                    context,
-                                  ).textTheme.bodySmall,
-                                ),
-                                onSubmitted: (value) async {
-                                  setState(() {
-                                    keyword = value;
-                                    isLoading = true;
-                                  });
-                                  await _fetchMedia();
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                },
-                              ),
-
-                              TabBar(
-                                isScrollable: true,
-                                tabAlignment: TabAlignment.start,
-                                controller: subTabController,
-                                tabs: sourceService
-                                    .map((e) => Tab(text: e.getName()))
-                                    .toList(),
-                              ),
-                              Expanded(
-                                child: source2Media.isEmpty
-                                    ? LoadingOrShowMsg(
-                                        msg: "detail.no_search_results".tr(),
-                                      )
-                                    : Padding(
-                                        padding: EdgeInsets.only(top: 6),
-                                        child: TabBarView(
-                                          controller: subTabController,
-                                          children: sourceService.map((e) {
-                                            final item = source2Media[e] ?? [];
-                                            return isLoading
-                                                ? LoadingOrShowMsg(msg: _msg)
-                                                : ListView.builder(
-                                                    itemCount: item.length,
-                                                    itemBuilder: (context, index) {
-                                                      final m = item[index];
-                                                      return Column(
-                                                        children: [
-                                                          MediaCard(
-                                                            id: " ${Random().nextInt(10000)}_${m.id!}",
-                                                            score: m.score ?? 0,
-                                                            imageUrl:
-                                                                m.coverUrl!,
-                                                            title:
-                                                                m.title ??
-                                                                "detail.no_title"
-                                                                    .tr(),
-                                                            genre: m.type,
-                                                            height: 150,
-                                                            onTap: () {
-                                                              defaultMedia = m;
-                                                              defaultSource = e;
-                                                              _goToPlayer();
-                                                            },
-                                                          ),
-                                                          Divider(height: 5),
-                                                        ],
-                                                      );
-                                                    },
-                                                  );
-                                          }).toList(),
-                                        ),
-                                      ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
+              _buildSearchResults();
             },
-            icon: Icon(Icons.search_rounded),
+            icon: AnimatedSwitcher(
+              key: ValueKey("detail_search_icon"),
+              duration: Duration(milliseconds: 500),
+              child: _isFetched
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+
+                        key: ValueKey("detail_search_loading"),
+                        padding: .zero,
+                      ),
+                    )
+                  : const Icon(
+                      Icons.search_rounded,
+                      key: ValueKey("detail_search_icon"),
+                    ),
+            ),
           ),
         ],
       ),

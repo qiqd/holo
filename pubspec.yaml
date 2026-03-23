@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.15+54
+version: 1.1.15+55
 
 environment:
   sdk: ^3.10.3
@@ -60,7 +60,10 @@ flutter:
     - lib/images/launcher_round.png
     - lib/assets/translations/
     - lib/assets/lottie/
-
+  fonts:
+    - family: BF
+      fonts:
+        - asset: lib/assets/fonts/BF.otf
 package_rename_config:
   android:
     app_name: "Holo"

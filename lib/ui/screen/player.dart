@@ -710,130 +710,136 @@ class _PlayerScreenState extends State<PlayerScreen>
   /// 简介
   Widget _buildSummary() {
     return Padding(
-      padding: .all(12),
-      child: CustomScrollView(
-        slivers: [
-          // 简介卡片
-          SliverToBoxAdapter(
-            child: MediaCard(
-              id: "player_${subject.id}",
-              imageUrl: subject.images.large!,
-              title: subject.title,
-              genre: subject.metaTags.join('/'),
-              episode: subject.totalEpisodes,
-              rating: subject.rating,
-              ratingCount: subject.ratingCount,
-              height: 180,
-              airDate: subject.airDate,
+      padding: EdgeInsets.all(12).copyWith(top: 6),
+      child: Material(
+        clipBehavior: .antiAlias,
+        child: CustomScrollView(
+          slivers: [
+            // 简介卡片
+            SliverToBoxAdapter(
+              child: MediaCard(
+                id: "player_${subject.id}",
+                imageUrl: subject.images.large!,
+                title: subject.title,
+                genre: subject.metaTags.join('/'),
+                episode: subject.totalEpisodes,
+                rating: subject.rating,
+                ratingCount: subject.ratingCount,
+                height: 180,
+                airDate: subject.airDate,
+              ),
             ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 6)),
-          // 数据源
-          SliverToBoxAdapter(
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              tileColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              title: Text(
-                "player.datasource".tr(),
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              subtitle: Text(
-                source.getName(),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              leading: SizedBox(
-                width: 100,
-                child: Center(
-                  child: Image.network(
-                    width: double.infinity,
-                    source.getLogoUrl().contains('http')
-                        ? source.getLogoUrl()
-                        : 'https://${source.getLogoUrl()}',
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.error);
-                    },
+            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+            // 数据源
+            SliverToBoxAdapter(
+              child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                tileColor: Theme.of(
+                  context,
+                ).colorScheme.surfaceContainerHighest,
+                title: Text(
+                  "player.datasource".tr(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                subtitle: Text(
+                  source.getName(),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                leading: SizedBox(
+                  width: 100,
+                  child: Center(
+                    child: Image.network(
+                      width: double.infinity,
+                      source.getLogoUrl().contains('http')
+                          ? source.getLogoUrl()
+                          : 'https://${source.getLogoUrl()}',
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.error);
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 6)),
-          // 弹幕
-          SliverToBoxAdapter(
-            child: AnimatedSize(
-              duration: Duration(milliseconds: 300),
-              child: _dammaku == null
-                  ? SizedBox.shrink()
-                  : Container(
-                      width: double.infinity,
+            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+            // 弹幕
+            SliverToBoxAdapter(
+              child: AnimatedSize(
+                duration: Duration(milliseconds: 300),
+                child: _dammaku == null
+                    ? SizedBox.shrink()
+                    : Container(
+                        width: double.infinity,
 
-                      decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        title: _isDanmakuLoading
-                            ? LinearProgressIndicator()
-                            : Text(
-                                context.tr(
-                                  'player.danmaku_statistics',
-                                  args: [
-                                    (_danmakuList?.length ?? 0).toString(),
-                                    (_dammaku?.comments?.length ?? 0)
-                                        .toString(),
-                                    (_dammaku?.comments?.length ?? 0)
-                                        .toString(),
-                                  ],
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          title: _isDanmakuLoading
+                              ? LinearProgressIndicator()
+                              : Text(
+                                  context.tr(
+                                    'player.danmaku_statistics',
+                                    args: [
+                                      (_danmakuList?.length ?? 0).toString(),
+                                      (_dammaku?.comments?.length ?? 0)
+                                          .toString(),
+                                      (_dammaku?.comments?.length ?? 0)
+                                          .toString(),
+                                    ],
+                                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
+                        ),
                       ),
-                    ),
-            ),
-          ),
-
-          // 角色
-          if (widget.character.isNotEmpty)
-            _buildPersonGrid(
-              title: "player.character".tr(),
-              name2Image: {
-                for (var e in widget.character)
-                  e.name ?? '': e.images?.grid ?? "",
-              },
-              onTap: (index) => _showPersonDetail(
-                bangumiId: widget.character[index].id!,
-                image: widget.character[index].images?.large ?? "",
-                name: widget.character[index].name ?? "",
-                role: widget.character[index].relation ?? "",
-                summary: widget.character[index].summary ?? "",
-                cv:
-                    widget.character[index].actors
-                        ?.map((a) => a.name ?? "")
-                        .join('·') ??
-                    "",
               ),
             ),
 
-          // 人物
-          if (widget.person.isNotEmpty)
-            _buildPersonGrid(
-              title: "player.person".tr(),
-              name2Image: {
-                for (var e in widget.person) e.name ?? '': e.images?.grid ?? "",
-              },
-              onTap: (index) => _showPersonDetail(
-                bangumiId: widget.person[index].id!,
-                image: widget.person[index].images?.large ?? "",
-                name: widget.person[index].name ?? "",
-                role: widget.person[index].relation ?? "",
-                isCharacter: false,
+            // 角色
+            if (widget.character.isNotEmpty)
+              _buildPersonGrid(
+                title: "player.character".tr(),
+                name2Image: {
+                  for (var e in widget.character)
+                    e.name ?? '': e.images?.grid ?? "",
+                },
+                onTap: (index) => _showPersonDetail(
+                  bangumiId: widget.character[index].id!,
+                  image: widget.character[index].images?.large ?? "",
+                  name: widget.character[index].name ?? "",
+                  role: widget.character[index].relation ?? "",
+                  summary: widget.character[index].summary ?? "",
+                  cv:
+                      widget.character[index].actors
+                          ?.map((a) => a.name ?? "")
+                          .join('·') ??
+                      "",
+                ),
               ),
-            ),
-        ],
+
+            // 人物
+            if (widget.person.isNotEmpty)
+              _buildPersonGrid(
+                title: "player.person".tr(),
+                name2Image: {
+                  for (var e in widget.person)
+                    e.name ?? '': e.images?.grid ?? "",
+                },
+                onTap: (index) => _showPersonDetail(
+                  bangumiId: widget.person[index].id!,
+                  image: widget.person[index].images?.large ?? "",
+                  name: widget.person[index].name ?? "",
+                  role: widget.person[index].relation ?? "",
+                  isCharacter: false,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:canvas_danmaku/models/danmaku_option.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:holo/assets/fonts/BF.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -868,25 +869,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       });
                       showVideoControlsTimer();
                     },
-                    icon: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Text('弹', style: TextStyle(color: Colors.white)),
-                        if (!showDanmaku) Icon(Icons.block_rounded),
-                      ],
-                    ),
+                    icon: Icon(showDanmaku ? BF.danmakuOn : BF.danmakuOff),
                   ),
                   //剧集列表按钮
                   if (widget.isFullScreen) ...[
-                    IconButton(
-                      color: Colors.white,
-                      tooltip: 'Episode List',
-                      onPressed: () {
-                        widget.onEpisodeTab?.call();
-                        showVideoControlsTimer();
-                      },
-                      icon: Icon(Icons.format_list_bulleted_rounded),
-                    ),
                     PopupMenuButton(
                       tooltip: 'Playback Speed',
                       padding: .zero,
@@ -907,6 +893,15 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         }
                         return items.reversed.toList();
                       },
+                    ),
+                    IconButton(
+                      color: Colors.white,
+                      tooltip: 'Episode List',
+                      onPressed: () {
+                        widget.onEpisodeTab?.call();
+                        showVideoControlsTimer();
+                      },
+                      icon: Icon(Icons.format_list_bulleted_rounded),
                     ),
                   ],
                   //音量调整,只在桌面端显示
@@ -931,6 +926,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       child: Slider(
                         min: 0,
                         max: 1,
+
                         padding: .symmetric(horizontal: 10),
                         value: currentVolume,
                         onChanged: (value) {
@@ -957,8 +953,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     },
                     icon: Icon(
                       widget.isFullScreen
-                          ? Icons.fullscreen_exit_rounded
-                          : Icons.fullscreen_rounded,
+                          ? BF.fullScreenExitM
+                          : BF.fullScreenEnterM,
                     ),
                   ),
                 ],
