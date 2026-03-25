@@ -862,7 +862,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   //弹幕开关按钮
                   IconButton(
                     tooltip: 'Danmaku Switch',
-                    color: Colors.white,
                     onPressed: () {
                       safeSetState(() {
                         showDanmaku = !showDanmaku;

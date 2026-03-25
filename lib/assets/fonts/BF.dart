@@ -1,11 +1,3 @@
-// Place fonts/BF.otf in your fonts/ directory and
-// add the following to your pubspec.yaml
-//
-// flutter:
-//   fonts:
-//    - family: BF
-//      fonts:
-//       - asset: fonts/BF.otf
 import 'package:flutter/widgets.dart';
 
 class BF {
@@ -13,6 +5,7 @@ class BF {
 
   static const String _fontFamily = 'BF';
 
+  static const IconData danmakuOn = IconData(0xf000, fontFamily: _fontFamily);
   static const IconData videoListen = IconData(0xf003, fontFamily: _fontFamily);
   static const IconData pip = IconData(0xf004, fontFamily: _fontFamily);
   static const IconData svgexport88 = IconData(0xf009, fontFamily: _fontFamily);
@@ -28,11 +21,23 @@ class BF {
   static const IconData coin = IconData(0xf031, fontFamily: _fontFamily);
   static const IconData danmakuFont = IconData(0xf034, fontFamily: _fontFamily);
   static const IconData help = IconData(0xf036, fontFamily: _fontFamily);
-  static const IconData danmakuPremium = IconData(0xf037, fontFamily: _fontFamily);
-  static const IconData danmakuColorful = IconData(0xf038, fontFamily: _fontFamily);
+  static const IconData danmakuPremium = IconData(
+    0xf037,
+    fontFamily: _fontFamily,
+  );
+  static const IconData danmakuColorful = IconData(
+    0xf038,
+    fontFamily: _fontFamily,
+  );
   static const IconData danmakuTop = IconData(0xf039, fontFamily: _fontFamily);
-  static const IconData danmakuFloat = IconData(0xf03a, fontFamily: _fontFamily);
-  static const IconData settingDanmaku = IconData(0xf03b, fontFamily: _fontFamily);
+  static const IconData danmakuFloat = IconData(
+    0xf03a,
+    fontFamily: _fontFamily,
+  );
+  static const IconData settingDanmaku = IconData(
+    0xf03b,
+    fontFamily: _fontFamily,
+  );
   static const IconData danmakuOffD = IconData(0xf03c, fontFamily: _fontFamily);
   static const IconData danmakuOnD = IconData(0xf03d, fontFamily: _fontFamily);
   static const IconData fullScreenD = IconData(0xf044, fontFamily: _fontFamily);
@@ -48,15 +53,23 @@ class BF {
   static const IconData timer = IconData(0xf061, fontFamily: _fontFamily);
   static const IconData download = IconData(0xf068, fontFamily: _fontFamily);
   static const IconData subtitle = IconData(0xf001, fontFamily: _fontFamily);
-  static const IconData videoOutline = IconData(0xf002, fontFamily: _fontFamily);
+  static const IconData videoOutline = IconData(
+    0xf002,
+    fontFamily: _fontFamily,
+  );
   static const IconData share = IconData(0xf006, fontFamily: _fontFamily);
   static const IconData favorite = IconData(0xf007, fontFamily: _fontFamily);
   static const IconData recommand = IconData(0xf008, fontFamily: _fontFamily);
-  static const IconData fullScreenExitM = IconData(0xf00b, fontFamily: _fontFamily);
-  static const IconData fullScreenEnterM = IconData(0xf00c, fontFamily: _fontFamily);
+  static const IconData fullScreenExitM = IconData(
+    0xf00b,
+    fontFamily: _fontFamily,
+  );
+  static const IconData fullScreenEnterM = IconData(
+    0xf00c,
+    fontFamily: _fontFamily,
+  );
   static const IconData silence = IconData(0xf00d, fontFamily: _fontFamily);
   static const IconData volume = IconData(0xf00e, fontFamily: _fontFamily);
-  static const IconData danmakuOn = IconData(0xf00f, fontFamily: _fontFamily);
   static const IconData danmakuOff = IconData(0xf010, fontFamily: _fontFamily);
   static const IconData pause = IconData(0xf011, fontFamily: _fontFamily);
   static const IconData play = IconData(0xf012, fontFamily: _fontFamily);

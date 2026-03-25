@@ -709,6 +709,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   /// 简介
   Widget _buildSummary() {
+    // var updateTo = checkUpdateAt(subject.airDate);
     return Padding(
       padding: EdgeInsets.all(12).copyWith(top: 6),
       child: Material(
@@ -763,7 +764,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                 ),
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+            if (_dammaku != null)
+              const SliverToBoxAdapter(child: SizedBox(height: 6)),
             // 弹幕
             SliverToBoxAdapter(
               child: AnimatedSize(
@@ -799,7 +801,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                       ),
               ),
             ),
-
+            if (widget.character.isNotEmpty)
+              const SliverToBoxAdapter(child: SizedBox(height: 6)),
             // 角色
             if (widget.character.isNotEmpty)
               _buildPersonGrid(
@@ -821,7 +824,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                       "",
                 ),
               ),
-
+            if (widget.person.isNotEmpty)
+              const SliverToBoxAdapter(child: SizedBox(height: 6)),
             // 人物
             if (widget.person.isNotEmpty)
               _buildPersonGrid(
@@ -1267,6 +1271,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }) {
     return SliverToBoxAdapter(
       child: Card(
+        margin: .zero,
         child: Container(
           padding: .all(6),
           height: 120,

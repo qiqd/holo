@@ -248,6 +248,7 @@ class Bangumi implements MetaService {
             title: title,
             images: Image.fromJson(subject["images"] as Map<String, dynamic>),
             summary: subject["summary"] as String,
+            rating: double.tryParse(subject["rating"]["score"].toString()),
             ratingCount: subject["rating"]?["total"] as int,
             totalEpisodes: subject["eps"] as int,
             airDate: subject["date"] as String?,
