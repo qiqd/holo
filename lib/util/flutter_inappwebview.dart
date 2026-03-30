@@ -272,7 +272,7 @@ class FlutterInappwebview {
       final errMsg = 'fetchHtml 异常: $e';
       log(errMsg);
       onError?.call(errMsg);
-      return '';
+      rethrow;
     }
   }
 
