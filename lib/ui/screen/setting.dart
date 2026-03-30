@@ -25,6 +25,7 @@ class SetttingScreen extends StatefulWidget {
 class _SetttingScreenState extends State<SetttingScreen>
     with WidgetsBindingObserver {
   String _version = '';
+  String _buildNumber = '';
   String? _email;
   String? _token;
   bool _checkVersioning = false;
@@ -44,9 +45,11 @@ class _SetttingScreenState extends State<SetttingScreen>
 
   Future<void> _loadVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
+
     // packageInfo.
     setState(() {
       _version = packageInfo.version;
+      _buildNumber = packageInfo.buildNumber;
     });
   }
 
@@ -102,7 +105,7 @@ class _SetttingScreenState extends State<SetttingScreen>
       AboutListTile(
         icon: const Icon(Icons.info_outline),
         applicationName: 'Holo',
-        applicationVersion: 'v$_version',
+        applicationVersion: 'v$_version.$_buildNumber',
         applicationIcon: ClipRRect(
           borderRadius: BorderRadius.circular(18),
           child: Image.asset('lib/images/launcher_round.png', width: 100),
