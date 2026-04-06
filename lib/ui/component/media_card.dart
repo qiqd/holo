@@ -82,7 +82,6 @@ class MediaCard extends StatelessWidget {
                       height: height,
                       width: height * 0.7,
                       child: CachedNetworkImage(
-                        useOldImageOnUrlChange: true,
                         imageUrl: imageUrl!.contains('http')
                             ? imageUrl!
                             : 'https://$imageUrl',

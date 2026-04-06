@@ -106,12 +106,12 @@ class Bangumi implements MetaService {
               _ => itemData["name"] ?? '',
             };
             var currentEpisode = checkUpdateAt(itemData['air_date']);
+            var images = itemData["images"] as Map<String, dynamic>?;
+
             return SubjectItem(
               id: itemData["id"],
               title: title,
-              images: Image.fromJson(
-                itemData["images"] as Map<String, dynamic>,
-              ),
+              images: Image.fromJson(images ?? {}),
               currentEpisode: currentEpisode,
               summary: "",
               ratingCount: 0,
