@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:device_info/device_info.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -20,7 +20,7 @@ class CheckVersion {
   static String supportedAbi = '';
 
   /// 设备信息插件实例
-  static final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  // static final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
   /// 获取最新版本信息
   /// 返回简化的 GitHub 资产信息，若没有新版本则返回 null
@@ -45,8 +45,8 @@ class CheckVersion {
       releaseLog: latestRelease.body,
     );
     if (Platform.isAndroid) {
-      final androidInfo = await deviceInfo.androidInfo;
-
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       supportedAbi = androidInfo.supportedAbis.join(',');
       final androidAsset = latestRelease.assets
           ?.where(
