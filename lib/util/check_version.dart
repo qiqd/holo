@@ -48,36 +48,38 @@ class CheckVersion {
       final androidInfo = await deviceInfo.androidInfo;
 
       supportedAbi = androidInfo.supportedAbis.join(',');
-      final androidAsset = latestRelease.assets?.firstWhere(
-        (element) =>
-            element.name?.contains('.apk') == true &&
-            element.name?.contains(androidInfo.supportedAbis.first) == true,
-      );
+      final androidAsset = latestRelease.assets
+          ?.where(
+            (element) =>
+                element.name?.contains('.apk') == true &&
+                element.name?.contains(androidInfo.supportedAbis.first) == true,
+          )
+          .firstOrNull;
       matchName = androidAsset?.name ?? '';
       simpleGitHubAsset.browserDownloadUrl = androidAsset?.browserDownloadUrl;
       return androidAsset == null ? null : simpleGitHubAsset;
     } else if (Platform.isIOS) {
-      final iosAsset = latestRelease.assets?.firstWhere(
-        (element) => element.name?.contains('.ipa') == true,
-      );
+      final iosAsset = latestRelease.assets
+          ?.where((element) => element.name?.contains('.ipa') == true)
+          .firstOrNull;
       simpleGitHubAsset.browserDownloadUrl = iosAsset?.browserDownloadUrl;
       return iosAsset == null ? null : simpleGitHubAsset;
     } else if (Platform.isWindows) {
-      final windowsAsset = latestRelease.assets?.firstWhere(
-        (element) => element.name?.contains('windows') == true,
-      );
+      final windowsAsset = latestRelease.assets
+          ?.where((element) => element.name?.contains('windows') == true)
+          .firstOrNull;
       simpleGitHubAsset.browserDownloadUrl = windowsAsset?.browserDownloadUrl;
       return windowsAsset == null ? null : simpleGitHubAsset;
     } else if (Platform.isMacOS) {
-      final macosAsset = latestRelease.assets?.firstWhere(
-        (element) => element.name?.contains('macos') == true,
-      );
+      final macosAsset = latestRelease.assets
+          ?.where((element) => element.name?.contains('macos') == true)
+          .firstOrNull;
       simpleGitHubAsset.browserDownloadUrl = macosAsset?.browserDownloadUrl;
       return macosAsset == null ? null : simpleGitHubAsset;
     } else if (Platform.isLinux) {
-      final linuxAsset = latestRelease.assets?.firstWhere(
-        (element) => element.name?.contains('linux') == true,
-      );
+      final linuxAsset = latestRelease.assets
+          ?.where((element) => element.name?.contains('linux') == true)
+          .firstOrNull;
       simpleGitHubAsset.browserDownloadUrl = linuxAsset?.browserDownloadUrl;
       return linuxAsset == null ? null : simpleGitHubAsset;
     }
