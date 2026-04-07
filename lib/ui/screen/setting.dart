@@ -7,6 +7,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
+import 'package:holo/main.dart';
 import 'package:holo/util/check_version.dart';
 import 'package:holo/util/local_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -133,6 +134,16 @@ class _SetttingScreenState extends State<SetttingScreen>
           setState(() => _checkVersioning = true);
           await CheckVersion.checkVersion(context);
           setState(() => _checkVersioning = false);
+        },
+      ),
+      SwitchListTile(
+        value: LocalStorage.getAutoCheckUpdate(),
+        title: Text('setting.app_info.auto_check_update'.tr()),
+        subtitle: Text('setting.app_info.auto_check_update_description'.tr()),
+        onChanged: (value) {
+          setState(() {
+            LocalStorage.setAutoCheckUpdate(value);
+          });
         },
       ),
     ];

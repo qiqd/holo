@@ -328,6 +328,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       valueListenable: MyApp.appSettingNotifier,
       builder: (context, setting, child) {
         return MaterialApp.router(
+          //showPerformanceOverlay: true,
           // 本地化代理
           localizationsDelegates: context.localizationDelegates,
           // 支持的语言

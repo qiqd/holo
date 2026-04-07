@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/update_api.dart';
 import 'package:holo/entity/github_release.dart';
+import 'package:holo/util/local_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -83,10 +84,14 @@ class CheckVersion {
     return null;
   }
 
-  /// 检查版本更新
+  /// 检查版本更新 ，如果自动检查更新为false，则不检查
   /// [context]: 上下文
   /// 如果有新版本，显示更新对话框
   static Future<void> checkVersion(BuildContext context) async {
+    final autoCheckUpdate = LocalStorage.getAutoCheckUpdate();
+    if (!autoCheckUpdate) {
+      return;
+    }
     final asset = await _fetchLatestRelease();
     if (asset != null && context.mounted) {
       showDialog(

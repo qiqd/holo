@@ -101,7 +101,10 @@
             "danmaku_title": "弾幕対応",
             "anime_image_search": "画像検索",
             "daily_sentence": "毎日の一言",
-            "check_version": "バージョンチェック"
+            "check_version": "バージョンチェック",
+            "check_version_description": "新バージョンをチェック",
+            "auto_check_update": "自動バージョンチェック",
+            "auto_check_update_description": "アプリを起動するたびに自動バージョンをチェック"
         },
         "language": {
             "change": "言語切替",

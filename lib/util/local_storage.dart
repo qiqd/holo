@@ -621,6 +621,18 @@ class LocalStorage {
     _prefs!.setString("${_key}_background_image_path", path);
   }
 
+  /// 是否自动检查更新，默认为false
+
+  static bool getAutoCheckUpdate() {
+    return _prefs!.getBool("${_key}_auto_check_update") ?? true;
+  }
+
+  /// 设置是否自动检查更新
+  /// [value]: 是否自动检查更新
+  static void setAutoCheckUpdate(bool value) {
+    _prefs!.setBool("${_key}_auto_check_update", value);
+  }
+
   /// 获取布尔值
   /// [key]: 存储键
   /// [defaultValue]: 默认值，默认为 false

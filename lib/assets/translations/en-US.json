@@ -101,7 +101,10 @@
             "danmaku_title": "Danmaku Provided",
             "anime_image_search": "Anime Image Search",
             "daily_sentence": "Daily Sentence",
-            "check_version": "Check Version"
+            "check_version": "Check Version",
+            "check_version_description": "Check if there is a new version update",
+            "auto_check_update": "Auto Check Update",
+            "auto_check_update_description": "Enable to check check for updates every time the app is started"
         },
         "language": {
             "change": "Change Language",

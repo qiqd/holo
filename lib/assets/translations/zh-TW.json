@@ -101,7 +101,10 @@
             "danmaku_title": "彈幕提供",
             "anime_image_search": "圖片搜索",
             "daily_sentence": "每日一言",
-            "check_version": "檢查更新"
+            "check_version": "檢查更新",
+            "check_version_description": "檢查是否有新版本更新",
+            "auto_check_update": "自動檢查更新",
+            "auto_check_update_description": "開啟後每次啟動應用程式會自動檢查更新"
         },
         "language": {
             "change": "切換語言",
