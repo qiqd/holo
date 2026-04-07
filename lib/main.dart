@@ -43,7 +43,6 @@ void main() async {
   // 初始化本地存储
   await LocalStorage.init();
 
-  await Bangumi.init(code: PlatformDispatcher.instance.locale.languageCode);
   // 初始化动画源服务
   Api.initSources();
   // 确保视频播放器已初始化（Windows和Linux平台）

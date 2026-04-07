@@ -15,7 +15,7 @@ import 'package:logger/logger.dart';
 /// Bangumi 元数据服务类
 /// 实现了 MetaService 接口，提供 Bangumi 网站的元数据服务
 class Bangumi implements MetaService {
-  static String languageCode = 'zh';
+  String languageCode;
   final Logger _logger = Logger();
   @override
   /// 获取服务名称
@@ -30,12 +30,11 @@ class Bangumi implements MetaService {
   String get logoUrl => "https://bangumi.tv/img/logo_riff.png";
 
   /// Dio 实例
-  static Dio? _dio;
+  Dio? _dio;
 
   /// 初始化 Dio 实例
-  static Future<void> init({String code = 'zh'}) async {
-    languageCode = code;
-    _dio = await HttpUtil.createDioWithUserAgent();
+  Bangumi({this.languageCode = 'zh'}) {
+    _dio = HttpUtil.createDio();
   }
 
   /// 获取日历详细信息
@@ -69,8 +68,7 @@ class Bangumi implements MetaService {
           broadcast.lastIndexOf('/'),
         );
         var dateTime = DateTime.parse(time);
-        dateTime = dateTime.add(const Duration(hours: 8));
-        result[subjectId] = dateTime;
+        result[subjectId] = dateTime.toLocal();
       }
       return result;
     } catch (e) {
@@ -107,7 +105,7 @@ class Bangumi implements MetaService {
             };
             var currentEpisode = checkUpdateAt(itemData['air_date']);
             var images = itemData["images"] as Map<String, dynamic>?;
-
+            var airDate = itemData['air_date'] as String?;
             return SubjectItem(
               id: itemData["id"],
               title: title,
@@ -118,6 +116,7 @@ class Bangumi implements MetaService {
               rating: 0,
               totalEpisodes: 0,
               metaTags: [],
+              airDate: airDate,
             );
           }).toList();
           return DailyBroadcast(
@@ -132,7 +131,7 @@ class Bangumi implements MetaService {
             for (var subject in item.items) {
               if (calenderDetail.containsKey(subject.id.toString())) {
                 var time = calenderDetail[subject.id.toString()];
-                subject.airTime = time.toString();
+                subject.airTime = '${time?.hour}:${time?.minute}';
               }
             }
           }

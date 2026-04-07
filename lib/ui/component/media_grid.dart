@@ -106,7 +106,7 @@ class MediaGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            airDate!,
+                            airTime!,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
