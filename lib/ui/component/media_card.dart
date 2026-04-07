@@ -1,8 +1,6 @@
-import 'dart:developer';
-
 import 'package:easy_localization/easy_localization.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:holo/util/datetime_util.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -81,29 +79,28 @@ class MediaCard extends StatelessWidget {
                     child: SizedBox(
                       height: height,
                       width: height * 0.7,
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrl!.contains('http')
+                      child: ExtendedImage.network(
+                        imageUrl!.startsWith('https://')
                             ? imageUrl!
-                            : 'https://$imageUrl',
-                        memCacheHeight: 1000,
-                        memCacheWidth: 800,
+                            : imageUrl!.replaceFirst('http://', 'https://'),
                         width: double.infinity,
                         height: double.infinity,
-                        fit: BoxFit.fitHeight,
-                        errorWidget: (context, url, error) {
-                          log("meida_card.image_url:$url");
-                          log("meida_card.image_error:$error");
-                          return SizedBox(
-                            height: double.infinity,
-                            width: double.infinity,
-                            child: Icon(Icons.broken_image),
-                          );
+                        fit: BoxFit.fitWidth,
+                        loadStateChanged: (state) {
+                          if (state.extendedImageLoadState ==
+                              LoadState.loading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state.extendedImageLoadState ==
+                              LoadState.completed) {
+                            return null;
+                          } else if (state.extendedImageLoadState ==
+                              LoadState.failed) {
+                            return const Center(child: Icon(Icons.error));
+                          }
+                          return null;
                         },
-                        placeholder: (context, url) => const SizedBox(
-                          height: double.infinity,
-                          width: double.infinity,
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
                       ),
                     ),
                   ),

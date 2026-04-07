@@ -1,5 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 class MediaGrid extends StatelessWidget {
@@ -44,17 +44,28 @@ class MediaGrid extends StatelessWidget {
                       tag: id,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
+                        child: ExtendedImage.network(
+                          imageUrl.startsWith("https://")
+                              ? imageUrl
+                              : imageUrl.replaceFirst("http://", "https://"),
                           width: double.infinity,
                           height: double.infinity,
                           fit: BoxFit.fitHeight,
-                          memCacheHeight: 1000,
-                          memCacheWidth: 800,
-                          imageUrl: imageUrl,
-                          placeholder: (context, url) =>
-                              Center(child: CircularProgressIndicator()),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+                          loadStateChanged: (state) {
+                            if (state.extendedImageLoadState ==
+                                LoadState.loading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (state.extendedImageLoadState ==
+                                LoadState.completed) {
+                              return null;
+                            } else if (state.extendedImageLoadState ==
+                                LoadState.failed) {
+                              return const Center(child: Icon(Icons.error));
+                            }
+                            return null;
+                          },
                         ),
                       ),
                     ),

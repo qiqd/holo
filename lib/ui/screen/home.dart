@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject_item.dart';
@@ -418,19 +418,35 @@ class _HomeContent extends StatelessWidget {
                                             children: [
                                               Hero(
                                                 tag: 'home-hot_${e.id}',
-                                                child: CachedNetworkImage(
+                                                child: ExtendedImage.network(
+                                                  e.images.large ?? "",
                                                   width: double.infinity,
                                                   height: double.infinity,
                                                   fit: BoxFit.cover,
-                                                  imageUrl:
-                                                      e.images.large ?? "",
-                                                  errorWidget: (c, u, e) =>
-                                                      const Icon(Icons.error),
-                                                  progressIndicatorBuilder:
-                                                      (c, u, p) => const Center(
+                                                  loadStateChanged: (state) {
+                                                    if (state
+                                                            .extendedImageLoadState ==
+                                                        LoadState.loading) {
+                                                      return const Center(
                                                         child:
                                                             CircularProgressIndicator(),
-                                                      ),
+                                                      );
+                                                    } else if (state
+                                                            .extendedImageLoadState ==
+                                                        LoadState.completed) {
+                                                      return state
+                                                          .completedWidget;
+                                                    } else if (state
+                                                            .extendedImageLoadState ==
+                                                        LoadState.failed) {
+                                                      return const Center(
+                                                        child: Icon(
+                                                          Icons.error,
+                                                        ),
+                                                      );
+                                                    }
+                                                    return null;
+                                                  },
                                                 ),
                                               ),
                                               Align(

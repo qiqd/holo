@@ -172,7 +172,9 @@ class AAfun implements SourceService {
         if (encryptedUrl != null && sessionKey != null) {
           try {
             final decryptedUrl = decryptAES(encryptedUrl, sessionKey);
-            return decryptedUrl.replaceFirst("http://", "https://");
+            return decryptedUrl.startsWith('http://')
+                ? decryptedUrl.replaceFirst('http://', 'https://')
+                : decryptedUrl;
           } catch (e) {
             log('解密失败: $e');
             return null;

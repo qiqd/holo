@@ -1,29 +1,25 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
-import 'package:holo/main.dart';
 import 'package:holo/util/check_version.dart';
 import 'package:holo/util/local_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class SetttingScreen extends StatefulWidget {
-  const SetttingScreen({super.key});
+class SettingScreen extends StatefulWidget {
+  const SettingScreen({super.key});
 
   @override
-  State<SetttingScreen> createState() => _SetttingScreenState();
+  State<SettingScreen> createState() => _SettingScreenState();
 }
 
-class _SetttingScreenState extends State<SetttingScreen>
+class _SettingScreenState extends State<SettingScreen>
     with WidgetsBindingObserver {
   String _version = '';
   String _buildNumber = '';
@@ -260,7 +256,7 @@ class _SetttingScreenState extends State<SetttingScreen>
       ListTile(
         leading: const Icon(Icons.palette_outlined),
         title: Text('appearance.appbar_title'.tr()),
-        onTap: () => context.push('/appearence'),
+        onTap: () => context.push('appearance'),
       ),
     ];
   }

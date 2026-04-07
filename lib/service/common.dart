@@ -170,7 +170,7 @@ class Common extends SourceService {
         }
         // 补全图片URL
         imgUrl = imgUrl.contains('http') ? imgUrl : rule.baseUrl + imgUrl;
-        imgUrl = imgUrl.contains("http") ? imgUrl : ('https://$imgUrl');
+        imgUrl = imgUrl.contains("https") ? imgUrl : ('https://$imgUrl');
         // 构建媒体对象
         return Media(
           id: e.querySelector(rule.itemIdSelector)?.attributes['href'] ?? '',

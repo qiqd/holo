@@ -629,7 +629,15 @@ class _DetailScreenState extends State<DetailScreen>
                                           return ListTile(
                                             leading: p.images != null
                                                 ? Image.network(
-                                                    p.images!.grid!,
+                                                    p.images!.grid!.startsWith(
+                                                          "https://",
+                                                        )
+                                                        ? p.images!.grid!
+                                                        : p.images!.grid!
+                                                              .replaceAll(
+                                                                "http://",
+                                                                "https://",
+                                                              ),
                                                     // width: 70,
                                                     // height: 70,
                                                     fit: BoxFit.fill,
@@ -666,7 +674,10 @@ class _DetailScreenState extends State<DetailScreen>
                                             leading: c.images != null
                                                 ? Image.network(
                                                     fit: BoxFit.fill,
-                                                    c.images!.grid!,
+                                                    c.images!.grid!.replaceAll(
+                                                      "http",
+                                                      "https",
+                                                    ),
                                                     // color: Colors.limeAccent,
                                                     errorBuilder:
                                                         (
@@ -702,7 +713,10 @@ class _DetailScreenState extends State<DetailScreen>
                                     return ListTile(
                                       leading: r.images != null
                                           ? Image.network(
-                                              r.images!.medium!,
+                                              r.images!.medium!.replaceAll(
+                                                "http",
+                                                "https",
+                                              ),
                                               fit: BoxFit.cover,
                                               errorBuilder:
                                                   (

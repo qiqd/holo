@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
@@ -13,7 +12,6 @@ import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/service/api.dart';
-import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/appearance.dart';
 import 'package:holo/ui/screen/image_search.dart';
@@ -161,7 +159,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             routes: [
               GoRoute(
                 path: '/setting',
-                builder: (context, state) => SetttingScreen(),
+                builder: (context, state) => SettingScreen(),
               ),
             ],
           ),
@@ -256,7 +254,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ),
       // 外观设置页路由
       GoRoute(
-        path: '/appearence',
+        path: '/appearance',
         builder: (context, state) {
           return Appearance();
         },
