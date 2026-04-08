@@ -424,6 +424,8 @@ class _HomeContent extends StatelessWidget {
                                                   imageUrl:
                                                       e.images.medium ?? '',
                                                   fit: BoxFit.cover,
+                                                  memCacheWidth: 700,
+                                                  memCacheHeight: 900,
                                                 ),
                                               ),
                                               Align(
