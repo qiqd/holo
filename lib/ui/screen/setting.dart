@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
@@ -425,8 +425,11 @@ class _SettingScreenState extends State<SettingScreen>
             child: Text('setting.data_management.clear_dialog_cancel'.tr()),
           ),
           FilledButton(
-            onPressed: () {
-              DefaultCacheManager().emptyCache();
+            onPressed: () async {
+              DefaultCacheManager().emptyCache().then((_) {
+                //clearDiskCachedImages();
+                Navigator.pop(context);
+              });
             },
             child: Text('setting.data_management.clear_dialog_confirm'.tr()),
           ),

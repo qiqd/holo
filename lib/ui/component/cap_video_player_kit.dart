@@ -91,14 +91,12 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   double currentVolume = 0.0;
   double currentBrightness = 0.0;
   bool showDanmaku = true;
-  bool showVolume = false;
-  bool showBrightness = false;
-  bool showDragOffset = false;
   double bufferProgress = 0.0;
   Danmu? dammaku;
   Timer? danmakuSettingTimer;
   Timer? settingTimer;
   bool isLandscape = false;
+  int toastShowMode = 0; //0:无,1:音量,2:亮度,3:进度
   final List<DanmakuContentItem<double>> danmakuItems = [];
 
   /// 显示视频控制条定时器
@@ -113,12 +111,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   }
 
   /// 更新显示音量或亮度的定时器
-  void updateShowVolumeOrBrightnessTimer() {
+  void _updateToastShowModeTimer() {
     volumeAndBrightnessToastTimer?.cancel();
-    volumeAndBrightnessToastTimer = Timer(Duration(seconds: 5), () {
+    volumeAndBrightnessToastTimer = Timer(Duration(seconds: 1), () {
       safeSetState(() {
-        showBrightness = false;
-        showVolume = false;
+        toastShowMode = 0;
       });
     });
   }
@@ -131,9 +128,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     if (isLock) {
       return;
     }
-    showBrightness = true;
-    showVolume = false;
-    updateShowVolumeOrBrightnessTimer();
+    toastShowMode = 2;
+    _updateToastShowModeTimer();
     final current = await _brightnessController.application;
     double newBrightness = current;
     if (direction == SwipeDirection.up) {
@@ -162,9 +158,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     if (isLock) {
       return;
     }
-    showVolume = true;
-    showBrightness = false;
-    updateShowVolumeOrBrightnessTimer();
+    toastShowMode = 1;
+    _updateToastShowModeTimer();
     final current = currentVolume;
     double newVolume = current;
 
@@ -187,9 +182,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       return;
     }
     safeSetState(() {
-      showBrightness = false;
-      showVolume = false;
-      showDragOffset = true;
+      toastShowMode = 3;
       if (direction == SwipeDirection.left) {
         dragOffset -= 1;
       } else if (direction == SwipeDirection.right) {
@@ -380,8 +373,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       );
       await player?.play();
       safeSetState(() {
-        showDragOffset = false;
         dragOffset = 0;
+        toastShowMode = 0;
       });
     });
   }
@@ -500,64 +493,74 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   ///亮度或者音量或者拖拽进度显示
   Widget _buildToast() {
     return AnimatedOpacity(
-      curve: (showVolume || showBrightness || showDragOffset)
-          ? Curves.decelerate
-          : Curves.easeOutQuart,
-      opacity: (showVolume || showBrightness || showDragOffset) ? 1.0 : 0.0,
+      curve: toastShowMode != 0 ? Curves.decelerate : Curves.easeOutQuart,
+      opacity: toastShowMode != 0 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 300),
-      child: Align(
-        alignment: Alignment.center,
-        child: showVolume
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    currentVolume > 0.66
-                        ? Icons.volume_up_rounded
-                        : currentVolume > 0.33
-                        ? Icons.volume_down_rounded
-                        : Icons.volume_mute_rounded,
-                    color: Colors.white,
-                  ),
-                  Text(
-                    "${(currentVolume * 100).toInt()}%",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              )
-            : showBrightness
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    currentBrightness > 66
-                        ? Icons.brightness_high_rounded
-                        : currentBrightness > 33
-                        ? Icons.brightness_medium_rounded
-                        : Icons.brightness_low_rounded,
-                    color: Colors.white,
-                  ),
-                  Text(
-                    "${(currentBrightness).toInt()}%",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              )
-            : showDragOffset
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (dragOffset < 0)
-                    Icon(Icons.fast_rewind_rounded, color: Colors.white),
-                  Text(
-                    "${(dragOffset.abs()).toInt()}s",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  if (dragOffset > 0)
-                    Icon(Icons.fast_forward_rounded, color: Colors.white),
-                ],
-              )
-            : const SizedBox(),
+      child: Center(
+        child: Container(
+          // width: ,
+          padding: toastShowMode == 0
+              ? EdgeInsets.zero
+              : const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: toastShowMode == 1
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      currentVolume > 0.66
+                          ? Icons.volume_up_rounded
+                          : currentVolume > 0.33
+                          ? Icons.volume_down_rounded
+                          : Icons.volume_mute_rounded,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      "${(currentVolume * 100).toInt()}%",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                )
+              : toastShowMode == 2
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      currentBrightness > 66
+                          ? Icons.brightness_high_rounded
+                          : currentBrightness > 33
+                          ? Icons.brightness_medium_rounded
+                          : Icons.brightness_low_rounded,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      "${(currentBrightness).toInt()}%",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                )
+              : toastShowMode == 3
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (dragOffset < 0)
+                      Icon(Icons.fast_rewind_rounded, color: Colors.white),
+                    Text(
+                      "${(dragOffset.abs()).toInt()}s",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    if (dragOffset > 0)
+                      Icon(Icons.fast_forward_rounded, color: Colors.white),
+                  ],
+                )
+              : SizedBox.shrink(),
+        ),
       ),
     );
   }

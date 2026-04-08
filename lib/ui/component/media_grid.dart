@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:holo/ui/component/cache_image.dart';
 
 class MediaGrid extends StatelessWidget {
   final String id;
@@ -44,29 +44,7 @@ class MediaGrid extends StatelessWidget {
                       tag: id,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: ExtendedImage.network(
-                          imageUrl.startsWith("https://")
-                              ? imageUrl
-                              : imageUrl.replaceFirst("http://", "https://"),
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.fitHeight,
-                          loadStateChanged: (state) {
-                            if (state.extendedImageLoadState ==
-                                LoadState.loading) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else if (state.extendedImageLoadState ==
-                                LoadState.completed) {
-                              return null;
-                            } else if (state.extendedImageLoadState ==
-                                LoadState.failed) {
-                              return const Center(child: Icon(Icons.error));
-                            }
-                            return null;
-                          },
-                        ),
+                        child: CacheImage(imageUrl: imageUrl),
                       ),
                     ),
                     //评分

@@ -1,6 +1,8 @@
+import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:holo/ui/component/cache_image.dart';
+import 'package:holo/ui/component/shimmer.dart';
 import 'package:holo/util/datetime_util.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -79,28 +81,10 @@ class MediaCard extends StatelessWidget {
                     child: SizedBox(
                       height: height,
                       width: height * 0.7,
-                      child: ExtendedImage.network(
-                        imageUrl!.startsWith('https://')
+                      child: CacheImage(
+                        imageUrl: imageUrl!.startsWith('https://')
                             ? imageUrl!
                             : imageUrl!.replaceFirst('http://', 'https://'),
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.fitWidth,
-                        loadStateChanged: (state) {
-                          if (state.extendedImageLoadState ==
-                              LoadState.loading) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else if (state.extendedImageLoadState ==
-                              LoadState.completed) {
-                            return null;
-                          } else if (state.extendedImageLoadState ==
-                              LoadState.failed) {
-                            return const Center(child: Icon(Icons.error));
-                          }
-                          return null;
-                        },
                       ),
                     ),
                   ),

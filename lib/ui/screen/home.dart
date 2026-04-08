@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject_item.dart';
 import 'package:holo/service/api.dart';
+import 'package:holo/ui/component/cache_image.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/util/check_version.dart';
@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
         var item = items[index];
         return MediaGrid(
           id: '${heroKey}_${item.id}',
-          imageUrl: item.images.large ?? "",
+          imageUrl: item.images.medium ?? "",
           title: item.title,
           onTap: () => context.push(
             '/detail',
@@ -418,35 +418,10 @@ class _HomeContent extends StatelessWidget {
                                             children: [
                                               Hero(
                                                 tag: 'home-hot_${e.id}',
-                                                child: ExtendedImage.network(
-                                                  e.images.large ?? "",
-                                                  width: double.infinity,
-                                                  height: double.infinity,
+                                                child: CacheImage(
+                                                  imageUrl:
+                                                      e.images.medium ?? '',
                                                   fit: BoxFit.cover,
-                                                  loadStateChanged: (state) {
-                                                    if (state
-                                                            .extendedImageLoadState ==
-                                                        LoadState.loading) {
-                                                      return const Center(
-                                                        child:
-                                                            CircularProgressIndicator(),
-                                                      );
-                                                    } else if (state
-                                                            .extendedImageLoadState ==
-                                                        LoadState.completed) {
-                                                      return state
-                                                          .completedWidget;
-                                                    } else if (state
-                                                            .extendedImageLoadState ==
-                                                        LoadState.failed) {
-                                                      return const Center(
-                                                        child: Icon(
-                                                          Icons.error,
-                                                        ),
-                                                      );
-                                                    }
-                                                    return null;
-                                                  },
                                                 ),
                                               ),
                                               Align(

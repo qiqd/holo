@@ -30,8 +30,7 @@ dependencies:
   screen_brightness: ^2.1.7 # not supported on web linux
   simple_gesture_detector: ^0.2.1
   volume_controller: ^3.4.1 #not supported on web
-  # cached_network_image: ^3.4.1
-  extended_image: ^10.0.1
+  cached_network_image_ce: ^4.6.4
   package_info_plus: ^9.0.0
   flutter_cache_manager: ^3.4.1
   easy_localization: ^3.0.8

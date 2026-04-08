@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-class ShimmerSkeleton extends StatelessWidget {
-  const ShimmerSkeleton({super.key});
+class ShimmerGridSkeleton extends StatelessWidget {
+  const ShimmerGridSkeleton({super.key});
   @override
   Widget build(BuildContext context) {
     var isLandscape =
@@ -16,17 +16,26 @@ class ShimmerSkeleton extends StatelessWidget {
         childAspectRatio: 0.6,
       ),
       itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white38,
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        );
+        return const ShimmerContainerSkeleton();
       },
+    );
+  }
+}
+
+class ShimmerContainerSkeleton extends StatelessWidget {
+  const ShimmerContainerSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white38,
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
     );
   }
 }

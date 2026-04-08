@@ -98,7 +98,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 return _msg != null
                     ? LoadingOrShowMsg(msg: _msg)
                     : _calendar.isEmpty
-                    ? const ShimmerSkeleton()
+                    ? const ShimmerGridSkeleton()
                     : GridView.builder(
                         padding: const EdgeInsets.all(8),
                         itemCount: _calendar[index].items.length,
