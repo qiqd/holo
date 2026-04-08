@@ -1,8 +1,6 @@
-import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/ui/component/cache_image.dart';
-import 'package:holo/ui/component/shimmer.dart';
 import 'package:holo/util/datetime_util.dart';
 import 'package:shimmer/shimmer.dart';
 

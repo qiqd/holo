@@ -8,7 +8,7 @@ import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/cache_image.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
-import 'package:holo/util/check_version.dart';
+import 'package:holo/util/version_checker.dart';
 import 'package:holo/extension/safe_set_state.dart';
 import 'package:holo/util/local_storage.dart';
 import 'package:logger/logger.dart';
@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _homeScreenInit() {
-    CheckVersion.checkVersion(context);
+    VersionChecker.checkVersion(context);
 
     _hotNotifier.addListener(() {
       if (_hotNotifier.value.isNotEmpty) {

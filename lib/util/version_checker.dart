@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -12,13 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// 版本检查类
 /// 用于检查应用程序的版本更新，获取最新版本信息并提示用户更新
-class CheckVersion {
-  /// 匹配的安装包名称
-  static String matchName = '';
-
-  /// 设备支持的 ABI
-  static String supportedAbi = '';
-
+class VersionChecker {
   /// 设备信息插件实例
   // static final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
@@ -45,17 +37,10 @@ class CheckVersion {
       releaseLog: latestRelease.body,
     );
     if (Platform.isAndroid) {
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      supportedAbi = androidInfo.supportedAbis.join(',');
       final androidAsset = latestRelease.assets
-          ?.where(
-            (element) =>
-                element.name?.contains('.apk') == true &&
-                element.name?.contains(androidInfo.supportedAbis.first) == true,
-          )
+          ?.where((element) => element.name?.contains('release.apk') == true)
           .firstOrNull;
-      matchName = androidAsset?.name ?? '';
+
       simpleGitHubAsset.browserDownloadUrl = androidAsset?.browserDownloadUrl;
       return androidAsset == null ? null : simpleGitHubAsset;
     } else if (Platform.isIOS) {
@@ -111,8 +96,6 @@ class CheckVersion {
                     "${context.tr("common.latest_version")}:v${asset.latestVersion}",
                   ),
                 ),
-                Text('device abi: $supportedAbi'),
-                Text('match name: $matchName'),
                 Text('download_url: ${asset.browserDownloadUrl ?? ""}'),
                 Text(asset.releaseLog ?? ""),
               ],

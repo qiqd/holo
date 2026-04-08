@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/playback_api.dart';
 import 'package:holo/api/subscribe_api.dart';
-import 'package:holo/util/check_version.dart';
+import 'package:holo/util/version_checker.dart';
 import 'package:holo/util/local_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -128,7 +128,7 @@ class _SettingScreenState extends State<SettingScreen>
         title: Text('setting.app_info.check_version'.tr()),
         onTap: () async {
           setState(() => _checkVersioning = true);
-          await CheckVersion.checkVersion(context);
+          await VersionChecker.checkVersion(context);
           setState(() => _checkVersioning = false);
         },
       ),
