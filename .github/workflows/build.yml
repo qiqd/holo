@@ -83,7 +83,7 @@ jobs:
           cd build/ios
           cp -R Release-iphoneos/Runner.app ipa/Payload/
           cd ipa
-          zip -r Runner.ipa Payload/
+          zip -r Payload.ipa Payload/
 
       - name: List built IPA
         run: ls -la build/ios/ipa/
