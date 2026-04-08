@@ -1,22 +1,37 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/update_api.dart';
 import 'package:holo/entity/github_release.dart';
 import 'package:holo/util/local_storage.dart';
+import 'package:logger/web.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// 版本检查类
 /// 用于检查应用程序的版本更新，获取最新版本信息并提示用户更新
 class VersionChecker {
-  /// 设备信息插件实例
-  // static final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  static const MethodChannel _channel = MethodChannel('abi_detector');
+  static final Logger _logger = Logger();
+
+  /// 获取设备ABI信息
+  static Future<String?> getDeviceAbi() async {
+    try {
+      final String? abi = await _channel.invokeMethod('getDeviceAbi');
+      _logger.i('Device ABI: $abi');
+      return abi;
+    } on PlatformException catch (e) {
+      _logger.e('Failed to get device ABI: ${e.message}');
+      return null;
+    }
+  }
 
   /// 获取最新版本信息
   /// 返回简化的 GitHub 资产信息，若没有新版本则返回 null
   static Future<SimpleGitHubAsset?> _fetchLatestRelease() async {
+    final abi = await getDeviceAbi();
     final latestRelease = await UpdateApi.getLatestRelease();
     if (latestRelease == null) {
       return null;
@@ -38,7 +53,11 @@ class VersionChecker {
     );
     if (Platform.isAndroid) {
       final androidAsset = latestRelease.assets
-          ?.where((element) => element.name?.contains('release.apk') == true)
+          ?.where(
+            (element) =>
+                element.name?.contains('.apk') == true &&
+                element.name?.contains(abi ?? 'release') == true,
+          )
           .firstOrNull;
 
       simpleGitHubAsset.browserDownloadUrl = androidAsset?.browserDownloadUrl;
