@@ -94,10 +94,6 @@ class VersionChecker {
   /// [context]: 上下文
   /// 如果有新版本，显示更新对话框
   static Future<void> checkVersion(BuildContext context) async {
-    final autoCheckUpdate = LocalStorage.getAutoCheckUpdate();
-    if (!autoCheckUpdate) {
-      return;
-    }
     final asset = await _fetchLatestRelease();
     if (asset != null && context.mounted) {
       showDialog(

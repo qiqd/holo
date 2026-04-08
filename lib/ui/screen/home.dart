@@ -95,8 +95,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _homeScreenInit() {
-    VersionChecker.checkVersion(context);
-
+    final autoCheckUpdate = LocalStorage.getAutoCheckUpdate();
+    if (autoCheckUpdate) {
+      VersionChecker.checkVersion(context);
+    }
     _hotNotifier.addListener(() {
       if (_hotNotifier.value.isNotEmpty) {
         _carouselTimer?.cancel();
