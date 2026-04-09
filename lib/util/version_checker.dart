@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/update_api.dart';
 import 'package:holo/entity/github_release.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:logger/web.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
