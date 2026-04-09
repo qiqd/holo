@@ -30,7 +30,6 @@ class VersionChecker {
   /// 获取最新版本信息
   /// 返回简化的 GitHub 资产信息，若没有新版本则返回 null
   static Future<SimpleGitHubAsset?> _fetchLatestRelease() async {
-    final abi = await getDeviceAbi();
     final latestRelease = await UpdateApi.getLatestRelease();
     if (latestRelease == null) {
       return null;
@@ -51,6 +50,7 @@ class VersionChecker {
       releaseLog: latestRelease.body,
     );
     if (Platform.isAndroid) {
+      final abi = await getDeviceAbi();
       final androidAsset = latestRelease.assets
           ?.where(
             (element) =>

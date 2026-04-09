@@ -398,114 +398,119 @@ class ScaffoldWithNavBar extends StatefulWidget {
 class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
   @override
   Widget build(BuildContext context) {
-    // 获取当前设备方向
-    final orientation = MediaQuery.of(context).orientation;
-
-    if (orientation == Orientation.landscape) {
-      // 横屏布局 - 使用侧边导航栏
-      return Scaffold(
-        body: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: Platform.isLinux || Platform.isWindows || Platform.isMacOS
-                ? 12
-                : 0,
-          ),
-          child: Row(
-            children: [
-              // 侧边导航栏
-              NavigationRail(
-                leading: Column(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.search_rounded),
-                      onPressed: () {
-                        context.push('/search');
-                      },
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isOrientation = constraints.maxWidth > constraints.maxHeight;
+        // 横屏布局 - 使用侧边导航栏
+        return isOrientation
+            ? Scaffold(
+                body: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical:
+                        Platform.isLinux ||
+                            Platform.isWindows ||
+                            Platform.isMacOS
+                        ? 12
+                        : 0,
+                  ),
+                  child: Row(
+                    children: [
+                      // 侧边导航栏
+                      NavigationRail(
+                        leading: Column(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.search_rounded),
+                              onPressed: () {
+                                context.push('/search');
+                              },
+                            ),
+                          ],
+                        ),
+                        // 当前选中索引
+                        selectedIndex: widget.navigationShell.currentIndex,
+                        // 选择目标回调
+                        onDestinationSelected: (index) {
+                          widget.navigationShell.goBranch(index);
+                        },
+                        // 背景颜色
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        // 选中图标主题
+                        selectedIconTheme: IconThemeData(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        // 未选中图标主题
+                        unselectedIconTheme: IconThemeData(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        // 导航目标
+                        destinations: [
+                          NavigationRailDestination(
+                            icon: Icon(Icons.home_rounded),
+                            label: Text('home.title'.tr()),
+                          ),
+                          NavigationRailDestination(
+                            icon: Icon(Icons.calendar_month_rounded),
+                            label: Text('calendar.title'.tr()),
+                          ),
+                          NavigationRailDestination(
+                            icon: Icon(Icons.subscriptions_rounded),
+                            label: Text('subscribe.title'.tr()),
+                          ),
+                          NavigationRailDestination(
+                            icon: Icon(Icons.settings_rounded),
+                            label: Text('setting.title'.tr()),
+                          ),
+                        ],
+                        // 标签类型
+                        labelType: NavigationRailLabelType.none,
+                      ),
+                      VerticalDivider(width: 1),
+                      // 主内容区域
+                      Expanded(child: widget.navigationShell),
+                    ],
+                  ),
+                ),
+              )
+            // 竖屏布局 - 使用底部导航栏
+            : Scaffold(
+                bottomNavigationBar: BottomNavigationBar(
+                  // 是否显示选中标签
+                  showSelectedLabels: false,
+                  // 选中项颜色
+                  selectedItemColor: Theme.of(context).colorScheme.primary,
+                  // 未选中项颜色
+                  unselectedItemColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant,
+                  // 导航项
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home_rounded),
+                      label: 'home.title'.tr(),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.calendar_month_rounded),
+                      label: 'calendar.title'.tr(),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.subscriptions_rounded),
+                      label: 'subscribe.title'.tr(),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.settings_rounded),
+                      label: 'setting.title'.tr(),
                     ),
                   ],
+                  // 当前选中索引
+                  currentIndex: widget.navigationShell.currentIndex,
+                  // 点击回调
+                  onTap: (index) => widget.navigationShell.goBranch(index),
                 ),
-                // 当前选中索引
-                selectedIndex: widget.navigationShell.currentIndex,
-                // 选择目标回调
-                onDestinationSelected: (index) {
-                  widget.navigationShell.goBranch(index);
-                },
-                // 背景颜色
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                // 选中图标主题
-                selectedIconTheme: IconThemeData(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                // 未选中图标主题
-                unselectedIconTheme: IconThemeData(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                // 导航目标
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.home_rounded),
-                    label: Text('home.title'.tr()),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.calendar_month_rounded),
-                    label: Text('calendar.title'.tr()),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.subscriptions_rounded),
-                    label: Text('subscribe.title'.tr()),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.settings_rounded),
-                    label: Text('setting.title'.tr()),
-                  ),
-                ],
-                // 标签类型
-                labelType: NavigationRailLabelType.none,
-              ),
-              VerticalDivider(width: 1),
-              // 主内容区域
-              Expanded(child: widget.navigationShell),
-            ],
-          ),
-        ),
-      );
-    } else {
-      // 竖屏布局 - 使用底部导航栏
-      return Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          // 是否显示选中标签
-          showSelectedLabels: false,
-          // 选中项颜色
-          selectedItemColor: Theme.of(context).colorScheme.primary,
-          // 未选中项颜色
-          unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
-          // 导航项
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded),
-              label: 'home.title'.tr(),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month_rounded),
-              label: 'calendar.title'.tr(),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.subscriptions_rounded),
-              label: 'subscribe.title'.tr(),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_rounded),
-              label: 'setting.title'.tr(),
-            ),
-          ],
-          // 当前选中索引
-          currentIndex: widget.navigationShell.currentIndex,
-          // 点击回调
-          onTap: (index) => widget.navigationShell.goBranch(index),
-        ),
-        // 主内容区域
-        body: widget.navigationShell,
-      );
-    }
+                // 主内容区域
+                body: widget.navigationShell,
+              );
+      },
+    );
   }
 }
