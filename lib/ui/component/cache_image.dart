@@ -5,10 +5,15 @@ import 'package:holo/ui/component/shimmer.dart';
 class CacheImage extends StatelessWidget {
   final String imageUrl;
   final BoxFit fit;
+  final int memCacheHeight;
+  final int memCacheWidth;
+
   const CacheImage({
     super.key,
     required this.imageUrl,
     this.fit = BoxFit.fitWidth,
+    this.memCacheHeight = 400,
+    this.memCacheWidth = 300,
   });
 
   @override
@@ -19,6 +24,8 @@ class CacheImage extends StatelessWidget {
           : imageUrl.replaceFirst('http://', 'https://'),
       width: double.infinity,
       height: double.infinity,
+      memCacheHeight: memCacheHeight,
+      memCacheWidth: memCacheWidth,
       fit: fit,
       errorBuilder: (context, error, stackTrace) {
         return const Center(child: Icon(Icons.error));
