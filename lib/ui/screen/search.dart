@@ -83,8 +83,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
         actionsPadding: .symmetric(horizontal: 12),
@@ -145,88 +143,108 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             if (_loading) LinearProgressIndicator(),
             Expanded(
-              child: SizedBox(
-                child: _searchResult.isEmpty
-                    ? SingleChildScrollView(
-                        padding: EdgeInsets.all(12),
-                        child: Column(
-                          spacing: 6,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "search.search_history".tr(),
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            Row(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isLandscape =
+                      constraints.maxWidth > constraints.maxHeight;
+                  return SizedBox(
+                    child: _searchResult.isEmpty
+                        ? SingleChildScrollView(
+                            padding: EdgeInsets.all(12),
+                            child: Column(
+                              spacing: 6,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Wrap(
-                                    spacing: 8,
-                                    children: _searchHistory.map((historyItem) {
-                                      return Chip(
-                                        label: InkWell(
-                                          child: Text(historyItem),
-                                          onTap: () {
-                                            _controller.text = historyItem;
-                                            _fetchSearch(historyItem, context);
-                                          },
-                                        ),
-                                        avatar: Icon(Icons.history, size: 18),
-                                        backgroundColor: Theme.of(context)
-                                            .colorScheme
-                                            .surfaceContainerHighest
-                                            .withOpacity(0.5),
-                                        deleteIcon: Icon(Icons.close, size: 18),
-                                        onDeleted: () {
-                                          setState(() {
-                                            _searchHistory.remove(historyItem);
-                                            LocalStorage.saveSearchHistory(
-                                              _searchHistory,
-                                            );
-                                          });
-                                        },
-                                      );
-                                    }).toList(),
-                                  ),
+                                Text(
+                                  "search.search_history".tr(),
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Wrap(
+                                        spacing: 8,
+                                        children: _searchHistory.map((
+                                          historyItem,
+                                        ) {
+                                          return Chip(
+                                            label: InkWell(
+                                              child: Text(historyItem),
+                                              onTap: () {
+                                                _controller.text = historyItem;
+                                                _fetchSearch(
+                                                  historyItem,
+                                                  context,
+                                                );
+                                              },
+                                            ),
+                                            avatar: Icon(
+                                              Icons.history,
+                                              size: 18,
+                                            ),
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .surfaceContainerHighest
+                                                .withOpacity(0.5),
+                                            deleteIcon: Icon(
+                                              Icons.close,
+                                              size: 18,
+                                            ),
+                                            onDeleted: () {
+                                              setState(() {
+                                                _searchHistory.remove(
+                                                  historyItem,
+                                                );
+                                                LocalStorage.saveSearchHistory(
+                                                  _searchHistory,
+                                                );
+                                              });
+                                            },
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      )
-                    : GridView.builder(
-                        itemCount: _searchResult.length,
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          mainAxisSpacing: 6,
-                          crossAxisSpacing: 6,
-                          crossAxisCount: isLandscape ? 6 : 3,
-                          childAspectRatio: 0.6,
-                        ),
-                        itemBuilder: (context, index) {
-                          final item = _searchResult[index];
-                          return MediaGrid(
-                            id: "search_${item.id}",
-                            imageUrl: item.images.medium!,
-                            title: item.title,
-                            rating: item.rating,
-                            airDate: item.airDate,
-                            onTap: () {
-                              context.push(
-                                '/detail',
-                                extra: {
-                                  'id': item.id,
-                                  'keyword': item.title,
-                                  'cover': item.images.large ?? '',
-                                  'subject': item,
-                                  'from': "search",
+                          )
+                        : GridView.builder(
+                            itemCount: _searchResult.length,
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  mainAxisSpacing: 6,
+                                  crossAxisSpacing: 6,
+                                  crossAxisCount: isLandscape ? 6 : 3,
+                                  childAspectRatio: 0.6,
+                                ),
+                            itemBuilder: (context, index) {
+                              final item = _searchResult[index];
+                              return MediaGrid(
+                                id: "search_${item.id}",
+                                imageUrl: item.images.medium!,
+                                title: item.title,
+                                rating: item.rating,
+                                airDate: item.airDate,
+                                onTap: () {
+                                  context.push(
+                                    '/detail',
+                                    extra: {
+                                      'id': item.id,
+                                      'keyword': item.title,
+                                      'cover': item.images.large ?? '',
+                                      'subject': item,
+                                      'from': "search",
+                                    },
+                                  );
                                 },
                               );
                             },
-                          );
-                        },
-                      ),
+                          ),
+                  );
+                },
               ),
             ),
           ],

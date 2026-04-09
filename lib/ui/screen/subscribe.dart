@@ -255,8 +255,6 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
   @override
   Widget build(BuildContext context) {
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
         actionsPadding: .symmetric(horizontal: 12),
@@ -355,36 +353,51 @@ class _SubscribeScreenState extends State<SubscribeScreen>
             ),
             if (_isUpdating) const LinearProgressIndicator(),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  //全部
-                  subscribe.isEmpty
-                      ? _buildEmptyMsg(tr("subscribe.refresh_btn_subs"))
-                      : _buildTabbarView(
-                          s: subscribe,
-                          isLandscape: isLandscape,
-                        ),
-                  //想看
-                  wish.isEmpty
-                      ? SizedBox.shrink()
-                      : _buildTabbarView(s: wish, isLandscape: isLandscape),
-                  //看过
-                  watched.isEmpty
-                      ? SizedBox.shrink()
-                      : _buildTabbarView(s: watched, isLandscape: isLandscape),
-                  //在看
-                  watching.isEmpty
-                      ? SizedBox.shrink()
-                      : _buildTabbarView(s: watching, isLandscape: isLandscape),
-                  //播放历史部分
-                  playback.isEmpty
-                      ? _buildEmptyMsg(
-                          tr("subscribe.refresh_btn_playback"),
-                          isPlayback: true,
-                        )
-                      : _buildTabbarView(p: playback, isLandscape: isLandscape),
-                ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isLandscape =
+                      constraints.maxWidth > constraints.maxHeight;
+                  return TabBarView(
+                    controller: _tabController,
+                    children: [
+                      //全部
+                      subscribe.isEmpty
+                          ? _buildEmptyMsg(tr("subscribe.refresh_btn_subs"))
+                          : _buildTabbarView(
+                              s: subscribe,
+                              isLandscape: isLandscape,
+                            ),
+                      //想看
+                      wish.isEmpty
+                          ? SizedBox.shrink()
+                          : _buildTabbarView(s: wish, isLandscape: isLandscape),
+                      //看过
+                      watched.isEmpty
+                          ? SizedBox.shrink()
+                          : _buildTabbarView(
+                              s: watched,
+                              isLandscape: isLandscape,
+                            ),
+                      //在看
+                      watching.isEmpty
+                          ? SizedBox.shrink()
+                          : _buildTabbarView(
+                              s: watching,
+                              isLandscape: isLandscape,
+                            ),
+                      //播放历史部分
+                      playback.isEmpty
+                          ? _buildEmptyMsg(
+                              tr("subscribe.refresh_btn_playback"),
+                              isPlayback: true,
+                            )
+                          : _buildTabbarView(
+                              p: playback,
+                              isLandscape: isLandscape,
+                            ),
+                    ],
+                  );
+                },
               ),
             ),
           ],

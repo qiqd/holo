@@ -5,18 +5,21 @@ class ShimmerGridSkeleton extends StatelessWidget {
   const ShimmerGridSkeleton({super.key});
   @override
   Widget build(BuildContext context) {
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    return GridView.builder(
-      padding: const EdgeInsets.all(8),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isLandscape ? 6 : 3,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 0.6,
-      ),
-      itemBuilder: (context, index) {
-        return const ShimmerContainerSkeleton();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isLandscape = constraints.maxWidth > constraints.maxHeight;
+        return GridView.builder(
+          padding: const EdgeInsets.all(8),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: isLandscape ? 6 : 3,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 0.6,
+          ),
+          itemBuilder: (context, index) {
+            return const ShimmerContainerSkeleton();
+          },
+        );
       },
     );
   }

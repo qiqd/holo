@@ -24,6 +24,7 @@ class MediaCard extends StatelessWidget {
   final bool showShimmer;
   final bool isChecked;
   final bool showCheckbox;
+  final bool isLandscape;
 
   /// 观看状态 0:无状态 1:想看 2:看过 3:在看
   final int? viewingStatus;
@@ -51,15 +52,13 @@ class MediaCard extends StatelessWidget {
     this.showCheckbox = false,
     this.isChecked = false,
     this.viewingStatus,
-
+    this.isLandscape = false,
     this.onViewingStatusChange,
   });
 
   @override
   Widget build(BuildContext context) {
     var updateTo = checkUpdateAt(airDate);
-    var isLanscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
     return Stack(
       children: [
         InkWell(
@@ -291,7 +290,7 @@ class MediaCard extends StatelessWidget {
                           child: isFavorite
                               ? SegmentedButton(
                                   emptySelectionAllowed: true,
-                                  showSelectedIcon: isLanscape ? true : false,
+                                  showSelectedIcon: isLandscape ? true : false,
                                   style: ButtonStyle(
                                     padding: WidgetStatePropertyAll(.zero),
                                   ),

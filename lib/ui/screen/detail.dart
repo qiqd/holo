@@ -559,192 +559,209 @@ class _DetailScreenState extends State<DetailScreen>
           ),
         ],
       ),
-      body: SafeArea(
-        child: subject == null
-            ? _buildShimmerSkeleton()
-            : Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  children: [
-                    MediaCard(
-                      id: "${widget.from}_${subject!.id}",
-                      imageUrl: widget.cover,
-                      viewingStatus: isSubscribed ? _viewingStatus : null,
-                      title: subject!.title,
-                      genre: subject!.metaTags.join('/'),
-                      episode: subject!.totalEpisodes,
-                      rating: subject!.rating,
-                      isFavorite: isSubscribed,
-                      ratingCount: subject!.ratingCount,
-                      height: 200,
-                      airDate: subject!.airDate,
-                      onViewingStatusChange: (status) {
-                        setState(() {
-                          _viewingStatus = status;
-                        });
-                        _storeSubscribeHistory();
-                      },
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          TabBar(
-                            isScrollable: true,
-                            tabAlignment: .center,
-                            controller: tabController,
-                            tabs: [
-                              Tab(text: "detail.tabs.summary".tr()),
-                              Tab(text: "detail.tabs.characters".tr()),
-                              Tab(text: "detail.tabs.relations".tr()),
-                              Tab(text: "detail.tabs.related_works".tr()),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isLandscape = constraints.maxWidth > constraints.maxHeight;
+          return SafeArea(
+            child: subject == null
+                ? _buildShimmerSkeleton()
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Column(
+                      children: [
+                        MediaCard(
+                          id: "${widget.from}_${subject!.id}",
+                          imageUrl: widget.cover,
+                          viewingStatus: isSubscribed ? _viewingStatus : null,
+                          title: subject!.title,
+                          genre: subject!.metaTags.join('/'),
+                          episode: subject!.totalEpisodes,
+                          rating: subject!.rating,
+                          isFavorite: isSubscribed,
+                          ratingCount: subject!.ratingCount,
+                          height: 200,
+                          airDate: subject!.airDate,
+                          isLandscape: isLandscape,
+                          onViewingStatusChange: (status) {
+                            setState(() {
+                              _viewingStatus = status;
+                            });
+                            _storeSubscribeHistory();
+                          },
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              TabBar(
+                                isScrollable: true,
+                                tabAlignment: .center,
+                                controller: tabController,
+                                tabs: [
+                                  Tab(text: "detail.tabs.summary".tr()),
+                                  Tab(text: "detail.tabs.characters".tr()),
+                                  Tab(text: "detail.tabs.relations".tr()),
+                                  Tab(text: "detail.tabs.related_works".tr()),
+                                ],
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  controller: tabController,
+                                  children: [
+                                    // 简介板块
+                                    subject?.summary.isNotEmpty == true
+                                        ? SizedBox(
+                                            width: double.infinity,
+                                            child: SingleChildScrollView(
+                                              padding: EdgeInsets.only(top: 8),
+                                              child: Text(
+                                                subject?.summary.isEmpty == true
+                                                    ? "detail.no_summary".tr()
+                                                    : subject!.summary,
+                                              ),
+                                            ),
+                                          )
+                                        : Center(
+                                            child: Text(
+                                              "detail.no_summary".tr(),
+                                            ),
+                                          ),
+
+                                    //人物板块
+                                    person.isNotEmpty
+                                        ? ListView.builder(
+                                            itemCount: person.length,
+                                            itemBuilder: (context, index) {
+                                              final p = person[index];
+                                              return ListTile(
+                                                leading: p.images != null
+                                                    ? Image.network(
+                                                        p.images!.grid!
+                                                                .startsWith(
+                                                                  "https://",
+                                                                )
+                                                            ? p.images!.grid!
+                                                            : p.images!.grid!
+                                                                  .replaceAll(
+                                                                    "http://",
+                                                                    "https://",
+                                                                  ),
+                                                        // width: 70,
+                                                        // height: 70,
+                                                        fit: BoxFit.fill,
+                                                        errorBuilder:
+                                                            (
+                                                              context,
+                                                              error,
+                                                              stackTrace,
+                                                            ) => const Icon(
+                                                              size: 70,
+                                                              Icons.error,
+                                                            ),
+                                                      )
+                                                    : const Icon(Icons.person),
+                                                title: Text(
+                                                  p.name ??
+                                                      "detail.unknown".tr(),
+                                                ),
+                                                subtitle: Text(
+                                                  p.relation ?? '',
+                                                ),
+                                              );
+                                            },
+                                          )
+                                        : Center(
+                                            child: Text(
+                                              "detail.no_character_data".tr(),
+                                            ),
+                                          ),
+                                    //角色板块
+                                    character.isNotEmpty
+                                        ? ListView.builder(
+                                            itemCount: character.length,
+                                            itemBuilder: (context, index) {
+                                              final c = character[index];
+                                              return ListTile(
+                                                leading: c.images != null
+                                                    ? Image.network(
+                                                        fit: BoxFit.fill,
+                                                        c.images!.grid!
+                                                            .replaceAll(
+                                                              "http",
+                                                              "https",
+                                                            ),
+                                                        // color: Colors.limeAccent,
+                                                        errorBuilder:
+                                                            (
+                                                              context,
+                                                              error,
+                                                              stackTrace,
+                                                            ) => const Icon(
+                                                              size: 70,
+                                                              Icons.error,
+                                                            ),
+                                                      )
+                                                    : const Icon(Icons.person),
+                                                title: Text(
+                                                  c.name ??
+                                                      "detail.unknown".tr(),
+                                                ),
+                                                subtitle: Text(
+                                                  c.relation ?? '',
+                                                ),
+                                                onTap: () =>
+                                                    _showCharacterDetail(
+                                                      c,
+                                                      context,
+                                                    ),
+                                              );
+                                            },
+                                          )
+                                        : Center(
+                                            child: Text(
+                                              "detail.no_relation_data".tr(),
+                                            ),
+                                          ),
+                                    ListView.builder(
+                                      itemCount: relation.length,
+                                      itemBuilder: (context, index) {
+                                        final r = relation[index];
+                                        return ListTile(
+                                          leading: r.images != null
+                                              ? Image.network(
+                                                  r.images!.medium!.replaceAll(
+                                                    "http",
+                                                    "https",
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder:
+                                                      (
+                                                        context,
+                                                        error,
+                                                        stackTrace,
+                                                      ) => const Icon(
+                                                        size: 70,
+                                                        Icons.error,
+                                                      ),
+                                                )
+                                              : const Icon(Icons.person),
+                                          title: Text(
+                                            r.nameCn ?? "detail.unknown".tr(),
+                                          ),
+                                          subtitle: Text(r.relation ?? ''),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                          Expanded(
-                            child: TabBarView(
-                              controller: tabController,
-                              children: [
-                                // 简介板块
-                                subject?.summary.isNotEmpty == true
-                                    ? SizedBox(
-                                        width: double.infinity,
-                                        child: SingleChildScrollView(
-                                          padding: EdgeInsets.only(top: 8),
-                                          child: Text(
-                                            subject?.summary.isEmpty == true
-                                                ? "detail.no_summary".tr()
-                                                : subject!.summary,
-                                          ),
-                                        ),
-                                      )
-                                    : Center(
-                                        child: Text("detail.no_summary".tr()),
-                                      ),
-
-                                //人物板块
-                                person.isNotEmpty
-                                    ? ListView.builder(
-                                        itemCount: person.length,
-                                        itemBuilder: (context, index) {
-                                          final p = person[index];
-                                          return ListTile(
-                                            leading: p.images != null
-                                                ? Image.network(
-                                                    p.images!.grid!.startsWith(
-                                                          "https://",
-                                                        )
-                                                        ? p.images!.grid!
-                                                        : p.images!.grid!
-                                                              .replaceAll(
-                                                                "http://",
-                                                                "https://",
-                                                              ),
-                                                    // width: 70,
-                                                    // height: 70,
-                                                    fit: BoxFit.fill,
-                                                    errorBuilder:
-                                                        (
-                                                          context,
-                                                          error,
-                                                          stackTrace,
-                                                        ) => const Icon(
-                                                          size: 70,
-                                                          Icons.error,
-                                                        ),
-                                                  )
-                                                : const Icon(Icons.person),
-                                            title: Text(
-                                              p.name ?? "detail.unknown".tr(),
-                                            ),
-                                            subtitle: Text(p.relation ?? ''),
-                                          );
-                                        },
-                                      )
-                                    : Center(
-                                        child: Text(
-                                          "detail.no_character_data".tr(),
-                                        ),
-                                      ),
-                                //角色板块
-                                character.isNotEmpty
-                                    ? ListView.builder(
-                                        itemCount: character.length,
-                                        itemBuilder: (context, index) {
-                                          final c = character[index];
-                                          return ListTile(
-                                            leading: c.images != null
-                                                ? Image.network(
-                                                    fit: BoxFit.fill,
-                                                    c.images!.grid!.replaceAll(
-                                                      "http",
-                                                      "https",
-                                                    ),
-                                                    // color: Colors.limeAccent,
-                                                    errorBuilder:
-                                                        (
-                                                          context,
-                                                          error,
-                                                          stackTrace,
-                                                        ) => const Icon(
-                                                          size: 70,
-                                                          Icons.error,
-                                                        ),
-                                                  )
-                                                : const Icon(Icons.person),
-                                            title: Text(
-                                              c.name ?? "detail.unknown".tr(),
-                                            ),
-                                            subtitle: Text(c.relation ?? ''),
-                                            onTap: () => _showCharacterDetail(
-                                              c,
-                                              context,
-                                            ),
-                                          );
-                                        },
-                                      )
-                                    : Center(
-                                        child: Text(
-                                          "detail.no_relation_data".tr(),
-                                        ),
-                                      ),
-                                ListView.builder(
-                                  itemCount: relation.length,
-                                  itemBuilder: (context, index) {
-                                    final r = relation[index];
-                                    return ListTile(
-                                      leading: r.images != null
-                                          ? Image.network(
-                                              r.images!.medium!.replaceAll(
-                                                "http",
-                                                "https",
-                                              ),
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (
-                                                    context,
-                                                    error,
-                                                    stackTrace,
-                                                  ) => const Icon(
-                                                    size: 70,
-                                                    Icons.error,
-                                                  ),
-                                            )
-                                          : const Icon(Icons.person),
-                                      title: Text(
-                                        r.nameCn ?? "detail.unknown".tr(),
-                                      ),
-                                      subtitle: Text(r.relation ?? ''),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+          );
+        },
       ),
     );
   }

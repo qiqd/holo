@@ -44,9 +44,11 @@ class MediaGrid extends StatelessWidget {
                       tag: id,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: CacheImage(
-                          imageUrl: imageUrl,
-                          fit: BoxFit.fitHeight,
+                        child: RepaintBoundary(
+                          child: CacheImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.fitHeight,
+                          ),
                         ),
                       ),
                     ),

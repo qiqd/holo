@@ -23,7 +23,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   SourceService? _service;
   late final _isEditMode = widget.isEditMode;
   late final Rule _rule = widget.rule ?? Rule();
-  bool _isTablet = false;
   void _saveRule() {
     if (!_formKey.currentState!.validate() || !_isEditMode) {
       return;
@@ -109,9 +108,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
     );
   }
 
-  List<Widget> _buildAppBarActions() {
+  List<Widget> _buildAppBarActions(bool isOrientation) {
     return [
-      if (widget.rule != null && !_isTablet)
+      if (widget.rule != null && !isOrientation)
         IconButton(
           icon: Text('Test'),
           onPressed: () {
@@ -1020,59 +1019,54 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    setState(() {
-      _isTablet =
-          Device.get().isTablet &&
-          MediaQuery.of(context).orientation == Orientation.landscape;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actionsPadding: .symmetric(horizontal: 12),
-        titleSpacing: 0,
-        actions: _buildAppBarActions(),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => context.pop(),
-        ),
-        title: Text('rule_edit.title'.tr()),
-      ),
-      body: SafeArea(
-        child: Row(
-          children: [
-            Flexible(
-              fit: FlexFit.tight,
-              child: SizedBox(
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        _buildBasicCard(),
-                        _buildSearchRuleCard(),
-                        _buildDetailRuleCard(),
-                        _buildPlayerRuleCard(),
-                      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isOrientation = constraints.maxWidth > constraints.maxHeight;
+        return Scaffold(
+          appBar: AppBar(
+            actionsPadding: .symmetric(horizontal: 12),
+            titleSpacing: 0,
+            actions: _buildAppBarActions(isOrientation),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_rounded),
+              onPressed: () => context.pop(),
+            ),
+            title: Text('rule_edit.title'.tr()),
+          ),
+          body: SafeArea(
+            child: Row(
+              children: [
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: SizedBox(
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            _buildBasicCard(),
+                            _buildSearchRuleCard(),
+                            _buildDetailRuleCard(),
+                            _buildPlayerRuleCard(),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                if (isOrientation)
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: widget.rule == null || _service == null
+                        ? Center(child: Text('保存规则后即可测试'))
+                        : RuleTestScreen(source: _service!, showNavBtn: false),
+                  ),
+              ],
             ),
-            if (_isTablet)
-              Flexible(
-                fit: FlexFit.tight,
-                child: widget.rule == null || _service == null
-                    ? Center(child: Text('保存规则后即可测试'))
-                    : RuleTestScreen(source: _service!, showNavBtn: false),
-              ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
