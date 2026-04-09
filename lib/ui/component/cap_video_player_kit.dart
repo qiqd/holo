@@ -629,6 +629,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               ),
             ),
             child: ListTile(
+              contentPadding: EdgeInsets.zero,
               horizontalTitleGap: 6,
               titleAlignment: ListTileTitleAlignment.center,
               leading: IconButton(
@@ -788,7 +789,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         curve: Curves.easeInOut,
         duration: const Duration(milliseconds: 100),
         child: Container(
-          padding: .symmetric(horizontal: 16),
+          // padding: .symmetric(horizontal: 16),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -857,7 +858,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       ),
                       onPressed: null,
                       child: Text(
-                        "${player?.value.position.inMinutes ?? 0}:${player?.value.position.inSeconds.remainder(60) ?? 0}/${player?.value.duration.inMinutes ?? 0}:${player?.value.duration.inSeconds.remainder(60) ?? 0}",
+                        "${(player?.value.position.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.position.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}/${(player?.value.duration.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.duration.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -874,14 +875,17 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     },
                     icon: Icon(showDanmaku ? BF.danmakuOn : BF.danmakuOff),
                   ),
-                  //剧集列表按钮
+                  //播放速度按钮
                   if (widget.isFullScreen) ...[
                     PopupMenuButton(
                       tooltip: 'Playback Speed',
                       padding: .zero,
                       iconColor: Colors.white,
                       icon: Text(
-                        player?.value.playbackSpeed.toStringAsFixed(1) ?? "1.0",
+                        player?.value.playbackSpeed
+                                .toStringAsFixed(1)
+                                .padRight(4, 'x') ??
+                            "1.0x",
                         style: TextStyle(color: Colors.white),
                       ),
                       onSelected: (value) {
@@ -891,12 +895,16 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         var items = <PopupMenuItem<double>>[];
                         for (var i = 0.5; i <= 4.0; i += 0.5) {
                           items.add(
-                            PopupMenuItem(value: i, child: Text(i.toString())),
+                            PopupMenuItem(
+                              value: i,
+                              child: Text(i.toString().padRight(4, 'x')),
+                            ),
                           );
                         }
                         return items.reversed.toList();
                       },
                     ),
+                    //剧集列表按钮
                     IconButton(
                       color: Colors.white,
                       tooltip: 'Episode List',

@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/main.dart';
 import 'package:holo/util/local_storage.dart';
-import 'package:image_picker/image_picker.dart';
 
 class Appearance extends StatefulWidget {
   const Appearance({super.key});
@@ -199,11 +198,11 @@ class _AppearanceState extends State<Appearance> {
   }
 
   /// 显示图片选择器
-  Future<void> _showImagePicker() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {}
-  }
+  // Future<void> _showImagePicker() async {
+  //   final ImagePicker picker = ImagePicker();
+  //   final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+  //   if (image != null) {}
+  // }
 
   List<Widget> _buildThemeModeTile() {
     var appSetting = MyApp.appSettingNotifier.value;
