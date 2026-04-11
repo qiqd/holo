@@ -79,6 +79,7 @@ class MediaCard extends StatelessWidget {
                       height: height,
                       width: height * 0.7,
                       child: CacheImage(
+                        fit: BoxFit.fitHeight,
                         imageUrl: imageUrl!.startsWith('https://')
                             ? imageUrl!
                             : imageUrl!.replaceFirst('http://', 'https://'),

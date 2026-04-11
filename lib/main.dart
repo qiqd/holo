@@ -28,6 +28,7 @@ import 'package:holo/ui/screen/home.dart';
 import 'package:holo/ui/screen/search.dart';
 import 'package:holo/ui/screen/setting.dart';
 import 'package:holo/ui/screen/subscribe.dart';
+import 'package:logger/logger.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -270,21 +271,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   /// 更新系统导航栏颜色
   /// [b] 亮度模式
   void _updateSystemNavigationBarColor(Brightness b) {
-    Color navigationBarColor;
-    Brightness iconBrightness;
-
-    if (b == Brightness.dark) {
-      navigationBarColor = const Color(0xff141400);
-      iconBrightness = Brightness.light;
-    } else {
-      navigationBarColor = const Color(0xfffff8f5);
-      iconBrightness = Brightness.dark;
-    }
+    var colorScheme = Theme.of(context).colorScheme;
+    final logger = Logger();
+    logger.i(
+      'Updating system navigation bar color: ${colorScheme.surface}, brightness: $b',
+    );
     // 设置系统UI覆盖样式
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        systemNavigationBarColor: navigationBarColor,
-        systemNavigationBarIconBrightness: iconBrightness,
+        systemNavigationBarColor: colorScheme.surface,
+        systemNavigationBarIconBrightness: b == Brightness.dark
+            ? Brightness.light
+            : Brightness.dark,
       ),
     );
   }
@@ -307,7 +305,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void didChangePlatformBrightness() {
     // 平台亮度变化时更新导航栏颜色
-    _updateSystemNavigationBarColor(MediaQuery.platformBrightnessOf(context));
+    // _updateSystemNavigationBarColor(MediaQuery.platformBrightnessOf(context));
     super.didChangePlatformBrightness();
   }
 
@@ -365,6 +363,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 ? null
                 : Color(setting.colorSeed),
             useMaterial3: true,
+            appBarTheme: AppBarTheme(
+              systemOverlayStyle: SystemUiOverlayStyle(
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarContrastEnforced: false,
+                systemNavigationBarIconBrightness: Brightness.dark,
+                statusBarBrightness: Brightness.dark,
+              ),
+            ),
           ),
           // 深色主题
           darkTheme: ThemeData(
@@ -374,6 +380,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 : Color(setting.colorSeed),
             brightness: Brightness.dark,
             useMaterial3: true,
+            //bottomNavigationBarTheme: ,
+            appBarTheme: AppBarTheme(
+              systemOverlayStyle: SystemUiOverlayStyle(
+                systemNavigationBarContrastEnforced: false,
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarIconBrightness: Brightness.light,
+                statusBarBrightness: Brightness.light,
+              ),
+            ),
           ),
         );
       },
