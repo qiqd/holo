@@ -36,6 +36,7 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   // 确保Flutter绑定已初始化
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   // 初始化国际化
   await EasyLocalization.ensureInitialized();
   // 初始化本地存储
@@ -340,11 +341,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 : Color(setting.colorSeed),
             useMaterial3: true,
             appBarTheme: AppBarTheme(
-              systemOverlayStyle: SystemUiOverlayStyle(
+              systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
                 systemNavigationBarColor: Colors.transparent,
                 systemNavigationBarContrastEnforced: false,
                 systemNavigationBarIconBrightness: Brightness.dark,
-                statusBarIconBrightness: Brightness.dark,
+                statusBarColor: Colors.transparent,
               ),
             ),
           ),
@@ -357,11 +358,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             brightness: Brightness.dark,
             useMaterial3: true,
             appBarTheme: AppBarTheme(
-              systemOverlayStyle: SystemUiOverlayStyle(
+              systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
                 systemNavigationBarContrastEnforced: false,
                 systemNavigationBarColor: Colors.transparent,
                 systemNavigationBarIconBrightness: Brightness.light,
-                statusBarIconBrightness: Brightness.light,
+                statusBarColor: Colors.transparent,
               ),
             ),
           ),

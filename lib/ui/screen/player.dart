@@ -1456,7 +1456,8 @@ class _PlayerScreenState extends State<PlayerScreen>
             key: _globalScaffoldKey,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
-              backgroundColor: Colors.black,
+              //  backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
               automaticallyImplyActions: false,
               automaticallyImplyLeading: false,
               toolbarHeight: 0,
