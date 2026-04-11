@@ -28,7 +28,6 @@ import 'package:holo/ui/screen/home.dart';
 import 'package:holo/ui/screen/search.dart';
 import 'package:holo/ui/screen/setting.dart';
 import 'package:holo/ui/screen/subscribe.dart';
-import 'package:logger/logger.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -268,25 +267,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     await Api.delayTest();
   }
 
-  /// 更新系统导航栏颜色
-  /// [b] 亮度模式
-  void _updateSystemNavigationBarColor(Brightness b) {
-    var colorScheme = Theme.of(context).colorScheme;
-    final logger = Logger();
-    logger.i(
-      'Updating system navigation bar color: ${colorScheme.surface}, brightness: $b',
-    );
-    // 设置系统UI覆盖样式
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        systemNavigationBarColor: colorScheme.surface,
-        systemNavigationBarIconBrightness: b == Brightness.dark
-            ? Brightness.light
-            : Brightness.dark,
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -294,10 +274,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     MyApp.initAppSetting();
     // 添加Widget绑定观察者
     WidgetsBinding.instance.addObserver(this);
-    // 首次构建后更新导航栏颜色
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateSystemNavigationBarColor(MediaQuery.platformBrightnessOf(context));
-    });
     // 初始化动画源
     initSource();
   }
@@ -368,7 +344,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 systemNavigationBarColor: Colors.transparent,
                 systemNavigationBarContrastEnforced: false,
                 systemNavigationBarIconBrightness: Brightness.dark,
-                statusBarBrightness: Brightness.dark,
+                statusBarIconBrightness: Brightness.dark,
               ),
             ),
           ),
@@ -380,13 +356,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 : Color(setting.colorSeed),
             brightness: Brightness.dark,
             useMaterial3: true,
-            //bottomNavigationBarTheme: ,
             appBarTheme: AppBarTheme(
               systemOverlayStyle: SystemUiOverlayStyle(
                 systemNavigationBarContrastEnforced: false,
                 systemNavigationBarColor: Colors.transparent,
                 systemNavigationBarIconBrightness: Brightness.light,
-                statusBarBrightness: Brightness.light,
+                statusBarIconBrightness: Brightness.light,
               ),
             ),
           ),

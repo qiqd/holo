@@ -256,7 +256,7 @@ class _SettingScreenState extends State<SettingScreen>
       ListTile(
         leading: const Icon(Icons.palette_outlined),
         title: Text('appearance.appbar_title'.tr()),
-        onTap: () => context.push('appearance'),
+        onTap: () => context.push('/appearance'),
       ),
     ];
   }
