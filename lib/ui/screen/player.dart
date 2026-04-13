@@ -99,7 +99,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     vsync: this,
     length: 2,
   );
-
+  late SystemUiOverlayStyle _style;
   Future<void> _fetchMediaEpisode() async {
     isLoading = true;
     try {
@@ -1373,12 +1373,13 @@ class _PlayerScreenState extends State<PlayerScreen>
       (value) => _fetchViewInfo(position: historyPosition),
     );
     // 设置播放器页面的状态栏样式（深色模式）
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.light, // 浅色图标
-        statusBarBrightness: Brightness.dark, // 深色状态栏
-      ),
-    );
+    // SystemChrome.setSystemUIOverlayStyle(
+    //   SystemUiOverlayStyle(
+    //     statusBarIconBrightness: Brightness.light, // 浅色图标
+    //     statusBarBrightness: Brightness.dark, // 深色状态栏
+    //   ),
+    // );
+
     super.initState();
   }
 
@@ -1456,11 +1457,29 @@ class _PlayerScreenState extends State<PlayerScreen>
             key: _globalScaffoldKey,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
-              //  backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
+              backgroundColor: Colors.black,
+              // foregroundColor: Colors.white,
               automaticallyImplyActions: false,
               automaticallyImplyLeading: false,
               toolbarHeight: 0,
+              systemOverlayStyle:
+                  Theme.of(context).brightness == Brightness.dark
+                  ? SystemUiOverlayStyle.light.copyWith(
+                      statusBarColor: Colors.transparent,
+                      statusBarIconBrightness: Brightness.light,
+                      systemNavigationBarColor: Colors.transparent,
+                      systemNavigationBarIconBrightness: Brightness.light,
+                      systemStatusBarContrastEnforced: false,
+                      systemNavigationBarContrastEnforced: false,
+                    )
+                  : SystemUiOverlayStyle.dark.copyWith(
+                      statusBarColor: Colors.transparent,
+                      statusBarIconBrightness: Brightness.light,
+                      systemNavigationBarColor: Colors.transparent,
+                      systemNavigationBarIconBrightness: Brightness.dark,
+                      systemStatusBarContrastEnforced: false,
+                      systemNavigationBarContrastEnforced: false,
+                    ),
             ),
             endDrawer: Drawer(width: 300, child: _buildDrawer()),
             endDrawerEnableOpenDragGesture: false,

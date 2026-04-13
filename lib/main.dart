@@ -280,13 +280,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangePlatformBrightness() {
-    // 平台亮度变化时更新导航栏颜色
-    // _updateSystemNavigationBarColor(MediaQuery.platformBrightnessOf(context));
-    super.didChangePlatformBrightness();
-  }
-
-  @override
   void dispose() {
     // 移除Widget绑定观察者
     WidgetsBinding.instance.removeObserver(this);
