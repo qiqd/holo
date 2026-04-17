@@ -99,7 +99,14 @@ class _PlayerScreenState extends State<PlayerScreen>
     vsync: this,
     length: 2,
   );
-  late SystemUiOverlayStyle _style;
+  final SystemUiOverlayStyle _style = SystemUiOverlayStyle(
+    systemStatusBarContrastEnforced: false,
+    systemNavigationBarContrastEnforced: false,
+    systemNavigationBarColor: Colors.transparent,
+    statusBarColor: Colors.black,
+    statusBarBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.light,
+  );
   Future<void> _fetchMediaEpisode() async {
     isLoading = true;
     try {
@@ -1464,21 +1471,11 @@ class _PlayerScreenState extends State<PlayerScreen>
               toolbarHeight: 0,
               systemOverlayStyle:
                   Theme.of(context).brightness == Brightness.dark
-                  ? SystemUiOverlayStyle.light.copyWith(
-                      statusBarColor: Colors.transparent,
-                      statusBarIconBrightness: Brightness.light,
-                      systemNavigationBarColor: Colors.transparent,
+                  ? _style.copyWith(
                       systemNavigationBarIconBrightness: Brightness.light,
-                      systemStatusBarContrastEnforced: false,
-                      systemNavigationBarContrastEnforced: false,
                     )
-                  : SystemUiOverlayStyle.dark.copyWith(
-                      statusBarColor: Colors.transparent,
-                      statusBarIconBrightness: Brightness.light,
-                      systemNavigationBarColor: Colors.transparent,
+                  : _style.copyWith(
                       systemNavigationBarIconBrightness: Brightness.dark,
-                      systemStatusBarContrastEnforced: false,
-                      systemNavigationBarContrastEnforced: false,
                     ),
             ),
             endDrawer: Drawer(width: 300, child: _buildDrawer()),

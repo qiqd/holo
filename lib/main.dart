@@ -336,9 +336,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             appBarTheme: AppBarTheme(
               systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
                 systemNavigationBarColor: Colors.transparent,
-                systemNavigationBarContrastEnforced: false,
-                systemNavigationBarIconBrightness: Brightness.dark,
                 statusBarColor: Colors.transparent,
+                systemNavigationBarContrastEnforced: false,
+                systemStatusBarContrastEnforced: false,
+                systemNavigationBarIconBrightness: Brightness.dark,
               ),
             ),
           ),
@@ -352,10 +353,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             useMaterial3: true,
             appBarTheme: AppBarTheme(
               systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
-                systemNavigationBarContrastEnforced: false,
-                systemNavigationBarColor: Colors.transparent,
-                systemNavigationBarIconBrightness: Brightness.light,
                 statusBarColor: Colors.transparent,
+                systemNavigationBarColor: Colors.transparent,
+                systemNavigationBarContrastEnforced: false,
+                systemStatusBarContrastEnforced: false,
+                systemNavigationBarIconBrightness: Brightness.light,
               ),
             ),
           ),
