@@ -468,6 +468,16 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     }
   }
 
+  void _setPlaybackSpeed(double speed) {
+    Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+      var player = widget.playerNotifier.value;
+      if (player?.value.playbackSpeed == speed) {
+        timer.cancel();
+      }
+      await player?.setPlaybackSpeed(speed);
+    });
+  }
+
   ///弹幕层
   Widget _buildDanmaku() {
     var danmakuSetting = widget.danmakuSetting;
@@ -888,8 +898,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                             "1.0x",
                         style: TextStyle(color: Colors.white),
                       ),
-                      onSelected: (value) {
-                        player?.setPlaybackSpeed(value);
+                      onSelected: (value) async {
+                        _setPlaybackSpeed(value);
                       },
                       itemBuilder: (context) {
                         var items = <PopupMenuItem<double>>[];
