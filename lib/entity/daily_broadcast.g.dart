@@ -3,6 +3,47 @@
 part of 'daily_broadcast.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class DailyBroadcastAdapter extends TypeAdapter<DailyBroadcast> {
+  @override
+  final typeId = 8;
+
+  @override
+  DailyBroadcast read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return DailyBroadcast(
+      weekOfDay: (fields[0] as num).toInt(),
+      items: (fields[1] as List).cast<SubjectItem>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, DailyBroadcast obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.weekOfDay)
+      ..writeByte(1)
+      ..write(obj.items);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyBroadcastAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

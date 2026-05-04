@@ -1,22 +1,21 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/api/subscribe_api.dart';
-import 'package:holo/entity/character.dart';
+import 'package:holo/api/web_dav.dart';
 import 'package:holo/entity/media.dart';
 import 'package:holo/entity/person.dart';
 import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
-import 'package:holo/entity/subscribe_history.dart';
+import 'package:holo/entity/user_subscribe.dart';
+import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
+import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:holo/extension/safe_set_state.dart';
@@ -42,16 +41,16 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen>
     with TickerProviderStateMixin {
-  late String keyword = widget.keyword;
-  late SubjectItem? subject = widget.subject;
-  List<Person> person = [];
-  List<Character> character = [];
-  List<SubjectRelation> relation = [];
-  Map<SourceService, List<Media>> source2Media = {};
-  List<SourceService> sourceService = [];
-  bool isLoading = false;
+  late String _keyword = widget.keyword;
+  late SubjectItem? _subject = widget.subject;
+  List<Person> _person = [];
+  List<Person> _character = [];
+  List<SubjectRelation> _relation = [];
+  final Map<SourceService, List<Media>> _source2Media = {};
+  List<SourceService> _sourceService = [];
+  bool _isLoading = false;
   bool _isFetched = false;
-  bool isCompleted = false;
+  bool _isCompleted = false;
   late TabController tabController = TabController(vsync: this, length: 4);
   late TabController subTabController = TabController(
     vsync: this,
@@ -62,29 +61,37 @@ class _DetailScreenState extends State<DetailScreen>
   SourceService? defaultSource;
   bool isSubscribed = false;
   int _viewingStatus = 0;
-  void _fetchSubject() async {
-    if (subject == null) {
+  final userSetting = MyApp.userSettingNotifier.value;
+  UserSubscribe? _userSubscribe;
+
+  Future<void> _fetchSubject() async {
+    var subject = HiveUtil.getSubjectItemById(widget.id);
+
+    if (widget.subject == null || subject == null) {
       final res = await Api.bangumi.fetchSubjectById(widget.id, (e) {
-        setState(() {
+        safeSetState(() {
           _msg = e.toString();
         });
       });
-      setState(() {
-        subject = res;
-      });
+      if (res != null) {
+        safeSetState(() {
+          _subject = res;
+        });
+        HiveUtil.setSubjectItem(res);
+      }
     }
     _loadSubscribeHistory();
   }
 
   Future<void> _fetchMedia() async {
     safeSetState(() {
-      isLoading = true;
+      _isLoading = true;
       _isFetched = true;
-      isCompleted = false;
+      _isCompleted = false;
     });
     final sources = Api.getSources();
     final future = sources.map((source) async {
-      final res = await source.fetchSearch(keyword, 1, 10, (e) {});
+      final res = await source.fetchSearch(_keyword, 1, 10, (e) {});
       double highestScore = 0;
       Media? tempMedia;
       SourceService? tempSource;
@@ -101,26 +108,26 @@ class _DetailScreenState extends State<DetailScreen>
         defaultMedia = tempMedia;
         defaultSource = tempSource;
         safeSetState(() {
-          isLoading = false;
+          _isLoading = false;
         });
       }
-      source2Media[source] = res;
+      _source2Media[source] = res;
     });
     await Future.wait(future);
-    for (var value in source2Media.values) {
+    for (var value in _source2Media.values) {
       value.sort((a, b) => b.score!.compareTo(a.score!));
     }
-    final keys = source2Media.keys.toList();
+    final keys = _source2Media.keys.toList();
     keys.sort((a, b) => b.delay.compareTo(a.delay));
     safeSetState(() {
-      sourceService = keys;
-      isLoading = false;
+      _sourceService = keys;
+      _isLoading = false;
       _isFetched = false;
-      isCompleted = true;
+      _isCompleted = true;
     });
   }
 
-  void _fetchPerson() async {
+  Future<void> _fetchPerson() async {
     final res = await Api.bangumi.fetchPerson(widget.id, (e) {
       setState(() {
         _msg = e.toString();
@@ -128,12 +135,12 @@ class _DetailScreenState extends State<DetailScreen>
     });
     if (mounted) {
       setState(() {
-        person = res;
+        _person = res;
       });
     }
   }
 
-  void _fetchCharacter() async {
+  Future<void> _fetchCharacter() async {
     final res = await Api.bangumi.fetchCharacter(widget.id, (e) {
       setState(() {
         _msg = e.toString();
@@ -141,12 +148,12 @@ class _DetailScreenState extends State<DetailScreen>
     });
     if (mounted) {
       setState(() {
-        character = res;
+        _character = res;
       });
     }
   }
 
-  void _fetchRelation() async {
+  Future<void> _fetchRelation() async {
     final res = await Api.bangumi.fetchSubjectRelation(widget.id, (e) {
       setState(() {
         _msg = e.toString();
@@ -154,66 +161,68 @@ class _DetailScreenState extends State<DetailScreen>
     });
     if (mounted) {
       setState(() {
-        relation = res;
+        _relation = res;
       });
     }
   }
 
   void _loadSubscribeHistory() {
-    if (subject == null) {
+    if (_subject == null) {
       return;
     }
-    final history = LocalStorage.getSubscribeHistoryById(subject!.id);
-    if (mounted && history != null) {
-      setState(() {
+
+    final subs = HiveUtil.getUserSubscribes(id: _subject!.id.toInt());
+    if (subs.isNotEmpty) {
+      safeSetState(() {
         isSubscribed = true;
-        _viewingStatus = history.viewingStatus;
+        _viewingStatus = subs.first.viewingStatus;
+        _userSubscribe = subs.first;
       });
     }
   }
 
-  void _storeSubscribeHistory() async {
-    if (subject == null) {
+  Future<void> _updateSubscribeHistory() async {
+    if (_subject == null) {
       return;
     }
     if (isSubscribed) {
-      SubscribeHistory history = SubscribeHistory(
-        subId: subject!.id,
-        title: subject!.title,
-        imgUrl: subject!.images.large ?? "",
-        createdAt: DateTime.now(),
-        viewingStatus: _viewingStatus,
-      );
-      _syncSubscribeHistory(history);
-      LocalStorage.addSubscribeHistory(history);
+      UserSubscribe subscribe = _userSubscribe != null
+          ? _userSubscribe!.copyWith(
+              viewingStatus: _viewingStatus,
+              createdAt: DateTime.now(),
+            )
+          : UserSubscribe(
+              id: _subject!.id.toInt(),
+              email: userSetting.email,
+              title: _subject!.title,
+              imgUrl: widget.cover,
+              createdAt: DateTime.now(),
+              isSync: false,
+              viewingStatus: _viewingStatus,
+            );
+      await HiveUtil.setUserSubscribe(subscribe);
     } else {
-      _cancelSync(subject!.id);
-      LocalStorage.removeSubscribeHistoryBySubId(subject!.id);
+      if (_userSubscribe != null) {
+        await HiveUtil.clearUserSubscribe(id: _userSubscribe!.id);
+      }
+    }
+    if (MyApp.userSettingNotifier.value.email.isNotEmpty) {
+      await WebDAV.syncData(false);
     }
   }
 
-  void subscribeHandle() {
+  Future<void> subscribeHandle() async {
     setState(() {
       isSubscribed = !isSubscribed;
     });
-    _storeSubscribeHistory();
-  }
-
-  void _cancelSync(int subId) {
-    SubscribeApi.deleteSubscribeRecordBySubId(subId, () {}, (msg) {});
-  }
-
-  void _syncSubscribeHistory(SubscribeHistory history) async {
-    SubscribeApi.saveSubscribeHistory(history, () {
-      history.isSync = true;
-    }, (e) {}).then((newSubscribe) {});
+    await _updateSubscribeHistory();
   }
 
   Future<void> _openBangumiUrl() async {
-    if (subject == null) {
+    if (_subject == null) {
       return;
     }
-    await launchUrl(Uri.parse("https://bangumi.tv/subject/${subject!.id}"));
+    await launchUrl(Uri.parse("https://bangumi.tv/subject/${_subject!.id}"));
   }
 
   Widget _buildShimmerSkeleton() {
@@ -281,7 +290,7 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  Future<void> _showCharacterDetail(Character character, BuildContext context) {
+  Future<void> _showCharacterDetail(Person person, BuildContext context) {
     return showModalBottomSheet(
       context: context,
       useSafeArea: true,
@@ -300,7 +309,7 @@ class _DetailScreenState extends State<DetailScreen>
                   child: Image.network(
                     width: double.infinity,
                     height: double.infinity,
-                    character.images?.large ?? '',
+                    person.images?.large ?? '',
                     fit: BoxFit.fitHeight,
                     loadingBuilder: (context, child, loadingProgress) =>
                         loadingProgress == null
@@ -320,20 +329,20 @@ class _DetailScreenState extends State<DetailScreen>
                     spacing: 4,
                     children: [
                       Text(
-                        character.name ?? "detail.unknown".tr(),
+                        person.name ?? "detail.unknown".tr(),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        'CV: ${character.actors?.map((e) => e.name).join('·') ?? ''}',
+                        'CV: ${person.actors?.map((e) => e.name).join('·') ?? ''}',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       Text(
-                        character.relation ?? '',
+                        person.relation ?? '',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
 
                       Text(
-                        character.summary ?? '',
+                        person.summary ?? '',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -371,12 +380,12 @@ class _DetailScreenState extends State<DetailScreen>
                       ),
                       onSubmitted: (value) async {
                         setState(() {
-                          keyword = value;
-                          isLoading = true;
+                          _keyword = value;
+                          _isLoading = true;
                         });
                         await _fetchMedia();
                         setState(() {
-                          isLoading = false;
+                          _isLoading = false;
                         });
                       },
                     ),
@@ -385,12 +394,12 @@ class _DetailScreenState extends State<DetailScreen>
                       isScrollable: true,
                       tabAlignment: TabAlignment.start,
                       controller: subTabController,
-                      tabs: sourceService
+                      tabs: _sourceService
                           .map((e) => Tab(text: e.getName()))
                           .toList(),
                     ),
                     Expanded(
-                      child: source2Media.isEmpty
+                      child: _source2Media.isEmpty
                           ? LoadingOrShowMsg(
                               msg: "detail.no_search_results".tr(),
                             )
@@ -398,9 +407,9 @@ class _DetailScreenState extends State<DetailScreen>
                               padding: EdgeInsets.only(top: 6),
                               child: TabBarView(
                                 controller: subTabController,
-                                children: sourceService.map((e) {
-                                  final item = source2Media[e] ?? [];
-                                  return isLoading
+                                children: _sourceService.map((e) {
+                                  final item = _source2Media[e] ?? [];
+                                  return _isLoading
                                       ? LoadingOrShowMsg(msg: _msg)
                                       : ListView.builder(
                                           itemCount: item.length,
@@ -443,7 +452,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   void _goToPlayer() {
-    if (defaultMedia == null || defaultSource == null || isLoading) {
+    if (defaultMedia == null || defaultSource == null || _isLoading) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("detail.no_source_found".tr())));
@@ -453,20 +462,121 @@ class _DetailScreenState extends State<DetailScreen>
       "/player",
       extra: {
         "mediaId": defaultMedia!.id!,
-        "subject": subject!,
+        "subject": _subject!,
         "source": defaultSource!,
         "nameCn": defaultMedia?.title ?? "detail.no_title".tr(),
         "isLove": isSubscribed,
-        'person': person,
-        'character': character,
-        'relation': relation,
+        'person': _person,
+        'character': _character,
+        'relation': _relation,
       },
+    );
+  }
+
+  Widget _buildSummary() {
+    return _subject?.summary.isNotEmpty == true
+        ? SizedBox(
+            width: double.infinity,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(top: 8),
+              child: Text(
+                _subject?.summary.isEmpty == true
+                    ? "detail.no_summary".tr()
+                    : _subject!.summary,
+              ),
+            ),
+          )
+        : Center(child: Text("detail.no_summary".tr()));
+  }
+
+  Widget _buildListTile({
+    required List<Map<String, String?>> data,
+    required String placeholder,
+    void Function(String id)? onTap,
+  }) {
+    return data.isNotEmpty
+        ? ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              final p = data[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  foregroundImage: NetworkImage(p['image'] ?? ''),
+                ),
+                title: Text(p['title'] ?? "detail.unknown".tr()),
+                subtitle: Text(p['subtitle'] ?? ''),
+                onTap: () => onTap?.call(p['id'] as String),
+              );
+            },
+          )
+        : Center(child: Text(placeholder));
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      actionsPadding: .symmetric(horizontal: 12),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios_rounded),
+        onPressed: () {
+          context.pop(context);
+        },
+      ),
+      //  title: Text("detail.title".tr()),
+      actions: [
+        IconButton(
+          tooltip: "Link to Bangumi",
+          onPressed: _openBangumiUrl,
+          icon: Icon(Icons.link_rounded),
+        ),
+        IconButton(
+          tooltip: "Subscribe/Unsubscribe",
+          onPressed: () {
+            if (_subject == null) {
+              return;
+            }
+            subscribeHandle();
+          },
+          icon: Icon(
+            isSubscribed
+                ? Icons.favorite_rounded
+                : Icons.favorite_border_rounded,
+          ),
+        ),
+        IconButton(
+          tooltip: 'All search results',
+          onPressed: () {
+            if (!_isCompleted) {
+              return;
+            }
+            _buildSearchResults();
+          },
+          icon: AnimatedSwitcher(
+            key: ValueKey("detail_search_icon"),
+            duration: Duration(milliseconds: 500),
+            child: _isFetched
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+
+                      key: ValueKey("detail_search_loading"),
+                      padding: .zero,
+                    ),
+                  )
+                : const Icon(
+                    Icons.search_rounded,
+                    key: ValueKey("detail_search_icon"),
+                  ),
+          ),
+        ),
+      ],
     );
   }
 
   @override
   void dispose() {
-    _storeSubscribeHistory();
+    _updateSubscribeHistory();
     subTabController.dispose();
     tabController.dispose();
     super.dispose();
@@ -490,7 +600,7 @@ class _DetailScreenState extends State<DetailScreen>
         onPressed: _goToPlayer,
         child: AnimatedSwitcher(
           duration: Duration(milliseconds: 500),
-          child: isLoading
+          child: _isLoading
               ? const CircularProgressIndicator(
                   key: ValueKey("detail_floating_loading"),
                 )
@@ -500,93 +610,35 @@ class _DetailScreenState extends State<DetailScreen>
                 ),
         ),
       ),
-      appBar: AppBar(
-        actionsPadding: .symmetric(horizontal: 12),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () {
-            context.pop(context);
-          },
-        ),
-        //  title: Text("detail.title".tr()),
-        actions: [
-          IconButton(
-            tooltip: "Link to Bangumi",
-            onPressed: _openBangumiUrl,
-            icon: Icon(Icons.link_rounded),
-          ),
-          IconButton(
-            tooltip: "Subscribe/Unsubscribe",
-            onPressed: () {
-              if (subject == null) {
-                return;
-              }
-              subscribeHandle();
-            },
-            icon: Icon(
-              isSubscribed
-                  ? Icons.favorite_rounded
-                  : Icons.favorite_border_rounded,
-            ),
-          ),
-          IconButton(
-            tooltip: 'All search results',
-            onPressed: () {
-              if (!isCompleted) {
-                return;
-              }
-              _buildSearchResults();
-            },
-            icon: AnimatedSwitcher(
-              key: ValueKey("detail_search_icon"),
-              duration: Duration(milliseconds: 500),
-              child: _isFetched
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-
-                        key: ValueKey("detail_search_loading"),
-                        padding: .zero,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.search_rounded,
-                      key: ValueKey("detail_search_icon"),
-                    ),
-            ),
-          ),
-        ],
-      ),
+      appBar: _buildAppBar() as PreferredSizeWidget,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isLandscape = constraints.maxWidth > constraints.maxHeight;
           return SafeArea(
-            child: subject == null
+            child: _subject == null
                 ? _buildShimmerSkeleton()
                 : Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12),
                     child: Column(
                       children: [
                         MediaCard(
-                          id: "${widget.from}_${subject!.id}",
+                          id: "${widget.from}_${_subject!.id}",
                           imageUrl: widget.cover,
                           viewingStatus: isSubscribed ? _viewingStatus : null,
-                          title: subject!.title,
-                          genre: subject!.metaTags.join('/'),
-                          episode: subject!.totalEpisodes,
-                          rating: subject!.rating,
+                          title: _subject!.title,
+                          genre: _subject!.metaTags.join('/'),
+                          episode: _subject!.totalEpisodes,
+                          rating: _subject!.rating,
                           isFavorite: isSubscribed,
-                          ratingCount: subject!.ratingCount,
+                          ratingCount: _subject!.ratingCount,
                           height: 200,
-                          airDate: subject!.airDate,
+                          airDate: _subject!.airDate,
                           isLandscape: isLandscape,
                           onViewingStatusChange: (status) {
                             setState(() {
                               _viewingStatus = status;
                             });
-                            _storeSubscribeHistory();
+                            _updateSubscribeHistory();
                           },
                         ),
                         Expanded(
@@ -607,150 +659,88 @@ class _DetailScreenState extends State<DetailScreen>
                                 child: TabBarView(
                                   controller: tabController,
                                   children: [
-                                    // 简介板块
-                                    subject?.summary.isNotEmpty == true
-                                        ? SizedBox(
-                                            width: double.infinity,
-                                            child: SingleChildScrollView(
-                                              padding: EdgeInsets.only(top: 8),
-                                              child: Text(
-                                                subject?.summary.isEmpty == true
-                                                    ? "detail.no_summary".tr()
-                                                    : subject!.summary,
-                                              ),
-                                            ),
-                                          )
-                                        : Center(
-                                            child: Text(
-                                              "detail.no_summary".tr(),
-                                            ),
-                                          ),
+                                    _buildSummary(),
 
                                     //人物板块
-                                    person.isNotEmpty
-                                        ? ListView.builder(
-                                            itemCount: person.length,
-                                            itemBuilder: (context, index) {
-                                              final p = person[index];
-                                              return ListTile(
-                                                leading: p.images != null
-                                                    ? Image.network(
-                                                        p.images!.grid!
-                                                                .startsWith(
-                                                                  "https://",
-                                                                )
-                                                            ? p.images!.grid!
-                                                            : p.images!.grid!
-                                                                  .replaceAll(
-                                                                    "http://",
-                                                                    "https://",
-                                                                  ),
-                                                        // width: 70,
-                                                        // height: 70,
-                                                        fit: BoxFit.fill,
-                                                        errorBuilder:
-                                                            (
-                                                              context,
-                                                              error,
-                                                              stackTrace,
-                                                            ) => const Icon(
-                                                              size: 70,
-                                                              Icons.error,
-                                                            ),
-                                                      )
-                                                    : const Icon(Icons.person),
-                                                title: Text(
-                                                  p.name ??
-                                                      "detail.unknown".tr(),
-                                                ),
-                                                subtitle: Text(
-                                                  p.relation ?? '',
-                                                ),
-                                              );
+                                    _buildListTile(
+                                      data: _person
+                                          .map(
+                                            (e) => {
+                                              'id': e.id.toString(),
+                                              'title': e.name,
+                                              'subtitle': e.relation,
+                                              'image': e.images!.grid!,
                                             },
                                           )
-                                        : Center(
-                                            child: Text(
-                                              "detail.no_character_data".tr(),
-                                            ),
-                                          ),
-                                    //角色板块
-                                    character.isNotEmpty
-                                        ? ListView.builder(
-                                            itemCount: character.length,
-                                            itemBuilder: (context, index) {
-                                              final c = character[index];
-                                              return ListTile(
-                                                leading: c.images != null
-                                                    ? Image.network(
-                                                        fit: BoxFit.fill,
-                                                        c.images!.grid!
-                                                            .replaceAll(
-                                                              "http",
-                                                              "https",
-                                                            ),
-                                                        // color: Colors.limeAccent,
-                                                        errorBuilder:
-                                                            (
-                                                              context,
-                                                              error,
-                                                              stackTrace,
-                                                            ) => const Icon(
-                                                              size: 70,
-                                                              Icons.error,
-                                                            ),
-                                                      )
-                                                    : const Icon(Icons.person),
-                                                title: Text(
-                                                  c.name ??
-                                                      "detail.unknown".tr(),
-                                                ),
-                                                subtitle: Text(
-                                                  c.relation ?? '',
-                                                ),
-                                                onTap: () =>
-                                                    _showCharacterDetail(
-                                                      c,
-                                                      context,
-                                                    ),
-                                              );
-                                            },
-                                          )
-                                        : Center(
-                                            child: Text(
-                                              "detail.no_relation_data".tr(),
-                                            ),
-                                          ),
-                                    ListView.builder(
-                                      itemCount: relation.length,
-                                      itemBuilder: (context, index) {
-                                        final r = relation[index];
-                                        return ListTile(
-                                          leading: r.images != null
-                                              ? Image.network(
-                                                  r.images!.medium!.replaceAll(
-                                                    "http",
-                                                    "https",
-                                                  ),
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder:
-                                                      (
-                                                        context,
-                                                        error,
-                                                        stackTrace,
-                                                      ) => const Icon(
-                                                        size: 70,
-                                                        Icons.error,
-                                                      ),
-                                                )
-                                              : const Icon(Icons.person),
-                                          title: Text(
-                                            r.nameCn ?? "detail.unknown".tr(),
-                                          ),
-                                          subtitle: Text(r.relation ?? ''),
-                                        );
-                                      },
+                                          .toList(),
+                                      placeholder: "detail.no_person_data".tr(),
                                     ),
+                                    //角色板块
+                                    _buildListTile(
+                                      data: _character
+                                          .map(
+                                            (e) => {
+                                              'id': e.id.toString(),
+                                              'title': e.name,
+                                              'subtitle': e.relation,
+                                              'image': e.images!.grid!,
+                                            },
+                                          )
+                                          .toList(),
+                                      placeholder: "detail.no_character_data"
+                                          .tr(),
+                                      onTap: (id) => _showCharacterDetail(
+                                        _character.firstWhere(
+                                          (e) => e.id == int.parse(id),
+                                        ),
+                                        context,
+                                      ),
+                                    ),
+                                    //关系板块
+                                    _buildListTile(
+                                      data: _relation
+                                          .map(
+                                            (e) => {
+                                              'id': e.id.toString(),
+                                              'title': e.nameCn,
+                                              'subtitle': e.relation,
+                                              'image': e.images!.medium!,
+                                            },
+                                          )
+                                          .toList(),
+                                      placeholder: "detail.no_relation_data"
+                                          .tr(),
+                                    ),
+                                    // ListView.builder(
+                                    //   itemCount: _relation.length,
+                                    //   itemBuilder: (context, index) {
+                                    //     final r = _relation[index];
+                                    //     return ListTile(
+                                    //       leading: r.images != null
+                                    //           ? Image.network(
+                                    //               r.images!.medium!.replaceAll(
+                                    //                 "http",
+                                    //                 "https",
+                                    //               ),
+                                    //               fit: BoxFit.cover,
+                                    //               errorBuilder:
+                                    //                   (
+                                    //                     context,
+                                    //                     error,
+                                    //                     stackTrace,
+                                    //                   ) => const Icon(
+                                    //                     size: 70,
+                                    //                     Icons.error,
+                                    //                   ),
+                                    //             )
+                                    //           : const Icon(Icons.person),
+                                    //       title: Text(
+                                    //         r.nameCn ?? "detail.unknown".tr(),
+                                    //       ),
+                                    //       subtitle: Text(r.relation ?? ''),
+                                    //     );
+                                    //   },
+                                    // ),
                                   ],
                                 ),
                               ),

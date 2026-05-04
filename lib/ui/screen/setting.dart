@@ -3,13 +3,12 @@ import 'dart:io';
 import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/api/playback_api.dart';
-import 'package:holo/api/subscribe_api.dart';
+import 'package:holo/entity/user_setting.dart';
+import 'package:holo/main.dart';
+import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/version_checker.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -23,10 +22,7 @@ class _SettingScreenState extends State<SettingScreen>
     with WidgetsBindingObserver {
   String _version = '';
   String _buildNumber = '';
-  String? _email;
-  String? _token;
-  bool _checkVersioning = false;
-
+  bool _checkingVersion = false;
   @override
   void initState() {
     super.initState();
@@ -53,38 +49,34 @@ class _SettingScreenState extends State<SettingScreen>
   List<Widget> _buildAccountInfo() {
     return [
       _buildSectionHeader('setting.section.account_status'.tr()),
-      VisibilityDetector(
-        key: const Key('account_info_section'),
-        child: ListTile(
-          leading: const Icon(Icons.account_circle_outlined),
-          title: AnimatedSwitcher(
-            key: const ValueKey('account_animated_switcher_key'),
-            duration: const Duration(milliseconds: 300),
-            child: Container(
-              key: const ValueKey('account_status_container'),
-              alignment: Alignment.centerLeft,
-              child: (_email != null && _token != null)
-                  ? Text(_email!, key: const ValueKey<String>('logged_in'))
-                  : Text(
-                      'setting.account.logged_out'.tr(),
-                      key: const ValueKey<String>('logged_out'),
-                    ),
+      ValueListenableBuilder(
+        valueListenable: MyApp.userSettingNotifier,
+        builder: (context, value, child) {
+          return ListTile(
+            leading: const Icon(Icons.account_circle_outlined),
+            title: AnimatedSwitcher(
+              key: const ValueKey('account_animated_switcher_key'),
+              duration: const Duration(milliseconds: 300),
+              child: Container(
+                key: const ValueKey('account_status_container'),
+                alignment: Alignment.centerLeft,
+                child: (value.email.isNotEmpty)
+                    ? Text(
+                        value.email,
+                        key: const ValueKey<String>('logged_in'),
+                      )
+                    : Text(
+                        'setting.account.logged_out'.tr(),
+                        key: const ValueKey<String>('logged_out'),
+                      ),
+              ),
             ),
-          ),
-          onTap: () {
-            if (_email == null || _token == null) {
-              context.push('/sign');
-            }
-          },
-        ),
-        onVisibilityChanged: (visibilityInfo) {
-          // log('Visibility: ${visibilityInfo.visibleFraction}');
-          if (visibilityInfo.visibleFraction > 0) {
-            setState(() {
-              _email = LocalStorage.getEmail();
-              _token = LocalStorage.getAccessToken();
-            });
-          }
+            onTap: () {
+              if (value.email.isEmpty) {
+                context.push('/sign');
+              }
+            },
+          );
         },
       ),
       ListTile(
@@ -113,7 +105,7 @@ class _SettingScreenState extends State<SettingScreen>
       ListTile(
         leading: AnimatedSwitcher(
           duration: Duration(milliseconds: 300),
-          child: _checkVersioning
+          child: _checkingVersion
               ? SizedBox(
                   key: ValueKey('setting.app_info.check_version_loading'),
                   width: 24,
@@ -127,19 +119,20 @@ class _SettingScreenState extends State<SettingScreen>
         ),
         title: Text('setting.app_info.check_version'.tr()),
         onTap: () async {
-          setState(() => _checkVersioning = true);
+          setState(() => _checkingVersion = true);
           await VersionChecker.checkVersion(context);
-          setState(() => _checkVersioning = false);
+          setState(() => _checkingVersion = false);
         },
       ),
       SwitchListTile(
-        value: LocalStorage.getAutoCheckUpdate(),
+        value: MyApp.userSettingNotifier.value.autoUpdate,
         title: Text('setting.app_info.auto_check_update'.tr()),
         subtitle: Text('setting.app_info.auto_check_update_description'.tr()),
-        onChanged: (value) {
-          setState(() {
-            LocalStorage.setAutoCheckUpdate(value);
-          });
+        onChanged: (value) async {
+          var newSetting = MyApp.userSettingNotifier.value.copyWith(
+            autoUpdate: value,
+          );
+          await HiveUtil.setUserSetting(newSetting);
         },
       ),
     ];
@@ -371,48 +364,6 @@ class _SettingScreenState extends State<SettingScreen>
     ];
   }
 
-  void _clearHistory(
-    bool isPlayback,
-    Function onCloudSuccess,
-    Function(dynamic msg) onCloudfaild,
-    Function onLocalSuccess,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('setting.data_management.clear_dialog_title'.tr()),
-        content: Text(
-          isPlayback
-              ? 'setting.data_management.clear_dialog_content_playback'.tr()
-              : 'setting.data_management.clear_dialog_content_subscribe'.tr(),
-        ),
-        actions: [
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('setting.data_management.clear_dialog_cancel'.tr()),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              if (isPlayback) {
-                PlayBackApi.deleteAllPlaybackRecord(() {
-                  onCloudSuccess();
-                }, (e) => onCloudfaild(e));
-              } else {
-                SubscribeApi.deleteAllSubscribeRecord(() {
-                  onCloudSuccess();
-                }, (e) => onCloudfaild(e));
-              }
-              LocalStorage.clearHistory(clearPlayback: isPlayback);
-              onLocalSuccess();
-            },
-            child: Text('setting.data_management.clear_dialog_confirm'.tr()),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showClearCacheDialog() {
     showDialog(
       context: context,
@@ -468,8 +419,8 @@ class _SettingScreenState extends State<SettingScreen>
     }
   }
 
-  void _showSignoutAccountDialog() {
-    showDialog(
+  Future<void> _showSignoutAccountDialog() {
+    return showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('setting.account.signout_dialog_title'.tr()),
@@ -482,9 +433,10 @@ class _SettingScreenState extends State<SettingScreen>
           FilledButton(
             onPressed: () {
               setState(() {
-                _email = null;
+                HiveUtil.removeUser();
+                MyApp.userSettingNotifier.value =
+                    UserSetting.createDefaultUserSetting(email: '');
               });
-              LocalStorage.removeLocalAccount();
               Navigator.pop(context);
             },
             child: Text('setting.account.signout_dialog_confirm'.tr()),

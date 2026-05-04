@@ -80,7 +80,7 @@
         },
         "account": {
             "logged_in": "已登入",
-            "logged_out": "未登入",
+            "logged_out": "配置WebDAV帳戶",
             "logout": "登出帳戶",
             "logout_description": "登出目前帳戶,但是本機歷史記錄資料不會刪除",
             "signout_dialog_title": "登出帳戶",
@@ -167,6 +167,7 @@
         "confirm_password": "確認密碼",
         "login": "登入",
         "register": "註冊",
+        "verify": "驗證",
         "switch_to_register": "切換至註冊",
         "switch_to_login": "切換至登入",
         "login_success": "登入成功",

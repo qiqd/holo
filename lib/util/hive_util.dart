@@ -1,0 +1,321 @@
+import 'dart:developer';
+import 'package:hive_ce/hive.dart';
+import 'package:holo/entity/daily_broadcast.dart';
+import 'package:holo/entity/image.dart';
+import 'package:holo/entity/rule.dart';
+import 'package:holo/entity/subject_item.dart';
+import 'package:holo/entity/user_playback.dart';
+import 'package:holo/entity/user_setting.dart';
+import 'package:holo/entity/user_subscribe.dart';
+import 'package:path_provider/path_provider.dart';
+
+import '../entity/user.dart' show User, UserAdapter;
+
+class HiveUtil {
+  static User? user;
+  static Box<User>? userBox;
+  static Box<Rule>? ruleBox;
+  static Box<UserSubscribe>? userSubscribeBox;
+  static Box<UserPlayback>? userPlaybackBox;
+  static Box<String>? userSearchBox;
+  static Box<SubjectItem>? subjectItemBox;
+  static Box<UserSetting>? userSettingBox;
+  static Box<SubjectItem>? hotSubjectItemBox;
+  static Box<SubjectItem>? hiScoreSubjectItemBox;
+  static Box<DailyBroadcast>? dailyBroadcastBox;
+  static late String appDBPath;
+
+  static Future<void> closeHive() async {
+    await Hive.close();
+  }
+
+  /// 初始化Hive数据库
+  static Future<void> initHive() async {
+    await Hive.close();
+    appDBPath = '${(await getApplicationDocumentsDirectory()).path}/holo';
+    Hive.init(appDBPath);
+    if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
+      Hive.registerAdapter(UserAdapter());
+    }
+    userBox = await Hive.openBox("user");
+    user = userBox?.values.firstOrNull;
+    await Hive.close();
+    if (user == null) {
+      Hive.init('$appDBPath/common/');
+    } else {
+      Hive.init('$appDBPath/${user!.email}/');
+    }
+    if (!Hive.isAdapterRegistered(UserSubscribeAdapter().typeId)) {
+      Hive.registerAdapter(UserSubscribeAdapter());
+    }
+    if (!Hive.isAdapterRegistered(UserPlaybackAdapter().typeId)) {
+      Hive.registerAdapter(UserPlaybackAdapter());
+    }
+    if (!Hive.isAdapterRegistered(UserSettingAdapter().typeId)) {
+      Hive.registerAdapter(UserSettingAdapter());
+    }
+    if (!Hive.isAdapterRegistered(SubjectItemAdapter().typeId)) {
+      Hive.registerAdapter(SubjectItemAdapter());
+    }
+    if (!Hive.isAdapterRegistered(RuleAdapter().typeId)) {
+      Hive.registerAdapter(RuleAdapter());
+    }
+    if (!Hive.isAdapterRegistered(RequestMethodAdapter().typeId)) {
+      Hive.registerAdapter(RequestMethodAdapter());
+    }
+    if (!Hive.isAdapterRegistered(ImageAdapter().typeId)) {
+      Hive.registerAdapter(ImageAdapter());
+    }
+    if (!Hive.isAdapterRegistered(DailyBroadcastAdapter().typeId)) {
+      Hive.registerAdapter(DailyBroadcastAdapter());
+    }
+
+    ruleBox = await Hive.openBox<Rule>("rule");
+    userSettingBox = await Hive.openBox<UserSetting>("user_setting");
+    userSubscribeBox = await Hive.openBox<UserSubscribe>("user_subscribe");
+    userPlaybackBox = await Hive.openBox<UserPlayback>("user_playback");
+    userSearchBox = await Hive.openBox<String>("user_search");
+    subjectItemBox = await Hive.openBox<SubjectItem>("subject_item");
+    hotSubjectItemBox = await Hive.openBox<SubjectItem>("hot_subject_item");
+    hiScoreSubjectItemBox = await Hive.openBox<SubjectItem>(
+      "hi_score_subject_item",
+    );
+    dailyBroadcastBox = await Hive.openBox<DailyBroadcast>("daily_broadcast");
+  }
+
+  /// 获取用户订阅路径，必须在[initHive]方法后调用
+  static String getUserSubscribePath() {
+    return '$appDBPath/${user?.email}/user_subscribe.hive';
+  }
+
+  /// 获取用户播放放路径，必须在[initHive]方法后调用
+  static String getUserPlaybackPath() {
+    return '$appDBPath/${user?.email}/user_playback.hive';
+  }
+
+  /// 获取用户设置路径，必须在[initHive]方法后调用
+  static String getUserSettingPath() {
+    return '$appDBPath/${user?.email}/user_setting.hive';
+  }
+
+  /// 获取公共用户订阅路径，必须在[initHive]方法后调用
+  static String getCommonUserSubscribePath() {
+    return '$appDBPath/common/user_subscribe.hive';
+  }
+
+  /// 获取公共用户播放放路径，必须在[initHive]方法后调用
+  static String getCommonUserPlaybackPath() {
+    return '$appDBPath/common/user_playback.hive';
+  }
+
+  /// 获取公共用户设置路径，必须在[initHive]方法后调用
+  static String getCommonUserSettingPath() {
+    return '$appDBPath/common/user_setting.hive';
+  }
+
+  /// 获取公共用户数据路径，必须在[initHive]方法后调用
+  static List<String> getCommonUserDataPath() {
+    String subscribePath = '$appDBPath/common/user_subscribe.hive';
+    String playbackPath = '$appDBPath/common/user_playback.hive';
+    String settingPath = '$appDBPath/common/user_setting.hive';
+    return [subscribePath, playbackPath, settingPath];
+  }
+
+  static Future<void> setUser(User user) async {
+    await Hive.close();
+    Hive.init('${(await getApplicationDocumentsDirectory()).path}/holo');
+    userBox = await Hive.openBox("user");
+    await userBox?.clear();
+    await userBox?.add(user);
+    await Hive.close();
+  }
+
+  static Future<void> removeUser() async {
+    await Hive.close();
+    Hive.init('${(await getApplicationDocumentsDirectory()).path}/holo');
+    userBox = await Hive.openBox("user");
+    await userBox?.clear();
+  }
+
+  static Future<void> setRule(Rule rule) async {
+    var rules = getRules();
+    rules.removeWhere((element) => element.name == rule.name);
+    rules.add(rule);
+    await ruleBox?.clear();
+    await ruleBox?.addAll(rules);
+  }
+
+  static List<Rule> getRules() {
+    return ruleBox?.values.toList() ?? [];
+  }
+
+  /// 清除规则
+  /// [name] 规则名称
+  /// 如果[name]为null，则清除所有规则
+  static Future<void> clearRule({String? name}) async {
+    if (name == null) {
+      await ruleBox?.clear();
+    } else {
+      var list = getRules();
+      list.removeWhere((element) => element.name == name);
+      await ruleBox?.clear();
+      await ruleBox?.addAll(list);
+    }
+  }
+
+  static Future<void> setUserSubscribe(UserSubscribe userSubscribe) async {
+    var newList = getUserSubscribes();
+    newList.removeWhere((element) => element.id == userSubscribe.id);
+    newList.add(userSubscribe);
+    await userSubscribeBox?.clear();
+    await userSubscribeBox?.addAll(newList);
+  }
+
+  /// 获取用户订阅
+  /// [id] 订阅id
+  /// 如果[id]为null，则获取所有订阅
+  static List<UserSubscribe> getUserSubscribes({int? id}) {
+    if (id == null) {
+      return userSubscribeBox?.values.toList() ?? [];
+    }
+    return userSubscribeBox?.values
+            .toList()
+            .where((element) => element.id == id)
+            .toList() ??
+        [];
+  }
+
+  /// 删除用户订阅
+  /// [id] 订阅id
+  /// 如果[id]为null，则清除所有订阅
+  static Future<void> clearUserSubscribe({int? id}) async {
+    if (id == null) {
+      await userSubscribeBox?.clear();
+    } else {
+      var list = getUserSubscribes();
+      list.removeWhere((element) => element.id == id);
+      await userSubscribeBox?.clear();
+      await userSubscribeBox?.addAll(list);
+    }
+  }
+
+  static Future<void> setUserPlayback(UserPlayback userPlayback) async {
+    var newList =
+        userPlaybackBox?.values
+            .where((item) => item.id != userPlayback.id)
+            .toList() ??
+        [];
+    newList.add(userPlayback);
+    await userPlaybackBox?.clear();
+    await userPlaybackBox?.addAll(newList);
+  }
+
+  static List<UserPlayback> getUserPlaybacks() {
+    log("user==null${user == null}");
+    return userPlaybackBox?.values.toList() ?? [];
+  }
+
+  /// 清除用户播放记录
+  /// [id] 播放记录id
+  /// 如果[id]为null，则清除所有播放记录
+  static Future<void> clearUserPlayback({int? id}) async {
+    if (id == null) {
+      await userPlaybackBox?.clear();
+    } else {
+      var list = getUserPlaybacks();
+      list.removeWhere((element) => element.id == id);
+      await userPlaybackBox?.clear();
+      await userPlaybackBox?.addAll(list);
+    }
+  }
+
+  static Future<void> setUserSearch(String keyword) async {
+    var list = getUserSearches();
+    list.add(keyword);
+    await userSearchBox?.clear();
+    await userSearchBox?.addAll(list.toList());
+  }
+
+  static List<String> getUserSearches() {
+    return userSearchBox?.values.toList() ?? [];
+  }
+
+  /// 清除用户搜索记录
+  /// [keyword] 搜索关键词
+  /// 如果[keyword]为null，则清除所有搜索记录
+  static Future<void> clearUserSearches({String? keyword}) async {
+    if (keyword == null) {
+      await userSearchBox?.clear();
+    } else {
+      var list = getUserSearches();
+      list.remove(keyword);
+      await userSearchBox?.clear();
+      await userSearchBox?.addAll(list);
+    }
+  }
+
+  static Future<void> setUserSetting(UserSetting userSetting) async {
+    await userSettingBox?.clear();
+    await userSettingBox?.add(userSetting);
+  }
+
+  /// 获取用户设置
+  /// 如果用户设置不存在，则返回默认用户设置
+  static UserSetting getUserSetting() {
+    return userSettingBox?.values.toList().firstOrNull ??
+        UserSetting.createDefaultUserSetting(email: user?.email ?? "");
+  }
+
+  static Future<void> clearUserSetting() async {
+    await userSettingBox?.clear();
+  }
+
+  static Future<void> setSubjectItem(SubjectItem subjectItem) async {
+    var newList =
+        subjectItemBox?.values
+            .where((item) => item.id != subjectItem.id)
+            .toList() ??
+        [];
+    newList.add(subjectItem);
+    await subjectItemBox?.clear();
+    await subjectItemBox?.addAll(newList);
+  }
+
+  static SubjectItem? getSubjectItemById(int id) {
+    return subjectItemBox?.values
+        .toList()
+        .where((element) => element.id == id)
+        .firstOrNull;
+  }
+
+  static Future<void> setHotSubjectItem(List<SubjectItem> subjectItems) async {
+    await hotSubjectItemBox?.clear();
+    await hotSubjectItemBox?.addAll(subjectItems);
+  }
+
+  static List<SubjectItem> getHotSubjectItems() {
+    return hotSubjectItemBox?.values.toList() ?? [];
+  }
+
+  static Future<void> setHiScoreSubjectItem(
+    List<SubjectItem> subjectItems,
+  ) async {
+    await hiScoreSubjectItemBox?.clear();
+    await hiScoreSubjectItemBox?.addAll(subjectItems);
+  }
+
+  static List<SubjectItem> getHiScoreSubjectItems() {
+    return hiScoreSubjectItemBox?.values.toList() ?? [];
+  }
+
+  static Future<void> setDailyBroadcast(
+    List<DailyBroadcast> dailyBroadcast,
+  ) async {
+    await dailyBroadcastBox?.clear();
+    await dailyBroadcastBox?.addAll(dailyBroadcast);
+  }
+
+  static List<DailyBroadcast> getDailyBroadcast() {
+    return dailyBroadcastBox?.values.toList() ?? [];
+  }
+}

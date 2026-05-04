@@ -3,9 +3,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/app_setting.dart';
+import 'package:holo/api/web_dav.dart';
+import 'package:holo/entity/user_setting.dart';
 import 'package:holo/main.dart';
-import 'package:holo/util/local_storage.dart';
+import 'package:holo/util/hive_util.dart';
 
 class Appearance extends StatefulWidget {
   const Appearance({super.key});
@@ -16,7 +17,9 @@ class Appearance extends StatefulWidget {
 
 class _AppearanceState extends State<Appearance> {
   // 主题颜色相关状态
-  Color _selectedPrimaryColor = Color(MyApp.appSettingNotifier.value.colorSeed);
+  Color _selectedPrimaryColor = Color(
+    MyApp.userSettingNotifier.value.colorSeed,
+  );
 
   // 预设颜色列表
   final List<Color> _presetColors = [
@@ -50,7 +53,7 @@ class _AppearanceState extends State<Appearance> {
         ColorTools.createPrimarySwatch(const Color(0xFF64FFDA)): 'Aqua Green',
       };
   String _getThemeModeText() {
-    final themeMode = MyApp.appSettingNotifier.value.themeMode;
+    final themeMode = MyApp.userSettingNotifier.value.themeMode;
     switch (themeMode) {
       case 0:
         return 'appearance.theme_mode_system'.tr();
@@ -64,10 +67,10 @@ class _AppearanceState extends State<Appearance> {
     }
   }
 
-  void _showThemeModeDialog() {
-    AppSetting appSetting = MyApp.appSettingNotifier.value;
-    ThemeMode? currentTheme = ThemeMode.values[appSetting.themeMode];
-    showDialog(
+  Future<void> _showThemeModeDialog() async {
+    UserSetting userSetting = MyApp.userSettingNotifier.value;
+    ThemeMode? currentTheme = ThemeMode.values[userSetting.themeMode];
+    await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('appearance.theme_dialog_title'.tr()),
@@ -123,10 +126,10 @@ class _AppearanceState extends State<Appearance> {
           ),
           FilledButton(
             onPressed: () {
-              MyApp.appSettingNotifier.value = appSetting.copyWith(
+              MyApp.userSettingNotifier.value = userSetting.copyWith(
                 themeMode: currentTheme?.index,
               );
-              LocalStorage.saveAppSetting(MyApp.appSettingNotifier.value);
+
               Navigator.pop(context);
             },
             child: Text('appearance.theme_dialog_confirm'.tr()),
@@ -137,7 +140,7 @@ class _AppearanceState extends State<Appearance> {
   }
 
   /// 显示FlexColorPicker颜色选择器
-  void _showFlexColorPicker() async {
+  Future<void> _showFlexColorPicker() async {
     Color selectedColor = _selectedPrimaryColor;
     final Color newColor = await showColorPickerDialog(
       context,
@@ -190,11 +193,11 @@ class _AppearanceState extends State<Appearance> {
 
   /// 更新主题颜色
   void _updatePrimaryColor(Color color) {
-    var appSetting = MyApp.appSettingNotifier.value;
-    MyApp.appSettingNotifier.value = appSetting.copyWith(
-      colorSeed: color.value,
-    );
-    LocalStorage.saveAppSetting(MyApp.appSettingNotifier.value);
+    var appSetting = MyApp.userSettingNotifier.value;
+    var newSetting = appSetting.copyWith(colorSeed: color.value);
+    MyApp.userSettingNotifier.value = newSetting;
+    HiveUtil.setUserSetting(newSetting);
+    WebDAV.syncData(newSetting.email.isEmpty);
   }
 
   /// 显示图片选择器
@@ -205,7 +208,7 @@ class _AppearanceState extends State<Appearance> {
   // }
 
   List<Widget> _buildThemeModeTile() {
-    var appSetting = MyApp.appSettingNotifier.value;
+    var appSetting = MyApp.userSettingNotifier.value;
     return [
       ListTile(
         leading: const Icon(Icons.palette),
@@ -216,14 +219,13 @@ class _AppearanceState extends State<Appearance> {
       if (Platform.isAndroid || Platform.isIOS)
         SwitchListTile(
           secondary: Icon(Icons.colorize_rounded),
-          value: MyApp.appSettingNotifier.value.useSystemColor,
+          value: MyApp.userSettingNotifier.value.useSystemColor,
           title: Text('appearance.use_system_color'.tr()),
           subtitle: Text('appearance.use_system_color_description'.tr()),
           onChanged: (v) => setState(() {
-            MyApp.appSettingNotifier.value = appSetting.copyWith(
+            MyApp.userSettingNotifier.value = appSetting.copyWith(
               useSystemColor: v,
             );
-            LocalStorage.saveAppSetting(MyApp.appSettingNotifier.value);
           }),
         ),
       // ListTile(

@@ -6,11 +6,11 @@ import 'package:holo/service/impl/animation/mwcy.dart';
 import 'package:holo/service/impl/animation/senfen.dart';
 import 'package:holo/service/impl/meta/anime_trace.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
-import 'package:holo/service/impl/meta/logvar.dart';
+import 'package:holo/service/impl/meta/log_var.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/dio_timing_extension.dart';
+import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/http_util.dart';
-import 'package:holo/util/local_storage.dart';
 
 /// API服务管理类
 /// 负责管理各种元数据服务和动画源服务
@@ -19,7 +19,7 @@ class Api {
   static Bangumi bangumi = Bangumi();
 
   /// 弹幕服务实例
-  static Logvar logvar = Logvar();
+  static LogVar logvar = LogVar();
 
   /// 动漫追踪服务实例
   static AnimeTrace animeTrace = AnimeTrace();
@@ -35,7 +35,7 @@ class Api {
     // 添加内置动画源
     _sources.addAll([AAfun(), Senfen(), Girugiru(), Mwcy(), Mengdao()]);
     // 获取用户规则
-    var ruleList = LocalStorage.getRules();
+    var ruleList = HiveUtil.getRules();
     // 构建启用的规则源
     var commonSources = ruleList
         .where((rule) => rule.isEnabled)

@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/api/setting_api.dart';
-import 'package:holo/entity/app_setting.dart';
-import 'package:holo/entity/character.dart';
+import 'package:holo/api/web_dav.dart';
 import 'package:holo/entity/person.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/user_setting.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/appearance.dart';
@@ -21,13 +20,13 @@ import 'package:holo/ui/screen/rule_manager.dart';
 import 'package:holo/ui/screen/rule_repository.dart';
 import 'package:holo/ui/screen/rule_test.dart';
 import 'package:holo/ui/screen/account.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:holo/ui/screen/calendar.dart';
 import 'package:holo/ui/screen/detail.dart';
 import 'package:holo/ui/screen/home.dart';
 import 'package:holo/ui/screen/search.dart';
 import 'package:holo/ui/screen/setting.dart';
 import 'package:holo/ui/screen/subscribe.dart';
+import 'package:holo/util/hive_util.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -39,8 +38,6 @@ void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   // 初始化国际化
   await EasyLocalization.ensureInitialized();
-  // 初始化本地存储
-  await LocalStorage.init();
 
   // 初始化动画源服务
   Api.initSources();
@@ -72,6 +69,8 @@ void main() async {
     });
   }
 
+  // 初始化Hive数据库
+  await HiveUtil.initHive();
   // 运行应用
   runApp(
     EasyLocalization(
@@ -95,8 +94,8 @@ void main() async {
 /// 应用程序主组件
 class MyApp extends StatefulWidget {
   /// 应用设置变更通知器
-  static final appSettingNotifier = ValueNotifier<AppSetting>(
-    LocalStorage.getAppSetting(),
+  static final userSettingNotifier = ValueNotifier<UserSetting>(
+    UserSetting.createDefaultUserSetting(email: ""),
   );
 
   /// 构造函数
@@ -105,12 +104,9 @@ class MyApp extends StatefulWidget {
   /// 初始化应用设置
   /// 从服务器获取设置，如果获取失败则使用本地存储的设置
   static Future<void> initAppSetting() async {
-    final setting = await SettingApi.fetchSetting((msg) {});
-    if (setting != null) {
-      LocalStorage.saveAppSetting(setting, isSync: false);
-    }
-    var appSetting = setting ?? LocalStorage.getAppSetting();
-    MyApp.appSettingNotifier.value = appSetting;
+    var appSetting = HiveUtil.getUserSetting();
+    MyApp.userSettingNotifier.value = appSetting;
+    WebDAV.init(HiveUtil.user);
   }
 
   @override
@@ -193,7 +189,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             nameCn: map['nameCn'] as String,
             isLove: map['isLove'] as bool,
             person: map['person'] ?? [] as List<Person>,
-            character: map['character'] ?? [] as List<Character>,
+            character: map['character'] ?? [] as List<Person>,
             relation: map['relation'] ?? [] as List<SubjectRelation>,
           );
         },
@@ -290,7 +286,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       // 监听应用设置变化
-      valueListenable: MyApp.appSettingNotifier,
+      valueListenable: MyApp.userSettingNotifier,
       builder: (context, setting, child) {
         return MaterialApp.router(
           //showPerformanceOverlay: true,
@@ -309,22 +305,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             (element) => element.index == setting.themeMode,
             orElse: () => ThemeMode.system,
           ),
-          // 背景图片构建器
-          builder: LocalStorage.getBackgroundImagePath().isEmpty
-              ? null
-              : (context, child) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: FileImage(
-                          File(LocalStorage.getBackgroundImagePath()),
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: child,
-                  );
-                },
+          // // 背景图片构建器
+          // builder: LocalStorage.getBackgroundImagePath().isEmpty
+          //     ? null
+          //     : (context, child) {
+          //         return Container(
+          //           decoration: BoxDecoration(
+          //             image: DecorationImage(
+          //               image: FileImage(
+          //                 File(LocalStorage.getBackgroundImagePath()),
+          //               ),
+          //               fit: BoxFit.cover,
+          //             ),
+          //           ),
+          //           child: child,
+          //         );
+          //       },
           // 浅色主题
           theme: ThemeData(
             useSystemColors: setting.useSystemColor,

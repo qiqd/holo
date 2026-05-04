@@ -80,7 +80,7 @@
         },
         "account": {
             "logged_in": "Logged In",
-            "logged_out": "Not Logged In",
+            "logged_out": "Configure WebDAV Account",
             "logout": "Log Out",
             "logout_description": "Log out of current account, but local history data will not be deleted",
             "signout_dialog_title": "Log Out",
@@ -166,6 +166,7 @@
         "password": "Password",
         "confirm_password": "Confirm Password",
         "login": "Login",
+        "verify": "Verify",
         "register": "Register",
         "switch_to_register": "Switch to Register",
         "switch_to_login": "Switch to Login",

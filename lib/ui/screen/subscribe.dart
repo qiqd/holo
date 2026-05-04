@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/api/playback_api.dart';
-import 'package:holo/api/subscribe_api.dart';
-import 'package:holo/entity/playback_history.dart';
+import 'package:holo/api/web_dav.dart';
 import 'package:holo/entity/subject_item.dart';
-import 'package:holo/entity/subscribe_history.dart';
+import 'package:holo/entity/user_playback.dart';
+import 'package:holo/entity/user_subscribe.dart';
 import 'package:holo/extension/safe_set_state.dart';
-import 'package:holo/util/local_storage.dart';
+import 'package:holo/main.dart';
+import 'package:holo/util/hive_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/media_card.dart';
@@ -24,11 +24,12 @@ class SubscribeScreen extends StatefulWidget {
 
 class _SubscribeScreenState extends State<SubscribeScreen>
     with SingleTickerProviderStateMixin, RouteAware {
-  List<PlaybackHistory> playback = [];
-  List<SubscribeHistory> subscribe = [];
-  List<SubscribeHistory> wish = [];
-  List<SubscribeHistory> watching = [];
-  List<SubscribeHistory> watched = [];
+  final setting = MyApp.userSettingNotifier.value;
+  List<UserPlayback> playback = [];
+  List<UserSubscribe> subscribe = [];
+  List<UserSubscribe> wish = [];
+  List<UserSubscribe> watching = [];
+  List<UserSubscribe> watched = [];
   bool _isEditMode = false;
   final Set<int> _checkedPlaybackIds = {};
   final Set<int> _checkedSubscribeIds = {};
@@ -37,44 +38,31 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     vsync: this,
     length: 5,
   );
-  Future<void> _fetchPlaybackHistoryFromServer() async {
-    final records = await PlayBackApi.fetchPlaybackHistory((_) {
+
+  Future<void> _fetchHistoryData() async {
+    final success = await WebDAV.fetchData();
+    if (success == null && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("WebDAV is not configured")));
+      return;
+    }
+    if (success == true) {
+      // HiveUtil.init();
+      // WebDAV.init(HiveUtil.user);
+      _loadHistory();
+    } else if (success == false && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(tr("subscribe.fetch_subs_failed"))),
       );
-    });
-    if (records.isNotEmpty) {
-      setState(() {
-        playback = records;
-        playback.sort((a, b) => b.lastPlaybackAt.compareTo(a.lastPlaybackAt));
-        LocalStorage.updatePlaybackHistory(records);
-      });
-    }
-  }
-
-  Future<void> _fetchSubscribeHistoryFromServer() async {
-    final records = await SubscribeApi.fetchSubscribeHistory((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr("subscribe.fetch_view_failed"))),
-      );
-    });
-    if (records.isNotEmpty) {
-      setState(() {
-        subscribe = records;
-        subscribe.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        wish = records.where((item) => item.viewingStatus == 1).toList();
-        watching = records.where((item) => item.viewingStatus == 3).toList();
-        watched = records.where((item) => item.viewingStatus == 2).toList();
-        LocalStorage.updateSubscribeHistory(records);
-      });
     }
   }
 
   void _loadHistory() {
-    final playbackHistory = LocalStorage.getPlaybackHistory();
-    final subscribeHistory = LocalStorage.getSubscribeHistory();
+    // final playbackHistory = HiveUtil.getUserPlaybacks();
+    final subscribeHistory = HiveUtil.getUserSubscribes();
     safeSetState(() {
-      playback = playbackHistory;
+      // playback = playbackHistory;
       subscribe = subscribeHistory;
       playback.sort((a, b) => b.lastPlaybackAt.compareTo(a.lastPlaybackAt));
       subscribe.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -85,34 +73,40 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   }
 
   SubjectItem? _getCacheBySubId(int id) {
-    return LocalStorage.getSubjectCache(id);
+    return HiveUtil.getSubjectItemById(id);
   }
 
-  void _deletePlaybackHistory() {
-    _checkedPlaybackIds.toList().forEach((id) {
-      LocalStorage.removePlaybackHistoryBySubId(id);
-      PlayBackApi.deletePlaybackRecordBySubId(id, () {}, (_) {});
-    });
+  Future<void> _deletePlaybackHistory() async {
+    var futures = _checkedPlaybackIds.toList().map((id) {
+      return HiveUtil.clearUserPlayback(id: id);
+    }).toList();
+    await Future.wait(futures);
     _loadHistory();
+    if (MyApp.userSettingNotifier.value.email.isNotEmpty) {
+      await WebDAV.syncData(false);
+    }
   }
 
-  void _changeSubscribeHistory(int viewingStatus) {
-    subscribe
-        .where((item) => _checkedSubscribeIds.contains(item.subId))
-        .forEach((s) {
-          switch (viewingStatus) {
-            case -1:
-              LocalStorage.removeSubscribeHistoryBySubId(s.subId);
-              SubscribeApi.deleteSubscribeRecordBySubId(s.subId, () {}, (_) {});
-              break;
-            default:
-              s.viewingStatus = viewingStatus;
-              LocalStorage.addSubscribeHistory(s);
-              SubscribeApi.saveSubscribeHistory(s, () {}, (_) {});
-          }
-        });
+  Future<void> _changeSubscribeHistory(int viewingStatus) async {
+    subscribe.where((item) => _checkedSubscribeIds.contains(item.id)).forEach((
+      s,
+    ) async {
+      switch (viewingStatus) {
+        // 删除订阅
+        case -1:
+          await HiveUtil.clearUserSubscribe(id: s.id);
+          break;
+        // 更新订阅状态
+        default:
+          var newSubscribe = s.copyWith(viewingStatus: viewingStatus);
+          await HiveUtil.setUserSubscribe(newSubscribe);
+      }
+    });
     _checkedSubscribeIds.clear();
     _loadHistory();
+    if (MyApp.userSettingNotifier.value.email.isNotEmpty) {
+      await WebDAV.syncData(false);
+    }
   }
 
   void initTabBarListener() {
@@ -128,17 +122,13 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   Widget _buildEmptyMsg(String msg, {bool isPlayback = false}) {
     return LoadingOrShowMsg(
       msg: msg,
-      onMsgTab: () async {
-        isPlayback
-            ? await _fetchPlaybackHistoryFromServer()
-            : await _fetchSubscribeHistoryFromServer();
-      },
+      onMsgTab: () async => await _fetchHistoryData(),
     );
   }
 
   Widget _buildTabbarView({
-    List<SubscribeHistory> s = const [],
-    List<PlaybackHistory> p = const [],
+    List<UserSubscribe> s = const [],
+    List<UserPlayback> p = const [],
     bool isLandscape = false,
   }) {
     return SizedBox.expand(
@@ -157,24 +147,24 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 itemBuilder: (context, index) {
                   final item = s[index];
                   return MediaGrid(
-                    id: "subscribe_${item.subId}",
+                    id: "subscribe_${item.id}",
                     imageUrl: item.imgUrl,
                     title: item.title,
-                    isChecked: _checkedSubscribeIds.contains(item.subId),
+                    isChecked: _checkedSubscribeIds.contains(item.id),
                     showCheckBox: _isEditMode,
                     onTap: () {
                       if (_isEditMode) {
                         setState(() {
-                          _checkedSubscribeIds.contains(item.subId)
-                              ? _checkedSubscribeIds.remove(item.subId)
-                              : _checkedSubscribeIds.add(item.subId);
+                          _checkedSubscribeIds.contains(item.id)
+                              ? _checkedSubscribeIds.remove(item.id)
+                              : _checkedSubscribeIds.add(item.id);
                         });
                       } else {
-                        var cache = _getCacheBySubId(item.subId);
+                        var cache = _getCacheBySubId(item.id);
                         context.push(
                           '/detail',
                           extra: {
-                            "id": item.subId,
+                            "id": item.id,
                             "keyword": item.title,
                             "cover": item.imgUrl,
                             "from": "subscribe",
@@ -186,8 +176,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                   );
                 },
               ),
-              onRefresh: () async {
-                await _fetchSubscribeHistoryFromServer();
+              onRefresh: () {
+                return _fetchHistoryData();
               },
             )
           // 播放记录列表
@@ -208,24 +198,24 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                         : 190,
                     lastViewAt: item.lastPlaybackAt,
                     historyEpisode: item.episodeIndex,
-                    id: "subscribe.history_${item.subId}",
+                    id: "subscribe.history_${item.id}",
                     imageUrl: item.imgUrl,
                     title: item.title,
-                    isChecked: _checkedPlaybackIds.contains(item.subId),
+                    isChecked: _checkedPlaybackIds.contains(item.id),
                     showCheckbox: _isEditMode,
                     onTap: () {
                       if (_isEditMode) {
                         setState(() {
-                          _checkedPlaybackIds.contains(item.subId)
-                              ? _checkedPlaybackIds.remove(item.subId)
-                              : _checkedPlaybackIds.add(item.subId);
+                          _checkedPlaybackIds.contains(item.id)
+                              ? _checkedPlaybackIds.remove(item.id)
+                              : _checkedPlaybackIds.add(item.id);
                         });
                       } else {
-                        var cache = _getCacheBySubId(item.subId);
+                        var cache = _getCacheBySubId(item.id);
                         context.push(
                           '/detail',
                           extra: {
-                            "id": item.subId,
+                            "id": item.id,
                             "keyword": item.title,
                             "cover": item.imgUrl,
                             "from": "subscribe.history",
@@ -238,9 +228,83 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 },
               ),
               onRefresh: () async {
-                await _fetchPlaybackHistoryFromServer();
+                await _fetchHistoryData();
               },
             ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      actionsPadding: .symmetric(horizontal: 12),
+      title: Text(tr("subscribe.title")),
+      actions: [
+        if (_checkedSubscribeIds.isNotEmpty)
+          PopupMenuButton(
+            tooltip: "Change Subscribe Status",
+            icon: Icon(Icons.menu_rounded),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 1,
+                child: Text('subscribe.tab_subs_wish'.tr()),
+              ),
+              PopupMenuItem(
+                value: 3,
+                child: Text('subscribe.tab_subs_watching'.tr()),
+              ),
+              PopupMenuItem(
+                value: 2,
+                child: Text('subscribe.tab_subs_watched'.tr()),
+              ),
+              PopupMenuItem(
+                value: -1,
+                child: Text('common.dialog.cancel'.tr()),
+              ),
+            ],
+            onSelected: (value) {
+              _changeSubscribeHistory(value);
+            },
+          ),
+
+        if (_checkedPlaybackIds.isNotEmpty)
+          IconButton(
+            tooltip: "Delete Playback History",
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              setState(() {
+                _deletePlaybackHistory();
+              });
+            },
+          ),
+        IconButton(
+          tooltip: "Toggle Edit Mode",
+          icon: Icon(_isEditMode ? Icons.done_all : Icons.edit_rounded),
+          onPressed: () {
+            setState(() {
+              _isEditMode = !_isEditMode;
+              if (!_isEditMode) {
+                _checkedPlaybackIds.clear();
+                _checkedSubscribeIds.clear();
+              }
+            });
+          },
+        ),
+        if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
+          IconButton(
+            tooltip: 'Refresh All',
+            onPressed: () async {
+              setState(() {
+                _isUpdating = true;
+              });
+              await _fetchHistoryData();
+              setState(() {
+                _isUpdating = false;
+              });
+            },
+            icon: Icon(Icons.refresh_rounded),
+          ),
+        ],
+      ],
     );
   }
 
@@ -249,86 +313,13 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     super.initState();
     initTabBarListener();
     _loadHistory();
-    _fetchPlaybackHistoryFromServer();
-    _fetchSubscribeHistoryFromServer();
+    _fetchHistoryData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actionsPadding: .symmetric(horizontal: 12),
-        title: Text(tr("subscribe.title")),
-        actions: [
-          if (_checkedSubscribeIds.isNotEmpty)
-            PopupMenuButton(
-              tooltip: "Change Subscribe Status",
-              icon: Icon(Icons.menu_rounded),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 1,
-                  child: Text('subscribe.tab_subs_wish'.tr()),
-                ),
-                PopupMenuItem(
-                  value: 3,
-                  child: Text('subscribe.tab_subs_watching'.tr()),
-                ),
-                PopupMenuItem(
-                  value: 2,
-                  child: Text('subscribe.tab_subs_watched'.tr()),
-                ),
-                PopupMenuItem(
-                  value: -1,
-                  child: Text('common.dialog.cancel'.tr()),
-                ),
-              ],
-              onSelected: (value) {
-                _changeSubscribeHistory(value);
-              },
-            ),
-
-          if (_checkedPlaybackIds.isNotEmpty)
-            IconButton(
-              tooltip: "Delete Playback History",
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                setState(() {
-                  _deletePlaybackHistory();
-                });
-              },
-            ),
-          IconButton(
-            tooltip: "Toggle Edit Mode",
-            icon: Icon(_isEditMode ? Icons.done_all : Icons.edit_rounded),
-            onPressed: () {
-              setState(() {
-                _isEditMode = !_isEditMode;
-                if (!_isEditMode) {
-                  _checkedPlaybackIds.clear();
-                  _checkedSubscribeIds.clear();
-                }
-              });
-            },
-          ),
-          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
-            IconButton(
-              tooltip: 'Refresh All',
-              onPressed: () async {
-                setState(() {
-                  _isUpdating = true;
-                });
-                await _fetchPlaybackHistoryFromServer();
-                await _fetchSubscribeHistoryFromServer();
-                setState(() {
-                  _isUpdating = false;
-                });
-              },
-              icon: Icon(Icons.refresh_rounded),
-            ),
-          ],
-        ],
-      ),
-
+      appBar: _buildAppBar() as PreferredSizeWidget,
       body: VisibilityDetector(
         key: const Key('subscribe_screen'),
         onVisibilityChanged: (visibilityInfo) {
@@ -341,7 +332,6 @@ class _SubscribeScreenState extends State<SubscribeScreen>
             TabBar(
               isScrollable: true,
               tabAlignment: .center,
-              dividerHeight: 0,
               controller: _tabController,
               tabs: [
                 Tab(text: tr("subscribe.tab_subs_all")),

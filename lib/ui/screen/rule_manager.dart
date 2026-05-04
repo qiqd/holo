@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/extension/safe_set_state.dart';
 import 'package:holo/service/api.dart';
-import 'package:holo/util/local_storage.dart';
+import 'package:holo/util/hive_util.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class RuleManager extends StatefulWidget {
@@ -19,20 +19,20 @@ class RuleManager extends StatefulWidget {
 }
 
 class _RuleManagerState extends State<RuleManager> {
-  List<Rule> _rules = LocalStorage.getRules();
+  List<Rule> _rules = HiveUtil.getRules();
   String _rulesStr = '';
   bool _isUpdating = false;
-  void _importRulesFromJson() {
+  Future<void> _importRulesFromJson() async {
     if (_rulesStr.isEmpty) {
       return;
     }
     try {
-      var rules = (json.decode(_rulesStr) as List)
-          .map((e) => Rule.fromJson(e))
-          .toList();
-      LocalStorage.saveRules(rules);
-      setState(() {
-        _rules = LocalStorage.getRules();
+      var futures = (json.decode(_rulesStr) as List).map((e) async {
+        return HiveUtil.setRule(Rule.fromJson(e));
+      }).toList();
+      await Future.wait(futures);
+      safeSetState(() {
+        _rules = HiveUtil.getRules();
       });
       Api.initSources();
       Api.delayTest();
@@ -48,7 +48,7 @@ class _RuleManagerState extends State<RuleManager> {
     safeSetState(() {
       _isUpdating = true;
     });
-    _rules = LocalStorage.getRules();
+    _rules = HiveUtil.getRules();
     Api.initSources();
     await Api.delayTest();
     safeSetState(() {
@@ -79,7 +79,7 @@ class _RuleManagerState extends State<RuleManager> {
           onVisibilityChanged: (info) {
             if (info.visibleFraction > 0) {
               setState(() {
-                _rules = LocalStorage.getRules();
+                _rules = HiveUtil.getRules();
               });
             }
           },
@@ -213,11 +213,11 @@ class _RuleManagerState extends State<RuleManager> {
                           IconButton(
                             padding: EdgeInsets.zero,
                             icon: const Icon(Icons.delete_rounded),
-                            onPressed: () {
+                            onPressed: () async {
+                              await HiveUtil.clearRule(
+                                name: _rules[index].name,
+                              );
                               setState(() {
-                                LocalStorage.removeRuleByName(
-                                  _rules[index].name,
-                                );
                                 _rules.removeAt(index);
                               });
                             },
@@ -229,7 +229,7 @@ class _RuleManagerState extends State<RuleManager> {
                             onChanged: (value) {
                               setState(() {
                                 _rules[index].isEnabled = value;
-                                LocalStorage.updateRule(_rules[index]);
+                                HiveUtil.setRule(_rules[index]);
                               });
                             },
                           ),

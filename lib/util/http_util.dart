@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 /// HTTP 工具类
@@ -59,44 +59,17 @@ class HttpUtil {
     return dio;
   }
 
-  /// 创建带 Referer 的配置好的 Dio 实例
-  /// [referer]: Referer 头
-  /// 返回配置好的 Dio 实例
-  static Dio createDioWithReferer(String referer) {
+  static Dio createDioWithAuthorization({
+    required String serverUrl,
+    required String email,
+    required String secret,
+  }) {
     final dio = createDio();
-    dio.options.headers['Referer'] = referer;
-    return dio;
-  }
-
-  /// 创建带拦截器的配置好的 Dio 实例,根据 baseUrl 配置服务器 URL
-  /// 并在请求头中添加 User-Agent, Authorization, Content-Type 请求头
-  /// 返回配置好的 Dio 实例
-  static Dio createDioWithInterceptor(String baseUrl) {
-    final dio = createDio();
+    dio.options.baseUrl = serverUrl;
     dio.options.contentType = "application/json";
-    dio.interceptors.add(RequestInterceptor(baseUrl));
+    dio.options.headers["User-Agent"] = "Holo/client";
+    dio.options.headers["Authorization"] =
+        "Basic ${base64.encode(utf8.encode("$email:$secret"))}";
     return dio;
-  }
-}
-
-/// 请求拦截器类
-/// 用于在请求头中添加服务器 URL 和认证令牌
-class RequestInterceptor extends Interceptor {
-  final String baseUrl;
-  RequestInterceptor(this.baseUrl);
-
-  /// 拦截请求并添加必要的头信息
-  /// [options]: 请求选项
-  /// [handler]: 拦截器处理器
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    var token = LocalStorage.getAccessToken();
-    options.baseUrl = baseUrl;
-    options.contentType = "application/json";
-    options.headers["User-Agent"] = "Holo/client";
-    if (token != null) {
-      options.headers["Authorization"] = LocalStorage.getAccessToken();
-    }
-    handler.next(options);
   }
 }

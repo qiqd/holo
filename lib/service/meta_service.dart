@@ -1,4 +1,3 @@
-import 'package:holo/entity/character.dart';
 import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/episode_item.dart';
 import 'package:holo/entity/person.dart';
@@ -72,7 +71,7 @@ abstract class MetaService {
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回角色列表
-  Future<List<Character>> fetchCharacter(
+  Future<List<Person>> fetchCharacter(
     int subjectId,
     void Function(dynamic) exception,
   );

@@ -1,18 +1,18 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'logvar_episode.g.dart';
+part 'log_var_episode.g.dart';
 
 @JsonSerializable()
-class LogvarEpisode {
+class LogVarEpisode {
   int? animeId;
   String? animeTitle;
   String? type;
   List<EpisodeItem>? episodes;
-  LogvarEpisode({this.animeId, this.animeTitle, this.type, this.episodes});
-  factory LogvarEpisode.fromJson(Map<String, dynamic> json) =>
-      _$LogvarEpisodeFromJson(json);
+  LogVarEpisode({this.animeId, this.animeTitle, this.type, this.episodes});
+  factory LogVarEpisode.fromJson(Map<String, dynamic> json) =>
+      _$LogVarEpisodeFromJson(json);
 
-  Map<String, dynamic> toJson() => _$LogvarEpisodeToJson(this);
+  Map<String, dynamic> toJson() => _$LogVarEpisodeToJson(this);
 }
 
 @JsonSerializable()

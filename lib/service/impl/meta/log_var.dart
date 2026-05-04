@@ -1,11 +1,11 @@
 import 'dart:developer';
 import 'package:holo/entity/danmu.dart';
-import 'package:holo/entity/logvar_episode.dart';
+import 'package:holo/entity/log_var_episode.dart';
 import 'package:holo/util/http_util.dart';
 
-class Logvar {
+class LogVar {
   static const String baseUrl = String.fromEnvironment("DAMMAKU_SERVER_URL");
-  Future<List<LogvarEpisode>> fetchEpisodeFromLogvar(
+  Future<List<LogVarEpisode>> fetchEpisodeFromLogVar(
     String keyword,
     Function(String) exception,
   ) async {
@@ -18,7 +18,7 @@ class Logvar {
         var data = response.data as Map<String, dynamic>;
         var animes = data['animes'] as List;
         return animes.map((item) {
-          return LogvarEpisode.fromJson(item);
+          return LogVarEpisode.fromJson(item);
         }).toList();
       }
       return [];
@@ -29,7 +29,7 @@ class Logvar {
     }
   }
 
-  Future<Danmu?> fetchDammakuSync(
+  Future<Danmu?> fetchDanmakuSync(
     int episodeId,
     void Function(String) exception, {
     int chConvert = 0,

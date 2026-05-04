@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
-import 'package:holo/entity/character.dart';
 import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/episode_item.dart';
 import 'package:holo/entity/image.dart';
@@ -151,7 +150,7 @@ class Bangumi implements MetaService {
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回角色列表
-  Future<List<Character>> fetchCharacter(
+  Future<List<Person>> fetchCharacter(
     int subjectId,
     void Function(Exception) exception,
   ) async {
@@ -162,7 +161,7 @@ class Bangumi implements MetaService {
       );
       if (response.data != null) {
         var data = response.data as List<dynamic>;
-        return data.map((e) => Character.fromJson(e)).toList();
+        return data.map((e) => Person.fromJson(e)).toList();
       }
       return [];
     } catch (e) {

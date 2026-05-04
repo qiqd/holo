@@ -80,7 +80,7 @@
         },
         "account": {
             "logged_in": "已登录",
-            "logged_out": "未登录",
+            "logged_out": "配置WebDAV账号",
             "logout": "退出账号",
             "logout_description": "退出当前账号,但是本地历史记录数据不会删除",
             "signout_dialog_title": "退出账号",
@@ -167,6 +167,7 @@
         "confirm_password": "确认密码",
         "login": "登录",
         "register": "注册",
+        "verify": "验证",
         "switch_to_register": "切换至注册",
         "switch_to_login": "切换至登录",
         "login_success": "登录成功",

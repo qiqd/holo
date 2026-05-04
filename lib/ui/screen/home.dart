@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject_item.dart';
+import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/cache_image.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
+import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/version_checker.dart';
 import 'package:holo/extension/safe_set_state.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -52,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     safeSetState(() {
       _hotNotifier.value = hot;
     });
-    LocalStorage.setHomeHotCache(_hotNotifier.value);
+    await HiveUtil.setHotSubjectItem(_hotNotifier.value);
   }
 
   Future<void> _fetchRank({int page = 1, bool loadMore = false}) async {
@@ -81,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _rank = rank;
       }
     });
-    LocalStorage.setHomeRankCache(_rank);
+    await HiveUtil.setHiScoreSubjectItem(_rank);
     safeSetState(() => _isLoading = false);
   }
 
@@ -95,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _homeScreenInit() {
-    final autoCheckUpdate = LocalStorage.getAutoCheckUpdate();
+    final autoCheckUpdate = MyApp.userSettingNotifier.value.autoUpdate;
     if (autoCheckUpdate) {
       VersionChecker.checkVersion(context);
     }
@@ -109,8 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
 
-    _hotNotifier.value = LocalStorage.getHomeHotCache();
-    _rank = LocalStorage.getHomeRankCache();
+    _hotNotifier.value = HiveUtil.getHotSubjectItems();
+    _rank = HiveUtil.getHiScoreSubjectItems();
 
     if (DateTime.now().hour % 3 == 0 || _hotNotifier.value.isEmpty) {
       _fetchHot();
@@ -281,6 +283,61 @@ class _HomeContent extends StatelessWidget {
 
   final _HomeScreenState state;
   final bool isLandscape;
+  Widget _buildCarouselView(void Function(SubjectItem item) onTap) {
+    return CarouselSlider(
+      options: CarouselOptions(
+        autoPlay: true,
+        viewportFraction: 0.8,
+        autoPlayInterval: const Duration(seconds: 2),
+      ),
+      items: state._hotNotifier.value.map((e) {
+        return InkWell(
+          onTap: () => onTap(e),
+          child: Padding(
+            padding: .symmetric(horizontal: 6),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Stack(
+                children: [
+                  Hero(
+                    tag: 'home-hot_${e.id}',
+                    child: CacheImage(
+                      imageUrl: e.images.medium ?? '',
+                      fit: BoxFit.cover,
+                      memCacheWidth: 700,
+                      memCacheHeight: 900,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.5),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                      child: Text(
+                        e.title,
+                        maxLines: 2,
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -309,166 +366,37 @@ class _HomeContent extends StatelessWidget {
                   ),
                   slivers: [
                     SliverToBoxAdapter(
-                      child: MouseRegion(
-                        onExit: (_) {
-                          state._carouselTimer?.cancel();
-                          state._carouselTimer = Timer.periodic(
-                            const Duration(seconds: 3),
-                            (timer) {
-                              state.index = state.index.remainder(
-                                state._hotNotifier.value.length,
-                              );
-                              state._carouselController.animateToItem(
-                                state.index++,
-                              );
-                            },
-                          );
-                        },
-                        onHover: (_) => state._carouselTimer?.cancel(),
-                        child: Row(
-                          children: [
-                            Text(
-                              tr('home.recommend_hot'),
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(width: 6),
-                            if (isLandscape)
-                              IconButton(
-                                onPressed: () {
-                                  if (state.index == 0) return;
-                                  state._carouselController.animateToItem(
-                                    --state.index,
-                                  );
-                                },
-                                icon: const Icon(Icons.navigate_before_rounded),
-                              ),
-                            if (isLandscape)
-                              IconButton(
-                                onPressed: () {
-                                  if (state.index >=
-                                      state._hotNotifier.value.length - 1) {
-                                    return;
-                                  }
-                                  state._carouselController.animateToItem(
-                                    ++state.index,
-                                  );
-                                },
-                                icon: const Icon(Icons.navigate_next_rounded),
-                              ),
-                          ],
-                        ),
+                      child: Text(
+                        tr('home.recommend_hot'),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
                     SliverToBoxAdapter(
-                      child: MouseRegion(
-                        onExit: (_) {
-                          state._carouselTimer?.cancel();
-                          state._carouselTimer = Timer.periodic(
-                            const Duration(seconds: 3),
-                            (timer) {
-                              state.index = state.index.remainder(
-                                state._hotNotifier.value.length,
-                              );
-                              state._carouselController.animateToItem(
-                                state.index++,
-                              );
-                            },
-                          );
-                        },
-                        onHover: (_) => state._carouselTimer?.cancel(),
-                        child: ValueListenableBuilder<List<SubjectItem>>(
-                          valueListenable: state._hotNotifier,
-                          builder: (context, hot, child) {
-                            return hot.isEmpty
-                                ? state._buildHotSkeleton(isLandscape)
-                                : SizedBox(
+                      child: ValueListenableBuilder<List<SubjectItem>>(
+                        valueListenable: state._hotNotifier,
+                        builder: (context, hot, child) {
+                          return hot.isEmpty
+                              ? state._buildHotSkeleton(isLandscape)
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: SizedBox(
                                     height: isLandscape ? 400 : 200,
                                     width: double.infinity,
-                                    child: GestureDetector(
-                                      onPanDown: (_) {
-                                        state._carouselTimer?.cancel();
-                                      },
-                                      onPanCancel: () {
-                                        state._refreshAutoSlideTimer();
-                                      },
-                                      child: CarouselView.weighted(
-                                        controller: state._carouselController,
-                                        itemSnapping: true,
-                                        onTap: (idx) {
-                                          context.push(
-                                            '/detail',
-                                            extra: {
-                                              'id': hot[idx].id,
-                                              'subject': hot[idx],
-                                              'keyword': hot[idx].title,
-                                              'cover':
-                                                  hot[idx].images.large ?? '',
-                                              'from': "home-hot",
-                                            },
-                                          );
+                                    child: _buildCarouselView((item) {
+                                      context.push(
+                                        '/detail',
+                                        extra: {
+                                          'id': item.id,
+                                          'subject': item,
+                                          'keyword': item.title,
+                                          'cover': item.images.large ?? '',
+                                          'from': "home-hot",
                                         },
-                                        flexWeights: isLandscape
-                                            ? [1, 1, 1]
-                                            : [5, 1],
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        children: hot.map((e) {
-                                          return Stack(
-                                            children: [
-                                              Hero(
-                                                tag: 'home-hot_${e.id}',
-                                                child: CacheImage(
-                                                  imageUrl:
-                                                      e.images.medium ?? '',
-                                                  fit: BoxFit.cover,
-                                                  memCacheWidth: 700,
-                                                  memCacheHeight: 900,
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                child: Container(
-                                                  width: double.infinity,
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      begin: Alignment
-                                                          .bottomCenter,
-                                                      end: Alignment.topCenter,
-                                                      colors: [
-                                                        Colors.black
-                                                            .withOpacity(0.5),
-                                                        Colors.transparent,
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  child: Text(
-                                                    e.title,
-                                                    maxLines: 2,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleMedium
-                                                        ?.copyWith(
-                                                          color: Colors.white,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  );
-                          },
-                        ),
+                                      );
+                                    }),
+                                  ),
+                                );
+                        },
                       ),
                     ),
                     SliverToBoxAdapter(

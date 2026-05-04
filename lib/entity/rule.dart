@@ -1,169 +1,95 @@
+import 'package:hive_ce/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'rule.g.dart';
-
-/// 默认用户代理
 
 const defaultHeaders = {
   "User-Agent":
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
 };
 
-/// 规则类
-/// 包含动画源网站的爬取规则配置
+@HiveType(typeId: 5)
 @JsonSerializable(explicitToJson: true)
 class Rule {
-  /// 规则名称(通常为网站名称)
+  @HiveField(0)
   String name;
-
-  /// 规则baseUrl(通常是网站的域名)
+  @HiveField(1)
   String baseUrl;
-
-  /// 规则logoUrl(通常是网站的logo)
+  @HiveField(2)
   String logoUrl;
-
-  /// 是否使用webview
+  @HiveField(3)
   bool useWebView;
-
-  /// 规则版本号
+  @HiveField(4)
   String version;
-
-  /// 搜索Url(通常是网站的搜索页面)
+  @HiveField(5)
   String searchUrl;
-
-  /// 搜索请求方法(默认get)
+  @HiveField(6)
   RequestMethod searchRequestMethod;
-
-  /// 搜索请求体(通常是网站的搜索页面的请求体)
+  @HiveField(7)
   Map<String, String> searchRequestBody;
-
-  /// 搜索请求头部(通常是网站的搜索页面的请求头部)
+  @HiveField(8)
   Map<String, String> searchRequestHeaders;
-
-  /// 是否是完整的搜索Url(如果是,则不与 baseUrl 拼接,否则拼接)
+  @HiveField(9)
   bool fullSearchUrl;
-
-  /// 超时时间(默认5秒)
+  @HiveField(10)
   int timeout;
-
-  /// 搜索选择器(通常是搜索结果的列表)
+  @HiveField(11)
   String searchSelector;
-
-  /// 搜索图片选择器(通常是搜索结果的列表中的每一项的图片,一般是一个img标签)
+  @HiveField(12)
   String itemImgSelector;
-
-  /// 是否是图片选择器中的src属性(如果是,则图片选择器中的src属性是图片的url,否则是data-original属性)
+  @HiveField(13)
   bool itemImgFromSrc;
-
-  /// 搜索标题选择器(通常是搜索结果的列表中的每一项的标题,一般是一个a标签)
+  @HiveField(14)
   String itemTitleSelector;
-
-  /// MediaId选择器(通常是搜索结果的列表中的每一项的Id,一般是一个a标签)
+  @HiveField(15)
   String itemIdSelector;
-
-  /// 搜索类型选择器(通常是搜索结果的列表中的每一项的内容的类型)
+  @HiveField(16)
   String? itemGenreSelector;
-
-  /// 详情Url(通常是网站的详情页面)
+  @HiveField(17)
   String detailUrl;
-
-  /// 详情请求方法(默认get)
+  @HiveField(18)
   RequestMethod detailRequestMethod;
-
-  /// 详情请求体(通常是网站的详情页面的请求体)
+  @HiveField(19)
   Map<String, String> detailRequestBody;
-
-  /// 详情请求头部(通常是网站的详情页面的请求头部)
+  @HiveField(20)
   Map<String, String> detailRequestHeaders;
-
-  /// 是否是完整的详情Url(如果是,则不与 baseUrl 拼接,否则拼接)
+  @HiveField(21)
   bool fullDetailUrl;
-
-  /// 路线选择器(该视频的播放路线)
+  @HiveField(22)
   String lineSelector;
-
-  /// 剧集选择器(每一条线路下对应的剧集,一般是一个a标签)
+  @HiveField(23)
   String episodeSelector;
-
-  /// 剧集是否反转
+  @HiveField(24)
   bool episodeReverse;
-
-  /// 播放页面Url(通常是网站的播放页面的视频播放地址)
+  @HiveField(25)
   String playerUrl;
-
-  /// 播放页面请求方法(默认get)
+  @HiveField(26)
   RequestMethod playerRequestMethod;
-
-  /// 播放页面请求体(通常是网站的播放页面的请求体)
+  @HiveField(27)
   Map<String, String> playerRequestBody;
-
-  /// 播放页面请求头部(通常是网站的播放页面的请求头部)
+  @HiveField(28)
   Map<String, String> playerRequestHeaders;
-
-  /// 是否是完整的播放Url(如果是 ,则不与 baseUrl 拼接,否则拼接)
+  @HiveField(29)
   bool fullPlayerUrl;
-
-  /// 播放视频选择器(通常是播放页面的视频标签,比如video,iframe等)
+  @HiveField(30)
   String playerVideoSelector;
-
-  /// 视频元素属性(通常是视频标签的src属性,比如video标签的src属性)
+  @HiveField(31)
   String videoElementAttribute;
-
-  /// 嵌入视频选择器,英文逗号分隔(通常是播放页面的嵌入视频标签,比如iframe等)
+  @HiveField(32)
   String embedVideoSelector;
-
-  /// 是否等待视频元素加载完成(如果是,则等待视频元素加载完成,否则立即返回)
+  @HiveField(33)
   bool waitForMediaElement;
-
-  /// 视频url截取,通常是从params参数中截取视频url,比如params=videoUrl=xxxx,则截取xxxx,如果是null,则直接返回匹配的url
+  @HiveField(34)
   String videoUrlSubsChar;
-
-  /// 规则更新时间
+  @HiveField(35)
   DateTime updateAt;
-
-  /// 规则是否启用
+  @HiveField(36)
   bool isEnabled;
-
-  /// 是否是本地规则
+  @HiveField(37)
   bool isLocal;
+  @HiveField(38)
+  String email;
 
-  /// 构造函数
-  /// [name] 规则名称，默认为空字符串
-  /// [logoUrl] 规则logoUrl，默认为空字符串
-  /// [useWebView] 是否使用webview，默认为false
-  /// [searchUrl] 搜索Url，默认为空字符串
-  /// [detailUrl] 详情Url，默认为空字符串
-  /// [playerUrl] 播放页面Url，默认为空字符串
-  /// [searchSelector] 搜索选择器，默认为空字符串
-  /// [lineSelector] 路线选择器，默认为空字符串
-  /// [episodeSelector] 剧集选择器，默认为空字符串
-  /// [playerVideoSelector] 播放视频选择器，默认为空字符串
-  /// [itemImgSelector] 搜索图片选择器，默认为空字符串
-  /// [itemTitleSelector] 搜索标题选择器，默认为空字符串
-  /// [itemIdSelector] MediaId选择器，默认为空字符串
-  /// [baseUrl] 规则baseUrl，默认为空字符串
-  /// [fullSearchUrl] 是否是完整的搜索Url，默认为false
-  /// [fullPlayerUrl] 是否是完整的播放Url，默认为false
-  /// [fullDetailUrl] 是否是完整的详情Url，默认为false
-  /// [itemImgFromSrc] 是否是图片选择器中的src属性，默认为true
-  /// [waitForMediaElement] 是否等待视频元素加载完成，默认为true
-  /// [searchRequestHeaders] 搜索请求头部，默认为带有默认用户代理的Map
-  /// [detailRequestHeaders] 详情请求头部，默认为带有默认用户代理的Map
-  /// [playerRequestHeaders] 播放页面请求头部，默认为带有默认用户代理的Map
-  /// [searchRequestBody] 搜索请求体，默认为空Map
-  /// [detailRequestBody] 详情请求体，默认为空Map
-  /// [playerRequestBody] 播放页面请求体，默认为空Map
-  /// [videoElementAttribute] 视频元素属性，默认为null
-  /// [version] 规则版本号，默认为'1.0'
-  /// [isEnabled] 规则是否启用，默认为true
-  /// [timeout] 超时时间，默认为5
-  /// [isLocal] 是否是本地规则，默认为true
-  /// [searchRequestMethod] 搜索请求方法，默认为RequestMethod.get
-  /// [detailRequestMethod] 详情请求方法，默认为RequestMethod.get
-  /// [playerRequestMethod] 播放页面请求方法，默认为RequestMethod.get
-  /// [embedVideoSelector] 嵌入视频选择器，默认为null
-  /// [itemGenreSelector] 搜索类型选择器，默认为null
-  /// [videoUrlSubsChar] 视频url截取，默认为null
   Rule({
     this.name = '',
     this.logoUrl = '',
@@ -202,22 +128,19 @@ class Rule {
     this.embedVideoSelector = '',
     this.itemGenreSelector = '',
     this.videoUrlSubsChar = '',
+    this.email = '',
   }) : updateAt = DateTime.now();
 
-  /// 从JSON格式创建Rule实例
   factory Rule.fromJson(Map<String, dynamic> json) => _$RuleFromJson(json);
-
-  /// 转换为JSON格式
   Map<String, dynamic> toJson() => _$RuleToJson(this);
 }
 
-/// 请求方法枚举
+@HiveType(typeId: 6)
 enum RequestMethod {
-  /// GET请求
+  @HiveField(0)
   @JsonValue('get')
   get,
-
-  /// POST请求
+  @HiveField(1)
   @JsonValue('post')
   post,
 }

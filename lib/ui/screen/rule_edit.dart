@@ -4,8 +4,8 @@ import 'package:holo/entity/rule.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/rule_test.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:holo/util/hive_util.dart';
 
 class RuleEditScreen extends StatefulWidget {
   final Rule? rule;
@@ -26,9 +26,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
       return;
     }
     if (widget.rule != null) {
-      LocalStorage.updateRule(_rule);
-    } else {
-      LocalStorage.saveRules([_rule]);
+      HiveUtil.setRule(_rule);
     }
     context.pop();
   }

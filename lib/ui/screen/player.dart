@@ -6,24 +6,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/api/playback_api.dart';
+import 'package:holo/api/web_dav.dart';
 import 'package:holo/entity/app_setting.dart';
-import 'package:holo/entity/character.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode_item.dart';
-import 'package:holo/entity/logvar_episode.dart';
+import 'package:holo/entity/log_var_episode.dart';
 import 'package:holo/entity/media.dart' as holo_media;
 import 'package:holo/entity/person.dart';
-import 'package:holo/entity/playback_history.dart';
 import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/user_playback.dart';
+import 'package:holo/entity/user_setting.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/cap_video_player_kit.dart';
 import 'package:holo/ui/component/circle_avatar_with_text.dart';
 import 'package:holo/ui/component/media_card.dart';
+import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:holo/extension/safe_set_state.dart';
@@ -40,7 +40,7 @@ class PlayerScreen extends StatefulWidget {
   final String nameCn;
   final bool isLove;
   final List<Person> person;
-  final List<Character> character;
+  final List<Person> character;
   final List<SubjectRelation> relation;
   const PlayerScreen({
     super.key,
@@ -66,35 +66,32 @@ class _PlayerScreenState extends State<PlayerScreen>
   final GlobalKey<ScaffoldState> _globalScaffoldKey =
       GlobalKey<ScaffoldState>();
   final Logger _logger = Logger();
-  late SubjectItem subject = widget.subject;
+  late final SubjectItem _subject = widget.subject;
   bool _isFullScreen = false;
-  String msg = "";
-  int episodeIndex = 0;
-  int lineIndex = 0;
+  String _msg = "";
+  int _episodeIndex = 0;
+  int _lineIndex = 0;
   List<Episode> _episode = [];
   holo_media.Detail? _detail;
-  bool isLoading = false;
-  int historyPosition = 0;
-  String? playUrl;
+  bool _isLoading = false;
+  int _historyPosition = 0;
+  String? _playUrl;
   bool _isActive = true;
-  List<LogvarEpisode>? _danmakuList;
-  LogvarEpisode? _bestDanmakuSourceMatch;
+  List<LogVarEpisode>? _danmakuList;
+  LogVarEpisode? _bestDanmakuSourceMatch;
   Danmu? _dammaku;
   bool _isDanmakuLoading = false;
   bool _isTablet = false;
-  String _danmakuKeyword = '';
-  DanmakuSetting _danmakuSetting = const DanmakuSetting();
   bool _isEpisodeDrawerOpen = false;
   bool _isSettingDrawerOpen = false;
   bool _isInfoDrawerOpen = false;
   bool _enableAutoFocus = true;
   int _danmakuOffset = 0;
-  late final String nameCn = widget.nameCn;
-  late final String mediaId = widget.mediaId;
-  late final SourceService source = widget.source;
+  late final String _nameCn = widget.nameCn;
+  late final String _mediaId = widget.mediaId;
+  late final SourceService _source = widget.source;
   final _playerNotifier = ValueNotifier<VideoPlayerController?>(null);
-  Duration _position = .zero;
-  Timer? _playbackHistorySyncTimer;
+  Duration _position = Duration.zero;
   late final TabController _tabController = TabController(
     vsync: this,
     length: 2,
@@ -107,14 +104,17 @@ class _PlayerScreenState extends State<PlayerScreen>
     statusBarBrightness: Brightness.light,
     statusBarIconBrightness: Brightness.light,
   );
+  UserSetting _setting = HiveUtil.getUserSetting();
+  UserPlayback? _userPlayback;
+
   Future<void> _fetchMediaEpisode() async {
-    isLoading = true;
+    _isLoading = true;
     try {
-      final res = await source.fetchDetail(
-        mediaId,
+      final res = await _source.fetchDetail(
+        _mediaId,
         (e) => setState(() {
           _logger.e("fetchDetail1 error: $e");
-          msg = e.toString();
+          _msg = e.toString();
         }),
       );
 
@@ -126,10 +126,10 @@ class _PlayerScreenState extends State<PlayerScreen>
     } catch (e) {
       _logger.e("fetchDetail2 error: $e");
       setState(() {
-        msg = e.toString();
+        _msg = e.toString();
       });
     } finally {
-      isLoading = false;
+      _isLoading = false;
     }
   }
 
@@ -139,20 +139,22 @@ class _PlayerScreenState extends State<PlayerScreen>
     void Function(String e)? onComplete,
   }) async {
     safeSetState(() {
-      msg = "";
-      isLoading = true;
+      _msg = "";
+      _isLoading = true;
     });
     try {
       if (_detail != null) {
-        lineIndex = lineIndex.clamp(0, _detail!.lines!.length - 1);
-        episodeIndex = episodeIndex.clamp(
+        _lineIndex = _lineIndex.clamp(0, _detail!.lines!.length - 1);
+        _episodeIndex = _episodeIndex.clamp(
           0,
-          _detail!.lines![lineIndex].episodes!.length - 1,
+          _detail!.lines![_lineIndex].episodes!.length - 1,
         );
         if (loadDanmaku) {
           _loadDanmaku(
             isFirstLoad: true,
-            keyword: _danmakuKeyword.isNotEmpty ? _danmakuKeyword : nameCn,
+            keyword: _setting.filterWords.isNotEmpty
+                ? _setting.filterWords
+                : _nameCn,
             onComplete: (e) {
               ScaffoldMessenger.of(
                 context,
@@ -163,24 +165,24 @@ class _PlayerScreenState extends State<PlayerScreen>
         _playerNotifier.value?.pause();
         _playerNotifier.value?.dispose();
         _playerNotifier.value = null;
-        final newUrl = await source.fetchPlaybackUrl(
-          _detail!.lines![lineIndex].episodes![episodeIndex],
+        final newUrl = await _source.fetchPlaybackUrl(
+          _detail!.lines![_lineIndex].episodes![_episodeIndex],
           (e) => safeSetState(() {
             _logger.e("fetchView error: $e");
-            msg = "player.playback_error".tr();
-            isLoading = false;
-            onComplete?.call(msg);
+            _msg = "player.playback_error".tr();
+            _isLoading = false;
+            onComplete?.call(_msg);
           }),
         );
         if (newUrl == null || newUrl.isEmpty) {
           safeSetState(() {
-            msg = "player.playback_error".tr();
-            isLoading = false;
-            onComplete?.call(msg);
+            _msg = "player.playback_error".tr();
+            _isLoading = false;
+            onComplete?.call(_msg);
           });
           return;
         }
-        playUrl = newUrl;
+        _playUrl = newUrl;
         final newController = VideoPlayerController.networkUrl(
           Uri.parse(newUrl),
         );
@@ -188,7 +190,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
         _playerNotifier.value = newController;
         safeSetState(() {
-          msg = '';
+          _msg = '';
         });
         _playerNotifier.value?.seekTo(Duration(seconds: position));
         _isActive
@@ -198,28 +200,28 @@ class _PlayerScreenState extends State<PlayerScreen>
     } catch (e) {
       _logger.e("fetchView error: $e");
       safeSetState(() {
-        msg = "player.playback_error".tr();
-        onComplete?.call(msg);
+        _msg = "player.playback_error".tr();
+        onComplete?.call(_msg);
       });
     } finally {
       safeSetState(() {
-        isLoading = false;
+        _isLoading = false;
       });
     }
   }
 
   void _onLineSelected(int index) {
-    if (index == lineIndex) {
+    if (index == _lineIndex) {
       return;
     }
     setState(() {
-      lineIndex = index;
+      _lineIndex = index;
     });
     _fetchViewInfo(position: _position.inSeconds, loadDanmaku: false);
   }
 
   void _onEpisodeSelected(int index) {
-    if (index >= _detail!.lines![lineIndex].episodes!.length) {
+    if (index >= _detail!.lines![_lineIndex].episodes!.length) {
       setState(() {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("player.episode_not_exist".tr())),
@@ -227,32 +229,33 @@ class _PlayerScreenState extends State<PlayerScreen>
       });
       return;
     }
-    if (index == episodeIndex) {
+    if (index == _episodeIndex) {
       return;
     }
     setState(() {
-      episodeIndex = index;
+      _episodeIndex = index;
     });
     _fetchViewInfo();
   }
 
-  void _loadHistory() async {
-    final history = LocalStorage.getPlaybackHistoryById(widget.subject.id);
-    if (history != null && mounted) {
-      setState(() {
-        episodeIndex = history.episodeIndex;
-        lineIndex = history.lineIndex;
-        historyPosition = history.position;
+  Future<void> _loadPlaybackHistory() async {
+    final history = HiveUtil.getUserPlaybacks();
+    if (history.isNotEmpty) {
+      safeSetState(() {
+        _episodeIndex = history.first.episodeIndex;
+        _lineIndex = history.first.lineIndex;
+        _historyPosition = history.first.position;
+        _userPlayback = history.first;
       });
     }
   }
 
-  void _fetchEpisode() async {
+  Future<void> _fetchEpisode() async {
     final res = await Api.bangumi.fetchEpisode(
       widget.subject.id,
       (e) => setState(() {
         _logger.e("fetchEpisode error: $e");
-        msg = e.toString();
+        _msg = e.toString();
       }),
     );
     if (mounted) {
@@ -262,8 +265,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  void _storeLocalHistory({bool syncNow = false}) async {
-    if (playUrl == null) {
+  Future<void> _updatePlaybackHistoryAndUserSetting() async {
+    if (_playUrl == null) {
       return;
     }
     final p =
@@ -271,24 +274,32 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (p <= 0) {
       return;
     }
-    PlaybackHistory history = PlaybackHistory(
-      subId: widget.subject.id,
-      title: nameCn,
-      episodeIndex: episodeIndex,
-      lineIndex: lineIndex,
-      lastPlaybackAt: DateTime.now(),
-      createdAt: DateTime.now(),
-      // position: _controller?.value.position.inSeconds ?? 0,
-      position: p,
-      imgUrl: widget.subject.images.large ?? "",
-    );
-    _syncPlaybackHistory(history, syncNow: syncNow);
-    var data = widget.subject;
-    LocalStorage.setSubjectCache(data);
-    LocalStorage.addPlaybackHistory(history);
+
+    final newPlayback = _userPlayback == null
+        ? UserPlayback(
+            id: widget.subject.id,
+            email: _setting.email,
+            title: _nameCn,
+            isSync: true,
+            episodeIndex: _episodeIndex,
+            lineIndex: _lineIndex,
+            lastPlaybackAt: DateTime.now(),
+            createdAt: DateTime.now(),
+            position: p,
+            imgUrl: widget.subject.images.large ?? "",
+          )
+        : _userPlayback!.copyWith(
+            position: p,
+            episodeIndex: _episodeIndex,
+            lineIndex: _lineIndex,
+          );
+
+    await HiveUtil.setUserPlayback(newPlayback);
+    await HiveUtil.setUserSetting(_setting);
+    await WebDAV.syncData(_setting.email.isEmpty);
   }
 
-  void _toggleFullScreen(bool isFullScreen) async {
+  Future<void> _toggleFullScreen(bool isFullScreen) async {
     if (isFullScreen) {
       await SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
@@ -300,28 +311,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       await SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
       ]);
-
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    }
-  }
-
-  void _syncPlaybackHistory(PlaybackHistory history, {bool syncNow = false}) {
-    if (syncNow) {
-      PlayBackApi.savePlaybackHistory(
-        history,
-        () {
-          history.isSync = true;
-        },
-        (e) {
-          _logger.e("savePlaybackHistory error: $e");
-        },
-      );
-    } else {
-      _playbackHistorySyncTimer?.cancel();
-      _playbackHistorySyncTimer = Timer.periodic(
-        const Duration(seconds: 3),
-        (timer) => _syncPlaybackHistory(history),
-      );
     }
   }
 
@@ -339,8 +329,8 @@ class _PlayerScreenState extends State<PlayerScreen>
       _isDanmakuLoading = true;
     });
     if (isFirstLoad) {
-      var data = await Api.logvar.fetchEpisodeFromLogvar(
-        keyword ?? subject.title,
+      var data = await Api.logvar.fetchEpisodeFromLogVar(
+        keyword ?? _subject.title,
         (e) {
           hasError = true;
           if (mounted) {
@@ -378,7 +368,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (hasError || _bestDanmakuSourceMatch == null) {
       return;
     }
-    var remainder = episodeIndex.remainder(_episode.length);
+    var remainder = _episodeIndex.remainder(_episode.length);
     if (remainder >= (_bestDanmakuSourceMatch?.episodes?.length ?? 0)) {
       safeSetState(() {
         _isDanmakuLoading = false;
@@ -388,7 +378,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       });
       return;
     }
-    final danmu = await Api.logvar.fetchDammakuSync(
+    final danmu = await Api.logvar.fetchDanmakuSync(
       _bestDanmakuSourceMatch!.episodes![remainder].episodeId!,
       (e) {
         hasError = true;
@@ -407,16 +397,16 @@ class _PlayerScreenState extends State<PlayerScreen>
     });
   }
 
-  void _onDanmakuSourceChange(LogvarEpisode e) {
+  Future<void> _onDanmakuSourceChange(LogVarEpisode e) async {
     if (e.animeId == _bestDanmakuSourceMatch?.animeId) {
       return;
     }
     setState(() {
       _bestDanmakuSourceMatch = e;
     });
-    _loadDanmaku(
+    return _loadDanmaku(
       isFirstLoad: false,
-      keyword: nameCn,
+      keyword: _nameCn,
       onComplete: (e) {
         ScaffoldMessenger.of(
           context,
@@ -425,20 +415,12 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  void _loadDanmakuSetting() {
-    setState(() {
-      _danmakuSetting = LocalStorage.getAppSetting().danmakuSetting.copyWith(
-        danmakuOffset: 0,
-      );
-    });
-  }
-
-  void _showDanmakuBottomSheet() {
+  Future<void> _showDanmakuBottomSheet() {
     setState(() {
       _enableAutoFocus = false;
     });
     //弹幕选择sheet
-    showModalBottomSheet(
+    return showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
       builder: (context) {
@@ -452,8 +434,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                   ).copyWith(top: 10),
                   child: Center(
                     child: TextFormField(
-                      textInputAction: .search,
-                      initialValue: _danmakuKeyword,
+                      textInputAction: TextInputAction.search,
+                      initialValue: _setting.filterWords,
                       decoration: InputDecoration(
                         hint: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -465,7 +447,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                       ),
                       onChanged: (value) {
                         setState(() {
-                          _danmakuKeyword = value;
+                          _setting = _setting.copyWith(filterWords: value);
                         });
                       },
                       onFieldSubmitted: (value) async {
@@ -522,7 +504,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     });
   }
 
-  void _showPersonDetail({
+  Future<void> _showPersonDetail({
     required String image,
     required String name,
     required String role,
@@ -531,7 +513,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     String cv = '',
     String summary = '',
   }) {
-    showModalBottomSheet(
+    return showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
       builder: (context) {
@@ -636,15 +618,15 @@ class _PlayerScreenState extends State<PlayerScreen>
         child: Center(
           child: CapVideoPlayerKit(
             title: widget.nameCn,
-            subTitle: _episode.isNotEmpty ? _episode[episodeIndex].title : '',
-            isLoading: isLoading,
-            centerMsg: msg,
+            subTitle: _episode.isNotEmpty ? _episode[_episodeIndex].title : '',
+            isLoading: _isLoading,
+            centerMsg: _msg,
             playerNotifier: _playerNotifier,
             isFullScreen: isFullScreen,
-            currentEpisodeIndex: episodeIndex,
+            currentEpisodeIndex: _episodeIndex,
             dammaku: _dammaku,
             isTablet: _isTablet,
-            danmakuSetting: _danmakuSetting,
+            danmakuSetting: _setting.getDanmakuSetting(),
             enableAutoFocus: _enableAutoFocus,
             onEpisodeTab: () {
               if (_isTablet ||
@@ -683,19 +665,19 @@ class _PlayerScreenState extends State<PlayerScreen>
               }
             },
             onError: (error) => setState(() {
-              msg = error.toString();
-              isLoading = false;
-              _logger.e("player.error: $msg");
+              _msg = error.toString();
+              _isLoading = false;
+              _logger.e("player.error: $_msg");
             }),
 
             onNextTab: () {
-              if (isLoading ||
-                  episodeIndex + 1 >
-                      _detail!.lines![lineIndex].episodes!.length - 1) {
+              if (_isLoading ||
+                  _episodeIndex + 1 >
+                      _detail!.lines![_lineIndex].episodes!.length - 1) {
                 return;
               }
               setState(() {
-                ++episodeIndex;
+                ++_episodeIndex;
               });
               _fetchViewInfo();
             },
@@ -726,15 +708,15 @@ class _PlayerScreenState extends State<PlayerScreen>
             // 简介卡片
             SliverToBoxAdapter(
               child: MediaCard(
-                id: "player_${subject.id}",
-                imageUrl: subject.images.large!,
-                title: subject.title,
-                genre: subject.metaTags.join('/'),
-                episode: subject.totalEpisodes,
-                rating: subject.rating,
-                ratingCount: subject.ratingCount,
+                id: "player_${_subject.id}",
+                imageUrl: _subject.images.large!,
+                title: _subject.title,
+                genre: _subject.metaTags.join('/'),
+                episode: _subject.totalEpisodes,
+                rating: _subject.rating,
+                ratingCount: _subject.ratingCount,
                 height: 180,
-                airDate: subject.airDate,
+                airDate: _subject.airDate,
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 6)),
@@ -752,7 +734,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 subtitle: Text(
-                  source.getName(),
+                  _source.getName(),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 leading: SizedBox(
@@ -760,9 +742,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                   child: Center(
                     child: Image.network(
                       width: double.infinity,
-                      source.getLogoUrl().contains('http')
-                          ? source.getLogoUrl()
-                          : 'https://${source.getLogoUrl()}',
+                      _source.getLogoUrl().contains('http')
+                          ? _source.getLogoUrl()
+                          : 'https://${_source.getLogoUrl()}',
                       errorBuilder: (context, error, stackTrace) {
                         return Icon(Icons.error);
                       },
@@ -857,9 +839,9 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   /// 剧集列表
   Widget _buildEpisode() {
-    return msg.isNotEmpty
+    return _msg.isNotEmpty
         ? LoadingOrShowMsg(
-            msg: msg,
+            msg: _msg,
             onMsgTab: () {
               _fetchViewInfo();
             },
@@ -884,9 +866,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                 selectedTileColor: Theme.of(
                   context,
                 ).colorScheme.primaryContainer,
-                selected: episodeIndex == index,
+                selected: _episodeIndex == index,
                 onTap: () {
-                  if (episodeIndex == index || isLoading) {
+                  if (_episodeIndex == index || _isLoading) {
                     return;
                   }
                   _onEpisodeSelected(index);
@@ -902,7 +884,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                   children: [
                     Text('${index + 1}'),
                     SizedBox(width: 10),
-                    if (episodeIndex == index)
+                    if (_episodeIndex == index)
                       ColorFiltered(
                         colorFilter: ColorFilter.mode(
                           Theme.of(context).colorScheme.primary,
@@ -968,7 +950,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                             ),
                           ),
 
-                          if (index == lineIndex)
+                          if (index == _lineIndex)
                             ColorFiltered(
                               colorFilter: ColorFilter.mode(
                                 Theme.of(context).colorScheme.primary,
@@ -1010,14 +992,14 @@ class _PlayerScreenState extends State<PlayerScreen>
         itemCount: eps.length,
         itemBuilder: (context, index) {
           return ListTile(
-            selected: index == episodeIndex,
+            selected: index == _episodeIndex,
             horizontalTitleGap: 0,
             leading: Text(
               (index + 1).toString(),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             title: Text(eps[index].title),
-            trailing: episodeIndex == index
+            trailing: _episodeIndex == index
                 ? Container(
                     constraints: BoxConstraints(maxWidth: 80),
                     child: ColorFiltered(
@@ -1258,9 +1240,19 @@ class _PlayerScreenState extends State<PlayerScreen>
       return _buildEpisodeDrawer();
     } else if (_isSettingDrawerOpen) {
       return _buildDanmakuSettingDrawer(
-        setting: _danmakuSetting,
-        onSettingChanged: (setting) => safeSetState(() {
-          _danmakuSetting = setting;
+        setting: _setting.getDanmakuSetting(),
+        onSettingChanged: (s) => safeSetState(() {
+          _setting = _setting.copyWith(
+            opacity: s.opacity,
+            area: s.area,
+            fontSize: s.fontSize,
+            hideTop: s.hideTop,
+            hideScroll: s.hideScroll,
+            hideBottom: s.hideBottom,
+            massiveMode: s.massiveMode,
+            danmakuOffset: s.danmakuOffset,
+            filterWords: s.filterWords,
+          );
         }),
       );
     } else if (_isInfoDrawerOpen && _isTablet) {
@@ -1279,6 +1271,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     return SliverToBoxAdapter(
       child: Card(
         margin: .zero,
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        shadowColor: Colors.transparent,
         child: Container(
           padding: .all(6),
           height: 120,
@@ -1331,22 +1325,20 @@ class _PlayerScreenState extends State<PlayerScreen>
       setState(() {
         _isActive = false;
       });
-      _storeLocalHistory(syncNow: true);
+      _updatePlaybackHistoryAndUserSetting();
     }
     if (state == AppLifecycleState.resumed) {
       setState(() {
         _isActive = true;
       });
     }
-    if (state == AppLifecycleState.inactive) {
-      _storeLocalHistory(syncNow: true);
-    }
+
     super.didChangeAppLifecycleState(state);
   }
 
   @override
   void didChangeDependencies() {
-    _storeLocalHistory();
+    _updatePlaybackHistoryAndUserSetting();
     if (Platform.isAndroid || Platform.isIOS) {
       var info = MediaQuery.of(context);
       setState(() {
@@ -1371,13 +1363,12 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (!(Platform.isAndroid || Platform.isIOS)) {
       windowManager.setTitle(widget.nameCn);
     }
-    _loadDanmakuSetting();
-    _loadHistory();
+    _loadPlaybackHistory();
     _fetchEpisode();
     _isTablet = Device.get().isTablet;
     WidgetsBinding.instance.addObserver(this);
     _fetchMediaEpisode().then(
-      (value) => _fetchViewInfo(position: historyPosition),
+      (value) => _fetchViewInfo(position: _historyPosition),
     );
     // 设置播放器页面的状态栏样式（深色模式）
     // SystemChrome.setSystemUIOverlayStyle(
@@ -1397,7 +1388,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         windowManager.setTitle(info.appName);
       });
     }
-    _storeLocalHistory(syncNow: true);
+    _updatePlaybackHistoryAndUserSetting();
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -1414,7 +1405,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   Future<AppExitResponse> didRequestAppExit() {
     _logger.d("didRequestAppExit");
-    _storeLocalHistory(syncNow: true);
+    _updatePlaybackHistoryAndUserSetting();
     return super.didRequestAppExit();
   }
 

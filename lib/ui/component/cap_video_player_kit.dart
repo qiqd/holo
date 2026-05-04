@@ -11,7 +11,6 @@ import 'package:holo/assets/fonts/BF.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
-import 'package:holo/util/local_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
@@ -77,58 +76,53 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   final Logger _logger = Logger();
   late final ScreenBrightness _brightnessController;
   DanmakuController<double>? _danmuController;
-  String msgText = '';
-  bool showMsg = false;
-  bool showVideoControls = true;
-  bool isForward = true;
-  int jumpMs = 0;
-  int dragOffset = 0;
-  bool isLock = false;
-  Timer? volumeAndBrightnessToastTimer;
-  Timer? videoControlsTimer;
-  Timer? videoTimer;
-  Timer? danmuTimer;
-  double currentVolume = 0.0;
-  double currentBrightness = 0.0;
-  bool showDanmaku = true;
-  double bufferProgress = 0.0;
-  Danmu? dammaku;
-  Timer? danmakuSettingTimer;
-  Timer? settingTimer;
-  bool isLandscape = false;
-  int toastShowMode = 0; //0:无,1:音量,2:亮度,3:进度
-  final List<DanmakuContentItem<double>> danmakuItems = [];
+  bool _showVideoControls = true;
+  int _dragOffset = 0;
+  bool _isLock = false;
+  Timer? _volumeAndBrightnessToastTimer;
+  Timer? _videoControlsTimer;
+  Timer? _videoTimer;
+  Timer? _danmuTimer;
+  double _currentVolume = 0.0;
+  double _currentBrightness = 0.0;
+  bool _showDanmaku = true;
+  double _bufferProgress = 0.0;
+  Danmu? _dammaku;
+  Timer? _settingTimer;
+  bool _isLandscape = false;
+  int _toastShowMode = 0; //0:无,1:音量,2:亮度,3:进度
+  final List<DanmakuContentItem<double>> _danmakuItems = [];
 
   /// 显示视频控制条定时器
-  void showVideoControlsTimer() {
+  void _showVideoControlsTimer() {
     // log("showVideoControlsTimer");
-    videoControlsTimer?.cancel();
-    videoControlsTimer = Timer(Duration(seconds: 5), () {
+    _videoControlsTimer?.cancel();
+    _videoControlsTimer = Timer(Duration(seconds: 5), () {
       safeSetState(() {
-        showVideoControls = false;
+        _showVideoControls = false;
       });
     });
   }
 
   /// 更新显示音量或亮度的定时器
   void _updateToastShowModeTimer() {
-    volumeAndBrightnessToastTimer?.cancel();
-    volumeAndBrightnessToastTimer = Timer(Duration(seconds: 1), () {
+    _volumeAndBrightnessToastTimer?.cancel();
+    _volumeAndBrightnessToastTimer = Timer(Duration(seconds: 1), () {
       safeSetState(() {
-        toastShowMode = 0;
+        _toastShowMode = 0;
       });
     });
   }
 
   /// 改变亮度,仅在移动平台生效
-  void changeBrightnessBy1Percent(SwipeDirection direction) async {
+  void _changeBrightnessBy1Percent(SwipeDirection direction) async {
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       return;
     }
-    if (isLock) {
+    if (_isLock) {
       return;
     }
-    toastShowMode = 2;
+    _toastShowMode = 2;
     _updateToastShowModeTimer();
     final current = await _brightnessController.application;
     double newBrightness = current;
@@ -142,25 +136,24 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       newBrightness,
     );
     safeSetState(() {
-      showMsg = true;
-      currentBrightness = newBrightness * 100;
+      _currentBrightness = newBrightness * 100;
     });
   }
 
   ///改变音量,仅在移动平台生效
-  void changeVolumeBy1Percent(
+  void _changeVolumeBy1Percent(
     SwipeDirection direction,
     void Function(double)? setVolume,
   ) async {
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       return;
     }
-    if (isLock) {
+    if (_isLock) {
       return;
     }
-    toastShowMode = 1;
+    _toastShowMode = 1;
     _updateToastShowModeTimer();
-    final current = currentVolume;
+    final current = _currentVolume;
     double newVolume = current;
 
     if (direction == SwipeDirection.up) {
@@ -171,32 +164,32 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     newVolume = newVolume.clamp(0, 1);
     setVolume?.call(newVolume);
     safeSetState(() {
-      showMsg = true;
-      currentVolume = newVolume;
+      _currentVolume = newVolume;
     });
   }
 
   /// 处理视频进度改变事件
-  void handleVideoProgressChange(SwipeDirection direction) {
-    if (isLock) {
+  void _handleVideoProgressChange(SwipeDirection direction) {
+    if (_isLock) {
       return;
     }
     safeSetState(() {
-      toastShowMode = 3;
+      _toastShowMode = 3;
       if (direction == SwipeDirection.left) {
-        dragOffset -= 1;
+        _dragOffset -= 1;
       } else if (direction == SwipeDirection.right) {
-        dragOffset += 1;
+        _dragOffset += 1;
       }
     });
     _updateShowDragOffsetTimer();
   }
 
   /// 填充弹幕
-  void fillDanmaku() {
+  void _fillDanmaku() {
+    _filterDanmakuItems();
     if (_danmuController == null) return;
     var nomal =
-        dammaku?.comments?.where((item) => item.type == 1).map((item) {
+        _dammaku?.comments?.where((item) => item.type == 1).map((item) {
           return DanmakuContentItem(
             item.text ?? "",
             type: DanmakuItemType.scroll,
@@ -211,7 +204,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         }).toList() ??
         [];
     var bottom =
-        dammaku?.comments?.where((item) => item.type == 4).map((item) {
+        _dammaku?.comments?.where((item) => item.type == 4).map((item) {
           return DanmakuContentItem(
             item.text ?? "",
             type: DanmakuItemType.bottom,
@@ -226,7 +219,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         }).toList() ??
         [];
     var top =
-        dammaku?.comments?.where((item) => item.type == 5).map((item) {
+        _dammaku?.comments?.where((item) => item.type == 5).map((item) {
           return DanmakuContentItem(
             item.text ?? "",
             type: DanmakuItemType.top,
@@ -240,14 +233,14 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           );
         }).toList() ??
         [];
-    danmakuItems.addAll(nomal);
-    danmakuItems.addAll(bottom);
-    danmakuItems.addAll(top);
+    _danmakuItems.addAll(nomal);
+    _danmakuItems.addAll(bottom);
+    _danmakuItems.addAll(top);
   }
 
   /// 初始化弹幕定时器,用于填充弹幕
-  void initTimerForDanmu({bool updateStateEverySecond = false}) {
-    danmuTimer?.cancel();
+  void _initTimerToDanmaku({bool updateStateEverySecond = false}) {
+    _danmuTimer?.cancel();
     _danmuController?.updateOption(
       DanmakuOption(
         area: widget.danmakuSetting.area,
@@ -259,7 +252,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         massiveMode: widget.danmakuSetting.massiveMode,
       ),
     );
-    danmuTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _danmuTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       //请求焦点,以便键盘事件生效
       if (widget.enableAutoFocus &&
           (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
@@ -275,12 +268,12 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         _danmuController?.pause();
         return;
       }
-      if (danmakuItems.isEmpty) {
-        fillDanmaku();
+      if (_danmakuItems.isEmpty) {
+        _fillDanmaku();
       }
       _danmuController?.resume();
 
-      danmakuItems
+      _danmakuItems
           .where((item) {
             return item.extra?.toInt() ==
                 (widget.playerNotifier.value?.value.position.inSeconds ?? 0) +
@@ -292,31 +285,20 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     });
   }
 
-  /// 保存弹幕设置
-  void saveDanmuSetting({DanmakuSetting? danmakuSetting}) {
-    filterDanmakuItems();
-    final appSetting = LocalStorage.getAppSetting();
-    appSetting.danmakuSetting = danmakuSetting ?? DanmakuSetting();
-    settingTimer?.cancel();
-    settingTimer = Timer(Duration(seconds: 5), () {
-      LocalStorage.saveAppSetting(appSetting);
-    });
-  }
-
   /// 过滤弹幕
-  void filterDanmakuItems() {
+  void _filterDanmakuItems() {
     if (widget.danmakuSetting.filterWords.isEmpty) {
       return;
     }
     var filters = widget.danmakuSetting.filterWords.split(",");
-    danmakuItems.removeWhere((item) {
+    _danmakuItems.removeWhere((item) {
       return filters.any((filter) => item.text.contains(filter.trim()) == true);
     });
   }
 
   ///显示键盘快捷键
-  void showKeyboardShortcuts() {
-    showDialog(
+  Future<void> _showKeyboardShortcuts() {
+    return showDialog<void>(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -364,17 +346,17 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   }
 
   void _updateShowDragOffsetTimer() {
-    videoTimer?.cancel();
-    videoTimer = Timer(Duration(milliseconds: 500), () async {
+    _videoTimer?.cancel();
+    _videoTimer = Timer(Duration(milliseconds: 500), () async {
       // _player.seekTo(Duration(seconds: videoPosition.toInt() + dragOffset));
       final player = widget.playerNotifier.value;
       await player?.seekTo(
-        Duration(seconds: player.value.position.inSeconds + dragOffset),
+        Duration(seconds: player.value.position.inSeconds + _dragOffset),
       );
       await player?.play();
       safeSetState(() {
-        dragOffset = 0;
-        toastShowMode = 0;
+        _dragOffset = 0;
+        _toastShowMode = 0;
       });
     });
   }
@@ -425,29 +407,29 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       _logger.w('player is null? ${player == null}');
       if (player == null) {
         safeSetState(() {
-          bufferProgress = 0.0;
+          _bufferProgress = 0.0;
         });
         return;
       }
       safeSetState(() {
-        currentVolume = currentVolume == 0.0
+        _currentVolume = _currentVolume == 0.0
             ? player.value.volume
-            : currentVolume;
+            : _currentVolume;
       });
       player.removeListener(() {});
-      player.setVolume(currentVolume);
+      player.setVolume(_currentVolume);
       player.addListener(() {
         widget.onPositionChanged?.call(player.value.position);
         safeSetState(() {
-          currentVolume = player.value.volume;
-          bufferProgress = getBuffered();
+          _currentVolume = player.value.volume;
+          _bufferProgress = _getBuffered();
         });
       });
     });
   }
 
   /// 获取缓存
-  double getBuffered() {
+  double _getBuffered() {
     try {
       var player = widget.playerNotifier.value;
       final buffered = player?.value.buffered ?? [];
@@ -461,9 +443,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       var d = maxEnd.inSeconds.toDouble();
       return d >= (player?.value.duration.inSeconds.toDouble() ?? 0.0) ? 0 : d;
     } catch (e) {
-      safeSetState(() {
-        msgText = e.toString();
-      });
+      _logger.e(e);
       return 0.0;
     }
   }
@@ -490,7 +470,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       fontSize: danmakuSetting.fontSize,
       opacity: danmakuSetting.opacity,
     );
-    return (showDanmaku)
+    return (_showDanmaku)
         ? DanmakuScreen<double>(
             createdController: (e) {
               _danmuController = e;
@@ -503,69 +483,69 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   ///亮度或者音量或者拖拽进度显示
   Widget _buildToast() {
     return AnimatedOpacity(
-      curve: toastShowMode != 0 ? Curves.decelerate : Curves.easeOutQuart,
-      opacity: toastShowMode != 0 ? 1.0 : 0.0,
+      curve: _toastShowMode != 0 ? Curves.decelerate : Curves.easeOutQuart,
+      opacity: _toastShowMode != 0 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 300),
       child: Center(
         child: Container(
           // width: ,
-          padding: toastShowMode == 0
+          padding: _toastShowMode == 0
               ? EdgeInsets.zero
               : const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.5),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: toastShowMode == 1
+          child: _toastShowMode == 1
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      currentVolume > 0.66
+                      _currentVolume > 0.66
                           ? Icons.volume_up_rounded
-                          : currentVolume > 0.33
+                          : _currentVolume > 0.33
                           ? Icons.volume_down_rounded
                           : Icons.volume_mute_rounded,
                       color: Colors.white,
                     ),
                     Text(
-                      "${(currentVolume * 100).toInt()}%",
+                      "${(_currentVolume * 100).toInt()}%",
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
                 )
-              : toastShowMode == 2
+              : _toastShowMode == 2
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      currentBrightness > 66
+                      _currentBrightness > 66
                           ? Icons.brightness_high_rounded
-                          : currentBrightness > 33
+                          : _currentBrightness > 33
                           ? Icons.brightness_medium_rounded
                           : Icons.brightness_low_rounded,
                       color: Colors.white,
                     ),
                     Text(
-                      "${(currentBrightness).toInt()}%",
+                      "${(_currentBrightness).toInt()}%",
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
                 )
-              : toastShowMode == 3
+              : _toastShowMode == 3
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (dragOffset < 0)
+                    if (_dragOffset < 0)
                       Icon(Icons.fast_rewind_rounded, color: Colors.white),
                     Text(
-                      "${(dragOffset.abs()).toInt()}s",
+                      "${(_dragOffset.abs()).toInt()}s",
                       style: TextStyle(color: Colors.white),
                     ),
-                    if (dragOffset > 0)
+                    if (_dragOffset > 0)
                       Icon(Icons.fast_forward_rounded, color: Colors.white),
                   ],
                 )
@@ -578,7 +558,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   ///视频控制层-锁定
   Widget _buildLock() {
     return AnimatedOpacity(
-      opacity: showVideoControls ? 1 : 0,
+      opacity: _showVideoControls ? 1 : 0,
       duration: const Duration(milliseconds: 100),
       child: Padding(
         padding: EdgeInsets.only(left: 20),
@@ -588,10 +568,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
             color: Colors.white,
             onPressed: () {
               safeSetState(() {
-                isLock = !isLock;
+                _isLock = !_isLock;
               });
             },
-            icon: Icon(isLock ? Icons.lock_rounded : Icons.lock_open_rounded),
+            icon: Icon(_isLock ? Icons.lock_rounded : Icons.lock_open_rounded),
           ),
         ),
       ),
@@ -601,7 +581,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   ///视频控制层-时间
   Widget _buildTime() {
     return AnimatedOpacity(
-      opacity: showVideoControls && widget.isFullScreen ? 1 : 0,
+      opacity: _showVideoControls && widget.isFullScreen ? 1 : 0,
       duration: const Duration(milliseconds: 100),
       child: Padding(
         padding: const EdgeInsets.only(top: 36),
@@ -621,13 +601,13 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     return AnimatedPositioned(
       key: const ValueKey('show_video_controls_top'),
       duration: const Duration(milliseconds: 300),
-      top: showVideoControls && !isLock ? 0 : -73,
+      top: _showVideoControls && !_isLock ? 0 : -73,
       left: 0,
       right: 0,
       child: IgnorePointer(
-        ignoring: !showVideoControls,
+        ignoring: !_showVideoControls,
         child: AnimatedOpacity(
-          opacity: showVideoControls && !isLock ? 1.0 : 0.0,
+          opacity: _showVideoControls && !_isLock ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 300),
           child: Container(
             width: double.infinity,
@@ -646,7 +626,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 color: Colors.white,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded),
                 onPressed: () {
-                  showVideoControlsTimer();
+                  _showVideoControlsTimer();
                   widget.onBackPressed?.call();
                 },
               ),
@@ -677,7 +657,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                               color: Colors.white,
                               tooltip: 'Keyboard Shortcuts',
                               onPressed: () {
-                                showKeyboardShortcuts();
+                                _showKeyboardShortcuts();
                               },
                               icon: const Icon(Icons.help_outline_rounded),
                             ),
@@ -686,7 +666,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                             tooltip: 'Settings',
                             onPressed: () {
                               widget.onSettingTab?.call();
-                              showVideoControlsTimer();
+                              _showVideoControlsTimer();
                             },
                             icon: const Icon(Icons.settings_rounded),
                           ),
@@ -714,17 +694,17 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 swipeDetectionBehavior: SwipeDetectionBehavior.continuous,
               ),
               onTap: () => safeSetState(() {
-                showVideoControlsTimer();
-                showVideoControls = !showVideoControls;
+                _showVideoControlsTimer();
+                _showVideoControls = !_showVideoControls;
               }),
               onDoubleTap: () {
                 (player?.value.isPlaying ?? false)
                     ? player?.pause()
                     : player?.play();
-                showVideoControlsTimer();
+                _showVideoControlsTimer();
               },
               onHorizontalSwipe: (direction) =>
-                  handleVideoProgressChange(direction),
+                  _handleVideoProgressChange(direction),
               child: (Platform.isAndroid || Platform.isIOS)
                   ? Row(
                       children: [
@@ -742,7 +722,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                                   direction == SwipeDirection.right) {
                                 return;
                               }
-                              changeBrightnessBy1Percent(direction);
+                              _changeBrightnessBy1Percent(direction);
                             },
 
                             child: Container(color: Colors.transparent),
@@ -762,7 +742,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                                   direction == SwipeDirection.right) {
                                 return;
                               }
-                              changeVolumeBy1Percent(
+                              _changeVolumeBy1Percent(
                                 direction,
                                 player?.setVolume,
                               );
@@ -790,12 +770,12 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     return AnimatedPositioned(
       key: const ValueKey('show_video_controls_bottom'),
       duration: const Duration(milliseconds: 300),
-      bottom: showVideoControls && !isLock ? 0 : -70,
+      bottom: _showVideoControls && !_isLock ? 0 : -70,
       left: 0,
       right: 0,
       child: AnimatedOpacity(
         key: ValueKey('show_video_controls_bottom_opacity'),
-        opacity: showVideoControls && !isLock ? 1.0 : 0.0,
+        opacity: _showVideoControls && !_isLock ? 1.0 : 0.0,
         curve: Curves.easeInOut,
         duration: const Duration(milliseconds: 100),
         child: Container(
@@ -819,11 +799,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         horizontal: 30,
                         vertical: 0,
                       ),
-                      secondaryTrackValue: bufferProgress,
+                      secondaryTrackValue: _bufferProgress,
                       value: player?.value.position.inSeconds.toDouble() ?? 0,
                       max: player?.value.duration.inSeconds.toDouble() ?? 0,
                       onChangeEnd: (value) {
-                        showVideoControlsTimer();
+                        _showVideoControlsTimer();
                         player?.seekTo(Duration(seconds: value.toInt()));
                       },
                     ),
@@ -836,7 +816,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   IconButton(
                     color: Colors.white,
                     onPressed: () {
-                      showVideoControlsTimer();
+                      _showVideoControlsTimer();
                       (player?.value.isPlaying ?? false)
                           ? player?.pause()
                           : player?.play();
@@ -851,7 +831,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   IconButton(
                     color: Colors.white,
                     onPressed: () {
-                      showVideoControlsTimer();
+                      _showVideoControlsTimer();
                       widget.onNextTab?.call();
                     },
                     icon: const Icon(Icons.skip_next_rounded),
@@ -879,11 +859,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     color: Colors.white,
                     onPressed: () {
                       safeSetState(() {
-                        showDanmaku = !showDanmaku;
+                        _showDanmaku = !_showDanmaku;
                       });
-                      showVideoControlsTimer();
+                      _showVideoControlsTimer();
                     },
-                    icon: Icon(showDanmaku ? BF.danmakuOn : BF.danmakuOff),
+                    icon: Icon(_showDanmaku ? BF.danmakuOn : BF.danmakuOff),
                   ),
                   //播放速度按钮
                   if (widget.isFullScreen) ...[
@@ -920,13 +900,13 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       tooltip: 'Episode List',
                       onPressed: () {
                         widget.onEpisodeTab?.call();
-                        showVideoControlsTimer();
+                        _showVideoControlsTimer();
                       },
                       icon: Icon(Icons.format_list_bulleted_rounded),
                     ),
                   ],
                   //音量调整,只在桌面端显示
-                  if (isLandscape &&
+                  if (_isLandscape &&
                       (Platform.isWindows ||
                           Platform.isMacOS ||
                           Platform.isLinux)) ...[
@@ -937,7 +917,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         player?.setVolume(0);
                       },
                       icon: Icon(
-                        currentVolume > 0
+                        _currentVolume > 0
                             ? Icons.volume_up_rounded
                             : Icons.volume_off_rounded,
                       ),
@@ -949,7 +929,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         max: 1,
 
                         padding: .symmetric(horizontal: 10),
-                        value: currentVolume,
+                        value: _currentVolume,
                         onChanged: (value) {
                           player?.setVolume(value);
                         },
@@ -962,7 +942,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   IconButton(
                     color: Colors.white,
                     onPressed: () async {
-                      showVideoControlsTimer();
+                      _showVideoControlsTimer();
                       if (Platform.isWindows ||
                           Platform.isMacOS ||
                           Platform.isLinux) {
@@ -996,11 +976,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
             child: MouseRegion(
               opaque: false,
               onHover: (event) => safeSetState(() {
-                showVideoControls = true;
-                showVideoControlsTimer();
+                _showVideoControls = true;
+                _showVideoControlsTimer();
               }),
               onExit: (event) => safeSetState(() {
-                showVideoControls = false;
+                _showVideoControls = false;
               }),
               child: const SizedBox.expand(),
             ),
@@ -1011,30 +991,27 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   @override
   void didUpdateWidget(covariant CapVideoPlayerKit oldWidget) {
     if (oldWidget.currentEpisodeIndex != widget.currentEpisodeIndex) {
-      danmakuItems.clear();
-      fillDanmaku();
+      _danmakuItems.clear();
+      _fillDanmaku();
     }
     if (oldWidget.dammaku != widget.dammaku) {
-      dammaku = widget.dammaku;
-      danmakuItems.clear();
-      fillDanmaku();
+      _dammaku = widget.dammaku;
+      _danmakuItems.clear();
+      _fillDanmaku();
     }
     if (oldWidget.danmakuSetting != widget.danmakuSetting) {
-      saveDanmuSetting(danmakuSetting: widget.danmakuSetting);
-      danmakuSettingTimer?.cancel();
-      danmakuSettingTimer = Timer(const Duration(milliseconds: 500), () {
-        _danmuController?.updateOption(
-          DanmakuOption(
-            area: widget.danmakuSetting.area,
-            opacity: widget.danmakuSetting.opacity,
-            fontSize: widget.danmakuSetting.fontSize,
-            hideBottom: widget.danmakuSetting.hideBottom,
-            hideScroll: widget.danmakuSetting.hideScroll,
-            hideTop: widget.danmakuSetting.hideTop,
-            massiveMode: widget.danmakuSetting.massiveMode,
-          ),
-        );
-      });
+      _filterDanmakuItems();
+      _danmuController?.updateOption(
+        DanmakuOption(
+          area: widget.danmakuSetting.area,
+          opacity: widget.danmakuSetting.opacity,
+          fontSize: widget.danmakuSetting.fontSize,
+          hideBottom: widget.danmakuSetting.hideBottom,
+          hideScroll: widget.danmakuSetting.hideScroll,
+          hideTop: widget.danmakuSetting.hideTop,
+          massiveMode: widget.danmakuSetting.massiveMode,
+        ),
+      );
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -1042,9 +1019,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   @override
   void initState() {
     _initListener();
-
-    initTimerForDanmu();
-    dammaku = widget.dammaku;
+    _initTimerToDanmaku();
+    _dammaku = widget.dammaku;
     VolumeController.instance.showSystemUI = false;
     _brightnessController = ScreenBrightness.instance;
     super.initState();
@@ -1054,19 +1030,20 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   void dispose() {
     ScreenBrightness.instance.resetApplicationScreenBrightness();
     widget.playerNotifier.value?.removeListener(() {});
-    danmuTimer?.cancel();
-    volumeAndBrightnessToastTimer?.cancel();
-    videoTimer?.cancel();
-    videoControlsTimer?.cancel();
-    settingTimer?.cancel();
+    _danmuTimer?.cancel();
+    _volumeAndBrightnessToastTimer?.cancel();
+    _videoTimer?.cancel();
+    _videoControlsTimer?.cancel();
+    _settingTimer?.cancel();
     super.dispose();
   }
 
   @override
   void didChangeDependencies() {
-    showVideoControlsTimer();
+    _showVideoControlsTimer();
     safeSetState(() {
-      isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+      _isLandscape =
+          MediaQuery.of(context).orientation == Orientation.landscape;
     });
     super.didChangeDependencies();
   }

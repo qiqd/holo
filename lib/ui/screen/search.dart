@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject_item.dart';
+import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:holo/util/local_storage.dart';
+import 'package:holo/util/hive_util.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -17,16 +19,16 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   List<SubjectItem> _searchResult = [];
   bool _loading = false;
-
   List<String> _searchHistory = [];
   final TextEditingController _controller = TextEditingController();
+  final userSetting = MyApp.userSettingNotifier.value;
   void _fetchSearch(String keyword, BuildContext content) async {
     if (keyword.isEmpty) return;
     if (_searchHistory.contains(keyword)) {
       _searchHistory.remove(keyword);
     }
     _searchHistory.insert(0, keyword);
-    LocalStorage.saveSearchHistory(_searchHistory);
+    await HiveUtil.setUserSearch(keyword);
     setState(() {
       _loading = true;
     });
@@ -37,7 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       );
     });
-    setState(() {
+    safeSetState(() {
       _loading = false;
       _searchResult = result;
     });
@@ -46,7 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    _searchHistory = LocalStorage.getSearchHistory();
+    _searchHistory = HiveUtil.getUserSearches();
   }
 
   @override
@@ -67,12 +69,12 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Text("search.cancel".tr()),
           ),
           TextButton(
-            onPressed: () {
-              LocalStorage.removeAllSearchHistory();
+            onPressed: () async {
+              await HiveUtil.clearUserSearches();
               setState(() {
                 _searchHistory.clear();
+                context.pop();
               });
-              context.pop();
             },
             child: Text("search.confirm".tr()),
           ),
@@ -191,15 +193,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                               Icons.close,
                                               size: 18,
                                             ),
-                                            onDeleted: () {
+                                            onDeleted: () async {
                                               setState(() {
                                                 _searchHistory.remove(
                                                   historyItem,
                                                 );
-                                                LocalStorage.saveSearchHistory(
-                                                  _searchHistory,
-                                                );
                                               });
+                                              await HiveUtil.clearUserSearches(
+                                                keyword: historyItem,
+                                              );
                                             },
                                           );
                                         }).toList(),

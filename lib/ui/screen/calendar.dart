@@ -8,7 +8,7 @@ import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
-import 'package:holo/util/local_storage.dart';
+import 'package:holo/util/hive_util.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -38,7 +38,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     setState(() {
       _calendar = dailyBroadcast;
     });
-    LocalStorage.setDailyBroadcastCache(dailyBroadcast);
+    await HiveUtil.setDailyBroadcast(dailyBroadcast);
   }
 
   @override
@@ -52,7 +52,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   @override
   void initState() {
-    _calendar = LocalStorage.getDailyBroadcastCache();
+    _calendar = HiveUtil.getDailyBroadcast();
     _fetchCalendar();
     WidgetsBinding.instance.addObserver(this);
     _tabController.animateTo(DateTime.now().weekday - 1);

@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'logvar_episode.dart';
+part of 'log_var_episode.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-LogvarEpisode _$LogvarEpisodeFromJson(Map<String, dynamic> json) =>
-    LogvarEpisode(
+LogVarEpisode _$LogVarEpisodeFromJson(Map<String, dynamic> json) =>
+    LogVarEpisode(
       animeId: (json['animeId'] as num?)?.toInt(),
       animeTitle: json['animeTitle'] as String?,
       type: json['type'] as String?,
@@ -16,7 +16,7 @@ LogvarEpisode _$LogvarEpisodeFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$LogvarEpisodeToJson(LogvarEpisode instance) =>
+Map<String, dynamic> _$LogVarEpisodeToJson(LogVarEpisode instance) =>
     <String, dynamic>{
       'animeId': instance.animeId,
       'animeTitle': instance.animeTitle,

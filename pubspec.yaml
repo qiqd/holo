@@ -43,10 +43,15 @@ dependencies:
   flutter_single_instance: ^1.7.0
   logger: ^2.6.2
   flex_color_picker: ^3.8.0
+  path_provider: ^2.1.5
+  hive_ce: ^2.19.3
+  carousel_slider: ^5.1.2
+
   # app_links: ^7.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  hive_ce_generator: ^1.6.0
   json_serializable: ^6.11.4
   build_runner: ^2.4.7 # dart run build_runner build --delete-conflicting-outputs --build-filter=lib/entity/**
   package_rename: ^1.10.1 # dart run package_rename

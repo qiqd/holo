@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:holo/api/rule_api.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/extension/safe_set_state.dart';
-import 'package:holo/util/local_storage.dart';
+import 'package:holo/util/hive_util.dart';
 
 class RuleRepository extends StatefulWidget {
   const RuleRepository({super.key});
@@ -17,12 +17,13 @@ class _RuleRepositoryState extends State<RuleRepository> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   List<Rule> _rules = [];
-  List<Rule> _localRules = LocalStorage.getRules();
   bool _isLoading = false;
+  late List<Rule> _localRules;
   Future<void> _getRules() async {
     safeSetState(() {
       _isLoading = true;
     });
+    _localRules = HiveUtil.getRules();
     var r = await RuleApi.getRules(
       onError: (error) {
         if (mounted) {
@@ -38,8 +39,8 @@ class _RuleRepositoryState extends State<RuleRepository> {
     });
   }
 
-  void _saveRule(Rule rule) {
-    LocalStorage.saveRules([rule]);
+  Future<void> _saveRule(Rule rule) async {
+    await HiveUtil.setRule(rule);
   }
 
   Widget _buildTileTrailing(Rule rule) {
@@ -48,10 +49,10 @@ class _RuleRepositoryState extends State<RuleRepository> {
         ) ||
         !_localRules.any((e) => e.name == rule.name)) {
       return IconButton(
-        onPressed: () {
+        onPressed: () async {
+          await _saveRule(rule);
           safeSetState(() {
-            _saveRule(rule);
-            _localRules = LocalStorage.getRules();
+            _localRules = HiveUtil.getRules();
           });
         },
         icon: const Icon(Icons.download_rounded),
