@@ -124,17 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _scrollController.addListener(_onScrollToBottom);
   }
 
-  void _refreshAutoSlideTimer() {
-    _autoSlideTimer?.cancel();
-    _autoSlideTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-      _carouselTimer?.cancel();
-      _carouselTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
-        index = index.remainder(_hotNotifier.value.length);
-        _carouselController.animateToItem(index++);
-      });
-    });
-  }
-
   Widget _buildHotSkeleton(bool isLandscape) {
     return SizedBox(
       height: isLandscape ? 400 : 200,

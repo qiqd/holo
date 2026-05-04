@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:hive_ce/hive.dart';
 import 'package:holo/entity/user.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:logger/logger.dart';
