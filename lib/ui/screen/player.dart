@@ -239,7 +239,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   Future<void> _loadPlaybackHistory() async {
-    final history = HiveUtil.getUserPlaybacks();
+    final history = HiveUtil.getUserPlaybacks(id: widget.subject.id);
     if (history.isNotEmpty) {
       safeSetState(() {
         _episodeIndex = history.first.episodeIndex;

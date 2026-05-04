@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:hive_ce/hive.dart';
 import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/image.dart';
@@ -135,6 +134,7 @@ class HiveUtil {
     Hive.init('${(await getApplicationDocumentsDirectory()).path}/holo');
     userBox = await Hive.openBox("user");
     await userBox?.clear();
+    await initHive();
   }
 
   static Future<void> setRule(Rule rule) async {
@@ -210,9 +210,15 @@ class HiveUtil {
     await userPlaybackBox?.addAll(newList);
   }
 
-  static List<UserPlayback> getUserPlaybacks() {
-    log("user==null${user == null}");
-    return userPlaybackBox?.values.toList() ?? [];
+  static List<UserPlayback> getUserPlaybacks({int? id}) {
+    if (id == null) {
+      return userPlaybackBox?.values.toList() ?? [];
+    }
+    return userPlaybackBox?.values
+            .toList()
+            .where((element) => element.id == id)
+            .toList() ??
+        [];
   }
 
   /// 清除用户播放记录

@@ -22,16 +22,9 @@ class _AccountScreenState extends State<AccountScreen> {
   final _serverUrlController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  late ScaffoldMessengerState _scaffoldMessage;
   bool _isPasswordVisible = false;
   bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _serverUrlController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   Future<void> _verifyWebDAV() async {
     if (_isLoading) {
@@ -50,7 +43,7 @@ class _AccountScreenState extends State<AccountScreen> {
       email: _emailController.text,
       secret: _passwordController.text,
       onError: (message) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        _scaffoldMessage.showSnackBar(
           SnackBar(content: Text("${"sign.login_failed".tr()}msg:$message")),
         );
       },
@@ -80,7 +73,17 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   @override
+  void dispose() {
+    _scaffoldMessage.hideCurrentSnackBar();
+    _serverUrlController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _scaffoldMessage = ScaffoldMessenger.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("sign.app_bar_title".tr()),

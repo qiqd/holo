@@ -23,6 +23,7 @@ class _SettingScreenState extends State<SettingScreen>
   String _version = '';
   String _buildNumber = '';
   bool _checkingVersion = false;
+
   @override
   void initState() {
     super.initState();
@@ -82,7 +83,7 @@ class _SettingScreenState extends State<SettingScreen>
       ListTile(
         leading: const Icon(Icons.exit_to_app),
         title: Text('setting.account.logout'.tr()),
-        subtitle: Text('setting.account.logout_description'.tr()),
+        //subtitle: Text('setting.account.logout_description'.tr()),
         onTap: () => _showSignoutAccountDialog(),
       ),
     ];

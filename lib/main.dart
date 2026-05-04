@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +96,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   /// 应用设置变更通知器
   static final userSettingNotifier = ValueNotifier<UserSetting>(
-    UserSetting.createDefaultUserSetting(email: ""),
+    HiveUtil.getUserSetting(),
   );
 
   /// 构造函数
@@ -103,10 +104,20 @@ class MyApp extends StatefulWidget {
 
   /// 初始化应用设置
   /// 从服务器获取设置，如果获取失败则使用本地存储的设置
-  static Future<void> initAppSetting() async {
+  static Future<void> initAppSetting({bool initNow = true}) async {
+    if (HiveUtil.user == null) {
+      return;
+    }
+    WebDAV.init(HiveUtil.user);
+    if (initNow) {
+      await WebDAV.fetchData();
+    } else {
+      Timer(const Duration(seconds: 5), () async {
+        await WebDAV.fetchData();
+      });
+    }
     var appSetting = HiveUtil.getUserSetting();
     MyApp.userSettingNotifier.value = appSetting;
-    WebDAV.init(HiveUtil.user);
   }
 
   @override
@@ -268,7 +279,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     // 初始化应用设置
-    MyApp.initAppSetting();
+    MyApp.initAppSetting(initNow: false);
     // 添加Widget绑定观察者
     WidgetsBinding.instance.addObserver(this);
     // 初始化动画源
