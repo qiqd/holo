@@ -14,8 +14,9 @@ class RuleApi {
   /// 日志记录器
   static final Logger _logger = Logger();
 
+  ///https://github.com/qiqd/holo/blob/main/rule.json
   static const String ruleRepositoryUrl =
-      "https://raw.githubusercontent.com/qiqd/holo-repository/master/data/rules.json";
+      "https://raw.githubusercontent.com/qiqd/holo/master/rule.json";
 
   /// 获取规则列表
   /// [onError] 错误回调
