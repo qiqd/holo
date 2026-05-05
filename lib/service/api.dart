@@ -8,7 +8,7 @@ import 'package:holo/service/impl/meta/anime_trace.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/impl/meta/log_var.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/util/dio_timing_extension.dart';
+import 'package:holo/extension/dio_timing_extension.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/http_util.dart';
 

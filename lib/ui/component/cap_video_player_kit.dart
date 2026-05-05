@@ -11,13 +11,14 @@ import 'package:holo/assets/fonts/BF.dart';
 import 'package:holo/entity/app_setting.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/ui/component/loading_msg.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:logger/logger.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:video_player/video_player.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
 
 class CapVideoPlayerKit extends StatefulWidget {
   final ValueNotifier<VideoPlayerController?> playerNotifier;
@@ -73,7 +74,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     skipTraversal: true,
     descendantsAreTraversable: false,
   );
-  final Logger _logger = Logger();
+  final Logger _logger = LoggerUtil.logger;
   late final ScreenBrightness _brightnessController;
   DanmakuController<double>? _danmuController;
   bool _showVideoControls = true;

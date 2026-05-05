@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/ui/screen/rule_test.dart';
+import 'package:holo/ui/screen/rule_test_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:holo/util/hive_util.dart';
 

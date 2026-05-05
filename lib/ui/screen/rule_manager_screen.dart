@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:visibility_detector/visibility_detector.dart';

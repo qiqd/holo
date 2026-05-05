@@ -4,6 +4,7 @@ import 'package:holo/entity/user.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_setting.dart';
 import 'package:holo/entity/user_subscribe.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:logger/logger.dart';
 
 class WebDAV {
@@ -11,7 +12,7 @@ class WebDAV {
   static const String _settingPath = "holo/user_setting.json";
   static const String _subscribePath = "holo/user_subscribe.json";
   static const String _playbackPath = "holo/user_playback.json";
-  static final Logger _logger = Logger();
+  static final Logger _logger = LoggerUtil.logger;
   static Dio? _dio;
   static void init(User? user) {
     if (user == null) {

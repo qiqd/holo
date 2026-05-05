@@ -7,7 +7,7 @@ import 'package:holo/api/web_dav.dart';
 import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_subscribe.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/main.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -38,12 +38,12 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     vsync: this,
     length: 5,
   );
-
+  ScaffoldMessengerState? _scaffoldMessengerState;
   Future<void> _fetchHistory() async {
     if (MyApp.userSettingNotifier.value.email.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("WebDAV is not configured")));
+      _scaffoldMessengerState?.showSnackBar(
+        SnackBar(content: Text("WebDAV is not configured")),
+      );
       return;
     }
     final subscribeRes = await WebDAV.fetchUserSubscribe();
@@ -307,6 +307,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
   @override
   Widget build(BuildContext context) {
+    _scaffoldMessengerState = ScaffoldMessenger.of(context);
     return Scaffold(
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: VisibilityDetector(

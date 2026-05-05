@@ -8,7 +8,7 @@ import 'package:html/parser.dart' as html_parser;
 
 /// Flutter InAppWebView 工具类
 /// 用于抓取网页内容，支持 JavaScript 执行和媒体元素检测
-class FlutterInappwebview {
+class FlutterInappwebviewUtil {
   /// 无头 WebView 实例
   HeadlessInAppWebView? _headlessWebView;
 

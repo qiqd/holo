@@ -2,7 +2,7 @@ import 'dart:math';
 
 /// Jaro-Winkler 相似度计算器
 /// 计算两个字符串之间的 Jaro-Winkler 相似度分数（0.0 到 1.0）
-class JaroWinklerSimilarity {
+class JaroWinklerSimilarityUtil {
   /// 默认缩放因子，用于计算公共前缀的权重
   static const double _defaultScalingFactor = 0.1;
 
@@ -26,7 +26,8 @@ class JaroWinklerSimilarity {
       return 0.0;
     }
 
-    final double j = (m / left.length + m / right.length + (m - mtp[1] / 2) / m) / 3;
+    final double j =
+        (m / left.length + m / right.length + (m - mtp[1] / 2) / m) / 3;
 
     if (j < 0.7) {
       return j;

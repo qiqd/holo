@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:holo/api/rule_api.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/util/hive_util.dart';
 
 class RuleRepository extends StatefulWidget {

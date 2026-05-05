@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/util/http_util.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:logger/web.dart';
 
 /// 规则相关API服务类
@@ -12,7 +13,7 @@ class RuleApi {
   static Dio dio = HttpUtil.createDio();
 
   /// 日志记录器
-  static final Logger _logger = Logger();
+  static final Logger _logger = LoggerUtil.logger;
 
   ///https://github.com/qiqd/holo/blob/main/rule.json
   static const String ruleRepositoryUrl =

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/main.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:easy_localization/easy_localization.dart';

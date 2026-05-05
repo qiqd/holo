@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/entity/user_setting.dart';
 import 'package:holo/main.dart';
 import 'package:holo/util/hive_util.dart';
-import 'package:holo/util/version_checker.dart';
+import 'package:holo/util/version_checker_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -121,9 +121,14 @@ class _SettingScreenState extends State<SettingScreen>
         title: Text('setting.app_info.check_version'.tr()),
         onTap: () async {
           setState(() => _checkingVersion = true);
-          await VersionChecker.checkVersion(context);
+          await VersionCheckerUtil.checkVersion(context);
           setState(() => _checkingVersion = false);
         },
+      ),
+      ListTile(
+        leading: Icon(Icons.message_outlined),
+        title: Text('setting.app_info.logger_view'.tr()),
+        onTap: () => context.push('/logger'),
       ),
       SwitchListTile(
         value: MyApp.userSettingNotifier.value.autoUpdate,

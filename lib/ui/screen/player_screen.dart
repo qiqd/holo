@@ -23,10 +23,11 @@ import 'package:holo/ui/component/cap_video_player_kit.dart';
 import 'package:holo/ui/component/circle_avatar_with_text.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:holo/util/hive_util.dart';
-import 'package:holo/util/jaro_winkler_similarity.dart';
+import 'package:holo/util/jaro_winkler_similarity_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -65,7 +66,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         AutomaticKeepAliveClientMixin {
   final GlobalKey<ScaffoldState> _globalScaffoldKey =
       GlobalKey<ScaffoldState>();
-  final Logger _logger = Logger();
+  final Logger _logger = LoggerUtil.logger;
   late final SubjectItem _subject = widget.subject;
   bool _isFullScreen = false;
   String _msg = "";
@@ -347,7 +348,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       });
       double score = 0;
       for (var element in data) {
-        var temp = JaroWinklerSimilarity.apply(
+        var temp = JaroWinklerSimilarityUtil.apply(
           element.animeTitle,
           keyword ?? '',
         );

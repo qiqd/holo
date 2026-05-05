@@ -13,13 +13,13 @@ import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/cache_image.dart';
 import 'package:holo/util/hive_util.dart';
-import 'package:holo/util/jaro_winkler_similarity.dart';
+import 'package:holo/util/jaro_winkler_similarity_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;
@@ -97,7 +97,7 @@ class _DetailScreenState extends State<DetailScreen>
       Media? tempMedia;
       SourceService? tempSource;
       for (var m in res) {
-        double s = JaroWinklerSimilarity.apply(widget.keyword, m.title!);
+        double s = JaroWinklerSimilarityUtil.apply(widget.keyword, m.title!);
         m.score = s;
         if (s > 0.9 && s > highestScore) {
           highestScore = s;

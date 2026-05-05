@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:holo/entity/media.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/util/flutter_inappwebview.dart';
+import 'package:holo/util/flutter_inappwebview_util.dart';
 import 'package:holo/util/http_util.dart';
 import 'package:html/parser.dart';
 
@@ -22,7 +22,7 @@ class Common extends SourceService {
   final RegExp reg = RegExp(r'\{[^}]*\}');
 
   /// WebView工具类实例
-  final FlutterInappwebview _webviewUtil = FlutterInappwebview();
+  final FlutterInappwebviewUtil _webviewUtil = FlutterInappwebviewUtil();
 
   /// 构造函数
   /// [rule] 规则配置对象

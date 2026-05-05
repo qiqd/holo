@@ -5,15 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/update_api.dart';
 import 'package:holo/entity/github_release.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:logger/web.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// 版本检查类
 /// 用于检查应用程序的版本更新，获取最新版本信息并提示用户更新
-class VersionChecker {
+class VersionCheckerUtil {
   static const MethodChannel _channel = MethodChannel('abi_detector');
-  static final Logger _logger = Logger();
+  static final Logger _logger = LoggerUtil.logger;
 
   /// 获取设备ABI信息
   static Future<String?> getDeviceAbi() async {

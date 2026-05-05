@@ -12,8 +12,9 @@ import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
 import 'package:holo/util/hive_util.dart';
-import 'package:holo/util/version_checker.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/util/logger_util.dart';
+import 'package:holo/util/version_checker_util.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:logger/logger.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   final CarouselController _carouselController = CarouselController();
   final ValueNotifier<List<SubjectItem>> _hotNotifier = ValueNotifier([]);
-  final Logger _logger = Logger();
+  final Logger _logger = LoggerUtil.logger;
 
   int index = 0;
   Timer? _carouselTimer;
@@ -100,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _homeScreenInit() {
     final autoCheckUpdate = MyApp.userSettingNotifier.value.autoUpdate;
     if (autoCheckUpdate) {
-      VersionChecker.checkVersion(context);
+      VersionCheckerUtil.checkVersion(context);
     }
     _hotNotifier.addListener(() {
       if (_hotNotifier.value.isNotEmpty) {

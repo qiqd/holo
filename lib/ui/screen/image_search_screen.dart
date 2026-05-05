@@ -5,7 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/subject_item.dart';
-import 'package:holo/extension/safe_set_state.dart';
+import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:image_picker/image_picker.dart';

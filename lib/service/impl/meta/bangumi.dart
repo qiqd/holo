@@ -9,13 +9,14 @@ import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/service/meta_service.dart';
 import 'package:holo/util/datetime_util.dart';
 import 'package:holo/util/http_util.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:logger/logger.dart';
 
 /// Bangumi 元数据服务类
 /// 实现了 MetaService 接口，提供 Bangumi 网站的元数据服务
 class Bangumi implements MetaService {
   String languageCode;
-  final Logger _logger = Logger();
+  final Logger _logger = LoggerUtil.logger;
   @override
   /// 获取服务名称
   String get name => "Bangumi";

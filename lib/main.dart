@@ -13,21 +13,24 @@ import 'package:holo/entity/subject_relation.dart';
 import 'package:holo/entity/user_setting.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/ui/screen/appearance.dart';
-import 'package:holo/ui/screen/image_search.dart';
-import 'package:holo/ui/screen/player.dart';
-import 'package:holo/ui/screen/rule_edit.dart';
-import 'package:holo/ui/screen/rule_manager.dart';
-import 'package:holo/ui/screen/rule_repository.dart';
-import 'package:holo/ui/screen/rule_test.dart';
-import 'package:holo/ui/screen/account.dart';
-import 'package:holo/ui/screen/calendar.dart';
-import 'package:holo/ui/screen/detail.dart';
-import 'package:holo/ui/screen/home.dart';
-import 'package:holo/ui/screen/search.dart';
-import 'package:holo/ui/screen/setting.dart';
-import 'package:holo/ui/screen/subscribe.dart';
+import 'package:holo/ui/screen/appearance_screen.dart';
+import 'package:holo/ui/screen/image_search_screen.dart';
+import 'package:holo/ui/screen/logger_screen.dart';
+import 'package:holo/ui/screen/player_screen.dart';
+import 'package:holo/ui/screen/rule_edit_screen.dart';
+import 'package:holo/ui/screen/rule_manager_screen.dart';
+import 'package:holo/ui/screen/rule_repository_screen.dart';
+import 'package:holo/ui/screen/rule_test_screen.dart';
+import 'package:holo/ui/screen/account_screen.dart';
+import 'package:holo/ui/screen/calendar_screen.dart';
+import 'package:holo/ui/screen/detail_screen.dart';
+import 'package:holo/ui/screen/home_screen.dart';
+import 'package:holo/ui/screen/search_screen.dart';
+import 'package:holo/ui/screen/setting_screen.dart';
+import 'package:holo/ui/screen/subscribe_screen.dart';
 import 'package:holo/util/hive_util.dart';
+import 'package:holo/util/logger_util.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -72,6 +75,9 @@ void main() async {
 
   // 初始化Hive数据库
   await HiveUtil.initHive();
+
+  // 初始化日志记录器
+  LoggerUtil.init('${(await getApplicationDocumentsDirectory()).path}/log.txt');
   // 运行应用
   runApp(
     EasyLocalization(
@@ -263,6 +269,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         path: '/appearance',
         builder: (context, state) {
           return Appearance();
+        },
+      ),
+      // 日志查看页路由
+      GoRoute(
+        path: '/logger',
+        builder: (context, state) {
+          return LoggerScreen();
         },
       ),
     ],
