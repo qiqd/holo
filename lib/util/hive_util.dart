@@ -134,7 +134,6 @@ class HiveUtil {
     Hive.init('${(await getApplicationDocumentsDirectory()).path}/holo');
     userBox = await Hive.openBox("user");
     await userBox?.clear();
-    await initHive();
   }
 
   static Future<void> setRule(Rule rule) async {
@@ -163,12 +162,24 @@ class HiveUtil {
     }
   }
 
-  static Future<void> setUserSubscribe(UserSubscribe userSubscribe) async {
+  /// 设置用户订阅
+  /// [userSubscribes] 用户订阅列表
+  /// 如果[userSubscribes]为空， 返回当前订阅列表
+  /// 否则，根据订阅id更新订阅列表，添加新订阅
+  /// 返回设置后的订阅列表
+  static Future<List<UserSubscribe>> setUserSubscribes(
+    List<UserSubscribe> userSubscribes,
+  ) async {
+    var ids = userSubscribes.map((e) => e.id).toList();
     var newList = getUserSubscribes();
-    newList.removeWhere((element) => element.id == userSubscribe.id);
-    newList.add(userSubscribe);
+    if (ids.isEmpty) {
+      return newList;
+    }
+    newList.removeWhere((element) => ids.contains(element.id));
+    newList.addAll(userSubscribes);
     await userSubscribeBox?.clear();
     await userSubscribeBox?.addAll(newList);
+    return newList;
   }
 
   /// 获取用户订阅
@@ -186,28 +197,42 @@ class HiveUtil {
   }
 
   /// 删除用户订阅
-  /// [id] 订阅id
-  /// 如果[id]为null，则清除所有订阅
-  static Future<void> clearUserSubscribe({int? id}) async {
-    if (id == null) {
+  /// [ids] 订阅id列表
+  /// 如果[ids]为空，则清除所有订阅
+  /// 返回清除后的订阅列表
+  static Future<List<UserSubscribe>> clearUserSubscribe({
+    List<int> ids = const [],
+  }) async {
+    if (ids.isEmpty) {
       await userSubscribeBox?.clear();
+      return [];
     } else {
       var list = getUserSubscribes();
-      list.removeWhere((element) => element.id == id);
+      list.removeWhere((element) => ids.contains(element.id));
       await userSubscribeBox?.clear();
       await userSubscribeBox?.addAll(list);
+      return list;
     }
   }
 
-  static Future<void> setUserPlayback(UserPlayback userPlayback) async {
-    var newList =
-        userPlaybackBox?.values
-            .where((item) => item.id != userPlayback.id)
-            .toList() ??
-        [];
-    newList.add(userPlayback);
+  /// 设置用户播放记录
+  /// [userPlaybacks] 用户播放记录列表
+  /// 如果[userPlaybacks]为空， 返回当前播放记录列表
+  /// 否则，根据播放记录id更新播放记录列表，添加新播放记录
+  /// 返回设置后的播放记录列表
+  static Future<List<UserPlayback>> setUserPlaybacks(
+    List<UserPlayback> userPlaybacks,
+  ) async {
+    var ids = userPlaybacks.map((e) => e.id).toList();
+    var newList = getUserPlaybacks();
+    if (ids.isEmpty) {
+      return newList;
+    }
+    newList.removeWhere((element) => ids.contains(element.id));
+    newList.addAll(userPlaybacks);
     await userPlaybackBox?.clear();
     await userPlaybackBox?.addAll(newList);
+    return newList;
   }
 
   static List<UserPlayback> getUserPlaybacks({int? id}) {
@@ -222,16 +247,21 @@ class HiveUtil {
   }
 
   /// 清除用户播放记录
-  /// [id] 播放记录id
-  /// 如果[id]为null，则清除所有播放记录
-  static Future<void> clearUserPlayback({int? id}) async {
-    if (id == null) {
+  /// [ids] 播放记录id列表
+  /// 如果[ids]为空，则清除所有播放记录
+  /// 返回清除后的播放记录列表
+  static Future<List<UserPlayback>> clearUserPlayback({
+    List<int> ids = const [],
+  }) async {
+    if (ids.isEmpty) {
       await userPlaybackBox?.clear();
+      return [];
     } else {
       var list = getUserPlaybacks();
-      list.removeWhere((element) => element.id == id);
+      list.removeWhere((element) => ids.contains(element.id));
       await userPlaybackBox?.clear();
       await userPlaybackBox?.addAll(list);
+      return list;
     }
   }
 
@@ -260,9 +290,10 @@ class HiveUtil {
     }
   }
 
-  static Future<void> setUserSetting(UserSetting userSetting) async {
+  static Future<UserSetting> setUserSetting(UserSetting userSetting) async {
     await userSettingBox?.clear();
     await userSettingBox?.add(userSetting);
+    return userSetting;
   }
 
   /// 获取用户设置

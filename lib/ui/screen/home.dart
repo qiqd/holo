@@ -10,6 +10,7 @@ import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/cache_image.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
+import 'package:holo/ui/component/shimmer.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/version_checker.dart';
 import 'package:holo/extension/safe_set_state.dart';
@@ -114,34 +115,14 @@ class _HomeScreenState extends State<HomeScreen> {
     _hotNotifier.value = HiveUtil.getHotSubjectItems();
     _rank = HiveUtil.getHiScoreSubjectItems();
 
-    if (DateTime.now().hour % 3 == 0 || _hotNotifier.value.isEmpty) {
+    if (DateTime.now().hour % 5 == 0 || _hotNotifier.value.isEmpty) {
       _fetchHot();
     }
-    if (DateTime.now().hour % 3 == 0 || _rank.isEmpty) {
+    if (DateTime.now().hour % 5 == 0 || _rank.isEmpty) {
       _fetchRank();
     }
 
     _scrollController.addListener(_onScrollToBottom);
-  }
-
-  Widget _buildHotSkeleton(bool isLandscape) {
-    return SizedBox(
-      height: isLandscape ? 400 : 200,
-      width: double.infinity,
-      child: CarouselView.weighted(
-        controller: _carouselController,
-        itemSnapping: true,
-        flexWeights: isLandscape ? [1, 1, 1] : [5, 1],
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        children: [1, 2, 3, 4].map((e) {
-          return Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(color: Colors.white38),
-          );
-        }).toList(),
-      ),
-    );
   }
 
   Widget _buildRankSkeleton(bool isLandscape) {
@@ -272,59 +253,74 @@ class _HomeContent extends StatelessWidget {
 
   final _HomeScreenState state;
   final bool isLandscape;
-  Widget _buildCarouselView(void Function(SubjectItem item) onTap) {
+  Widget _buildCarouselView(
+    List<SubjectItem> items,
+    void Function(SubjectItem item) onTap,
+  ) {
     return CarouselSlider(
       options: CarouselOptions(
         autoPlay: true,
         viewportFraction: 0.8,
-        autoPlayInterval: const Duration(seconds: 2),
+        autoPlayInterval: const Duration(seconds: 5),
       ),
-      items: state._hotNotifier.value.map((e) {
-        return InkWell(
-          onTap: () => onTap(e),
-          child: Padding(
-            padding: .symmetric(horizontal: 6),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Stack(
-                children: [
-                  Hero(
-                    tag: 'home-hot_${e.id}',
-                    child: CacheImage(
-                      imageUrl: e.images.medium ?? '',
-                      fit: BoxFit.cover,
-                      memCacheWidth: 700,
-                      memCacheHeight: 900,
-                    ),
+      items: items.isEmpty
+          ? [1, 2, 3, 4]
+                .map(
+                  (e) => Padding(
+                    padding: .symmetric(horizontal: 6),
+                    child: ShimmerContainerSkeleton(),
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Colors.black.withOpacity(0.5),
-                            Colors.transparent,
-                          ],
+                )
+                .toList()
+          : items.map((e) {
+              return InkWell(
+                onTap: () => onTap(e),
+                child: Padding(
+                  padding: .symmetric(horizontal: 6),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Stack(
+                      children: [
+                        Hero(
+                          tag: 'home-hot_${e.id}',
+                          child: CacheImage(
+                            imageUrl: e.images.medium ?? '',
+                            fit: BoxFit.cover,
+                            memCacheWidth: 700,
+                            memCacheHeight: 900,
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        e.title,
-                        maxLines: 2,
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [
+                                  Colors.black.withOpacity(0.5),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                            child: Text(
+                              e.title,
+                              maxLines: 2,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }).toList(),
+                ),
+              );
+            }).toList(),
     );
   }
 
@@ -364,27 +360,25 @@ class _HomeContent extends StatelessWidget {
                       child: ValueListenableBuilder<List<SubjectItem>>(
                         valueListenable: state._hotNotifier,
                         builder: (context, hot, child) {
-                          return hot.isEmpty
-                              ? state._buildHotSkeleton(isLandscape)
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: SizedBox(
-                                    height: isLandscape ? 400 : 200,
-                                    width: double.infinity,
-                                    child: _buildCarouselView((item) {
-                                      context.push(
-                                        '/detail',
-                                        extra: {
-                                          'id': item.id,
-                                          'subject': item,
-                                          'keyword': item.title,
-                                          'cover': item.images.large ?? '',
-                                          'from': "home-hot",
-                                        },
-                                      );
-                                    }),
-                                  ),
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: SizedBox(
+                              height: isLandscape ? 400 : 200,
+                              width: double.infinity,
+                              child: _buildCarouselView(hot, (item) {
+                                context.push(
+                                  '/detail',
+                                  extra: {
+                                    'id': item.id,
+                                    'subject': item,
+                                    'keyword': item.title,
+                                    'cover': item.images.large ?? '',
+                                    'from': "home-hot",
+                                  },
                                 );
+                              }),
+                            ),
+                          );
                         },
                       ),
                     ),

@@ -1,15 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:holo/entity/user.dart';
-import 'package:holo/util/hive_util.dart';
+import 'package:holo/entity/user_playback.dart';
+import 'package:holo/entity/user_setting.dart';
+import 'package:holo/entity/user_subscribe.dart';
 import 'package:logger/logger.dart';
 
 class WebDAV {
   static const String _appDBPath = "holo/";
-  static const String _settingPath = "holo/user_setting.hive";
-  static const String _subscribePath = "holo/user_subscribe.hive";
-  static const String _playbackPath = "holo/user_playback.hive";
+  static const String _settingPath = "holo/user_setting.json";
+  static const String _subscribePath = "holo/user_subscribe.json";
+  static const String _playbackPath = "holo/user_playback.json";
   static final Logger _logger = Logger();
   static Dio? _dio;
   static void init(User? user) {
@@ -22,6 +23,8 @@ class WebDAV {
       ..options.headers["User-Agent"] = "Holo/client"
       ..options.headers["Authorization"] =
           "Basic ${base64.encode(utf8.encode("${user.email}:${user.secret}"))}";
+
+    folderChecker();
   }
 
   ///webDAV登录
@@ -44,6 +47,7 @@ class WebDAV {
           },
         ),
       );
+
       return (request.statusCode ?? 500) ~/ 100 == 2;
     } catch (e) {
       onError?.call(e.toString());
@@ -57,12 +61,12 @@ class WebDAV {
     if (_dio == null) {
       return;
     }
-
     try {
-      final res = await _dio!.request<String>(
+      final res = await _dio!.request<void>(
         _appDBPath,
         options: Options(method: "PROPFIND"),
       );
+
       //目录已经存在
       if (res.statusCode == 207) {
         return;
@@ -74,82 +78,78 @@ class WebDAV {
     }
   }
 
-  /// 从webDAV获取数据
-  static Future<bool?> fetchData() async {
-    if (HiveUtil.user == null) {
+  static Future<List<UserSubscribe>> fetchUserSubscribe() async {
+    try {
+      final subscribe = await _dio?.get(_subscribePath);
+      return (json.decode(subscribe?.data) as List)
+          .map((e) => UserSubscribe.fromJson(e))
+          .toList();
+    } catch (e) {
+      _logger.e(e.toString());
+      return [];
+    }
+  }
+
+  static Future<List<UserPlayback>> fetchUserPlayback() async {
+    try {
+      final playback = await _dio?.get(_playbackPath);
+      return (json.decode(playback?.data) as List)
+          .map((e) => UserPlayback.fromJson(e))
+          .toList();
+    } catch (e) {
+      _logger.e(e.toString());
+      return [];
+    }
+  }
+
+  static Future<UserSetting?> fetchUserSetting() async {
+    try {
+      final setting = await _dio?.get(_settingPath);
+      return UserSetting.fromJson(json.decode(setting?.data));
+    } catch (e) {
+      _logger.e(e.toString());
       return null;
     }
+  }
+
+  static Future<bool> syncUserSetting(UserSetting setting) async {
     try {
-      await HiveUtil.closeHive();
-      folderChecker();
-      if (_dio == null) {
-        return null;
-      }
-      final future1 = _dio!.download(
-        _subscribePath,
-        HiveUtil.getUserSubscribePath(),
-      );
-      final future2 = _dio!.download(
-        _playbackPath,
-        HiveUtil.getUserPlaybackPath(),
-      );
-      final future3 = _dio!.download(
+      final res = await _dio?.put<void>(
         _settingPath,
-        HiveUtil.getUserSettingPath(),
+        data: setting.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
       );
-      await Future.wait([future1, future2, future3]);
-      await HiveUtil.initHive();
-      return true;
+      return (res?.statusCode ?? 500) ~/ 100 == 2;
     } catch (e) {
       _logger.e(e.toString());
       return false;
     }
   }
 
-  /// 同步数据到webDAV
-  /// [isCommon] 是否是公共数据
-  static Future<bool> syncData(bool isCommon) async {
+  static Future<bool> syncUserSubscribe(
+    List<UserSubscribe> subscribeList,
+  ) async {
     try {
-      final future1 = uploadFile(
-        filePath: isCommon
-            ? HiveUtil.getCommonUserSettingPath()
-            : HiveUtil.getUserSettingPath(),
-        targetPath: _settingPath,
+      final res = await _dio?.put<void>(
+        _subscribePath,
+        data: subscribeList.map((e) => e.toJson()).toList(),
+        options: Options(contentType: Headers.jsonContentType),
       );
-      final future2 = uploadFile(
-        filePath: isCommon
-            ? HiveUtil.getCommonUserSubscribePath()
-            : HiveUtil.getUserSubscribePath(),
-        targetPath: _subscribePath,
-      );
-      final future3 = uploadFile(
-        filePath: isCommon
-            ? HiveUtil.getCommonUserPlaybackPath()
-            : HiveUtil.getUserPlaybackPath(),
-        targetPath: _playbackPath,
-      );
-      await Future.wait([future1, future2, future3]);
-      return true;
+      return res?.statusCode == 204;
     } catch (e) {
       _logger.e(e.toString());
       return false;
     }
   }
 
-  static Future<bool> uploadFile({
-    required String filePath,
-    required String targetPath,
-  }) async {
-    if (_dio == null) {
-      return false;
-    }
+  static Future<bool> syncUserPlayback(List<UserPlayback> playbackList) async {
     try {
-      final res = await _dio!.request<void>(
-        targetPath,
-        data: File(filePath).openRead(),
-        options: Options(method: "PUT"),
+      final res = await _dio?.put<void>(
+        _playbackPath,
+        data: playbackList.map((e) => e.toJson()).toList(),
+        options: Options(contentType: Headers.jsonContentType),
       );
-      return res.statusCode == 204;
+      return res?.statusCode == 204;
     } catch (e) {
       _logger.e(e.toString());
       return false;

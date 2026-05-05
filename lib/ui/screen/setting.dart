@@ -432,13 +432,14 @@ class _SettingScreenState extends State<SettingScreen>
             child: Text('setting.account.signout_dialog_cancel'.tr()),
           ),
           FilledButton(
-            onPressed: () {
-              setState(() {
-                HiveUtil.removeUser();
-                MyApp.userSettingNotifier.value =
-                    UserSetting.createDefaultUserSetting(email: '');
-              });
-              Navigator.pop(context);
+            onPressed: () async {
+              MyApp.userSettingNotifier.value =
+                  UserSetting.createDefaultUserSetting(email: '');
+              await HiveUtil.removeUser();
+              await HiveUtil.initHive();
+              if (mounted) {
+                context.pop();
+              }
             },
             child: Text('setting.account.signout_dialog_confirm'.tr()),
           ),

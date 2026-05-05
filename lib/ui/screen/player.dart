@@ -294,9 +294,10 @@ class _PlayerScreenState extends State<PlayerScreen>
             lineIndex: _lineIndex,
           );
 
-    await HiveUtil.setUserPlayback(newPlayback);
+    var newPlaybackHistory = await HiveUtil.setUserPlaybacks([newPlayback]);
     await HiveUtil.setUserSetting(_setting);
-    await WebDAV.syncData(_setting.email.isEmpty);
+    await WebDAV.syncUserSetting(_setting);
+    await WebDAV.syncUserPlayback(newPlaybackHistory);
   }
 
   Future<void> _toggleFullScreen(bool isFullScreen) async {

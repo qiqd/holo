@@ -18,6 +18,8 @@ class UserSubscribe {
   final DateTime createdAt;
   @HiveField(5)
   final bool isSync;
+
+  /// 观看状态 0:无状态 1:想看 2:看过 3:在看
   @HiveField(6)
   final int viewingStatus;
 
@@ -60,7 +62,7 @@ class UserSubscribe {
       createdAt: map['createdAt'] != null
           ? DateTime.parse(map['createdAt'])
           : DateTime(2022, 6, 20),
-      isSync: map['isSync'] == 1,
+      isSync: map['isSync'],
       viewingStatus: map['viewingStatus'],
     );
   }
@@ -72,7 +74,7 @@ class UserSubscribe {
       'title': title,
       'imgUrl': imgUrl,
       'createdAt': createdAt.toIso8601String(),
-      'isSync': isSync ? 1 : 0,
+      'isSync': isSync,
       'viewingStatus': viewingStatus,
     };
   }

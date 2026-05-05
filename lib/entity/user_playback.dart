@@ -90,7 +90,7 @@ class UserPlayback {
       'position': position,
       'episodeIndex': episodeIndex,
       'lineIndex': lineIndex,
-      'isSync': isSync ? 1 : 0,
+      'isSync': isSync,
     };
   }
 }

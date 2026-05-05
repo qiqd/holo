@@ -39,23 +39,19 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     length: 5,
   );
 
-  Future<void> _fetchHistoryData() async {
-    final success = await WebDAV.fetchData();
-    if (success == null && mounted) {
+  Future<void> _fetchHistory() async {
+    if (MyApp.userSettingNotifier.value.email.isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("WebDAV is not configured")));
       return;
     }
-    if (success == true) {
-      // HiveUtil.init();
-      // WebDAV.init(HiveUtil.user);
-      _loadHistory();
-    } else if (success == false && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr("subscribe.fetch_subs_failed"))),
-      );
-    }
+    final subscribeRes = await WebDAV.fetchUserSubscribe();
+    final playbackRes = await WebDAV.fetchUserPlayback();
+
+    await HiveUtil.setUserSubscribes(subscribeRes);
+    await HiveUtil.setUserPlaybacks(playbackRes);
+    _loadHistory();
   }
 
   void _loadHistory() {
@@ -77,36 +73,29 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   }
 
   Future<void> _deletePlaybackHistory() async {
-    var futures = _checkedPlaybackIds.toList().map((id) {
-      return HiveUtil.clearUserPlayback(id: id);
-    }).toList();
-    await Future.wait(futures);
+    final newList = await HiveUtil.clearUserPlayback(
+      ids: _checkedPlaybackIds.toList(),
+    );
+
     _loadHistory();
-    if (MyApp.userSettingNotifier.value.email.isNotEmpty) {
-      await WebDAV.syncData(false);
-    }
+    await WebDAV.syncUserPlayback(newList);
   }
 
   Future<void> _changeSubscribeHistory(int viewingStatus) async {
-    subscribe.where((item) => _checkedSubscribeIds.contains(item.id)).forEach((
-      s,
-    ) async {
-      switch (viewingStatus) {
-        // 删除订阅
-        case -1:
-          await HiveUtil.clearUserSubscribe(id: s.id);
-          break;
-        // 更新订阅状态
-        default:
-          var newSubscribe = s.copyWith(viewingStatus: viewingStatus);
-          await HiveUtil.setUserSubscribe(newSubscribe);
-      }
-    });
+    var items = subscribe
+        .where((item) => _checkedSubscribeIds.contains(item.id))
+        .toList();
+    var newList = switch (viewingStatus) {
+      -1 => await HiveUtil.clearUserSubscribe(
+        ids: items.map((e) => e.id).toList(),
+      ),
+      _ => await HiveUtil.setUserSubscribes(
+        items.map((e) => e.copyWith(viewingStatus: viewingStatus)).toList(),
+      ),
+    };
     _checkedSubscribeIds.clear();
     _loadHistory();
-    if (MyApp.userSettingNotifier.value.email.isNotEmpty) {
-      await WebDAV.syncData(false);
-    }
+    await WebDAV.syncUserSubscribe(newList);
   }
 
   void initTabBarListener() {
@@ -122,7 +111,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   Widget _buildEmptyMsg(String msg, {bool isPlayback = false}) {
     return LoadingOrShowMsg(
       msg: msg,
-      onMsgTab: () async => await _fetchHistoryData(),
+      onMsgTab: () async => await _fetchHistory(),
     );
   }
 
@@ -177,7 +166,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 },
               ),
               onRefresh: () {
-                return _fetchHistoryData();
+                return _fetchHistory();
               },
             )
           // 播放记录列表
@@ -228,7 +217,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 },
               ),
               onRefresh: () async {
-                await _fetchHistoryData();
+                await _fetchHistory();
               },
             ),
     );
@@ -296,7 +285,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               setState(() {
                 _isUpdating = true;
               });
-              await _fetchHistoryData();
+              await _fetchHistory();
               setState(() {
                 _isUpdating = false;
               });
@@ -313,7 +302,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     super.initState();
     initTabBarListener();
     _loadHistory();
-    _fetchHistoryData();
+    _fetchHistory();
   }
 
   @override

@@ -103,21 +103,19 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   /// 初始化应用设置
-  /// 从服务器获取设置，如果获取失败则使用本地存储的设置
-  static Future<void> initAppSetting({bool initNow = true}) async {
+  /// 从WebDAV获取设置，包括订阅、播放记录
+  static Future<void> initAppSetting() async {
     if (HiveUtil.user == null) {
       return;
     }
     WebDAV.init(HiveUtil.user);
-    if (initNow) {
-      await WebDAV.fetchData();
-    } else {
-      Timer(const Duration(seconds: 5), () async {
-        await WebDAV.fetchData();
-      });
+    final UserSetting? setting = await WebDAV.fetchUserSetting();
+    if (setting != null) {
+      HiveUtil.setUserSetting(setting);
+      MyApp.userSettingNotifier.value = setting;
     }
-    var appSetting = HiveUtil.getUserSetting();
-    MyApp.userSettingNotifier.value = appSetting;
+    // await HiveUtil.setUserSubscribes((await WebDAV.fetchUserSubscribe()) ?? []);
+    // await HiveUtil.setUserPlaybacks((await WebDAV.fetchUserPlayback()) ?? []);
   }
 
   @override
@@ -279,7 +277,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     // 初始化应用设置
-    MyApp.initAppSetting(initNow: false);
+    MyApp.initAppSetting();
     // 添加Widget绑定观察者
     WidgetsBinding.instance.addObserver(this);
     // 初始化动画源

@@ -11,6 +11,7 @@ import 'package:holo/entity/user_subscribe.dart';
 import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
+import 'package:holo/ui/component/cache_image.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/jaro_winkler_similarity.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -185,6 +186,7 @@ class _DetailScreenState extends State<DetailScreen>
     if (_subject == null) {
       return;
     }
+    var newSubscribe = <UserSubscribe>[];
     if (isSubscribed) {
       UserSubscribe subscribe = _userSubscribe != null
           ? _userSubscribe!.copyWith(
@@ -200,15 +202,15 @@ class _DetailScreenState extends State<DetailScreen>
               isSync: false,
               viewingStatus: _viewingStatus,
             );
-      await HiveUtil.setUserSubscribe(subscribe);
+      newSubscribe = await HiveUtil.setUserSubscribes([subscribe]);
     } else {
       if (_userSubscribe != null) {
-        await HiveUtil.clearUserSubscribe(id: _userSubscribe!.id);
+        newSubscribe = await HiveUtil.clearUserSubscribe(
+          ids: [_userSubscribe!.id],
+        );
       }
     }
-    if (MyApp.userSettingNotifier.value.email.isNotEmpty) {
-      await WebDAV.syncData(false);
-    }
+    await WebDAV.syncUserSubscribe(newSubscribe);
   }
 
   Future<void> subscribeHandle() async {
@@ -492,6 +494,7 @@ class _DetailScreenState extends State<DetailScreen>
   Widget _buildListTile({
     required List<Map<String, String?>> data,
     required String placeholder,
+    bool useCircleAvatar = true,
     void Function(String id)? onTap,
   }) {
     return data.isNotEmpty
@@ -500,9 +503,18 @@ class _DetailScreenState extends State<DetailScreen>
             itemBuilder: (context, index) {
               final p = data[index];
               return ListTile(
-                leading: CircleAvatar(
-                  foregroundImage: NetworkImage(p['image'] ?? ''),
-                ),
+                leading: useCircleAvatar
+                    ? CircleAvatar(
+                        foregroundImage: NetworkImage(p['image'] ?? ''),
+                      )
+                    : SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: CacheImage(
+                          fit: BoxFit.contain,
+                          imageUrl: p['image'] ?? '',
+                        ),
+                      ),
                 title: Text(p['title'] ?? "detail.unknown".tr()),
                 subtitle: Text(p['subtitle'] ?? ''),
                 onTap: () => onTap?.call(p['id'] as String),
@@ -576,7 +588,7 @@ class _DetailScreenState extends State<DetailScreen>
 
   @override
   void dispose() {
-    _updateSubscribeHistory();
+    // _updateSubscribeHistory();
     subTabController.dispose();
     tabController.dispose();
     super.dispose();
@@ -698,6 +710,7 @@ class _DetailScreenState extends State<DetailScreen>
                                     ),
                                     //关系板块
                                     _buildListTile(
+                                      useCircleAvatar: false,
                                       data: _relation
                                           .map(
                                             (e) => {

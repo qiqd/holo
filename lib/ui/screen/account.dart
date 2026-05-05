@@ -42,16 +42,9 @@ class _AccountScreenState extends State<AccountScreen> {
       url: _serverUrlController.text,
       email: _emailController.text,
       secret: _passwordController.text,
-      onError: (message) {
-        _scaffoldMessage.showSnackBar(
-          SnackBar(content: Text("${"sign.login_failed".tr()}msg:$message")),
-        );
-      },
     );
+
     if (success && mounted) {
-      safeSetState(() {
-        _isLoading = false;
-      });
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("sign.login_success".tr())));
@@ -64,12 +57,32 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       );
       await HiveUtil.initHive();
+      var userSetting = HiveUtil.getUserSetting().copyWith(
+        email: _emailController.text,
+      );
       WebDAV.init(HiveUtil.user);
-      await MyApp.initAppSetting();
+      var s = await WebDAV.fetchUserSetting();
+      if (s == null) {
+        await WebDAV.syncUserSetting(userSetting);
+        await MyApp.initAppSetting();
+      } else {
+        userSetting = s;
+        HiveUtil.setUserSetting(userSetting);
+      }
+      MyApp.userSettingNotifier.value = userSetting;
+      HiveUtil.setUserPlaybacks((await WebDAV.fetchUserPlayback()));
+      HiveUtil.setUserSubscribes((await WebDAV.fetchUserSubscribe()));
       if (mounted) {
         context.go('/home');
       }
+    } else if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("sign.verify_failed".tr())));
     }
+    safeSetState(() {
+      _isLoading = false;
+    });
   }
 
   @override

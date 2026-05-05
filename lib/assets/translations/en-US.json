@@ -167,6 +167,7 @@
         "confirm_password": "Confirm Password",
         "login": "Login",
         "verify": "Verify",
+        "verify_failed": "Verification failed",
         "register": "Register",
         "switch_to_register": "Switch to Register",
         "switch_to_login": "Switch to Login",

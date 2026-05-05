@@ -168,6 +168,7 @@
         "login": "登入",
         "register": "註冊",
         "verify": "驗證",
+        "verify_failed": "驗證失敗",
         "switch_to_register": "切換至註冊",
         "switch_to_login": "切換至登入",
         "login_success": "登入成功",

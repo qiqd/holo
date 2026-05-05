@@ -192,12 +192,12 @@ class _AppearanceState extends State<Appearance> {
   }
 
   /// 更新主题颜色
-  void _updatePrimaryColor(Color color) {
+  Future<void> _updatePrimaryColor(Color color) async {
     var appSetting = MyApp.userSettingNotifier.value;
     var newSetting = appSetting.copyWith(colorSeed: color.value);
     MyApp.userSettingNotifier.value = newSetting;
-    HiveUtil.setUserSetting(newSetting);
-    WebDAV.syncData(newSetting.email.isEmpty);
+    await HiveUtil.setUserSetting(newSetting);
+    await WebDAV.syncUserSetting(newSetting);
   }
 
   /// 显示图片选择器
