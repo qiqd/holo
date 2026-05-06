@@ -4,7 +4,9 @@ import 'package:holo/entity/rule.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/flutter_inappwebview_util.dart';
 import 'package:holo/util/http_util.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:html/parser.dart';
+import 'package:logger/web.dart';
 
 /// 通用动画源服务类
 /// 根据规则配置构建动画源服务
@@ -23,6 +25,8 @@ class Common extends SourceService {
 
   /// WebView工具类实例
   final FlutterInappwebviewUtil _webviewUtil = FlutterInappwebviewUtil();
+
+  final Logger _logger = LoggerUtil.logger;
 
   /// 构造函数
   /// [rule] 规则配置对象
@@ -81,6 +85,8 @@ class Common extends SourceService {
             (key, value) =>
                 MapEntry(key, value.replaceAll('{mediaId}', mediaId)),
           ),
+          waitingForTargetElement: rule.waitForTargetElement,
+          targetElementSelector: rule.lineSelector,
           onError: exceptionHandler,
         ),
         false =>
@@ -139,6 +145,8 @@ class Common extends SourceService {
           ),
           timeout: Duration(seconds: rule.timeout),
           headers: rule.searchRequestHeaders,
+          waitingForTargetElement: rule.waitForTargetElement,
+          targetElementSelector: rule.searchSelector,
           onError: exceptionHandler,
         ),
         false =>
@@ -194,7 +202,7 @@ class Common extends SourceService {
   /// [episodeId] 剧集ID
   /// [exceptionHandler] 异常处理器
   /// 返回播放地址字符串
-  Future<String?> fetchPlaybackUrl(
+  Future<String?> fetchVideoUrl(
     String episodeId,
     Function(String) exceptionHandler,
   ) async {
@@ -213,7 +221,8 @@ class Common extends SourceService {
           ),
           isPlayerPage: true,
           headers: rule.playerRequestHeaders,
-          waitForMediaElement: rule.waitForMediaElement,
+          waitingForTargetElement: rule.waitForTargetElement,
+          targetElementSelector: rule.playerVideoSelector,
           onError: exceptionHandler,
         ),
         false =>
@@ -237,15 +246,15 @@ class Common extends SourceService {
               tempUrl,
               isPlayerPage: true,
               headers: rule.playerRequestHeaders,
-              waitForMediaElement: rule.waitForMediaElement,
+
+              waitingForTargetElement: rule.waitForTargetElement,
+              targetElementSelector: selector,
               timeout: Duration(seconds: rule.timeout),
             ),
             false => (await HttpUtil.createDio().get(tempUrl)).data as String,
           };
           doc = parse(tempHtmlStr);
-          log(
-            'embed selector==${DateTime.now().millisecond}==}:$selector, tempUrl:$tempUrl',
-          );
+          _logger.d("embed selector:$selector, tempUrl:$tempUrl");
         }
       }
       // 从videoElement中获取视频URL
@@ -272,10 +281,15 @@ class Common extends SourceService {
         }
       }
       // 如果videoUrl为空，尝试从playerVideoSelector中获取文本内容
-      if (videoUrl.isEmpty) {
+      if (videoUrl.trim().isEmpty) {
         videoUrl = doc.querySelector(rule.playerVideoSelector)?.text ?? '';
       }
-      log('fetch_view_videoUrl==${DateTime.now().millisecond}==}:$videoUrl');
+      if (videoUrl.trim().isEmpty) {
+        videoUrl =
+            doc.querySelector(rule.playerVideoSelector)?.attributes['src'] ??
+            '';
+      }
+      _logger.d("fetch_view_videoUrl:$videoUrl");
       return videoUrl;
     } catch (e) {
       exceptionHandler(e.toString());

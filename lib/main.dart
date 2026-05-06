@@ -120,8 +120,6 @@ class MyApp extends StatefulWidget {
       HiveUtil.setUserSetting(setting);
       MyApp.userSettingNotifier.value = setting;
     }
-    // await HiveUtil.setUserSubscribes((await WebDAV.fetchUserSubscribe()) ?? []);
-    // await HiveUtil.setUserPlaybacks((await WebDAV.fetchUserPlayback()) ?? []);
   }
 
   @override

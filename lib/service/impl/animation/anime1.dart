@@ -30,7 +30,7 @@ class Anime1 implements SourceService {
   }
 
   @override
-  Future<String?> fetchPlaybackUrl(
+  Future<String?> fetchVideoUrl(
     String episodeId,
     Function(dynamic) exceptionHandler,
   ) {

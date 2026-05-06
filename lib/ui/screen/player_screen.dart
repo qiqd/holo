@@ -166,7 +166,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         _playerNotifier.value?.pause();
         _playerNotifier.value?.dispose();
         _playerNotifier.value = null;
-        final newUrl = await _source.fetchPlaybackUrl(
+        final newUrl = await _source.fetchVideoUrl(
           _detail!.lines![_lineIndex].episodes![_episodeIndex],
           (e) => safeSetState(() {
             _logger.e("fetchView error: $e");

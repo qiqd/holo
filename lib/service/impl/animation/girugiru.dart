@@ -95,7 +95,7 @@ class Girugiru implements SourceService {
   }
 
   @override
-  Future<String?> fetchPlaybackUrl(
+  Future<String?> fetchVideoUrl(
     String episodeId,
     Function(dynamic) exceptionHandler,
   ) async {

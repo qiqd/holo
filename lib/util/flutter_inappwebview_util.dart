@@ -18,11 +18,11 @@ class FlutterInappwebviewUtil {
   /// 当前请求的完成器
   Completer<String>? _currentCompleter;
 
-  /// 当前请求是否为播放器页面
-  bool _currentIsPlayerPage = false;
-
   /// 当前请求是否等待媒体元素
   bool _currentWaitForMediaElement = false;
+
+  /// 当前请求的目标元素选择器
+  String? _currentTargetElementSelector;
 
   /// 检查字符串是否包含 Unicode 字符
   /// [str]: 要检查的字符串
@@ -56,26 +56,19 @@ class FlutterInappwebviewUtil {
     return result;
   }
 
-  /// 检查 HTML 内容是否包含有效媒体元素（iframe 或 video）
+  /// 检查 HTML 内容是否包含有效媒体元素（根据目标元素选择器）
   /// [htmlContent]: HTML 内容字符串
+  /// [targetElementSelector]: 目标元素选择器，默认为空 null,当waitingForTargetElement为true时必填
   /// 返回是否包含有效媒体元素
-  bool hasValidMediaElements(String htmlContent) {
+  bool hasValidTargetElements(
+    String htmlContent,
+    String targetElementSelector,
+  ) {
     try {
       final doc = html_parser.parse(htmlContent);
-      final iframes = doc.querySelectorAll('iframe');
-      final videos = doc.querySelectorAll('video');
+      final items = doc.querySelectorAll(targetElementSelector);
 
-      for (var iframe in iframes) {
-        final src = iframe.attributes['src'];
-        if (src != null && src.contains('http')) return true;
-      }
-
-      for (var video in videos) {
-        final src = video.attributes['src'];
-        if (src != null && src.contains('http')) return true;
-      }
-
-      return false;
+      return items.isNotEmpty;
     } catch (e) {
       log('HTML解析失败: $e');
       return false;
@@ -91,23 +84,24 @@ class FlutterInappwebviewUtil {
   /// [headers]: 请求头
   /// [requestBody]: 请求体，仅用于 POST 请求
   /// [onError]: 错误回调
+  ///[waitingForTargetElement]: 是否等待目标元素加载完成，默认为 false
+  /// [targetElementSelector]: 目标元素选择器，默认为空 null,当waitingForTargetElement为true时必填
   /// 返回获取的 HTML 内容
   Future<String> fetchHtml(
     String url, {
     RequestMethod requestMethod = RequestMethod.get,
     bool isPlayerPage = false,
-    bool waitForMediaElement = false,
     Duration timeout = const Duration(seconds: 15),
     Map<String, String> headers = const {},
     Map<String, String> requestBody = const {},
+    bool waitingForTargetElement = false,
+    String? targetElementSelector,
     Function(String error)? onError,
   }) async {
     final completer = Completer<String>();
     _currentCompleter = completer;
-    _currentIsPlayerPage = isPlayerPage;
-    _currentWaitForMediaElement = waitForMediaElement;
-    _currentIsPlayerPage = isPlayerPage;
-    _currentWaitForMediaElement = waitForMediaElement;
+    _currentWaitForMediaElement = waitingForTargetElement;
+    _currentTargetElementSelector = targetElementSelector;
 
     try {
       final webUri = WebUri(url.startsWith('http') ? url : 'https://$url');
@@ -183,13 +177,20 @@ class FlutterInappwebviewUtil {
               }
 
               // 如果需要等待媒体元素
-              if (_currentIsPlayerPage && _currentWaitForMediaElement) {
+              if (_currentTargetElementSelector != null &&
+                  _currentWaitForMediaElement) {
                 int count = 0;
-                const maxWait = 30; // 最多等待 30 秒
+                int maxWait = timeout.inMilliseconds ~/ 500;
 
-                while (!hasValidMediaElements(htmlContent) && count < maxWait) {
-                  log('等待媒体元素... ($count/$maxWait)');
-                  await Future.delayed(const Duration(seconds: 1));
+                while (!hasValidTargetElements(
+                      htmlContent,
+                      _currentTargetElementSelector!,
+                    ) &&
+                    count < maxWait) {
+                  log(
+                    '等待媒体元素($_currentTargetElementSelector)... ($count/$maxWait)',
+                  );
+                  await Future.delayed(const Duration(milliseconds: 500));
                   html =
                       await controller.evaluateJavascript(
                             source: 'document.documentElement.outerHTML',
@@ -203,7 +204,7 @@ class FlutterInappwebviewUtil {
                 }
 
                 if (count >= maxWait) {
-                  log('等待媒体元素超时');
+                  log('等待媒体元素($_currentTargetElementSelector)超时');
                 }
               }
 

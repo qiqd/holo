@@ -35,7 +35,7 @@ class RuleAdapter extends TypeAdapter<Rule> {
       fullPlayerUrl: fields[29] == null ? false : fields[29] as bool,
       fullDetailUrl: fields[21] == null ? false : fields[21] as bool,
       itemImgFromSrc: fields[13] == null ? true : fields[13] as bool,
-      waitForMediaElement: fields[33] == null ? true : fields[33] as bool,
+      waitForTargetElement: fields[33] == null ? true : fields[33] as bool,
       episodeReverse: fields[24] == null ? false : fields[24] as bool,
       searchRequestHeaders: fields[8] == null
           ? defaultHeaders
@@ -147,7 +147,7 @@ class RuleAdapter extends TypeAdapter<Rule> {
       ..writeByte(32)
       ..write(obj.embedVideoSelector)
       ..writeByte(33)
-      ..write(obj.waitForMediaElement)
+      ..write(obj.waitForTargetElement)
       ..writeByte(34)
       ..write(obj.videoUrlSubsChar)
       ..writeByte(35)
@@ -231,7 +231,7 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   fullPlayerUrl: json['fullPlayerUrl'] as bool? ?? false,
   fullDetailUrl: json['fullDetailUrl'] as bool? ?? false,
   itemImgFromSrc: json['itemImgFromSrc'] as bool? ?? true,
-  waitForMediaElement: json['waitForMediaElement'] as bool? ?? true,
+  waitForTargetElement: json['waitForTargetElement'] as bool? ?? true,
   episodeReverse: json['episodeReverse'] as bool? ?? false,
   searchRequestHeaders:
       (json['searchRequestHeaders'] as Map<String, dynamic>?)?.map(
@@ -326,7 +326,7 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'playerVideoSelector': instance.playerVideoSelector,
   'videoElementAttribute': instance.videoElementAttribute,
   'embedVideoSelector': instance.embedVideoSelector,
-  'waitForMediaElement': instance.waitForMediaElement,
+  'waitForTargetElement': instance.waitForTargetElement,
   'videoUrlSubsChar': instance.videoUrlSubsChar,
   'updateAt': instance.updateAt.toIso8601String(),
   'isEnabled': instance.isEnabled,

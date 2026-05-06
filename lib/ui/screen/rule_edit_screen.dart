@@ -25,7 +25,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
     if (!_formKey.currentState!.validate() || !_isEditMode) {
       return;
     }
-    if (widget.rule != null) {
+    if (_rule.name.isNotEmpty) {
       HiveUtil.setRule(_rule);
     }
     context.pop();
@@ -262,6 +262,21 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   _rule.useWebView = value;
                 });
               },
+            ),
+            //详情页等待视频元素加载开关
+            SwitchListTile(
+              value:
+                  widget.rule?.waitForTargetElement ??
+                  _rule.waitForTargetElement,
+              onChanged: widget.isEditMode
+                  ? (value) {
+                      setState(() {
+                        _rule.waitForTargetElement = value;
+                      });
+                    }
+                  : null,
+              title: Text('rule_edit.wait_for_ target_element_label'.tr()),
+              subtitle: Text('rule_edit.wait_for_target_element_subtitle'.tr()),
             ),
           ],
         ),
@@ -909,20 +924,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 });
               },
             ),
-            //详情页等待视频元素加载开关
-            SwitchListTile(
-              value:
-                  widget.rule?.waitForMediaElement ?? _rule.waitForMediaElement,
-              onChanged: widget.isEditMode
-                  ? (value) {
-                      setState(() {
-                        _rule.waitForMediaElement = value;
-                      });
-                    }
-                  : null,
-              title: Text('rule_edit.wait_for_media_element_label'.tr()),
-              subtitle: Text('rule_edit.wait_for_media_element_subtitle'.tr()),
-            ),
+
             TextFormField(
               enabled: widget.isEditMode,
               initialValue: widget.rule?.embedVideoSelector,

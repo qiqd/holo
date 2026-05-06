@@ -57,7 +57,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
       if (hasError || detail == null || detail.lines!.isEmpty) {
         return;
       }
-      var url = await widget.source.fetchPlaybackUrl(
+      var url = await widget.source.fetchVideoUrl(
         detail.lines![0].episodes![0],
         (e) {
           hasError = true;
