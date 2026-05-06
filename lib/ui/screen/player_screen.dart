@@ -293,6 +293,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             position: p,
             episodeIndex: _episodeIndex,
             lineIndex: _lineIndex,
+            lastPlaybackAt: DateTime.now(),
           );
 
     var newPlaybackHistory = await HiveUtil.setUserPlaybacks([newPlayback]);
