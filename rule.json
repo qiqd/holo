@@ -505,5 +505,52 @@
         "updateAt": "2026-03-19T11:24:36.672Z",
         "isEnabled": true,
         "isLocal": true
+    },
+    {
+        "name": "aowo",
+        "baseUrl": "https://www.aowu.tv",
+        "logoUrl": "https://www.aowu.tv/facion.ico",
+        "useWebView": true,
+        "version": "1.0",
+        "searchUrl": "/s/sKJKpxQ23x3o?anime={keyword}",
+        "searchRequestMethod": "get",
+        "searchRequestBody": {},
+        "searchRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullSearchUrl": false,
+        "timeout": 10,
+        "searchSelector": "article.category-video-card",
+        "itemImgSelector": "a.poster>img",
+        "itemImgFromSrc": true,
+        "itemTitleSelector": "h3>a",
+        "itemIdSelector": "h3>a",
+        "itemGenreSelector": "p",
+        "detailUrl": "{mediaid}",
+        "detailRequestMethod": "get",
+        "detailRequestBody": {},
+        "detailRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullDetailUrl": false,
+        "lineSelector": "div.episode-grid",
+        "episodeSelector": "a",
+        "episodeReverse": false,
+        "playerUrl": "{episodeId}",
+        "playerRequestMethod": "get",
+        "playerRequestBody": {},
+        "playerRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullPlayerUrl": false,
+        "playerVideoSelector": "video.art-video",
+        "videoElementAttribute": "src",
+        "embedVideoSelector": "",
+        "waitForTargetElement": true,
+        "videoUrlSubsChar": "",
+        "updateAt": "2026-05-06T20:32:16.481",
+        "isEnabled": true,
+        "isLocal": true,
+        "email": ""
     }
 ]
