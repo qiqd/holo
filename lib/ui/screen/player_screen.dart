@@ -702,140 +702,135 @@ class _PlayerScreenState extends State<PlayerScreen>
   /// 简介
   Widget _buildSummary() {
     // var updateTo = checkUpdateAt(subject.airDate);
-    return Padding(
-      padding: EdgeInsets.all(12).copyWith(top: 6),
-      child: Material(
-        clipBehavior: .antiAlias,
-        child: CustomScrollView(
-          slivers: [
-            // 简介卡片
-            SliverToBoxAdapter(
-              child: MediaCard(
-                id: "player_${_subject.id}",
-                imageUrl: _subject.images.large!,
-                title: _subject.title,
-                genre: _subject.metaTags.join('/'),
-                episode: _subject.totalEpisodes,
-                rating: _subject.rating,
-                ratingCount: _subject.ratingCount,
-                height: 180,
-                airDate: _subject.airDate,
-              ),
+    return Material(
+      clipBehavior: .antiAlias,
+      color: Colors.transparent,
+      child: CustomScrollView(
+        slivers: [
+          // 简介卡片
+          SliverToBoxAdapter(
+            child: MediaCard(
+              id: "player_${_subject.id}",
+              imageUrl: _subject.images.large!,
+              title: _subject.title,
+              genre: _subject.metaTags.join('/'),
+              episode: _subject.totalEpisodes,
+              rating: _subject.rating,
+              ratingCount: _subject.ratingCount,
+              height: 180,
+              airDate: _subject.airDate,
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 6)),
-            // 数据源
-            SliverToBoxAdapter(
-              child: ListTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                tileColor: Theme.of(
-                  context,
-                ).colorScheme.surfaceContainerHighest,
-                title: Text(
-                  "player.datasource".tr(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                subtitle: Text(
-                  _source.getName(),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                leading: SizedBox(
-                  width: 100,
-                  child: Center(
-                    child: Image.network(
-                      width: double.infinity,
-                      _source.getLogoUrl().contains('http')
-                          ? _source.getLogoUrl()
-                          : 'https://${_source.getLogoUrl()}',
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(Icons.error);
-                      },
-                    ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          // 数据源
+          SliverToBoxAdapter(
+            child: ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              tileColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              title: Text(
+                "player.datasource".tr(),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              subtitle: Text(
+                _source.getName(),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              leading: SizedBox(
+                width: 100,
+                child: Center(
+                  child: Image.network(
+                    width: double.infinity,
+                    _source.getLogoUrl().contains('http')
+                        ? _source.getLogoUrl()
+                        : 'https://${_source.getLogoUrl()}',
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.error);
+                    },
                   ),
                 ),
               ),
             ),
-            if (_dammaku != null)
-              const SliverToBoxAdapter(child: SizedBox(height: 6)),
-            // 弹幕
-            SliverToBoxAdapter(
-              child: AnimatedSize(
-                duration: Duration(milliseconds: 300),
-                child: _dammaku == null
-                    ? SizedBox.shrink()
-                    : Container(
-                        width: double.infinity,
+          ),
+          if (_dammaku != null)
+            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          // 弹幕
+          SliverToBoxAdapter(
+            child: AnimatedSize(
+              duration: Duration(milliseconds: 300),
+              child: _dammaku == null
+                  ? SizedBox.shrink()
+                  : Container(
+                      width: double.infinity,
 
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          title: _isDanmakuLoading
-                              ? LinearProgressIndicator()
-                              : Text(
-                                  context.tr(
-                                    'player.danmaku_statistics',
-                                    args: [
-                                      (_danmakuList?.length ?? 0).toString(),
-                                      (_dammaku?.comments?.length ?? 0)
-                                          .toString(),
-                                      (_dammaku?.comments?.length ?? 0)
-                                          .toString(),
-                                    ],
-                                  ),
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                        ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(12),
                       ),
+                      child: ListTile(
+                        title: _isDanmakuLoading
+                            ? LinearProgressIndicator()
+                            : Text(
+                                context.tr(
+                                  'player.danmaku_statistics',
+                                  args: [
+                                    (_danmakuList?.length ?? 0).toString(),
+                                    (_dammaku?.comments?.length ?? 0)
+                                        .toString(),
+                                    (_dammaku?.comments?.length ?? 0)
+                                        .toString(),
+                                  ],
+                                ),
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                      ),
+                    ),
+            ),
+          ),
+          if (widget.character.isNotEmpty)
+            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          // 角色
+          if (widget.character.isNotEmpty)
+            _buildPersonGrid(
+              title: "player.character".tr(),
+              name2Image: {
+                for (var e in widget.character)
+                  e.name ?? '': e.images?.grid ?? "",
+              },
+              onTap: (index) => _showPersonDetail(
+                bangumiId: widget.character[index].id!,
+                image: widget.character[index].images?.large ?? "",
+                name: widget.character[index].name ?? "",
+                role: widget.character[index].relation ?? "",
+                summary: widget.character[index].summary ?? "",
+                cv:
+                    widget.character[index].actors
+                        ?.map((a) => a.name ?? "")
+                        .join('·') ??
+                    "",
               ),
             ),
-            if (widget.character.isNotEmpty)
-              const SliverToBoxAdapter(child: SizedBox(height: 6)),
-            // 角色
-            if (widget.character.isNotEmpty)
-              _buildPersonGrid(
-                title: "player.character".tr(),
-                name2Image: {
-                  for (var e in widget.character)
-                    e.name ?? '': e.images?.grid ?? "",
-                },
-                onTap: (index) => _showPersonDetail(
-                  bangumiId: widget.character[index].id!,
-                  image: widget.character[index].images?.large ?? "",
-                  name: widget.character[index].name ?? "",
-                  role: widget.character[index].relation ?? "",
-                  summary: widget.character[index].summary ?? "",
-                  cv:
-                      widget.character[index].actors
-                          ?.map((a) => a.name ?? "")
-                          .join('·') ??
-                      "",
-                ),
+          if (widget.person.isNotEmpty)
+            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          // 人物
+          if (widget.person.isNotEmpty)
+            _buildPersonGrid(
+              title: "player.person".tr(),
+              name2Image: {
+                for (var e in widget.person) e.name ?? '': e.images?.grid ?? "",
+              },
+              onTap: (index) => _showPersonDetail(
+                bangumiId: widget.person[index].id!,
+                image: widget.person[index].images?.large ?? "",
+                name: widget.person[index].name ?? "",
+                role: widget.person[index].relation ?? "",
+                isCharacter: false,
               ),
-            if (widget.person.isNotEmpty)
-              const SliverToBoxAdapter(child: SizedBox(height: 6)),
-            // 人物
-            if (widget.person.isNotEmpty)
-              _buildPersonGrid(
-                title: "player.person".tr(),
-                name2Image: {
-                  for (var e in widget.person)
-                    e.name ?? '': e.images?.grid ?? "",
-                },
-                onTap: (index) => _showPersonDetail(
-                  bangumiId: widget.person[index].id!,
-                  image: widget.person[index].images?.large ?? "",
-                  name: widget.person[index].name ?? "",
-                  role: widget.person[index].relation ?? "",
-                  isCharacter: false,
-                ),
-              ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -851,7 +846,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           )
         : GridView.builder(
             key: PageStorageKey("player_episodes"),
-            padding: EdgeInsets.all(10),
+
             itemCount: _episode.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
@@ -977,9 +972,12 @@ class _PlayerScreenState extends State<PlayerScreen>
             ],
           ),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [_buildSummary(), _buildEpisode()],
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: TabBarView(
+                controller: _tabController,
+                children: [_buildSummary(), _buildEpisode()],
+              ),
             ),
           ),
         ],
@@ -1274,7 +1272,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     return SliverToBoxAdapter(
       child: Card(
         margin: .zero,
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         shadowColor: Colors.transparent,
         child: Container(
           padding: .all(6),

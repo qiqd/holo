@@ -24,7 +24,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   String? _msg;
   List<String> _weekdays = tr("calendar.week").split(',');
   void _fetchCalendar({bool refresh = false}) async {
-    if (_calendar.isNotEmpty && DateTime.now().hour % 3 != 0 && !refresh) {
+    if (_calendar.isNotEmpty && DateTime.now().hour % 5 != 0 && !refresh) {
       return;
     }
     setState(() {
