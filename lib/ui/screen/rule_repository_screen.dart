@@ -86,45 +86,49 @@ class _RuleRepositoryState extends State<RuleRepository> {
             ),
         ],
       ),
-      body: RefreshIndicator(
-        key: _refreshIndicatorKey,
-        onRefresh: _getRules,
-        child: SizedBox.expand(
-          child: Column(
-            children: [
-              if (_isLoading &&
-                  (Platform.isWindows || Platform.isMacOS || Platform.isLinux))
-                const Center(child: LinearProgressIndicator()),
-              Flexible(
-                child: ListView.builder(
-                  padding: .symmetric(horizontal: 12, vertical: 6),
-                  itemCount: _rules.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: () {},
-                      leading: SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: Image.network(
-                          _rules[index].logoUrl,
-                          loadingBuilder: (context, child, loadingProgress) =>
-                              loadingProgress == null
-                              ? child
-                              : const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Center(child: Icon(Icons.error_rounded)),
+      body: SafeArea(
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _getRules,
+          child: SizedBox.expand(
+            child: Column(
+              children: [
+                if (_isLoading &&
+                    (Platform.isWindows ||
+                        Platform.isMacOS ||
+                        Platform.isLinux))
+                  const Center(child: LinearProgressIndicator()),
+                Flexible(
+                  child: ListView.builder(
+                    padding: .symmetric(horizontal: 12, vertical: 6),
+                    itemCount: _rules.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        onTap: () {},
+                        leading: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: Image.network(
+                            _rules[index].logoUrl,
+                            loadingBuilder: (context, child, loadingProgress) =>
+                                loadingProgress == null
+                                ? child
+                                : const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Center(child: Icon(Icons.error_rounded)),
+                          ),
                         ),
-                      ),
-                      title: Text(_rules[index].name),
-                      subtitle: Text(_rules[index].version),
-                      trailing: _buildTileTrailing(_rules[index]),
-                    );
-                  },
+                        title: Text(_rules[index].name),
+                        subtitle: Text(_rules[index].version),
+                        trailing: _buildTileTrailing(_rules[index]),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
