@@ -275,7 +275,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       });
                     }
                   : null,
-              title: Text('rule_edit.wait_for_ target_element_label'.tr()),
+              title: Text('rule_edit.wait_for_target_element_label'.tr()),
               subtitle: Text('rule_edit.wait_for_target_element_subtitle'.tr()),
             ),
           ],

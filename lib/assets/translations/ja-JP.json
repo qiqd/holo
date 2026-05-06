@@ -211,8 +211,8 @@
         },
         "no_summary": "概要なし",
         "unknown": "不明",
+        "no_person_data": "人物情報なし",
         "no_character_data": "キャラクター情報なし",
-        "no_relation_data": "キャラクター情報なし",
         "no_related_works_data": "関連作品情報なし",
         "air_date_key": "放送開始"
     },

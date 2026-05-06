@@ -211,8 +211,8 @@
         },
         "no_summary": "暫無簡介",
         "unknown": "未知",
-        "no_character_data": "人物暫無資料",
-        "no_relation_data": "角色暫無資料",
+        "no_person_data": "人物暫無資料",
+        "no_character_data": "角色暫無資料",
         "no_related_works_data": "關聯作品暫無資料",
         "air_date_key": "放送開始"
     },

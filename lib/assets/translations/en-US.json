@@ -211,8 +211,8 @@
         },
         "no_summary": "No summary",
         "unknown": "Unknown",
+        "no_person_data": "No person data",
         "no_character_data": "No character data",
-        "no_relation_data": "No role data",
         "no_related_works_data": "No related works data",
         "air_date_key": "Air Date"
     },
