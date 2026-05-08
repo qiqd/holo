@@ -1,7 +1,5 @@
 import 'package:holo/service/common.dart';
 import 'package:holo/service/impl/animation/aafun.dart';
-import 'package:holo/service/impl/animation/girugiru.dart';
-import 'package:holo/service/impl/animation/mengdao.dart';
 import 'package:holo/service/impl/animation/mwcy.dart';
 import 'package:holo/service/impl/animation/senfen.dart';
 import 'package:holo/service/impl/animation/skr.dart';
