@@ -96,7 +96,7 @@ class FlutterInappwebviewUtil {
     Map<String, String> requestBody = const {},
     bool waitingForTargetElement = false,
     String? targetElementSelector,
-    Function(String error)? onError,
+    void Function(String error)? onError,
   }) async {
     final completer = Completer<String>();
     _currentCompleter = completer;

@@ -22,6 +22,7 @@ import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/cap_video_player_kit.dart';
 import 'package:holo/ui/component/circle_avatar_with_text.dart';
 import 'package:holo/ui/component/media_card.dart';
+import 'package:holo/ui/component/person_detail.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/jaro_winkler_similarity_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -507,105 +508,6 @@ class _PlayerScreenState extends State<PlayerScreen>
     });
   }
 
-  Future<void> _showPersonDetail({
-    required String image,
-    required String name,
-    required String role,
-    required int bangumiId,
-    bool isCharacter = true,
-    String cv = '',
-    String summary = '',
-  }) {
-    return showModalBottomSheet<void>(
-      context: context,
-      useSafeArea: true,
-      builder: (context) {
-        return Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.all(12),
-          child: Stack(
-            children: [
-              Row(
-                spacing: 4,
-                children: [
-                  Flexible(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        width: double.infinity,
-                        height: double.infinity,
-                        image,
-                        fit: BoxFit.fitHeight,
-                        loadingBuilder: (context, child, loadingProgress) =>
-                            loadingProgress == null
-                            ? child
-                            : const Center(child: CircularProgressIndicator()),
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(child: Icon(size: 70, Icons.error)),
-                      ),
-                    ),
-                  ),
-
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 4,
-                        children: [
-                          if (name.isNotEmpty)
-                            Text(
-                              name,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          if (cv.isNotEmpty)
-                            Text(
-                              'CV: $cv',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          if (role.isNotEmpty)
-                            Text(
-                              role,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-
-                          if (summary.isNotEmpty)
-                            Text(
-                              summary,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Positioned(
-                right:
-                    MediaQuery.of(context).orientation == Orientation.landscape
-                    ? 20
-                    : 6,
-                top: 6,
-                child: IconButton(
-                  tooltip: "Link to Bangumi",
-                  onPressed: () async {
-                    await launchUrl(
-                      Uri.parse(
-                        'https://bangumi.tv/${isCharacter ? 'character' : 'person'}/$bangumiId',
-                      ),
-                    );
-                  },
-                  icon: Icon(Icons.link_rounded),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildPlayer({
     required bool isFullScreen,
     required void Function(bool isFullScreen) onFullScreenChanged,
@@ -746,7 +648,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                         ? _source.getLogoUrl()
                         : 'https://${_source.getLogoUrl()}',
                     errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.error);
+                      return Icon(Icons.broken_image_outlined);
                     },
                   ),
                 ),
@@ -800,18 +702,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                 for (var e in widget.character)
                   e.name ?? '': e.images?.grid ?? "",
               },
-              onTap: (index) => _showPersonDetail(
-                bangumiId: widget.character[index].id!,
-                image: widget.character[index].images?.large ?? "",
-                name: widget.character[index].name ?? "",
-                role: widget.character[index].relation ?? "",
-                summary: widget.character[index].summary ?? "",
-                cv:
-                    widget.character[index].actors
-                        ?.map((a) => a.name ?? "")
-                        .join('·') ??
-                    "",
-              ),
+              onTap: (index) =>
+                  showPersonDetailBottomSheet(widget.character[index], context),
             ),
           if (widget.person.isNotEmpty)
             const SliverToBoxAdapter(child: SizedBox(height: 6)),
@@ -822,13 +714,8 @@ class _PlayerScreenState extends State<PlayerScreen>
               name2Image: {
                 for (var e in widget.person) e.name ?? '': e.images?.grid ?? "",
               },
-              onTap: (index) => _showPersonDetail(
-                bangumiId: widget.person[index].id!,
-                image: widget.person[index].images?.large ?? "",
-                name: widget.person[index].name ?? "",
-                role: widget.person[index].relation ?? "",
-                isCharacter: false,
-              ),
+              onTap: (index) =>
+                  showPersonDetailBottomSheet(widget.person[index], context),
             ),
         ],
       ),

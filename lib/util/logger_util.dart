@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LoggerUtil {
   static late Logger logger;
   static late File logFile;
-  static void init(String logPath) {
+  static Future<void> init() async {
+    final logPath =
+        '${(await getApplicationDocumentsDirectory()).path}/log.txt';
     logFile = File(logPath);
     logger = Logger(
       output: MultiOutput([ConsoleOutput(), FileOutput(logFile)]),

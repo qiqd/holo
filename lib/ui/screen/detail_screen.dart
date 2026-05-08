@@ -12,6 +12,7 @@ import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/cache_image.dart';
+import 'package:holo/ui/component/person_detail.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/jaro_winkler_similarity_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -289,72 +290,6 @@ class _DetailScreenState extends State<DetailScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Future<void> _showCharacterDetail(Person person, BuildContext context) {
-    return showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      builder: (context) {
-        return Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.all(12),
-
-          child: Row(
-            spacing: 4,
-            children: [
-              Flexible(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    width: double.infinity,
-                    height: double.infinity,
-                    person.images?.large ?? '',
-                    fit: BoxFit.fitHeight,
-                    loadingBuilder: (context, child, loadingProgress) =>
-                        loadingProgress == null
-                        ? child
-                        : const Center(child: CircularProgressIndicator()),
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Center(child: Icon(size: 70, Icons.error)),
-                  ),
-                ),
-              ),
-
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 4,
-                    children: [
-                      Text(
-                        person.name ?? "detail.unknown".tr(),
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(
-                        'CV: ${person.actors?.map((e) => e.name).join('·') ?? ''}',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      Text(
-                        person.relation ?? '',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-
-                      Text(
-                        person.summary ?? '',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -686,6 +621,13 @@ class _DetailScreenState extends State<DetailScreen>
                                           )
                                           .toList(),
                                       placeholder: "detail.no_person_data".tr(),
+                                      onTap: (id) =>
+                                          showPersonDetailBottomSheet(
+                                            _person.firstWhere(
+                                              (e) => e.id == int.parse(id),
+                                            ),
+                                            context,
+                                          ),
                                     ),
                                     //角色板块
                                     _buildListTile(
@@ -701,12 +643,13 @@ class _DetailScreenState extends State<DetailScreen>
                                           .toList(),
                                       placeholder: "detail.no_character_data"
                                           .tr(),
-                                      onTap: (id) => _showCharacterDetail(
-                                        _character.firstWhere(
-                                          (e) => e.id == int.parse(id),
-                                        ),
-                                        context,
-                                      ),
+                                      onTap: (id) =>
+                                          showPersonDetailBottomSheet(
+                                            _character.firstWhere(
+                                              (e) => e.id == int.parse(id),
+                                            ),
+                                            context,
+                                          ),
                                     ),
                                     //关系板块
                                     _buildListTile(

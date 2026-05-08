@@ -43,8 +43,6 @@ void main() async {
   // 初始化国际化
   await EasyLocalization.ensureInitialized();
 
-  // 初始化动画源服务
-  Api.initSources();
   // 确保视频播放器已初始化（Windows和Linux平台）
   VideoPlayerMediaKit.ensureInitialized(windows: true, linux: true);
 
@@ -72,12 +70,13 @@ void main() async {
       await windowManager.focus();
     });
   }
-
+  // 初始化日志记录器
+  await LoggerUtil.init();
   // 初始化Hive数据库
   await HiveUtil.initHive();
+  // 初始化动画源服务
+  Api.initSources();
 
-  // 初始化日志记录器
-  LoggerUtil.init('${(await getApplicationDocumentsDirectory()).path}/log.txt');
   // 运行应用
   runApp(
     EasyLocalization(

@@ -28,7 +28,7 @@ class CacheImage extends StatelessWidget {
       memCacheWidth: memCacheWidth,
       fit: fit,
       errorBuilder: (context, error, stackTrace) {
-        return const Center(child: Icon(Icons.error));
+        return const Center(child: Icon(Icons.broken_image_outlined));
       },
       placeholder: (context, url) => ShimmerContainerSkeleton(),
       placeholderFadeInDuration: const Duration(milliseconds: 300),
