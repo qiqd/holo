@@ -30,7 +30,6 @@ import 'package:holo/ui/screen/setting_screen.dart';
 import 'package:holo/ui/screen/subscribe_screen.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/logger_util.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 

@@ -1,12 +1,8 @@
 import 'package:hive_ce/hive.dart';
+import 'package:holo/util/http_option_util.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'rule.g.dart';
-
-const defaultHeaders = {
-  "User-Agent":
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
-};
 
 @HiveType(typeId: 5)
 @JsonSerializable(explicitToJson: true)
@@ -188,9 +184,9 @@ class Rule {
     this.itemImgFromSrc = true,
     this.waitForTargetElement = true,
     this.episodeReverse = false,
-    this.searchRequestHeaders = defaultHeaders,
-    this.detailRequestHeaders = defaultHeaders,
-    this.playerRequestHeaders = defaultHeaders,
+    this.searchRequestHeaders = defaultUserAgent,
+    this.detailRequestHeaders = defaultUserAgent,
+    this.playerRequestHeaders = defaultUserAgent,
     this.searchRequestBody = const {},
     this.detailRequestBody = const {},
     this.playerRequestBody = const {},

@@ -38,13 +38,13 @@ class RuleAdapter extends TypeAdapter<Rule> {
       waitForTargetElement: fields[33] == null ? true : fields[33] as bool,
       episodeReverse: fields[24] == null ? false : fields[24] as bool,
       searchRequestHeaders: fields[8] == null
-          ? defaultHeaders
+          ? defaultUserAgent
           : (fields[8] as Map).cast<String, String>(),
       detailRequestHeaders: fields[20] == null
-          ? defaultHeaders
+          ? defaultUserAgent
           : (fields[20] as Map).cast<String, String>(),
       playerRequestHeaders: fields[28] == null
-          ? defaultHeaders
+          ? defaultUserAgent
           : (fields[28] as Map).cast<String, String>(),
       searchRequestBody: fields[7] == null
           ? const {}
@@ -237,17 +237,17 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
       (json['searchRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      defaultHeaders,
+      defaultUserAgent,
   detailRequestHeaders:
       (json['detailRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      defaultHeaders,
+      defaultUserAgent,
   playerRequestHeaders:
       (json['playerRequestHeaders'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      defaultHeaders,
+      defaultUserAgent,
   searchRequestBody:
       (json['searchRequestBody'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),

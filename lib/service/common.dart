@@ -23,7 +23,7 @@ class Common extends SourceService {
   final RegExp reg = RegExp(r'\{[^}]*\}');
 
   /// WebView工具类实例
-  final FlutterInappwebviewUtil _webviewUtil = FlutterInappwebviewUtil();
+  final FlutterInappwebviewUtil webviewUtil = FlutterInappwebviewUtil();
 
   final Logger _logger = LoggerUtil.logger;
 
@@ -31,7 +31,7 @@ class Common extends SourceService {
   /// [rule] 规则配置对象
   Common({required this.rule}) {
     if (rule.useWebView) {
-      _webviewUtil.fetchHtml(rule.baseUrl);
+      webviewUtil.fetchHtml(rule.baseUrl);
     }
   }
 
@@ -75,7 +75,7 @@ class Common extends SourceService {
       var detailUrl = rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await _webviewUtil.fetchHtml(
+        true => await webviewUtil.fetchHtml(
           mediaId.contains('http') ? mediaId : detailUrl,
           requestMethod: rule.detailRequestMethod,
           timeout: Duration(seconds: rule.timeout),
@@ -135,7 +135,7 @@ class Common extends SourceService {
       var searchUrl = rule.baseUrl + rule.searchUrl.replaceAll(reg, keyword);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await _webviewUtil.fetchHtml(
+        true => await webviewUtil.fetchHtml(
           keyword.contains('http') ? keyword : searchUrl,
           requestMethod: rule.searchRequestMethod,
           requestBody: rule.searchRequestBody.map(
@@ -210,7 +210,7 @@ class Common extends SourceService {
       var viewUrl = rule.baseUrl + rule.playerUrl.replaceAll(reg, episodeId);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await _webviewUtil.fetchHtml(
+        true => await webviewUtil.fetchHtml(
           episodeId.contains('http') ? episodeId : viewUrl,
           timeout: Duration(seconds: rule.timeout),
           requestMethod: rule.playerRequestMethod,
@@ -241,7 +241,7 @@ class Common extends SourceService {
               ? tempUrl
               : (rule.baseUrl + tempUrl);
           var tempHtmlStr = switch (rule.useWebView) {
-            true => await _webviewUtil.fetchHtml(
+            true => await webviewUtil.fetchHtml(
               tempUrl,
               isPlayerPage: true,
               headers: rule.playerRequestHeaders,

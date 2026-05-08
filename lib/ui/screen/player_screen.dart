@@ -32,7 +32,6 @@ import 'package:holo/util/logger_util.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayerScreen extends StatefulWidget {

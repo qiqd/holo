@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
-import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:holo/util/http_option_util.dart';
 
 import 'package:html/parser.dart';
 import 'package:holo/entity/media.dart';
@@ -127,13 +127,9 @@ class AAfun implements SourceService {
         final targetUrl = "${getBaseUrl()}/player/?url=$url";
         final res = await HttpUtil.createDio().get(
           targetUrl,
-          options: Options(
-            headers: {
-              "Host": getBaseUrl().substring(getBaseUrl().lastIndexOf("/") + 1),
-              "Referer": getBaseUrl() + episodeId,
-              "User-Agent":
-                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            },
+          options: getDefaultOptions(
+            host: Uri.parse(getBaseUrl()).host,
+            referer: getBaseUrl() + episodeId,
           ),
         );
         if (res.statusCode != 200) {
