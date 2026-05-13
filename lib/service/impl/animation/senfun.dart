@@ -6,7 +6,7 @@ import 'package:holo/entity/media.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/http_util.dart';
 
-class Senfen implements SourceService {
+class Senfun implements SourceService {
   @override
   int delay = 9999;
   @override

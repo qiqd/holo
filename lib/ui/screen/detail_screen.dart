@@ -310,7 +310,7 @@ class _DetailScreenState extends State<DetailScreen>
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         hint: FittedBox(
-                          fit: .scaleDown,
+                          fit: BoxFit.scaleDown,
                           child: Text("detail.search_hint".tr()),
                         ),
                         hintStyle: Theme.of(context).textTheme.bodySmall,
@@ -329,7 +329,7 @@ class _DetailScreenState extends State<DetailScreen>
 
                     TabBar(
                       isScrollable: true,
-                      tabAlignment: TabAlignment.start,
+                      tabAlignment: TabAlignment.center,
                       controller: subTabController,
                       tabs: _sourceService
                           .map((e) => Tab(text: e.getName()))

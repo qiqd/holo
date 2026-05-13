@@ -234,6 +234,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                   crossAxisCount: 3,
                   mainAxisSpacing: 6,
                   crossAxisSpacing: 6,
+                  childAspectRatio: 3 / 4,
                 ),
                 itemCount: _subject.length,
                 padding: EdgeInsets.symmetric(vertical: 6),

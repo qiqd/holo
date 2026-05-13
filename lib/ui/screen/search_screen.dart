@@ -22,7 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<String> _searchHistory = [];
   final TextEditingController _controller = TextEditingController();
   final userSetting = MyApp.userSettingNotifier.value;
-  void _fetchSearch(String keyword, BuildContext content) async {
+  Future<void> _fetchSearch(String keyword, BuildContext content) async {
     if (keyword.isEmpty) return;
     if (_searchHistory.contains(keyword)) {
       _searchHistory.remove(keyword);
@@ -45,20 +45,8 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _searchHistory = HiveUtil.getUserSearches();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _showDeleteDialog() {
-    showDialog(
+  Future<void> _showDeleteDialog() async {
+    await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text("search.delete_search_history".tr()),
@@ -83,175 +71,192 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  Widget _buildAppBar() {
+    return AppBar(
+      actionsPadding: .symmetric(horizontal: 12),
+      titleSpacing: 0,
+      actions: [
+        if (Device.get().isTablet)
+          IconButton(
+            tooltip: "Image Search",
+            onPressed: () => context.push('/image_search'),
+            icon: Icon(Icons.image_search_rounded),
+          ),
+        IconButton(
+          tooltip: "search.delete_search_history".tr(),
+          onPressed: () {
+            _showDeleteDialog();
+          },
+          icon: Icon(Icons.delete_forever_rounded),
+        ),
+      ],
+      leading: IconButton(
+        alignment: .center,
+        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+        onPressed: () {
+          context.pop();
+        },
+      ),
+      title: TextField(
+        controller: _controller,
+        onSubmitted: (value) {
+          _fetchSearch(value, context);
+        },
+        onChanged: (_) {
+          setState(() {});
+        },
+        maxLines: 1,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          prefixIcon: Icon(Icons.search_rounded),
+          suffixIcon: _controller.value.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear_rounded),
+                  onPressed: () => setState(() {
+                    _searchResult = [];
+                    _controller.clear();
+                  }),
+                )
+              : null,
+          hintText: "search.hint_text".tr(),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+          ),
+        ),
+        textInputAction: TextInputAction.search,
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _searchHistory = HiveUtil.getUserSearches();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _buildBody() {
+    return SafeArea(
+      child: Column(
+        children: [
+          if (_loading) LinearProgressIndicator(),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isLandscape =
+                    constraints.maxWidth > constraints.maxHeight;
+                return SizedBox(
+                  child: _searchResult.isEmpty
+                      ? SingleChildScrollView(
+                          padding: EdgeInsets.all(12),
+                          child: Column(
+                            spacing: 6,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "search.search_history".tr(),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Wrap(
+                                      spacing: 8,
+                                      children: _searchHistory.map((
+                                        historyItem,
+                                      ) {
+                                        return Chip(
+                                          label: InkWell(
+                                            child: Text(historyItem),
+                                            onTap: () {
+                                              _controller.text = historyItem;
+                                              _fetchSearch(
+                                                historyItem,
+                                                context,
+                                              );
+                                            },
+                                          ),
+                                          avatar: Icon(Icons.history, size: 18),
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                              .withOpacity(0.5),
+                                          deleteIcon: Icon(
+                                            Icons.close,
+                                            size: 18,
+                                          ),
+                                          onDeleted: () async {
+                                            setState(() {
+                                              _searchHistory.remove(
+                                                historyItem,
+                                              );
+                                            });
+                                            await HiveUtil.clearUserSearches(
+                                              keyword: historyItem,
+                                            );
+                                          },
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      : GridView.builder(
+                          itemCount: _searchResult.length,
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                mainAxisSpacing: 6,
+                                crossAxisSpacing: 6,
+                                crossAxisCount: isLandscape ? 6 : 3,
+                                childAspectRatio: 0.6,
+                              ),
+                          itemBuilder: (context, index) {
+                            final item = _searchResult[index];
+                            return MediaGrid(
+                              id: "search_${item.id}",
+                              imageUrl: item.images.medium!,
+                              title: item.title,
+                              rating: item.rating,
+                              airDate: item.airDate,
+                              onTap: () {
+                                context.push(
+                                  '/detail',
+                                  extra: {
+                                    'id': item.id,
+                                    'keyword': item.title,
+                                    'cover': item.images.large ?? '',
+                                    'subject': item,
+                                    'from': "search",
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actionsPadding: .symmetric(horizontal: 12),
-        titleSpacing: 0,
-        actions: [
-          if (Device.get().isTablet)
-            IconButton(
-              tooltip: "Image Search",
-              onPressed: () => context.push('/image_search'),
-              icon: Icon(Icons.image_search_rounded),
-            ),
-          IconButton(
-            tooltip: "search.delete_search_history".tr(),
-            onPressed: () {
-              _showDeleteDialog();
-            },
-            icon: Icon(Icons.delete_forever_rounded),
-          ),
-        ],
-        leading: IconButton(
-          alignment: .center,
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () {
-            context.pop();
-          },
-        ),
-        title: TextField(
-          controller: _controller,
-          onSubmitted: (value) {
-            _fetchSearch(value, context);
-          },
-          onChanged: (_) {
-            setState(() {});
-          },
-          maxLines: 1,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            prefixIcon: Icon(Icons.search_rounded),
-            suffixIcon: _controller.value.text.isNotEmpty
-                ? IconButton(
-                    icon: Icon(Icons.clear_rounded),
-                    onPressed: () => setState(() {
-                      _searchResult = [];
-                      _controller.clear();
-                    }),
-                  )
-                : null,
-            hintText: "search.hint_text".tr(),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-            ),
-          ),
-          textInputAction: TextInputAction.search,
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            if (_loading) LinearProgressIndicator(),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isLandscape =
-                      constraints.maxWidth > constraints.maxHeight;
-                  return SizedBox(
-                    child: _searchResult.isEmpty
-                        ? SingleChildScrollView(
-                            padding: EdgeInsets.all(12),
-                            child: Column(
-                              spacing: 6,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "search.search_history".tr(),
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Wrap(
-                                        spacing: 8,
-                                        children: _searchHistory.map((
-                                          historyItem,
-                                        ) {
-                                          return Chip(
-                                            label: InkWell(
-                                              child: Text(historyItem),
-                                              onTap: () {
-                                                _controller.text = historyItem;
-                                                _fetchSearch(
-                                                  historyItem,
-                                                  context,
-                                                );
-                                              },
-                                            ),
-                                            avatar: Icon(
-                                              Icons.history,
-                                              size: 18,
-                                            ),
-                                            backgroundColor: Theme.of(context)
-                                                .colorScheme
-                                                .surfaceContainerHighest
-                                                .withOpacity(0.5),
-                                            deleteIcon: Icon(
-                                              Icons.close,
-                                              size: 18,
-                                            ),
-                                            onDeleted: () async {
-                                              setState(() {
-                                                _searchHistory.remove(
-                                                  historyItem,
-                                                );
-                                              });
-                                              await HiveUtil.clearUserSearches(
-                                                keyword: historyItem,
-                                              );
-                                            },
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          )
-                        : GridView.builder(
-                            itemCount: _searchResult.length,
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  mainAxisSpacing: 6,
-                                  crossAxisSpacing: 6,
-                                  crossAxisCount: isLandscape ? 6 : 3,
-                                  childAspectRatio: 0.6,
-                                ),
-                            itemBuilder: (context, index) {
-                              final item = _searchResult[index];
-                              return MediaGrid(
-                                id: "search_${item.id}",
-                                imageUrl: item.images.medium!,
-                                title: item.title,
-                                rating: item.rating,
-                                airDate: item.airDate,
-                                onTap: () {
-                                  context.push(
-                                    '/detail',
-                                    extra: {
-                                      'id': item.id,
-                                      'keyword': item.title,
-                                      'cover': item.images.large ?? '',
-                                      'subject': item,
-                                      'from': "search",
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: _buildAppBar() as PreferredSizeWidget,
+      body: _buildBody(),
     );
   }
 }

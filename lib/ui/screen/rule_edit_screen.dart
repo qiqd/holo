@@ -156,6 +156,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.rule_name_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.rule_name_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -183,6 +184,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.base_url_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.base_url_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -212,6 +214,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.logo_url_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.logo_url_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -242,6 +245,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.timeout_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.timeout_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -268,7 +272,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               value:
                   widget.rule?.waitForTargetElement ??
                   _rule.waitForTargetElement,
-              onChanged: widget.isEditMode
+              onChanged: widget.isEditMode && _rule.useWebView
                   ? (value) {
                       setState(() {
                         _rule.waitForTargetElement = value;
@@ -306,6 +310,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.search_url_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.search_url_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -360,6 +365,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                         labelText: '请求体'.tr(),
                         hint: FittedBox(
                           fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
                           child: Text('key与value用=隔开,多个用英文逗号隔开'.tr()),
                         ),
                         border: OutlineInputBorder(
@@ -398,6 +404,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.search_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.search_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -424,6 +431,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.item_img_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.item_img_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -463,6 +471,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.item_title_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.item_title_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -489,6 +498,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.item_id_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.item_id_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -515,6 +525,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.item_genre_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.item_genre_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -596,6 +607,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.detail_url_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.detail_url_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -650,6 +662,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                         labelText: '请求体'.tr(),
                         hint: FittedBox(
                           fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
                           child: Text('key与value用=隔开,多个用英文逗号隔开'.tr()),
                         ),
                         border: OutlineInputBorder(
@@ -688,6 +701,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.line_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.line_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -714,6 +728,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.episode_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.episode_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -794,6 +809,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.player_url_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.player_url_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -848,6 +864,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                         labelText: '请求体'.tr(),
                         hint: FittedBox(
                           fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
                           child: Text('key与value用=隔开,多个用英文逗号隔开'.tr()),
                         ),
                         border: OutlineInputBorder(
@@ -886,6 +903,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.player_video_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.player_video_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -912,6 +930,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.video_element_attribute_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.video_element_attribute_hint'.tr()),
                 ),
                 border: OutlineInputBorder(
@@ -932,6 +951,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 labelText: 'rule_edit.embed_video_selector_label'.tr(),
                 hint: FittedBox(
                   fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
                   child: Text('rule_edit.embed_video_selector_hint'.tr()),
                 ),
                 border: OutlineInputBorder(

@@ -169,7 +169,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         final newUrl = await _source.fetchVideoUrl(
           _detail!.lines![_lineIndex].episodes![_episodeIndex],
           (e) => safeSetState(() {
-            _logger.e("fetchView error: $e");
+            _logger.e("fetchVideoUrl error: $e");
             _msg = "player.playback_error".tr();
             _isLoading = false;
             onComplete?.call(_msg);

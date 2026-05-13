@@ -39,83 +39,28 @@ class Common extends SourceService {
   /// [rule] 规则配置对象
   factory Common.build(Rule rule) => Common(rule: rule);
 
-  @override
   /// 获取网站基础地址
+  @override
   String getBaseUrl() {
     return rule.baseUrl;
   }
 
-  @override
   /// 获取网站logo地址
+  @override
   String getLogoUrl() {
     return rule.logoUrl;
   }
 
-  @override
   /// 获取服务名称
+  @override
   String getName() {
     return rule.name;
   }
 
-  @override
   /// 服务延迟时间
+  @override
   int delay = 9999;
 
-  @override
-  /// 解析媒体详情信息
-  /// [mediaId] 媒体ID
-  /// [exceptionHandler] 异常处理器
-  /// 返回详情信息对象
-  Future<Detail?> fetchDetail(
-    String mediaId,
-    Function(String) exceptionHandler,
-  ) async {
-    try {
-      // 构建详情页URL
-      var detailUrl = rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId);
-      // 获取HTML内容
-      final htmlStr = switch (rule.useWebView) {
-        true => await webviewUtil.fetchHtml(
-          mediaId.contains('http') ? mediaId : detailUrl,
-          requestMethod: rule.detailRequestMethod,
-          timeout: Duration(seconds: rule.timeout),
-          headers: rule.detailRequestHeaders,
-          requestBody: rule.detailRequestBody.map(
-            (key, value) =>
-                MapEntry(key, value.replaceAll('{mediaId}', mediaId)),
-          ),
-          waitingForTargetElement: rule.waitForTargetElement,
-          targetElementSelector: rule.lineSelector,
-          onError: exceptionHandler,
-        ),
-        false =>
-          (await HttpUtil.createDio().get(
-                mediaId.contains('http') ? mediaId : detailUrl,
-              )).data
-              as String,
-      };
-
-      // 解析HTML文档
-      var doc = parse(htmlStr);
-      // 提取剧集信息
-      var lines = doc.querySelectorAll(rule.lineSelector).map((line) {
-        final episode = line.querySelectorAll(rule.episodeSelector);
-        var episodes = episode.map((e) {
-          return e.attributes['href'] ?? '';
-        }).toList();
-        if (rule.episodeReverse) {
-          episodes = episodes.reversed.toList();
-        }
-        return Line(episodes: episodes);
-      }).toList();
-      return Detail(lines: lines);
-    } catch (e) {
-      exceptionHandler(e.toString());
-    }
-    return null;
-  }
-
-  @override
   /// 搜索媒体
   /// [keyword] 搜索关键词
   /// [page] 页码
@@ -123,6 +68,7 @@ class Common extends SourceService {
   /// [exceptionHandler] 异常处理器
   /// [timeout] 超时时间
   /// 返回媒体列表
+  @override
   Future<List<Media>> fetchSearch(
     String keyword,
     int page,
@@ -194,6 +140,60 @@ class Common extends SourceService {
       exceptionHandler(e.toString());
       return [];
     }
+  }
+
+  /// 解析媒体详情信息
+  /// [mediaId] 媒体ID
+  /// [exceptionHandler] 异常处理器
+  /// 返回详情信息对象
+  @override
+  Future<Detail?> fetchDetail(
+    String mediaId,
+    Function(String) exceptionHandler,
+  ) async {
+    try {
+      // 构建详情页URL
+      var detailUrl = rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId);
+      // 获取HTML内容
+      final htmlStr = switch (rule.useWebView) {
+        true => await webviewUtil.fetchHtml(
+          mediaId.contains('http') ? mediaId : detailUrl,
+          requestMethod: rule.detailRequestMethod,
+          timeout: Duration(seconds: rule.timeout),
+          headers: rule.detailRequestHeaders,
+          requestBody: rule.detailRequestBody.map(
+            (key, value) =>
+                MapEntry(key, value.replaceAll('{mediaId}', mediaId)),
+          ),
+          waitingForTargetElement: rule.waitForTargetElement,
+          targetElementSelector: rule.lineSelector,
+          onError: exceptionHandler,
+        ),
+        false =>
+          (await HttpUtil.createDio().get(
+                mediaId.contains('http') ? mediaId : detailUrl,
+              )).data
+              as String,
+      };
+
+      // 解析HTML文档
+      var doc = parse(htmlStr);
+      // 提取剧集信息
+      var lines = doc.querySelectorAll(rule.lineSelector).map((line) {
+        final episode = line.querySelectorAll(rule.episodeSelector);
+        var episodes = episode.map((e) {
+          return e.attributes['href'] ?? '';
+        }).toList();
+        if (rule.episodeReverse) {
+          episodes = episodes.reversed.toList();
+        }
+        return Line(episodes: episodes);
+      }).toList();
+      return Detail(lines: lines);
+    } catch (e) {
+      exceptionHandler(e.toString());
+    }
+    return null;
   }
 
   @override

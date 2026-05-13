@@ -1,7 +1,7 @@
 import 'package:holo/service/common.dart';
 import 'package:holo/service/impl/animation/aafun.dart';
+import 'package:holo/service/impl/animation/jcy.dart';
 import 'package:holo/service/impl/animation/mwcy.dart';
-import 'package:holo/service/impl/animation/senfen.dart';
 import 'package:holo/service/impl/animation/skr.dart';
 import 'package:holo/service/impl/meta/anime_trace.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
@@ -32,7 +32,7 @@ class Api {
     // 清空现有源
     _sources.clear();
     // 添加内置动画源
-    _sources.addAll([AAfun(), Senfen(), Mwcy(), Skr()]);
+    _sources.addAll([AAfun(), Mwcy(), Skr(), Jcy()]);
     // 获取用户规则
     var ruleList = HiveUtil.getRules();
     // 构建启用的规则源
