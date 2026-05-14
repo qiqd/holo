@@ -264,16 +264,10 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  Future<void> _updatePlaybackHistoryAndUserSetting() async {
-    if (_playUrl == null) {
+  Future<void> _updatePlaybackHistory() async {
+    if (_playUrl == null || _position.inSeconds <= 0) {
       return;
     }
-    final p =
-        (await _playerNotifier.value?.position ?? Duration.zero).inSeconds;
-    if (p <= 0) {
-      return;
-    }
-
     final newPlayback = _userPlayback == null
         ? UserPlayback(
             id: widget.subject.id,
@@ -284,20 +278,24 @@ class _PlayerScreenState extends State<PlayerScreen>
             lineIndex: _lineIndex,
             lastPlaybackAt: DateTime.now(),
             createdAt: DateTime.now(),
-            position: p,
+            position: _position.inSeconds,
             imgUrl: widget.subject.images.large ?? "",
           )
         : _userPlayback!.copyWith(
-            position: p,
+            position: _position.inSeconds,
             episodeIndex: _episodeIndex,
             lineIndex: _lineIndex,
             lastPlaybackAt: DateTime.now(),
           );
 
     var newPlaybackHistory = await HiveUtil.setUserPlaybacks([newPlayback]);
+    await WebDAV.syncUserPlayback(newPlaybackHistory);
+    _logger.i('updatePlaybackHistory, newPlayback: $newPlayback');
+  }
+
+  Future<void> _updateUserSetting() async {
     await HiveUtil.setUserSetting(_setting);
     await WebDAV.syncUserSetting(_setting);
-    await WebDAV.syncUserPlayback(newPlaybackHistory);
   }
 
   Future<void> _toggleFullScreen(bool isFullScreen) async {
@@ -1209,7 +1207,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       setState(() {
         _isActive = false;
       });
-      _updatePlaybackHistoryAndUserSetting();
+      _updatePlaybackHistory();
     }
     if (state == AppLifecycleState.resumed) {
       setState(() {
@@ -1222,7 +1220,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void didChangeDependencies() {
-    _updatePlaybackHistoryAndUserSetting();
+    _updatePlaybackHistory();
     if (Platform.isAndroid || Platform.isIOS) {
       var info = MediaQuery.of(context);
       setState(() {
@@ -1272,7 +1270,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         windowManager.setTitle(info.appName);
       });
     }
-    _updatePlaybackHistoryAndUserSetting();
+    _updatePlaybackHistory();
     WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -1289,8 +1287,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   Future<AppExitResponse> didRequestAppExit() {
     _logger.d("didRequestAppExit");
-    _updatePlaybackHistoryAndUserSetting();
-    return super.didRequestAppExit();
+    return _updatePlaybackHistory().then((_) => super.didRequestAppExit());
   }
 
   @override
@@ -1305,6 +1302,9 @@ class _PlayerScreenState extends State<PlayerScreen>
               setState(() {
                 _enableAutoFocus = !isOpened;
               });
+              if (!isOpened && _isSettingDrawerOpen) {
+                _updateUserSetting();
+              }
             },
             endDrawerEnableOpenDragGesture: false,
             endDrawer: Drawer(width: 400, child: _buildDrawer()),
@@ -1354,6 +1354,11 @@ class _PlayerScreenState extends State<PlayerScreen>
                     ),
             ),
             endDrawer: Drawer(width: 300, child: _buildDrawer()),
+            onEndDrawerChanged: (isOpened) {
+              if (!isOpened && _isSettingDrawerOpen) {
+                _updateUserSetting();
+              }
+            },
             endDrawerEnableOpenDragGesture: false,
             body: SafeArea(
               child: Center(
