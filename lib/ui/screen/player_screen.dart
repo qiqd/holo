@@ -107,7 +107,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   );
   UserSetting _setting = HiveUtil.getUserSetting();
   UserPlayback? _userPlayback;
-
+  String _danmakuKeyword = '';
   Future<void> _fetchMediaEpisode() async {
     _isLoading = true;
     try {
@@ -153,9 +153,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         if (loadDanmaku) {
           _loadDanmaku(
             isFirstLoad: true,
-            keyword: _setting.filterWords.isNotEmpty
-                ? _setting.filterWords
-                : _nameCn,
+            keyword: _danmakuKeyword.isNotEmpty ? _danmakuKeyword : _nameCn,
             onComplete: (e) {
               ScaffoldMessenger.of(
                 context,
@@ -409,7 +407,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     });
     return _loadDanmaku(
       isFirstLoad: false,
-      keyword: _nameCn,
+      keyword: _danmakuKeyword.isEmpty ? _nameCn : _danmakuKeyword,
       onComplete: (e) {
         ScaffoldMessenger.of(
           context,
@@ -438,7 +436,8 @@ class _PlayerScreenState extends State<PlayerScreen>
                   child: Center(
                     child: TextFormField(
                       textInputAction: TextInputAction.search,
-                      initialValue: _setting.filterWords,
+                      textAlign: TextAlign.center,
+                      initialValue: _danmakuKeyword,
                       decoration: InputDecoration(
                         hint: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -449,9 +448,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                         ),
                       ),
                       onChanged: (value) {
-                        setState(() {
-                          _setting = _setting.copyWith(filterWords: value);
-                        });
+                        _danmakuKeyword = value;
                       },
                       onFieldSubmitted: (value) async {
                         if (value.isEmpty) {
