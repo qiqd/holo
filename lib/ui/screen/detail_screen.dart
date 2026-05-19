@@ -664,8 +664,8 @@ class _DetailScreenState extends State<DetailScreen>
                                             },
                                           )
                                           .toList(),
-                                      placeholder: "detail.no_relation_data"
-                                          .tr(),
+                                      placeholder:
+                                          "detail.no_related_works_data".tr(),
                                     ),
                                     // ListView.builder(
                                     //   itemCount: _relation.length,
