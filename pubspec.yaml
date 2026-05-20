@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.17+86
+version: 1.1.17+87
 
 environment:
   sdk: ^3.10.3
@@ -45,7 +45,7 @@ dependencies:
   path_provider: ^2.1.5
   hive_ce: ^2.19.3
   carousel_slider: ^5.1.2
-
+  pausable_timer: ^3.1.0+3
   # app_links: ^7.0.0
 dev_dependencies:
   flutter_test:

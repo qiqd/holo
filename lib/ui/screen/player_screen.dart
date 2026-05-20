@@ -32,6 +32,7 @@ import 'package:holo/util/logger_util.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pausable_timer/pausable_timer.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -108,6 +109,8 @@ class _PlayerScreenState extends State<PlayerScreen>
   UserSetting _setting = HiveUtil.getUserSetting();
   UserPlayback? _userPlayback;
   String _danmakuKeyword = '';
+  PausableTimer? _pausableTimer;
+
   Future<void> _fetchMediaEpisode() async {
     _isLoading = true;
     try {
@@ -1207,12 +1210,14 @@ class _PlayerScreenState extends State<PlayerScreen>
       setState(() {
         _isActive = false;
       });
-      _updatePlaybackHistory();
+      //_updatePlaybackHistory();
+      _pausableTimer?.pause();
     }
     if (state == AppLifecycleState.resumed) {
       setState(() {
         _isActive = true;
       });
+      _pausableTimer?.reset();
     }
 
     super.didChangeAppLifecycleState(state);
@@ -1220,7 +1225,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   @override
   void didChangeDependencies() {
-    _updatePlaybackHistory();
+    //_updatePlaybackHistory();
     if (Platform.isAndroid || Platform.isIOS) {
       var info = MediaQuery.of(context);
       setState(() {
@@ -1259,7 +1264,11 @@ class _PlayerScreenState extends State<PlayerScreen>
     //     statusBarBrightness: Brightness.dark, // 深色状态栏
     //   ),
     // );
-
+    _pausableTimer = PausableTimer.periodic(
+      const Duration(seconds: 10),
+      () => _updatePlaybackHistory(),
+    );
+    _pausableTimer?.start();
     super.initState();
   }
 
@@ -1281,6 +1290,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     // _controller?.dispose();
     _playerNotifier.value?.dispose();
+    _pausableTimer?.cancel();
     super.dispose();
   }
 
