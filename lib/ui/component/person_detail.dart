@@ -4,7 +4,7 @@ import 'package:holo/entity/person.dart';
 import 'package:holo/ui/component/cache_image.dart';
 
 Future<void> showPersonDetailBottomSheet(Person person, BuildContext context) {
-  return showModalBottomSheet(
+  return showModalBottomSheet<void>(
     context: context,
     useSafeArea: true,
     builder: (context) {
@@ -22,7 +22,8 @@ Future<void> showPersonDetailBottomSheet(Person person, BuildContext context) {
                 child: CacheImage(
                   imageUrl: person.images?.large ?? '',
                   fit: BoxFit.fitHeight,
-                  memCacheHeight: 500,
+                  memCacheHeight: 700,
+                  memCacheWidth: 400,
                 ),
               ),
             ),
