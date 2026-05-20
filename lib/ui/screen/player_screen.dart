@@ -268,7 +268,10 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   Future<void> _updatePlaybackHistory() async {
-    if (_playUrl == null || _position.inSeconds <= 0) {
+    if (_playUrl == null ||
+        _position.inSeconds <= 0 ||
+        _isLoading ||
+        !(_playerNotifier.value?.value.isPlaying ?? false)) {
       return;
     }
     final newPlayback = _userPlayback == null
@@ -773,9 +776,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                           BlendMode.srcATop,
                         ),
                         child: LottieBuilder.asset(
-                          "lib/assets/lottie/playing.json",
+                          "lib/assets/lottie/music_play.json",
                           repeat: true,
-                          width: 40,
+                          width: 24,
                         ),
                       ),
                   ],
@@ -825,6 +828,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                       value: index,
                       child: Row(
                         spacing: 10,
+
                         children: [
                           Text(
                             'player.route_number'.tr(
@@ -839,9 +843,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 BlendMode.srcATop,
                               ),
                               child: LottieBuilder.asset(
-                                "lib/assets/lottie/playing.json",
+                                "lib/assets/lottie/music_play.json",
                                 repeat: true,
-                                width: 40,
+                                width: 20,
                               ),
                             ),
                         ],
@@ -885,18 +889,17 @@ class _PlayerScreenState extends State<PlayerScreen>
             ),
             title: Text(eps[index].title),
             trailing: _episodeIndex == index
-                ? Container(
-                    constraints: BoxConstraints(maxWidth: 80),
-                    child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                        Theme.of(context).colorScheme.primary,
-                        BlendMode.srcATop,
-                      ),
-                      child: LottieBuilder.asset(
-                        "lib/assets/lottie/playing2.json",
-                        repeat: true,
-                        fit: BoxFit.cover,
-                      ),
+                ? ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.primary,
+                      BlendMode.srcATop,
+                    ),
+                    child: LottieBuilder.asset(
+                      "lib/assets/lottie/music_play.json",
+                      repeat: true,
+                      // fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                      width: 24,
                     ),
                   )
                 : null,

@@ -39,10 +39,11 @@ Future<void> showPersonDetailBottomSheet(Person person, BuildContext context) {
                       person.name ?? "detail.unknown".tr(),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    Text(
-                      'CV: ${person.actors?.map((e) => e.name).join('·') ?? ''}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
+                    if (person.actors?.isNotEmpty ?? false)
+                      Text(
+                        'CV: ${person.actors?.map((e) => e.name).join('·') ?? ''}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     Text(
                       person.relation ?? '',
                       style: Theme.of(context).textTheme.bodyMedium,
