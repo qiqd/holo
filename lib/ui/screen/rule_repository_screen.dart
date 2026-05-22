@@ -74,10 +74,6 @@ class _RuleRepositoryState extends State<RuleRepository> {
       appBar: AppBar(
         title: const Text("规则仓库"),
         actionsPadding: .symmetric(horizontal: 12),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
         actions: [
           if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
             IconButton(
@@ -114,7 +110,9 @@ class _RuleRepositoryState extends State<RuleRepository> {
                                 loadingProgress == null
                                 ? child
                                 : const Center(
-                                    child: CircularProgressIndicator(),
+                                    child: CircularProgressIndicator(
+                                      year2023: false,
+                                    ),
                                   ),
                             errorBuilder: (context, error, stackTrace) =>
                                 const Center(child: Icon(Icons.error_rounded)),

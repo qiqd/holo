@@ -22,7 +22,7 @@ class LoadingOrShowMsg extends StatelessWidget {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(),
+                  const CircularProgressIndicator(year2023: false),
                   if (subMsg != null && subMsg!.isNotEmpty)
                     Text(
                       subMsg!,

@@ -1046,10 +1046,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             actionsPadding: .symmetric(horizontal: 12),
             titleSpacing: 0,
             actions: _buildAppBarActions(isOrientation),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_rounded),
-              onPressed: () => context.pop(),
-            ),
             title: Text('rule_edit.title'.tr()),
           ),
           body: SafeArea(

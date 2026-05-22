@@ -93,6 +93,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   bool _isLandscape = false;
   int _toastShowMode = 0; //0:无,1:音量,2:亮度,3:进度
   final List<DanmakuContentItem<double>> _danmakuItems = [];
+  Timer? _danmakuOptionTimer;
 
   /// 显示视频控制条定时器
   void _showVideoControlsTimer() {
@@ -625,7 +626,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               titleAlignment: ListTileTitleAlignment.center,
               leading: IconButton(
                 color: Colors.white,
-                icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   _showVideoControlsTimer();
                   widget.onBackPressed?.call();
@@ -955,8 +956,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     },
                     icon: Icon(
                       widget.isFullScreen
-                          ? BF.fullScreenExitM
-                          : BF.fullScreenEnterM,
+                          ? Icons.fullscreen_exit_rounded
+                          : Icons.fullscreen_rounded,
                     ),
                   ),
                 ],
@@ -1002,17 +1003,20 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     }
     if (oldWidget.danmakuSetting != widget.danmakuSetting) {
       _filterDanmakuItems();
-      _danmuController?.updateOption(
-        DanmakuOption(
-          area: widget.danmakuSetting.area,
-          opacity: widget.danmakuSetting.opacity,
-          fontSize: widget.danmakuSetting.fontSize,
-          hideBottom: widget.danmakuSetting.hideBottom,
-          hideScroll: widget.danmakuSetting.hideScroll,
-          hideTop: widget.danmakuSetting.hideTop,
-          massiveMode: widget.danmakuSetting.massiveMode,
-        ),
-      );
+      _danmakuOptionTimer?.cancel();
+      _danmakuOptionTimer = Timer(const Duration(milliseconds: 200), () {
+        _danmuController?.updateOption(
+          DanmakuOption(
+            area: widget.danmakuSetting.area,
+            opacity: widget.danmakuSetting.opacity,
+            fontSize: widget.danmakuSetting.fontSize,
+            hideBottom: widget.danmakuSetting.hideBottom,
+            hideScroll: widget.danmakuSetting.hideScroll,
+            hideTop: widget.danmakuSetting.hideTop,
+            massiveMode: widget.danmakuSetting.massiveMode,
+          ),
+        );
+      });
     }
     super.didUpdateWidget(oldWidget);
   }

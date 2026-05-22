@@ -98,14 +98,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     _scaffoldMessage = ScaffoldMessenger.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text("sign.app_bar_title".tr()),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => context.pop(),
-        ),
-      ),
+      appBar: AppBar(title: Text("sign.app_bar_title".tr()), centerTitle: true),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(

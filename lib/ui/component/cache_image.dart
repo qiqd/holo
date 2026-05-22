@@ -5,8 +5,8 @@ import 'package:holo/ui/component/shimmer.dart';
 class CacheImage extends StatelessWidget {
   final String imageUrl;
   final BoxFit fit;
-  final int memCacheHeight;
-  final int memCacheWidth;
+  final int? memCacheHeight;
+  final int? memCacheWidth;
 
   const CacheImage({
     super.key,

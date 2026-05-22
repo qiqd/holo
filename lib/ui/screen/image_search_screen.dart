@@ -89,16 +89,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        animateColor: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () {
-            context.pop();
-          },
-        ),
-        title: Text(tr('image_search.title')),
-      ),
+      appBar: AppBar(animateColor: true, title: Text(tr('image_search.title'))),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 12),
         child: Column(

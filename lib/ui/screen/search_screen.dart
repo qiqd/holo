@@ -90,13 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
           icon: Icon(Icons.delete_forever_rounded),
         ),
       ],
-      leading: IconButton(
-        alignment: .center,
-        icon: const Icon(Icons.arrow_back_ios_new_rounded),
-        onPressed: () {
-          context.pop();
-        },
-      ),
+
       title: TextField(
         controller: _controller,
         onSubmitted: (value) {

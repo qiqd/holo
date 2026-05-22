@@ -111,7 +111,10 @@ class _SettingScreenState extends State<SettingScreen>
                   key: ValueKey('setting.app_info.check_version_loading'),
                   width: 24,
                   height: 24,
-                  child: const CircularProgressIndicator(padding: .zero),
+                  child: const CircularProgressIndicator(
+                    padding: EdgeInsets.zero,
+                    year2023: false,
+                  ),
                 )
               : Icon(
                   key: ValueKey('setting.app_info.check_version_icon'),

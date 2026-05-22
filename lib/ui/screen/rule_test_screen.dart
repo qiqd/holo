@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:holo/entity/media.dart' as media;
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/media_grid.dart';
@@ -103,12 +102,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: widget.showNavBtn
-            ? IconButton(
-                icon: Icon(Icons.arrow_back_ios_rounded),
-                onPressed: () => context.pop(),
-              )
-            : SizedBox(),
+        automaticallyImplyLeading: widget.showNavBtn,
         title: Text('${widget.source.getName()} Test'),
       ),
       body: Container(

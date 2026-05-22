@@ -158,9 +158,14 @@ class _PlayerScreenState extends State<PlayerScreen>
             isFirstLoad: true,
             keyword: _danmakuKeyword.isNotEmpty ? _danmakuKeyword : _nameCn,
             onComplete: (e) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(e),
+                  showCloseIcon: true,
+                  duration: const Duration(seconds: 2),
+                  backgroundColor: Colors.red,
+                ),
+              );
             },
           );
         }
@@ -226,7 +231,10 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (index >= _detail!.lines![_lineIndex].episodes!.length) {
       setState(() {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("player.episode_not_exist".tr())),
+          SnackBar(
+            content: Text("player.episode_not_exist".tr()),
+            duration: const Duration(seconds: 2),
+          ),
         );
       });
       return;
@@ -413,9 +421,13 @@ class _PlayerScreenState extends State<PlayerScreen>
       isFirstLoad: false,
       keyword: _danmakuKeyword.isEmpty ? _nameCn : _danmakuKeyword,
       onComplete: (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e), showCloseIcon: true));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e),
+            showCloseIcon: true,
+            duration: const Duration(seconds: 2),
+          ),
+        );
       },
     );
   }
@@ -605,10 +617,11 @@ class _PlayerScreenState extends State<PlayerScreen>
   Widget _buildSummary() {
     // var updateTo = checkUpdateAt(subject.airDate);
     return Material(
-      clipBehavior: .antiAlias,
+      clipBehavior: Clip.antiAlias,
       color: Colors.transparent,
       child: CustomScrollView(
         slivers: [
+          SliverToBoxAdapter(child: SizedBox(height: 6)),
           // 简介卡片
           SliverToBoxAdapter(
             child: MediaCard(
@@ -630,7 +643,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              tileColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              tileColor: Theme.of(context).colorScheme.surfaceContainerHigh,
               title: Text(
                 "player.datasource".tr(),
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -669,7 +682,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                       decoration: BoxDecoration(
                         color: Theme.of(
                           context,
-                        ).colorScheme.surfaceContainerHighest,
+                        ).colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ListTile(
@@ -733,7 +746,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           )
         : GridView.builder(
             key: PageStorageKey("player_episodes"),
-
+            padding: EdgeInsets.only(top: 6),
             itemCount: _episode.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
@@ -861,7 +874,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.symmetric(horizontal: 12),
               child: TabBarView(
                 controller: _tabController,
                 children: [_buildSummary(), _buildEpisode()],
@@ -1063,6 +1076,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                     child: Slider(
                       min: 0.1,
                       max: 1.0,
+                      year2023: false,
                       value: setting.opacity,
                       onChanged: (value) {
                         onSettingChanged?.call(
@@ -1085,6 +1099,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                     child: Slider(
                       min: 0.1,
                       max: 1.0,
+                      year2023: false,
                       value: setting.area,
                       onChanged: (value) {
                         onSettingChanged?.call(setting.copyWith(area: value));
@@ -1105,6 +1120,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                     child: Slider(
                       min: 10.0,
                       max: 50.0,
+                      year2023: false,
                       value: setting.fontSize,
                       onChanged: (value) {
                         onSettingChanged?.call(
@@ -1159,7 +1175,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     return SliverToBoxAdapter(
       child: Card(
         margin: .zero,
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
         shadowColor: Colors.transparent,
         child: Container(
           padding: .all(6),

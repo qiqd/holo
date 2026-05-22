@@ -461,13 +461,7 @@ class _DetailScreenState extends State<DetailScreen>
 
   Widget _buildAppBar() {
     return AppBar(
-      actionsPadding: .symmetric(horizontal: 12),
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_rounded),
-        onPressed: () {
-          context.pop(context);
-        },
-      ),
+      actionsPadding: EdgeInsets.symmetric(horizontal: 12),
       //  title: Text("detail.title".tr()),
       actions: [
         IconButton(
@@ -506,7 +500,7 @@ class _DetailScreenState extends State<DetailScreen>
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-
+                      year2023: false,
                       key: ValueKey("detail_search_loading"),
                       padding: .zero,
                     ),
@@ -549,6 +543,7 @@ class _DetailScreenState extends State<DetailScreen>
           duration: Duration(milliseconds: 500),
           child: _isLoading
               ? const CircularProgressIndicator(
+                  year2023: false,
                   key: ValueKey("detail_floating_loading"),
                 )
               : const Icon(

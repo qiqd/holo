@@ -84,12 +84,7 @@ class _RuleManagerState extends State<RuleManager> {
             }
           },
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () {
-            context.pop();
-          },
-        ),
+
         actions: [
           if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
             IconButton(

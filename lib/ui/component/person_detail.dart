@@ -22,8 +22,8 @@ Future<void> showPersonDetailBottomSheet(Person person, BuildContext context) {
                 child: CacheImage(
                   imageUrl: person.images?.large ?? '',
                   fit: BoxFit.fitHeight,
-                  memCacheHeight: 700,
-                  memCacheWidth: 400,
+                  memCacheHeight: null,
+                  memCacheWidth: null,
                 ),
               ),
             ),

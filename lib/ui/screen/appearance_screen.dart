@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
 import 'package:holo/entity/user_setting.dart';
 import 'package:holo/main.dart';
@@ -328,13 +327,7 @@ class _AppearanceState extends State<Appearance> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('appearance.appbar_title'.tr()),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => context.pop(),
-        ),
-      ),
+      appBar: AppBar(title: Text('appearance.appbar_title'.tr())),
       body: ListView(
         children: [..._buildThemeModeTile(), ..._buildPrimaryColorTile()],
       ),

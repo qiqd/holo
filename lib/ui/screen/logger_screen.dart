@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:holo/util/logger_util.dart';
 
 class LoggerScreen extends StatelessWidget {
@@ -9,16 +8,13 @@ class LoggerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var log = LoggerUtil.getLog();
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Logger"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => context.pop(),
-        ),
+      appBar: AppBar(title: Text("Logger")),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12),
+        child: log.isEmpty
+            ? Center(child: Text("No log found"))
+            : SingleChildScrollView(child: SelectableText(log)),
       ),
-      body: log.isEmpty
-          ? Center(child: Text("No log found"))
-          : SingleChildScrollView(child: SelectableText(log)),
     );
   }
 }
