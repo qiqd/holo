@@ -16,7 +16,7 @@
             "hide_scroll_danmaku": "スクロール弾幕を非表示",
             "massive_danmaku_mode": "大量弾幕モード",
             "massive_danmaku_subtitle": "弾幕レーンがいっぱいになったら重ねて表示",
-            "danmaku_opacity": "弾幕の透明度",
+            "danmaku_opacity": "弾幕の不透明度",
             "display_area": "表示領域",
             "danmaku_font_size": "弾幕フォントサイズ"
         },

@@ -133,15 +133,23 @@ class _SettingScreenState extends State<SettingScreen>
         title: Text('setting.app_info.logger_view'.tr()),
         onTap: () => context.push('/logger'),
       ),
-      SwitchListTile(
-        value: MyApp.userSettingNotifier.value.autoUpdate,
-        title: Text('setting.app_info.auto_check_update'.tr()),
-        subtitle: Text('setting.app_info.auto_check_update_description'.tr()),
-        onChanged: (value) async {
-          var newSetting = MyApp.userSettingNotifier.value.copyWith(
-            autoUpdate: value,
+      ValueListenableBuilder(
+        valueListenable: MyApp.userSettingNotifier,
+        builder: (context, value, child) {
+          return SwitchListTile(
+            value: value.autoUpdate,
+            title: Text('setting.app_info.auto_check_update'.tr()),
+            subtitle: Text(
+              'setting.app_info.auto_check_update_description'.tr(),
+            ),
+            onChanged: (value) {
+              var newSetting = MyApp.userSettingNotifier.value.copyWith(
+                autoUpdate: value,
+              );
+              MyApp.userSettingNotifier.value = newSetting;
+              HiveUtil.setUserSetting(newSetting);
+            },
           );
-          await HiveUtil.setUserSetting(newSetting);
         },
       ),
     ];

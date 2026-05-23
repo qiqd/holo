@@ -163,7 +163,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                   content: Text(e),
                   showCloseIcon: true,
                   duration: const Duration(seconds: 2),
-                  backgroundColor: Colors.red,
                 ),
               );
             },
@@ -1076,7 +1075,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                     child: Slider(
                       min: 0.1,
                       max: 1.0,
-                      year2023: false,
                       value: setting.opacity,
                       onChanged: (value) {
                         onSettingChanged?.call(
@@ -1099,7 +1097,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                     child: Slider(
                       min: 0.1,
                       max: 1.0,
-                      year2023: false,
+
                       value: setting.area,
                       onChanged: (value) {
                         onSettingChanged?.call(setting.copyWith(area: value));
@@ -1116,11 +1114,12 @@ class _PlayerScreenState extends State<PlayerScreen>
               subtitle: Row(
                 children: [
                   Text('${(setting.fontSize).round()}'),
+                  SizedBox(width: 10),
                   Expanded(
                     child: Slider(
                       min: 10.0,
                       max: 50.0,
-                      year2023: false,
+
                       value: setting.fontSize,
                       onChanged: (value) {
                         onSettingChanged?.call(

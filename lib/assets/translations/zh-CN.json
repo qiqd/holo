@@ -16,7 +16,7 @@
             "hide_scroll_danmaku": "隐藏滚动弹幕",
             "massive_danmaku_mode": "海量弹幕模式",
             "massive_danmaku_subtitle": "弹幕轨道占满时进行叠加",
-            "danmaku_opacity": "弹幕透明度",
+            "danmaku_opacity": "弹幕不透明度",
             "display_area": "显示区域",
             "danmaku_font_size": "弹幕字号"
         },
