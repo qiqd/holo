@@ -86,7 +86,9 @@
             "signout_dialog_title": "登出帳戶",
             "signout_dialog_content": "確定登出目前帳戶嗎？",
             "signout_dialog_cancel": "取消",
-            "signout_dialog_confirm": "確定"
+            "signout_dialog_confirm": "確定",
+            "room_preferences": "偏好設定",
+            "room_preferences_description": "配置應用程式自動檢查更新、主題、資源匹配策略等"
         },
         "app_info": {
             "about": "關於應用程式",
@@ -143,6 +145,12 @@
     },
     "appearance": {
         "appbar_title": "外觀設定",
+        "primary_color": "主題顏色",
+        "recent_colors": "最近使用的顏色",
+        "confirm": "確定",
+        "cancel": "取消"
+    },
+    "preference": {
         "theme_mode": "主題模式",
         "theme_mode_system": "跟隨系統",
         "theme_mode_light": "淺色",
@@ -152,12 +160,11 @@
         "theme_dialog_confirm": "確定",
         "use_system_color": "使用系統顏色",
         "use_system_color_description": "開啟後將使用系統顏色主題",
-        "primary_color": "主題顏色",
         "custom_color": "自訂顏色",
         "preset_colors": "預設顏色",
-        "recent_colors": "最近使用的顏色",
-        "confirm": "確定",
-        "cancel": "取消"
+        "auto_check_update": "自動檢查更新",
+        "match_strategy": "匹配策略",
+        "match_strategy_description": "如果開啟,將根據最近播放記錄匹配播放源,當匹配值大於90%時,將自動選擇該播放源"
     },
     "sign": {
         "title": "歡迎回來",

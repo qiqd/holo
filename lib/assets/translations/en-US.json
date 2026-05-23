@@ -86,7 +86,9 @@
             "signout_dialog_title": "Log Out",
             "signout_dialog_content": "Are you sure you want to log out of the current account?",
             "signout_dialog_cancel": "Cancel",
-            "signout_dialog_confirm": "Confirm"
+            "signout_dialog_confirm": "Confirm",
+            "room_preferences": "Preferences",
+            "room_preferences_description": "Configure app auto check update, theme, resource match strategy, etc."
         },
         "app_info": {
             "about": "About App",
@@ -143,6 +145,12 @@
     },
     "appearance": {
         "appbar_title": "Appearance Settings",
+        "primary_color": "Theme Color",
+        "recent_colors": "Recent Colors",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    },
+    "preference": {
         "theme_mode": "Theme Mode",
         "theme_mode_system": "Follow System",
         "theme_mode_light": "Light",
@@ -152,12 +160,11 @@
         "theme_dialog_confirm": "OK",
         "use_system_color": "Use System Color",
         "use_system_color_description": "Use system color theme when enabled",
-        "primary_color": "Theme Color",
         "custom_color": "Custom Color",
         "preset_colors": "Preset Colors",
-        "recent_colors": "Recent Colors",
-        "confirm": "Confirm",
-        "cancel": "Cancel"
+        "auto_check_update": "Auto Check Update",
+        "match_strategy": "Match Match Strategy",
+        "match_strategy_description": "If enabled, the app will match the playback source based on the recent playback history. If the match value is greater than 90%, the app will automatically select the playback source"
     },
     "sign": {
         "title": "Welcome Back",

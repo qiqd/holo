@@ -86,6 +86,12 @@ class _SettingScreenState extends State<SettingScreen>
         //subtitle: Text('setting.account.logout_description'.tr()),
         onTap: () => _showSignoutAccountDialog(),
       ),
+      ListTile(
+        leading: const Icon(Icons.room_preferences_outlined),
+        title: Text('setting.account.room_preferences'.tr()),
+        subtitle: Text('setting.account.room_preferences_description'.tr()),
+        onTap: () => context.push('/preferences'),
+      ),
     ];
   }
 
@@ -132,25 +138,6 @@ class _SettingScreenState extends State<SettingScreen>
         leading: Icon(Icons.message_outlined),
         title: Text('setting.app_info.logger_view'.tr()),
         onTap: () => context.push('/logger'),
-      ),
-      ValueListenableBuilder(
-        valueListenable: MyApp.userSettingNotifier,
-        builder: (context, value, child) {
-          return SwitchListTile(
-            value: value.autoUpdate,
-            title: Text('setting.app_info.auto_check_update'.tr()),
-            subtitle: Text(
-              'setting.app_info.auto_check_update_description'.tr(),
-            ),
-            onChanged: (value) {
-              var newSetting = MyApp.userSettingNotifier.value.copyWith(
-                autoUpdate: value,
-              );
-              MyApp.userSettingNotifier.value = newSetting;
-              HiveUtil.setUserSetting(newSetting);
-            },
-          );
-        },
       ),
     ];
   }
@@ -260,17 +247,6 @@ class _SettingScreenState extends State<SettingScreen>
     ];
   }
 
-  List<Widget> _buildAppearance() {
-    return [
-      _buildSectionHeader('setting.section.appearance'.tr()),
-      ListTile(
-        leading: const Icon(Icons.palette_outlined),
-        title: Text('appearance.appbar_title'.tr()),
-        onTap: () => context.push('/appearance'),
-      ),
-    ];
-  }
-
   List<Widget> _buildOpenSource() {
     return [
       _buildSectionHeader('setting.section.open_source'.tr()),
@@ -308,8 +284,6 @@ class _SettingScreenState extends State<SettingScreen>
           ..._buildLanguage(),
           // 数据管理部分
           ..._buildDataManagement(),
-          // 外观设置部分
-          ..._buildAppearance(),
           // 开源项目部分
           ..._buildOpenSource(),
         ],

@@ -86,7 +86,9 @@
             "signout_dialog_title": "アカウントからログアウト",
             "signout_dialog_content": "本当にアカウントからログアウトしますか？",
             "signout_dialog_cancel": "キャンセル",
-            "signout_dialog_confirm": "確認"
+            "signout_dialog_confirm": "確認",
+            "room_preferences": "設定",
+            "room_preferences_description": "アプリを自動的に更新するか、テーマを設定するなど"
         },
         "app_info": {
             "about": "アプリについて",
@@ -143,6 +145,12 @@
     },
     "appearance": {
         "appbar_title": "外観設定",
+        "primary_color": "テーマカラー",
+        "recent_colors": "最近使用した色",
+        "confirm": "確定",
+        "cancel": "キャンセル"
+    },
+    "preference": {
         "theme_mode": "テーマモード",
         "theme_mode_system": "システムに連動",
         "theme_mode_light": "ライト",
@@ -152,12 +160,11 @@
         "theme_dialog_confirm": "確定",
         "use_system_color": "システムカラーを使用",
         "use_system_color_description": "オンにするとシステムカラーテーマを使用します",
-        "primary_color": "テーマカラー",
         "custom_color": "カスタムカラー",
         "preset_colors": "プリセットカラー",
-        "recent_colors": "最近使用した色",
-        "confirm": "確定",
-        "cancel": "キャンセル"
+        "auto_check_update": "自動バージョンチェック",
+        "match_strategy": "マッチング略",
+        "match_strategy_description": "アプリが再生元をマッチする方法を指定します。有効にすると、最近の再生履歴に基づいて再生元をマッチします。マッチ値が90%以上の場合、自動的に再生元を選択します"
     },
     "sign": {
         "title": "お帰りなさい",

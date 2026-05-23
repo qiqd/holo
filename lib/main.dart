@@ -17,6 +17,7 @@ import 'package:holo/ui/screen/appearance_screen.dart';
 import 'package:holo/ui/screen/image_search_screen.dart';
 import 'package:holo/ui/screen/logger_screen.dart';
 import 'package:holo/ui/screen/player_screen.dart';
+import 'package:holo/ui/screen/preferences_screen.dart';
 import 'package:holo/ui/screen/rule_edit_screen.dart';
 import 'package:holo/ui/screen/rule_manager_screen.dart';
 import 'package:holo/ui/screen/rule_repository_screen.dart';
@@ -272,6 +273,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         path: '/logger',
         builder: (context, state) {
           return LoggerScreen();
+        },
+      ),
+      // 房间设置页路由
+      GoRoute(
+        path: '/preferences',
+        builder: (context, state) {
+          return PreferencesScreen();
         },
       ),
     ],
