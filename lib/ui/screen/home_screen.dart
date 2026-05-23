@@ -35,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _carouselTimer;
   Timer? _autoSlideTimer;
   bool _isLoading = false;
-  bool _isRefresh = false;
   String _msg = '';
   int _page = 1;
   List<SubjectItem> _rank = [];
@@ -332,10 +331,8 @@ class _HomeContent extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: () async {
-        state.safeSetState(() => state._isRefresh = true);
-        await state._fetchRank(page: ++state._page, loadMore: false);
-        state.safeSetState(() => state._isRefresh = false);
+      onRefresh: () {
+        return state._fetchRank(page: ++state._page, loadMore: false);
       },
       child: Column(
         children: [

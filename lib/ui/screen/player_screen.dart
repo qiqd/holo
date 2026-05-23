@@ -487,7 +487,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                   child: (_danmakuList.isEmpty)
                       ? Center(child: Text('player.no_danmaku_sheet_text'.tr()))
                       : ListView.separated(
-                          itemCount: _danmakuList.length ?? 0,
+                          itemCount: _danmakuList.length,
                           separatorBuilder: (context, index) =>
                               Divider(height: 1),
                           itemBuilder: (context, index) {
@@ -1063,7 +1063,10 @@ class _PlayerScreenState extends State<PlayerScreen>
               leading: null,
               subtitle: Row(
                 children: [
-                  Text('${(setting.opacity * 100).round()}%'),
+                  SizedBox(
+                    width: 36,
+                    child: Text('${(setting.opacity * 100).round()}%'),
+                  ),
                   Expanded(
                     child: Slider(
                       min: 0.1,
@@ -1085,12 +1088,14 @@ class _PlayerScreenState extends State<PlayerScreen>
               ),
               subtitle: Row(
                 children: [
-                  Text('${(setting.area * 100).round()}%'),
+                  SizedBox(
+                    width: 36,
+                    child: Text('${(setting.area * 100).round()}%'),
+                  ),
                   Expanded(
                     child: Slider(
                       min: 0.1,
                       max: 1.0,
-
                       value: setting.area,
                       onChanged: (value) {
                         onSettingChanged?.call(setting.copyWith(area: value));
@@ -1106,13 +1111,14 @@ class _PlayerScreenState extends State<PlayerScreen>
               ),
               subtitle: Row(
                 children: [
-                  Text('${(setting.fontSize).round()}'),
-                  SizedBox(width: 10),
+                  SizedBox(
+                    width: 36,
+                    child: Text('${(setting.fontSize).round()}'),
+                  ),
                   Expanded(
                     child: Slider(
                       min: 10.0,
                       max: 50.0,
-
                       value: setting.fontSize,
                       onChanged: (value) {
                         onSettingChanged?.call(
