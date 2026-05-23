@@ -234,7 +234,8 @@
         "danmaku_selection": "Danmaku selection",
         "choose_danmaku_sheet_text": "If the danmaku is not correct, please choose manually",
         "no_danmaku_sheet_text": "No danmaku",
-        "danmaku_statistics": "{} danmaku sources, total {} comments",
+        "danmaku_source_statistics": "{} danmaku sources",
+        "danmaku_count_statistics": "{} comments",
         "datasource": "Data Source",
         "danmaku_search_hint": "If the danmaku is not correct, please search manually"
     },

@@ -24,7 +24,8 @@ class UserPlayback {
   final int lineIndex;
   @HiveField(9)
   final bool isSync;
-
+  @HiveField(10)
+  final String? sourceName;
   const UserPlayback({
     required this.id,
     required this.email,
@@ -36,6 +37,7 @@ class UserPlayback {
     required this.episodeIndex,
     required this.lineIndex,
     required this.isSync,
+    this.sourceName,
   });
 
   UserPlayback copyWith({
@@ -49,6 +51,7 @@ class UserPlayback {
     int? episodeIndex,
     int? lineIndex,
     bool? isSync,
+    String? sourceName,
   }) {
     return UserPlayback(
       id: id ?? this.id,
@@ -61,6 +64,7 @@ class UserPlayback {
       episodeIndex: episodeIndex ?? this.episodeIndex,
       lineIndex: lineIndex ?? this.lineIndex,
       isSync: isSync ?? this.isSync,
+      sourceName: sourceName ?? this.sourceName,
     );
   }
 
@@ -76,6 +80,7 @@ class UserPlayback {
       episodeIndex: map['episodeIndex'],
       lineIndex: map['lineIndex'],
       isSync: map['isSync'] ?? false,
+      sourceName: map['sourceName'],
     );
   }
 
@@ -91,6 +96,7 @@ class UserPlayback {
       'episodeIndex': episodeIndex,
       'lineIndex': lineIndex,
       'isSync': isSync,
+      'sourceName': sourceName,
     };
   }
 }

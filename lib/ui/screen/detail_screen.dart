@@ -7,6 +7,7 @@ import 'package:holo/entity/media.dart';
 import 'package:holo/entity/person.dart';
 import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_subscribe.dart';
 import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
@@ -51,7 +52,6 @@ class _DetailScreenState extends State<DetailScreen>
   final Map<SourceService, List<Media>> _source2Media = {};
   List<SourceService> _sourceService = [];
   bool _isLoading = false;
-  bool _isFetched = false;
   bool _isCompleted = false;
   late TabController tabController = TabController(vsync: this, length: 4);
   late TabController subTabController = TabController(
@@ -88,7 +88,6 @@ class _DetailScreenState extends State<DetailScreen>
   Future<void> _fetchMedia() async {
     safeSetState(() {
       _isLoading = true;
-      _isFetched = true;
       _isCompleted = false;
     });
     final sources = Api.getSources();
@@ -106,13 +105,31 @@ class _DetailScreenState extends State<DetailScreen>
           tempSource = source;
         }
       }
-      if (tempMedia != null && tempSource != null) {
-        defaultMedia = tempMedia;
-        defaultSource = tempSource;
-        safeSetState(() {
-          _isLoading = false;
-        });
+      //如果启用了最近源播放并且有播放记录，则使用最近源的视频
+      final playbackHistory = _loadPlaybackHistory(widget.id);
+      if (MyApp.userSettingNotifier.value.useLastSource &&
+          playbackHistory.isNotEmpty) {
+        if (tempMedia != null &&
+            tempSource != null &&
+            tempSource.getName() == playbackHistory.first.sourceName) {
+          defaultMedia = tempMedia;
+          defaultSource = tempSource;
+          safeSetState(() {
+            _isLoading = false;
+          });
+        }
       }
+      //如果没有最近源，就使用最高分(相似度最高)的视频
+      else {
+        if (tempMedia != null && tempSource != null) {
+          defaultMedia = tempMedia;
+          defaultSource = tempSource;
+          safeSetState(() {
+            _isLoading = false;
+          });
+        }
+      }
+
       _source2Media[source] = res;
     });
     await Future.wait(future);
@@ -124,35 +141,30 @@ class _DetailScreenState extends State<DetailScreen>
     safeSetState(() {
       _sourceService = keys;
       _isLoading = false;
-      _isFetched = false;
       _isCompleted = true;
     });
   }
 
   Future<void> _fetchPerson() async {
     final res = await Api.bangumi.fetchPerson(widget.id, (e) {
-      setState(() {
+      safeSetState(() {
         _msg = e.toString();
       });
     });
-    if (mounted) {
-      setState(() {
-        _person = res;
-      });
-    }
+    safeSetState(() {
+      _person = res;
+    });
   }
 
   Future<void> _fetchCharacter() async {
     final res = await Api.bangumi.fetchCharacter(widget.id, (e) {
-      setState(() {
+      safeSetState(() {
         _msg = e.toString();
       });
     });
-    if (mounted) {
-      setState(() {
-        _character = res;
-      });
-    }
+    safeSetState(() {
+      _character = res;
+    });
   }
 
   Future<void> _fetchRelation() async {
@@ -161,11 +173,9 @@ class _DetailScreenState extends State<DetailScreen>
         _msg = e.toString();
       });
     });
-    if (mounted) {
-      setState(() {
-        _relation = res;
-      });
-    }
+    safeSetState(() {
+      _relation = res;
+    });
   }
 
   void _loadSubscribeHistory() {
@@ -181,6 +191,10 @@ class _DetailScreenState extends State<DetailScreen>
         _userSubscribe = subs.first;
       });
     }
+  }
+
+  List<UserPlayback> _loadPlaybackHistory(int id) {
+    return HiveUtil.getUserPlaybacks(id: id);
   }
 
   Future<void> _updateSubscribeHistory() async {
@@ -494,7 +508,7 @@ class _DetailScreenState extends State<DetailScreen>
           icon: AnimatedSwitcher(
             key: ValueKey("detail_search_icon"),
             duration: Duration(milliseconds: 500),
-            child: _isFetched
+            child: !_isCompleted
                 ? const SizedBox(
                     width: 20,
                     height: 20,

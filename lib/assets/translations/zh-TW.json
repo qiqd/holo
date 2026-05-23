@@ -234,7 +234,8 @@
         "danmaku_selection": "彈幕選擇",
         "choose_danmaku_sheet_text": "若弹幕不正确,請手動選擇弹幕",
         "no_danmaku_sheet_text": "暫無弹幕",
-        "danmaku_statistics": "{}個彈幕源，共計{}條彈幕",
+        "danmaku_source_statistics": "{}個彈幕源",
+        "danmaku_count_statistics": "{}條彈幕",
         "datasource": "數據源",
         "danmaku_search_hint": "若弹幕不正确,請手動搜索"
     },

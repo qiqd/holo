@@ -35,6 +35,8 @@ class UserSetting {
   final int colorSeed;
   @HiveField(13)
   final bool autoUpdate;
+  @HiveField(14)
+  final bool useLastSource;
   const UserSetting({
     required this.email,
     required this.opacity,
@@ -50,6 +52,7 @@ class UserSetting {
     required this.themeMode,
     required this.colorSeed,
     this.autoUpdate = true,
+    this.useLastSource = true,
   });
 
   static UserSetting createDefaultUserSetting({required String email}) {
@@ -68,6 +71,7 @@ class UserSetting {
       themeMode: 0,
       colorSeed: 0xffd08b57,
       autoUpdate: true,
+      useLastSource: true,
     );
   }
 
@@ -100,6 +104,7 @@ class UserSetting {
     int? themeMode,
     int? colorSeed,
     bool? autoUpdate,
+    bool? useLastSource,
   }) {
     return UserSetting(
       email: email ?? this.email,
@@ -116,25 +121,27 @@ class UserSetting {
       themeMode: themeMode ?? this.themeMode,
       colorSeed: colorSeed ?? this.colorSeed,
       autoUpdate: autoUpdate ?? this.autoUpdate,
+      useLastSource: useLastSource ?? this.useLastSource,
     );
   }
 
   factory UserSetting.fromJson(Map<String, dynamic> map) {
     return UserSetting(
       email: map['email'],
-      opacity: map['opacity'],
-      area: map['area'],
-      fontSize: map['fontSize'],
-      hideTop: map['hideTop'] == 1,
-      hideScroll: map['hideScroll'] == 1,
-      hideBottom: map['hideBottom'] == 1,
-      massiveMode: map['massiveMode'] == 1,
-      danmakuOffset: map['danmakuOffset'],
-      filterWords: map['filterWords'],
-      useSystemColor: map['useSystemColor'] == 1,
-      themeMode: map['themeMode'],
-      colorSeed: map['colorSeed'],
-      autoUpdate: map['autoUpdate'] == 1,
+      opacity: map['opacity'] ?? 1.0,
+      area: map['area'] ?? 1.0,
+      fontSize: map['fontSize'] ?? 16,
+      hideTop: map['hideTop'] ?? false,
+      hideScroll: map['hideScroll'] ?? false,
+      hideBottom: map['hideBottom'] ?? false,
+      massiveMode: map['massiveMode'] ?? false,
+      danmakuOffset: map['danmakuOffset'] ?? 0,
+      filterWords: map['filterWords'] ?? '',
+      useSystemColor: map['useSystemColor'] ?? false,
+      themeMode: map['themeMode'] ?? 0,
+      colorSeed: map['colorSeed'] ?? 0xffd08b57,
+      autoUpdate: map['autoUpdate'] ?? true,
+      useLastSource: map['useLastSource'] ?? true,
     );
   }
 
@@ -144,16 +151,17 @@ class UserSetting {
       'opacity': opacity,
       'area': area,
       'fontSize': fontSize,
-      'hideTop': hideTop ? 1 : 0,
-      'hideScroll': hideScroll ? 1 : 0,
-      'hideBottom': hideBottom ? 1 : 0,
-      'massiveMode': massiveMode ? 1 : 0,
+      'hideTop': hideTop,
+      'hideScroll': hideScroll,
+      'hideBottom': hideBottom,
+      'massiveMode': massiveMode,
       'danmakuOffset': danmakuOffset,
       'filterWords': filterWords,
-      'useSystemColor': useSystemColor ? 1 : 0,
+      'useSystemColor': useSystemColor,
       'themeMode': themeMode,
       'colorSeed': colorSeed,
-      'autoUpdate': autoUpdate ? 1 : 0,
+      'autoUpdate': autoUpdate,
+      'useLastSource': useLastSource,
     };
   }
 }

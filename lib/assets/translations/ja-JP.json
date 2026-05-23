@@ -234,7 +234,8 @@
         "danmaku_selection": "弹幕選択",
         "choose_danmaku_sheet_text": "弹幕が正しくない場合は、手動で選択してください",
         "no_danmaku_sheet_text": "暫無弹幕",
-        "danmaku_statistics": "{}つの弾幕ソース、合計{}件のコメント",
+        "danmaku_source_statistics": "{}つの弾幕ソース",
+        "danmaku_count_statistics": "{}件のコメント",
         "datasource": "データソース",
         "danmaku_search_hint": "弹幕が正しくない場合は、手動で検索してください"
     },

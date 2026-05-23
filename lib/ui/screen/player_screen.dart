@@ -79,7 +79,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   int _historyPosition = 0;
   String? _playUrl;
   bool _isActive = true;
-  List<LogVarEpisode>? _danmakuList;
+  List<LogVarEpisode> _danmakuList = [];
   LogVarEpisode? _bestDanmakuSourceMatch;
   Danmu? _dammaku;
   bool _isDanmakuLoading = false;
@@ -293,12 +293,14 @@ class _PlayerScreenState extends State<PlayerScreen>
             createdAt: DateTime.now(),
             position: _position.inSeconds,
             imgUrl: widget.subject.images.large ?? "",
+            sourceName: _source.getName(),
           )
         : _userPlayback!.copyWith(
             position: _position.inSeconds,
             episodeIndex: _episodeIndex,
             lineIndex: _lineIndex,
             lastPlaybackAt: DateTime.now(),
+            sourceName: _source.getName(),
           );
 
     var newPlaybackHistory = await HiveUtil.setUserPlaybacks([newPlayback]);
@@ -482,25 +484,23 @@ class _PlayerScreenState extends State<PlayerScreen>
                     child: LinearProgressIndicator(),
                   ),
                 Expanded(
-                  child: (_danmakuList == null || _danmakuList!.isEmpty)
+                  child: (_danmakuList.isEmpty)
                       ? Center(child: Text('player.no_danmaku_sheet_text'.tr()))
                       : ListView.separated(
-                          itemCount: _danmakuList?.length ?? 0,
+                          itemCount: _danmakuList.length ?? 0,
                           separatorBuilder: (context, index) =>
                               Divider(height: 1),
                           itemBuilder: (context, index) {
                             return ListTile(
                               selected:
                                   _bestDanmakuSourceMatch?.animeId ==
-                                  _danmakuList?[index].animeId,
-                              title: Text(
-                                _danmakuList?[index].animeTitle ?? '',
-                              ),
+                                  _danmakuList[index].animeId,
+                              title: Text(_danmakuList[index].animeTitle ?? ''),
                               subtitle: Text(
-                                _danmakuList?[index].animeTitle ?? '',
+                                _danmakuList[index].animeTitle ?? '',
                               ),
                               onTap: () {
-                                _onDanmakuSourceChange(_danmakuList![index]);
+                                _onDanmakuSourceChange(_danmakuList[index]);
                                 Navigator.pop(context);
                               },
                             );
@@ -665,43 +665,36 @@ class _PlayerScreenState extends State<PlayerScreen>
                   ),
                 ),
               ),
-            ),
-          ),
-          if (_dammaku != null)
-            const SliverToBoxAdapter(child: SizedBox(height: 6)),
-          // 弹幕
-          SliverToBoxAdapter(
-            child: AnimatedSize(
-              duration: Duration(milliseconds: 300),
-              child: _dammaku == null
-                  ? SizedBox.shrink()
-                  : Container(
-                      width: double.infinity,
-
-                      decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(12),
+              trailing: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: _danmakuList.isEmpty
+                    ? SizedBox.shrink(
+                        key: ValueKey('danmaku_source_statistics_empty'),
+                      )
+                    : Column(
+                        key: ValueKey('danmaku_source_statistics'),
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.tr(
+                              'player.danmaku_source_statistics',
+                              args: [(_danmakuList.length).toString()],
+                            ),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          Text(
+                            context.tr(
+                              'player.danmaku_count_statistics',
+                              args: [
+                                (_dammaku?.comments?.length ?? 0).toString(),
+                              ],
+                            ),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
                       ),
-                      child: ListTile(
-                        title: _isDanmakuLoading
-                            ? LinearProgressIndicator()
-                            : Text(
-                                context.tr(
-                                  'player.danmaku_statistics',
-                                  args: [
-                                    (_danmakuList?.length ?? 0).toString(),
-                                    (_dammaku?.comments?.length ?? 0)
-                                        .toString(),
-                                    (_dammaku?.comments?.length ?? 0)
-                                        .toString(),
-                                  ],
-                                ),
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                      ),
-                    ),
+              ),
             ),
           ),
           if (widget.character.isNotEmpty)

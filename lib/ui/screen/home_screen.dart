@@ -339,8 +339,6 @@ class _HomeContent extends StatelessWidget {
       },
       child: Column(
         children: [
-          if (state._isLoading && !state._isRefresh)
-            const LinearProgressIndicator(),
           Expanded(
             child: RepaintBoundary(
               child: Padding(
