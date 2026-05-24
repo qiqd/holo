@@ -129,8 +129,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                 itemCount: s.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: isLandscape ? 6 : 3,
-                  crossAxisSpacing: 6,
-                  mainAxisSpacing: 6,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
                   childAspectRatio: 0.6,
                 ),
                 itemBuilder: (context, index) {
@@ -173,8 +173,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
           : RefreshIndicator(
               child: ListView.separated(
                 padding: const EdgeInsets.all(8),
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 10),
+                separatorBuilder: (context, index) => const SizedBox(height: 8),
                 itemCount: p.length,
                 itemBuilder: (context, index) {
                   final item = p[index];

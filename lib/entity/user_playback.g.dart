@@ -27,13 +27,14 @@ class UserPlaybackAdapter extends TypeAdapter<UserPlayback> {
       episodeIndex: (fields[7] as num).toInt(),
       lineIndex: (fields[8] as num).toInt(),
       isSync: fields[9] as bool,
+      sourceName: fields[10] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPlayback obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -53,7 +54,9 @@ class UserPlaybackAdapter extends TypeAdapter<UserPlayback> {
       ..writeByte(8)
       ..write(obj.lineIndex)
       ..writeByte(9)
-      ..write(obj.isSync);
+      ..write(obj.isSync)
+      ..writeByte(10)
+      ..write(obj.sourceName);
   }
 
   @override

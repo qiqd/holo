@@ -574,7 +574,7 @@ class _DetailScreenState extends State<DetailScreen>
             child: _subject == null
                 ? _buildShimmerSkeleton()
                 : Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Column(
                       children: [
                         MediaCard(

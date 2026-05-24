@@ -278,7 +278,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (_playUrl == null ||
         _position.inSeconds <= 0 ||
         _isLoading ||
-        !(_playerNotifier.value?.value.isPlaying ?? false)) {
+        !(_playerNotifier.value?.value.isPlaying ?? false) ||
+        _playerNotifier.value?.value.isBuffering == true) {
       return;
     }
     final newPlayback = _userPlayback == null
@@ -866,7 +867,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
+              padding: EdgeInsets.symmetric(horizontal: 8),
               child: TabBarView(
                 controller: _tabController,
                 children: [_buildSummary(), _buildEpisode()],
@@ -1305,7 +1306,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     ]);
     // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    // _controller?.dispose();
+    _tabController.dispose();
     _playerNotifier.value?.dispose();
     _pausableTimer?.cancel();
     super.dispose();

@@ -130,8 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
       key: const ValueKey('home_rank_grid'),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: isLandscape ? 6 : 3,
-        mainAxisSpacing: 6,
-        crossAxisSpacing: 6,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
         childAspectRatio: 0.6,
       ),
       itemBuilder: (context, index) {
@@ -217,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                   title: Padding(
-                    padding: const EdgeInsets.only(left: 12),
+                    padding: const EdgeInsets.only(left: 8),
                     child: TextField(
                       readOnly: true,
                       decoration: InputDecoration(
@@ -261,13 +261,13 @@ class _HomeContent extends StatelessWidget {
       options: CarouselOptions(
         autoPlay: true,
         viewportFraction: 0.8,
-        autoPlayInterval: const Duration(seconds: 5),
+        autoPlayInterval: const Duration(seconds: 105),
       ),
       items: items.isEmpty
           ? [1, 2, 3, 4]
                 .map(
                   (e) => Padding(
-                    padding: .symmetric(horizontal: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: ShimmerContainerSkeleton(),
                   ),
                 )
@@ -276,10 +276,11 @@ class _HomeContent extends StatelessWidget {
               return InkWell(
                 onTap: () => onTap(e),
                 child: Padding(
-                  padding: .symmetric(horizontal: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Stack(
+                      fit: StackFit.expand,
                       children: [
                         Hero(
                           tag: 'home-hot_${e.id}',
@@ -339,7 +340,7 @@ class _HomeContent extends StatelessWidget {
           Expanded(
             child: RepaintBoundary(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: CustomScrollView(
                   controller: state._scrollController,
                   physics: const BouncingScrollPhysics(
@@ -352,6 +353,7 @@ class _HomeContent extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 6)),
                     SliverToBoxAdapter(
                       child: ValueListenableBuilder<List<SubjectItem>>(
                         valueListenable: state._hotNotifier,
@@ -378,6 +380,7 @@ class _HomeContent extends StatelessWidget {
                         },
                       ),
                     ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 6)),
                     SliverToBoxAdapter(
                       child: Text(
                         tr('home.recommend_hight_score'),

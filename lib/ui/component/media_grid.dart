@@ -36,6 +36,7 @@ class MediaGrid extends StatelessWidget {
           onTap: () => onTap?.call(), //
           borderRadius: BorderRadius.circular(10),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
                 child: Stack(

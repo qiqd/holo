@@ -25,12 +25,12 @@ class UserSettingAdapter extends TypeAdapter<UserSetting> {
       hideScroll: fields[5] as bool,
       hideBottom: fields[6] as bool,
       massiveMode: fields[7] as bool,
-      danmakuOffset: (fields[8] as num).toInt(),
-      filterWords: fields[9] as String,
-      useSystemColor: fields[10] as bool,
-      themeMode: (fields[11] as num).toInt(),
-      colorSeed: (fields[12] as num).toInt(),
-      autoUpdate: fields[13] == null ? true : fields[13] as bool,
+      filterWords: fields[8] as String,
+      useSystemColor: fields[9] as bool,
+      themeMode: (fields[10] as num).toInt(),
+      colorSeed: (fields[11] as num).toInt(),
+      autoUpdate: fields[12] == null ? true : fields[12] as bool,
+      useLastSource: fields[13] == null ? true : fields[13] as bool,
     );
   }
 
@@ -55,17 +55,17 @@ class UserSettingAdapter extends TypeAdapter<UserSetting> {
       ..writeByte(7)
       ..write(obj.massiveMode)
       ..writeByte(8)
-      ..write(obj.danmakuOffset)
-      ..writeByte(9)
       ..write(obj.filterWords)
-      ..writeByte(10)
+      ..writeByte(9)
       ..write(obj.useSystemColor)
-      ..writeByte(11)
+      ..writeByte(10)
       ..write(obj.themeMode)
-      ..writeByte(12)
+      ..writeByte(11)
       ..write(obj.colorSeed)
+      ..writeByte(12)
+      ..write(obj.autoUpdate)
       ..writeByte(13)
-      ..write(obj.autoUpdate);
+      ..write(obj.useLastSource);
   }
 
   @override

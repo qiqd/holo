@@ -24,18 +24,16 @@ class UserSetting {
   @HiveField(7)
   final bool massiveMode;
   @HiveField(8)
-  final int danmakuOffset;
-  @HiveField(9)
   final String filterWords;
-  @HiveField(10)
+  @HiveField(9)
   final bool useSystemColor;
-  @HiveField(11)
+  @HiveField(10)
   final int themeMode;
-  @HiveField(12)
+  @HiveField(11)
   final int colorSeed;
-  @HiveField(13)
+  @HiveField(12)
   final bool autoUpdate;
-  @HiveField(14)
+  @HiveField(13)
   final bool useLastSource;
   const UserSetting({
     required this.email,
@@ -46,7 +44,6 @@ class UserSetting {
     required this.hideScroll,
     required this.hideBottom,
     required this.massiveMode,
-    required this.danmakuOffset,
     required this.filterWords,
     required this.useSystemColor,
     required this.themeMode,
@@ -65,7 +62,6 @@ class UserSetting {
       hideScroll: false,
       hideBottom: false,
       massiveMode: false,
-      danmakuOffset: 0,
       filterWords: '',
       useSystemColor: false,
       themeMode: 0,
@@ -84,7 +80,6 @@ class UserSetting {
       hideScroll: hideScroll,
       hideBottom: hideBottom,
       massiveMode: massiveMode,
-      danmakuOffset: danmakuOffset,
       filterWords: filterWords,
     );
   }
@@ -115,7 +110,6 @@ class UserSetting {
       hideScroll: hideScroll ?? this.hideScroll,
       hideBottom: hideBottom ?? this.hideBottom,
       massiveMode: massiveMode ?? this.massiveMode,
-      danmakuOffset: danmakuOffset ?? this.danmakuOffset,
       filterWords: filterWords ?? this.filterWords,
       useSystemColor: useSystemColor ?? this.useSystemColor,
       themeMode: themeMode ?? this.themeMode,
@@ -135,7 +129,6 @@ class UserSetting {
       hideScroll: map['hideScroll'] ?? false,
       hideBottom: map['hideBottom'] ?? false,
       massiveMode: map['massiveMode'] ?? false,
-      danmakuOffset: map['danmakuOffset'] ?? 0,
       filterWords: map['filterWords'] ?? '',
       useSystemColor: map['useSystemColor'] ?? false,
       themeMode: map['themeMode'] ?? 0,
@@ -155,7 +148,6 @@ class UserSetting {
       'hideScroll': hideScroll,
       'hideBottom': hideBottom,
       'massiveMode': massiveMode,
-      'danmakuOffset': danmakuOffset,
       'filterWords': filterWords,
       'useSystemColor': useSystemColor,
       'themeMode': themeMode,
