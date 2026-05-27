@@ -261,7 +261,7 @@ class _HomeContent extends StatelessWidget {
       options: CarouselOptions(
         autoPlay: true,
         viewportFraction: 0.8,
-        autoPlayInterval: const Duration(seconds: 105),
+        autoPlayInterval: const Duration(seconds: 5),
       ),
       items: items.isEmpty
           ? [1, 2, 3, 4]

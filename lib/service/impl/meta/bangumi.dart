@@ -77,10 +77,10 @@ class Bangumi implements MetaService {
     }
   }
 
-  @override
   /// 获取日历信息
   /// [exception] 异常处理器
   /// 返回日历列表
+  @override
   Future<List<DailyBroadcast>> fetchDailyBroadcast(
     void Function(String) exception,
   ) async {
@@ -146,11 +146,11 @@ class Bangumi implements MetaService {
     }
   }
 
-  @override
   /// 获取角色信息
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回角色列表
+  @override
   Future<List<Person>> fetchCharacter(
     int subjectId,
     void Function(Exception) exception,
@@ -171,11 +171,11 @@ class Bangumi implements MetaService {
     }
   }
 
-  @override
   /// 获取人物信息
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回人物列表
+  @override
   Future<List<Person>> fetchPerson(
     int subjectId,
     void Function(Exception) exception,
@@ -196,7 +196,6 @@ class Bangumi implements MetaService {
     }
   }
 
-  @override
   /// 获取推荐媒体
   /// [page] 页码
   /// [size] 每页数量
@@ -205,6 +204,7 @@ class Bangumi implements MetaService {
   /// [sort] 排序方式
   /// [exception] 异常处理器
   /// 返回推荐结果
+  @override
   Future<List<SubjectItem>> fetchRecommend({
     int page = 1,
     int size = 10,
@@ -266,11 +266,11 @@ class Bangumi implements MetaService {
     }
   }
 
-  @override
   /// 搜索媒体
   /// [keyword] 搜索关键词
   /// [exception] 异常处理器
   /// 返回搜索结果
+  @override
   Future<List<SubjectItem>> fetchSearch(
     String keyword,
     void Function(dynamic) exception,
@@ -323,11 +323,11 @@ class Bangumi implements MetaService {
     }
   }
 
-  @override
   /// 获取媒体关联信息
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回关联媒体列表
+  @override
   Future<List<SubjectRelation>> fetchSubjectRelation(
     int subjectId,
     void Function(Exception) exception,
@@ -348,11 +348,11 @@ class Bangumi implements MetaService {
     }
   }
 
-  @override
   /// 获取媒体详情
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回媒体详情
+  @override
   Future<SubjectItem?> fetchSubjectById(
     int subjectId,
     void Function(Exception) exception,
@@ -391,11 +391,11 @@ class Bangumi implements MetaService {
     }
   }
 
-  @override
   /// 获取剧集信息
   /// [subjectId] 媒体ID
   /// [exception] 异常处理器
   /// 返回剧集信息
+  @override
   Future<List<Episode>> fetchEpisode(
     int subjectId,
     void Function(Exception) exception,
