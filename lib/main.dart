@@ -6,10 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/person.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/entity/subject_item.dart';
-import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/related_work.dart';
 import 'package:holo/entity/user_setting.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
@@ -184,7 +184,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             keyword: map['keyword'] as String,
             cover: map['cover'] as String,
             from: map['from'] as String,
-            subject: map['subject'] as SubjectItem?,
+            subject: map['animeInfo'] as AnimeInfo?,
           );
         },
       ),
@@ -196,13 +196,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           final map = state.extra as Map<String, dynamic>;
           return PlayerScreen(
             mediaId: map['mediaId'] as String,
-            subject: map['subject'] as SubjectItem,
+            subject: map['subject'] as AnimeInfo,
             source: map['source'] as SourceService,
             nameCn: map['nameCn'] as String,
             isLove: map['isLove'] as bool,
             person: map['person'] ?? [] as List<Person>,
             character: map['character'] ?? [] as List<Person>,
-            relation: map['relation'] ?? [] as List<SubjectRelation>,
+            relation: map['relation'] ?? [] as List<RelatedWork>,
           );
         },
       ),

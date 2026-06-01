@@ -58,7 +58,7 @@ class MediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var updateTo = checkUpdateAt(airDate);
+    var updateTo = checkUpdateAt(airDate) ?? -1;
     return Stack(
       children: [
         InkWell(

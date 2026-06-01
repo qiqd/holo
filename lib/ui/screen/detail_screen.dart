@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/media.dart';
 import 'package:holo/entity/person.dart';
-import 'package:holo/entity/subject_item.dart';
-import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/related_work.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_subscribe.dart';
 import 'package:holo/main.dart';
@@ -28,7 +28,7 @@ class DetailScreen extends StatefulWidget {
   final String keyword;
   final String cover;
   final String from;
-  final SubjectItem? subject;
+  final AnimeInfo? subject;
   const DetailScreen({
     super.key,
     required this.id,
@@ -45,10 +45,10 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen>
     with TickerProviderStateMixin {
   late String _keyword = widget.keyword;
-  late SubjectItem? _subject = widget.subject;
+  late AnimeInfo? _subject = widget.subject;
   List<Person> _person = [];
   List<Person> _character = [];
-  List<SubjectRelation> _relation = [];
+  List<RelatedWork> _relation = [];
   final Map<SourceService, List<Media>> _source2Media = {};
   List<SourceService> _sourceService = [];
   bool _isLoading = false;
@@ -67,10 +67,10 @@ class _DetailScreenState extends State<DetailScreen>
   UserSubscribe? _userSubscribe;
 
   Future<void> _fetchSubject() async {
-    var subject = HiveUtil.getSubjectItemById(widget.id);
+    var subject = HiveUtil.getAnimeInfoById(widget.id);
 
     if (widget.subject == null || subject == null) {
-      final res = await Api.bangumi.fetchSubjectById(widget.id, (e) {
+      final res = await Api.bangumi.fetchAnimeInfoById(widget.id, (e) {
         safeSetState(() {
           _msg = e.toString();
         });
@@ -79,7 +79,7 @@ class _DetailScreenState extends State<DetailScreen>
         safeSetState(() {
           _subject = res;
         });
-        HiveUtil.setSubjectItem(res);
+        HiveUtil.setAnimeInfo(res);
       }
     }
     _loadSubscribeHistory();
@@ -146,7 +146,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Future<void> _fetchPerson() async {
-    final res = await Api.bangumi.fetchPerson(widget.id, (e) {
+    final res = await Api.bangumi.fetchStaffs(widget.id, (e) {
       safeSetState(() {
         _msg = e.toString();
       });
@@ -157,7 +157,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Future<void> _fetchCharacter() async {
-    final res = await Api.bangumi.fetchCharacter(widget.id, (e) {
+    final res = await Api.bangumi.fetchCharacters(widget.id, (e) {
       safeSetState(() {
         _msg = e.toString();
       });
@@ -168,7 +168,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Future<void> _fetchRelation() async {
-    final res = await Api.bangumi.fetchSubjectRelation(widget.id, (e) {
+    final res = await Api.bangumi.fetchRelatedWorks(widget.id, (e) {
       setState(() {
         _msg = e.toString();
       });
@@ -425,15 +425,15 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Widget _buildSummary() {
-    return _subject?.summary.isNotEmpty == true
+    return _subject?.summary?.isNotEmpty == true
         ? SizedBox(
             width: double.infinity,
             child: SingleChildScrollView(
               padding: EdgeInsets.only(top: 8),
               child: Text(
-                _subject?.summary.isEmpty == true
+                _subject?.summary!.isEmpty == true
                     ? "detail.no_summary".tr()
-                    : _subject!.summary,
+                    : _subject!.summary!,
               ),
             ),
           )
@@ -582,13 +582,15 @@ class _DetailScreenState extends State<DetailScreen>
                           imageUrl: widget.cover,
                           viewingStatus: isSubscribed ? _viewingStatus : null,
                           title: _subject!.title,
-                          genre: _subject!.metaTags.join('/'),
-                          episode: _subject!.totalEpisodes,
-                          rating: _subject!.rating,
+                          genre: _subject?.genres.join('/'),
+                          episode: _subject?.episodes,
+                          rating: _subject?.rating,
                           isFavorite: isSubscribed,
                           ratingCount: _subject!.ratingCount,
                           height: 200,
-                          airDate: _subject!.airDate,
+                          airDate: _subject?.airDateTime != null
+                              ? DateFormat.yMd().format(_subject!.airDateTime!)
+                              : null,
                           isLandscape: isLandscape,
                           onViewingStatusChange: (status) {
                             setState(() {
@@ -618,6 +620,7 @@ class _DetailScreenState extends State<DetailScreen>
                                     _buildSummary(),
 
                                     //人物板块
+                                    /// TODO
                                     _buildListTile(
                                       data: _person
                                           .map(
@@ -625,7 +628,7 @@ class _DetailScreenState extends State<DetailScreen>
                                               'id': e.id.toString(),
                                               'title': e.name,
                                               'subtitle': e.relation,
-                                              'image': e.images!.grid!,
+                                              'image': e.images!.medium!,
                                             },
                                           )
                                           .toList(),
@@ -646,7 +649,7 @@ class _DetailScreenState extends State<DetailScreen>
                                               'id': e.id.toString(),
                                               'title': e.name,
                                               'subtitle': e.relation,
-                                              'image': e.images!.grid!,
+                                              'image': e.images!.medium!,
                                             },
                                           )
                                           .toList(),

@@ -1,5 +1,5 @@
 import 'package:hive_ce/hive.dart';
-import 'package:holo/entity/subject_item.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'daily_broadcast.g.dart';
 
@@ -7,10 +7,10 @@ part 'daily_broadcast.g.dart';
 @JsonSerializable()
 class DailyBroadcast {
   @HiveField(0)
-  final int weekOfDay;
+  final int dayOfWeek;
   @HiveField(1)
-  final List<SubjectItem> items;
-  const DailyBroadcast({required this.weekOfDay, required this.items});
+  final List<AnimeInfo> items;
+  const DailyBroadcast({required this.dayOfWeek, required this.items});
   factory DailyBroadcast.fromJson(Map<String, dynamic> json) =>
       _$DailyBroadcastFromJson(json);
   Map<String, dynamic> toJson() => _$DailyBroadcastToJson(this);

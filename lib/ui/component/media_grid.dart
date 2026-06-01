@@ -9,7 +9,7 @@ class MediaGrid extends StatelessWidget {
   final double? rating;
   final Function? onTap;
   final String? airDate;
-  final String? airTime;
+  final DateTime? airDateTime;
   final bool showCheckBox;
   final bool isChecked;
   final int? currentEpisode;
@@ -21,7 +21,7 @@ class MediaGrid extends StatelessWidget {
     required this.title,
     this.rating,
     this.airDate,
-    this.airTime,
+    this.airDateTime,
     this.onTap,
     this.currentEpisode,
     this.showCheckBox = false,
@@ -87,7 +87,7 @@ class MediaGrid extends StatelessWidget {
                         ),
                       ),
                     //更新时间
-                    if (airTime != null)
+                    if (airDateTime != null)
                       Positioned(
                         right: 4,
                         top: 4,
@@ -101,7 +101,7 @@ class MediaGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            airTime!,
+                            DateFormat('yyyy-MM-dd').format(airDateTime!),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,

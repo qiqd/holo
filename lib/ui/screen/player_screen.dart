@@ -7,14 +7,13 @@ import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
-import 'package:holo/entity/app_setting.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/episode_item.dart';
 import 'package:holo/entity/log_var_episode.dart';
 import 'package:holo/entity/media.dart' as holo_media;
 import 'package:holo/entity/person.dart';
-import 'package:holo/entity/subject_item.dart';
-import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/related_work.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_setting.dart';
 import 'package:holo/service/api.dart';
@@ -37,13 +36,13 @@ import 'package:video_player/video_player.dart';
 
 class PlayerScreen extends StatefulWidget {
   final String mediaId;
-  final SubjectItem subject;
+  final AnimeInfo subject;
   final SourceService source;
   final String nameCn;
   final bool isLove;
   final List<Person> person;
   final List<Person> character;
-  final List<SubjectRelation> relation;
+  final List<RelatedWork> relation;
   const PlayerScreen({
     super.key,
     required this.mediaId,
@@ -68,12 +67,12 @@ class _PlayerScreenState extends State<PlayerScreen>
   final GlobalKey<ScaffoldState> _globalScaffoldKey =
       GlobalKey<ScaffoldState>();
   final Logger _logger = LoggerUtil.logger;
-  late final SubjectItem _subject = widget.subject;
+  late final AnimeInfo _subject = widget.subject;
   bool _isFullScreen = false;
   String _msg = "";
   int _episodeIndex = 0;
   int _lineIndex = 0;
-  List<Episode> _episode = [];
+  List<EpisodeInfo> _episode = [];
   holo_media.Detail? _detail;
   bool _isLoading = false;
   int _historyPosition = 0;
@@ -260,7 +259,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   Future<void> _fetchEpisode() async {
-    final res = await Api.bangumi.fetchEpisode(
+    final res = await Api.bangumi.fetchEpisodeInfos(
       widget.subject.id,
       (e) => setState(() {
         _logger.e("fetchEpisode error: $e");
@@ -628,12 +627,14 @@ class _PlayerScreenState extends State<PlayerScreen>
               id: "player_${_subject.id}",
               imageUrl: _subject.images.large!,
               title: _subject.title,
-              genre: _subject.metaTags.join('/'),
-              episode: _subject.totalEpisodes,
+              genre: _subject.genres.join('/'),
+              episode: _subject.episodes,
               rating: _subject.rating,
               ratingCount: _subject.ratingCount,
               height: 180,
-              airDate: _subject.airDate,
+              airDate: _subject.airDateTime != null
+                  ? DateFormat.yMd().format(_subject.airDateTime!)
+                  : null,
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 6)),
@@ -706,7 +707,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               title: "player.character".tr(),
               name2Image: {
                 for (var e in widget.character)
-                  e.name ?? '': e.images?.grid ?? "",
+                  e.name ?? '': e.images?.medium ?? "",
               },
               onTap: (index) =>
                   showPersonDetailBottomSheet(widget.character[index], context),
@@ -714,11 +715,13 @@ class _PlayerScreenState extends State<PlayerScreen>
           if (widget.person.isNotEmpty)
             const SliverToBoxAdapter(child: SizedBox(height: 6)),
           // 人物
+          /// TODO: 人物图片为空时，显示默认图片
           if (widget.person.isNotEmpty)
             _buildPersonGrid(
               title: "player.person".tr(),
               name2Image: {
-                for (var e in widget.person) e.name ?? '': e.images?.grid ?? "",
+                for (var e in widget.person)
+                  e.name ?? '': e.images?.medium ?? "",
               },
               onTap: (index) =>
                   showPersonDetailBottomSheet(widget.person[index], context),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/subject_item.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
@@ -17,7 +17,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  List<SubjectItem> _searchResult = [];
+  List<AnimeInfo> _searchResult = [];
   bool _loading = false;
   List<String> _searchHistory = [];
   final TextEditingController _controller = TextEditingController();
@@ -221,7 +221,9 @@ class _SearchScreenState extends State<SearchScreen> {
                               imageUrl: item.images.medium!,
                               title: item.title,
                               rating: item.rating,
-                              airDate: item.airDate,
+                              airDate: item.airDateTime != null
+                                  ? DateFormat.yMd().format(item.airDateTime!)
+                                  : null,
                               onTap: () {
                                 context.push(
                                   '/detail',

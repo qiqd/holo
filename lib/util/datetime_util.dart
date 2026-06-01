@@ -30,14 +30,13 @@ String formatTimeAgo(DateTime dateTime) {
 }
 
 /// 检查 [airDate] 距离现在有多少周
-/// [airDate]: 播出日期字符串
-/// 返回距离现在的周数，若解析失败则返回 -1
-int checkUpdateAt(String? airDate) {
+/// 返回距离现在的周数，若解析失败则返回 null
+int? checkUpdateAt(String? airDate) {
   try {
     var airTime = airDate != null ? DateTime.parse(airDate) : DateTime.now();
     var difference = DateTime.now().difference(airTime);
     return (difference.inDays / 7).toInt() + 1;
   } catch (e) {
-    return -1;
+    return null;
   }
 }

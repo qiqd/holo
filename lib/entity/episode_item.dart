@@ -1,12 +1,12 @@
-class Episode {
-  int id;
-  String title;
-  int number;
-  String? description;
-  Episode({
+class EpisodeInfo {
+  final int id;
+  final String title;
+  final int number;
+  final String description;
+  const EpisodeInfo({
     required this.id,
     required this.title,
     required this.number,
-    this.description,
+    required this.description,
   });
 }

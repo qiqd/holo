@@ -78,3 +78,33 @@ class UserSettingAdapter extends TypeAdapter<UserSetting> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+DanmakuSetting _$DanmakuSettingFromJson(Map<String, dynamic> json) =>
+    DanmakuSetting(
+      opacity: (json['opacity'] as num?)?.toDouble() ?? 1.0,
+      area: (json['area'] as num?)?.toDouble() ?? 1.0,
+      fontSize: (json['fontSize'] as num?)?.toDouble() ?? 16,
+      hideTop: json['hideTop'] as bool? ?? false,
+      hideScroll: json['hideScroll'] as bool? ?? false,
+      hideBottom: json['hideBottom'] as bool? ?? false,
+      massiveMode: json['massiveMode'] as bool? ?? false,
+      filterWords: json['filterWords'] as String? ?? '',
+      danmakuOffset: (json['danmakuOffset'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$DanmakuSettingToJson(DanmakuSetting instance) =>
+    <String, dynamic>{
+      'opacity': instance.opacity,
+      'area': instance.area,
+      'fontSize': instance.fontSize,
+      'hideTop': instance.hideTop,
+      'hideScroll': instance.hideScroll,
+      'hideBottom': instance.hideBottom,
+      'massiveMode': instance.massiveMode,
+      'danmakuOffset': instance.danmakuOffset,
+      'filterWords': instance.filterWords,
+    };

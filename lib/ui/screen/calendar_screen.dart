@@ -115,8 +115,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                             id: "calendar_${item[itemIndex].id}",
                             imageUrl: item[itemIndex].images.large ?? '',
                             title: item[itemIndex].title,
-                            airDate: item[itemIndex].airDate,
-                            airTime: item[itemIndex].airTime,
+                            airDateTime: item[itemIndex].airDateTime,
                             onTap: () => context.push(
                               '/detail',
                               extra: {

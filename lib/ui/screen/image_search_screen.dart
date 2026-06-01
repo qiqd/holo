@@ -1,10 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/subject_item.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/media_grid.dart';
@@ -19,7 +18,7 @@ class ImageSearchScreen extends StatefulWidget {
 
 class _ImageSearchScreenState extends State<ImageSearchScreen> {
   List<Map<String, dynamic>>? _searchResult;
-  List<SubjectItem> _subject = [];
+  List<AnimeInfo> _subject = [];
   XFile? _image;
   bool _isLoading = false;
   final ImagePicker _picker = ImagePicker();
@@ -235,7 +234,9 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                     id: "image.search_${data.id}",
                     imageUrl: data.images.large ?? '',
                     title: data.title,
-                    airDate: data.airDate,
+                    airDate: data.airDateTime != null
+                        ? DateFormat.yMd().format(data.airDateTime!)
+                        : null,
                     onTap: () {
                       context.push(
                         '/detail',
@@ -244,6 +245,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
                           "keyword": data.title,
                           "cover": data.images.large ?? '',
                           "from": "image.search",
+                          "subject": data,
                         },
                       );
                     },

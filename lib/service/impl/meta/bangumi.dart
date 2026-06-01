@@ -1,11 +1,10 @@
-import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/episode_item.dart';
 import 'package:holo/entity/image.dart';
 import 'package:holo/entity/person.dart';
-import 'package:holo/entity/subject_item.dart';
-import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/related_work.dart';
 import 'package:holo/service/meta_service.dart';
 import 'package:holo/util/datetime_util.dart';
 import 'package:holo/util/http_util.dart';
@@ -23,7 +22,7 @@ class Bangumi implements MetaService {
 
   @override
   /// 获取网站基础地址
-  String get baseUrl => "https://api.bgm.tv";
+  String get baseUrl => "https://api.bgm.tv/v0";
 
   @override
   /// 获取网站logo地址
@@ -39,7 +38,7 @@ class Bangumi implements MetaService {
 
   /// 获取日历详细信息
   /// 返回 subjectId 和播出时间的映射
-  Future<Map<String, DateTime>> _fetchCalenderDetail() async {
+  Future<Map<String, DateTime>> _fetchCalender() async {
     try {
       final rs = await HttpUtil.createDio().get(
         'https://bgmlist.com/api/v1/bangumi/onair',
@@ -72,21 +71,18 @@ class Bangumi implements MetaService {
       }
       return result;
     } catch (e) {
-      log('fetchCalenderDetail error: ${e.toString()}');
+      _logger.e('fetchCalenderDetail error: ${e.toString()}');
       return {};
     }
   }
 
-  /// 获取日历信息
-  /// [exception] 异常处理器
-  /// 返回日历列表
   @override
   Future<List<DailyBroadcast>> fetchDailyBroadcast(
-    void Function(String) exception,
+    void Function(Exception ex) exceptionHandler,
   ) async {
     try {
       // 获取日历详细信息
-      var calenderDetail = await _fetchCalenderDetail();
+      var calenderDetail = await _fetchCalender();
       // 发起获取日历的请求
       final response = await _dio!.get("$baseUrl/calendar");
       if (response.data != null) {
@@ -106,21 +102,17 @@ class Bangumi implements MetaService {
             var currentEpisode = checkUpdateAt(itemData['air_date']);
             var images = itemData["images"] as Map<String, dynamic>?;
             var airDate = itemData['air_date'] as String?;
-            return SubjectItem(
+            return AnimeInfo(
               id: itemData["id"],
               title: title,
               images: Image.fromJson(images ?? {}),
-              currentEpisode: currentEpisode,
-              summary: "",
-              ratingCount: 0,
-              rating: 0,
-              totalEpisodes: 0,
-              metaTags: [],
-              airDate: airDate,
+              latestEpisode: currentEpisode,
+
+              airDateTime: airDate != null ? DateTime.parse(airDate) : null,
             );
           }).toList();
           return DailyBroadcast(
-            weekOfDay: dayData['weekday']["id"] as int,
+            dayOfWeek: dayData['weekday']['id'] as int,
             items: dailyItems,
           );
         }).toList();
@@ -131,7 +123,10 @@ class Bangumi implements MetaService {
             for (var subject in item.items) {
               if (calenderDetail.containsKey(subject.id.toString())) {
                 var time = calenderDetail[subject.id.toString()];
-                subject.airTime = '${time?.hour}:${time?.minute}';
+                subject.airDateTime = subject.airDateTime?.copyWith(
+                  hour: time?.hour,
+                  minute: time?.minute,
+                );
               }
             }
           }
@@ -141,24 +136,20 @@ class Bangumi implements MetaService {
       return [];
     } catch (e) {
       _logger.e('fetchDailyBroadcast error: ${e.toString()}');
-      exception(e.toString());
+      exceptionHandler(e as Exception);
       return [];
     }
   }
 
-  /// 获取角色信息
-  /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
-  /// 返回角色列表
   @override
-  Future<List<Person>> fetchCharacter(
+  Future<List<Person>> fetchCharacters(
     int subjectId,
-    void Function(Exception) exception,
+    void Function(Exception) exceptionHandler,
   ) async {
     try {
       // 发起获取角色信息的请求
       final response = await _dio!.get(
-        "$baseUrl/v0/subjects/$subjectId/characters",
+        "$baseUrl/subjects/$subjectId/characters",
       );
       if (response.data != null) {
         var data = response.data as List<dynamic>;
@@ -166,52 +157,38 @@ class Bangumi implements MetaService {
       }
       return [];
     } catch (e) {
-      exception(e as Exception);
+      exceptionHandler(e as Exception);
       return [];
     }
   }
 
-  /// 获取人物信息
-  /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
-  /// 返回人物列表
   @override
-  Future<List<Person>> fetchPerson(
+  Future<List<Person>> fetchStaffs(
     int subjectId,
-    void Function(Exception) exception,
+    void Function(Exception) exceptionHandler,
   ) async {
     try {
       // 发起获取人物信息的请求
-      final response = await _dio!.get(
-        "$baseUrl/v0/subjects/$subjectId/persons",
-      );
+      final response = await _dio!.get("$baseUrl/subjects/$subjectId/persons");
       if (response.data != null) {
         var data = response.data as List<dynamic>;
         return data.map((e) => Person.fromJson(e)).toList();
       }
       return [];
     } catch (e) {
-      exception(e as Exception);
+      exceptionHandler(e as Exception);
       return [];
     }
   }
 
-  /// 获取推荐媒体
-  /// [page] 页码
-  /// [size] 每页数量
-  /// [year] 年份
-  /// [month] 月份
-  /// [sort] 排序方式
-  /// [exception] 异常处理器
-  /// 返回推荐结果
   @override
-  Future<List<SubjectItem>> fetchRecommend({
+  Future<List<AnimeInfo>> fetchRecommend({
     int page = 1,
     int size = 10,
     int? year,
     int? month,
     String sort = "date",
-    void Function(Exception)? exception,
+    required void Function(Exception ex) exceptionHandler,
   }) async {
     // 构建请求参数
     var param = Map.from({
@@ -228,7 +205,7 @@ class Bangumi implements MetaService {
     try {
       // 发起获取推荐的请求
       final response = await _dio!.get(
-        "$baseUrl/v0/subjects",
+        "$baseUrl/subjects",
         queryParameters: Map.from(param),
       );
       if (response.data != null) {
@@ -242,43 +219,45 @@ class Bangumi implements MetaService {
                   : subject["name"] ?? '',
             _ => subject["name"] ?? '',
           };
-          return SubjectItem(
+          return AnimeInfo(
             id: subject["id"] as int,
             title: title,
             images: Image.fromJson(subject["images"] as Map<String, dynamic>),
             summary: subject["summary"] as String,
             rating: double.tryParse(subject["rating"]["score"].toString()),
             ratingCount: subject["rating"]?["total"] as int,
-            totalEpisodes: subject["eps"] as int,
-            airDate: subject["date"] as String?,
-            metaTags:
+            episodes: subject["eps"] as int,
+            airDateTime: subject["date"] != null
+                ? DateTime.tryParse(subject["date"] as String)
+                : null,
+            genres:
                 (subject["meta_tags"] as List<dynamic>?)
                     ?.map((e) => e as String)
                     .toList() ??
                 [],
+            type: subject["platform"] as String,
+            latestEpisode:
+                checkUpdateAt(subject["date"] as String?) ??
+                subject["eps"] as int,
           );
         }).toList();
       }
       return [];
     } catch (e) {
-      exception?.call(e as Exception);
+      exceptionHandler(e as Exception);
       return [];
     }
   }
 
-  /// 搜索媒体
-  /// [keyword] 搜索关键词
-  /// [exception] 异常处理器
-  /// 返回搜索结果
   @override
-  Future<List<SubjectItem>> fetchSearch(
+  Future<List<AnimeInfo>> fetchSearch(
     String keyword,
-    void Function(dynamic) exception,
+    void Function(Exception ex) exceptionHandler,
   ) async {
     try {
       // 发起搜索请求
       final response = await _dio!.post(
-        "$baseUrl/v0/search/subjects",
+        "$baseUrl/search/subjects",
         data: {
           "keyword": keyword,
           "sort": "match",
@@ -298,68 +277,64 @@ class Bangumi implements MetaService {
                   : subject["name"] ?? '',
             _ => subject["name"] ?? '',
           };
-          return SubjectItem(
+          return AnimeInfo(
             id: subject["id"] as int,
             title: title,
             images: Image.fromJson(subject["images"] as Map<String, dynamic>),
             rating: double.tryParse(subject["rating"]["score"].toString()),
-            airDate: subject["date"] as String?,
+            airDateTime: subject["date"] != null
+                ? DateTime.tryParse(subject["date"] as String)
+                : null,
             summary: subject["summary"] as String,
             ratingCount: subject["rating"]?["total"] as int,
-            totalEpisodes: subject["eps"] as int,
-            metaTags:
+            episodes: subject["eps"] as int,
+            genres:
                 (subject["meta_tags"] as List<dynamic>?)
                     ?.map((e) => e as String)
                     .toList() ??
                 [],
+            type: subject["platform"] as String,
+            latestEpisode:
+                checkUpdateAt(subject["date"] as String?) ??
+                subject["eps"] as int,
           );
         }).toList();
       }
       return [];
     } catch (e) {
-      log(e.toString());
-      exception(e);
+      _logger.e(e.toString());
+      exceptionHandler(e as Exception);
       return [];
     }
   }
 
-  /// 获取媒体关联信息
-  /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
-  /// 返回关联媒体列表
   @override
-  Future<List<SubjectRelation>> fetchSubjectRelation(
+  Future<List<RelatedWork>> fetchRelatedWorks(
     int subjectId,
-    void Function(Exception) exception,
+    void Function(Exception ex) exceptionHandler,
   ) async {
     try {
       // 发起获取关联媒体的请求
-      final response = await _dio!.get(
-        "$baseUrl/v0/subjects/$subjectId/subjects",
-      );
+      final response = await _dio!.get("$baseUrl/subjects/$subjectId/subjects");
       if (response.data != null) {
         var data = response.data as List<dynamic>;
-        return data.map((e) => SubjectRelation.fromJson(e)).toList();
+        return data.map((e) => RelatedWork.fromJson(e)).toList();
       }
       return [];
     } catch (e) {
-      exception(e as Exception);
+      exceptionHandler(e as Exception);
       return [];
     }
   }
 
-  /// 获取媒体详情
-  /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
-  /// 返回媒体详情
   @override
-  Future<SubjectItem?> fetchSubjectById(
+  Future<AnimeInfo?> fetchAnimeInfoById(
     int subjectId,
-    void Function(Exception) exception,
+    void Function(Exception ex) exceptionHandler,
   ) async {
     try {
       // 发起获取媒体详情的请求
-      final response = await _dio!.get("$baseUrl/v0/subjects/$subjectId");
+      final response = await _dio!.get("$baseUrl/subjects/$subjectId");
       if (response.data != null) {
         var data = response.data as Map<String, dynamic>;
         var title = switch (languageCode) {
@@ -369,41 +344,41 @@ class Bangumi implements MetaService {
                 : data["name"] ?? '',
           _ => data["name"] ?? '',
         };
-        return SubjectItem(
+        return AnimeInfo(
           id: data["id"] as int,
           title: title,
           images: Image.fromJson(data["images"] as Map<String, dynamic>),
           summary: data["summary"] as String,
           rating: double.tryParse(data["rating"]["score"].toString()),
           ratingCount: data["rating"]?["total"] as int,
-          totalEpisodes: data["eps"] as int,
-          metaTags:
+          episodes: data["eps"] as int,
+          genres:
               (data["meta_tags"] as List?)?.map((e) => e as String).toList() ??
               [],
-          airDate: data["date"] as String?,
-          currentEpisode: checkUpdateAt(data["date"] as String?),
+          airDateTime: data["date"] != null
+              ? DateTime.tryParse(data["date"] as String)
+              : null,
+          type: data["platform"] as String,
+          latestEpisode:
+              checkUpdateAt(data["date"] as String?) ?? data["eps"] as int,
         );
       }
       return null;
     } catch (e) {
-      exception(e as Exception);
+      exceptionHandler(e as Exception);
       return null;
     }
   }
 
-  /// 获取剧集信息
-  /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
-  /// 返回剧集信息
   @override
-  Future<List<Episode>> fetchEpisode(
+  Future<List<EpisodeInfo>> fetchEpisodeInfos(
     int subjectId,
-    void Function(Exception) exception,
+    void Function(Exception ex) exceptionHandler,
   ) async {
     try {
       // 发起获取剧集信息的请求
       final response = await _dio!.get(
-        "$baseUrl/v0/episodes",
+        "$baseUrl/episodes",
         queryParameters: {"subject_id": subjectId},
       );
       if (response.data != null) {
@@ -417,17 +392,17 @@ class Bangumi implements MetaService {
                   : episode[" name"] ?? '',
             _ => episode["name"] ?? '',
           };
-          return Episode(
+          return EpisodeInfo(
             id: episode["id"] as int,
             title: title,
             number: episode["ep"] as int,
-            description: episode["desc"] as String?,
+            description: episode["desc"] as String,
           );
         }).toList();
       }
       return [];
     } catch (e) {
-      exception(e as Exception);
+      exceptionHandler(e as Exception);
       return [];
     }
   }

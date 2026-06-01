@@ -4,7 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:holo/entity/subject_item.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/cache_image.dart';
@@ -28,16 +28,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   final CarouselController _carouselController = CarouselController();
-  final ValueNotifier<List<SubjectItem>> _hotNotifier = ValueNotifier([]);
+  final ValueNotifier<List<AnimeInfo>> _hotNotifier = ValueNotifier([]);
   final Logger _logger = LoggerUtil.logger;
 
-  int index = 0;
+  int _index = 0;
   Timer? _carouselTimer;
   Timer? _autoSlideTimer;
   bool _isLoading = false;
   String _msg = '';
   int _page = 1;
-  List<SubjectItem> _rank = [];
+  List<AnimeInfo> _rank = [];
 
   Future<void> _fetchHot() async {
     final hot = await Api.bangumi.fetchRecommend(
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
       sort: "rank",
       page: _page,
       size: 20,
-      exception: (e) {
+      exceptionHandler: (e) {
         safeSetState(() {
           _logger.e("home->fetch hot error: $e");
           _msg = context.tr("common.load_failed");
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     safeSetState(() {
       _hotNotifier.value = hot;
     });
-    await HiveUtil.setHotSubjectItem(_hotNotifier.value);
+    await HiveUtil.setHotAnimeInfo(_hotNotifier.value);
   }
 
   Future<void> _fetchRank({int page = 1, bool loadMore = false}) async {
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
       size: Platform.isWindows || Platform.isLinux || Platform.isMacOS
           ? 30
           : 10,
-      exception: (e) {
+      exceptionHandler: (e) {
         safeSetState(() {
           _logger.e("home->fetch rank error: $e");
           _msg = context.tr("common.load_failed");
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _rank = rank;
       }
     });
-    await HiveUtil.setHiScoreSubjectItem(_rank);
+    await HiveUtil.setHiScoreAnimeInfo(_rank);
     safeSetState(() => _isLoading = false);
   }
 
@@ -106,14 +106,14 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_hotNotifier.value.isNotEmpty) {
         _carouselTimer?.cancel();
         _carouselTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
-          index = index.remainder(_hotNotifier.value.length);
-          _carouselController.animateToItem(index++);
+          _index = _index.remainder(_hotNotifier.value.length);
+          _carouselController.animateToItem(_index++);
         });
       }
     });
 
-    _hotNotifier.value = HiveUtil.getHotSubjectItems();
-    _rank = HiveUtil.getHiScoreSubjectItems();
+    _hotNotifier.value = HiveUtil.getHotAnimeInfos();
+    _rank = HiveUtil.getHiScoreAnimeInfos();
 
     if (DateTime.now().hour % 5 == 0 || _hotNotifier.value.isEmpty) {
       _fetchHot();
@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSliverGrid(
-    List<SubjectItem> items, {
+    List<AnimeInfo> items, {
     required bool isLandscape,
     required String heroKey,
   }) {
@@ -254,8 +254,8 @@ class _HomeContent extends StatelessWidget {
   final _HomeScreenState state;
   final bool isLandscape;
   Widget _buildCarouselView(
-    List<SubjectItem> items,
-    void Function(SubjectItem item) onTap,
+    List<AnimeInfo> items,
+    void Function(AnimeInfo item) onTap,
   ) {
     return CarouselSlider(
       options: CarouselOptions(
@@ -355,7 +355,7 @@ class _HomeContent extends StatelessWidget {
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 6)),
                     SliverToBoxAdapter(
-                      child: ValueListenableBuilder<List<SubjectItem>>(
+                      child: ValueListenableBuilder<List<AnimeInfo>>(
                         valueListenable: state._hotNotifier,
                         builder: (context, hot, child) {
                           return ClipRRect(

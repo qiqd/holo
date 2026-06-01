@@ -17,8 +17,8 @@ class DailyBroadcastAdapter extends TypeAdapter<DailyBroadcast> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return DailyBroadcast(
-      weekOfDay: (fields[0] as num).toInt(),
-      items: (fields[1] as List).cast<SubjectItem>(),
+      dayOfWeek: (fields[0] as num).toInt(),
+      items: (fields[1] as List).cast<AnimeInfo>(),
     );
   }
 
@@ -27,7 +27,7 @@ class DailyBroadcastAdapter extends TypeAdapter<DailyBroadcast> {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.weekOfDay)
+      ..write(obj.dayOfWeek)
       ..writeByte(1)
       ..write(obj.items);
   }
@@ -49,11 +49,11 @@ class DailyBroadcastAdapter extends TypeAdapter<DailyBroadcast> {
 
 DailyBroadcast _$DailyBroadcastFromJson(Map<String, dynamic> json) =>
     DailyBroadcast(
-      weekOfDay: (json['weekOfDay'] as num).toInt(),
+      dayOfWeek: (json['dayOfWeek'] as num).toInt(),
       items: (json['items'] as List<dynamic>)
-          .map((e) => SubjectItem.fromJson(e as Map<String, dynamic>))
+          .map((e) => AnimeInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$DailyBroadcastToJson(DailyBroadcast instance) =>
-    <String, dynamic>{'weekOfDay': instance.weekOfDay, 'items': instance.items};
+    <String, dynamic>{'dayOfWeek': instance.dayOfWeek, 'items': instance.items};

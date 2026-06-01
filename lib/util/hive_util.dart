@@ -1,8 +1,8 @@
 import 'package:hive_ce/hive.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/image.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/entity/subject_item.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_setting.dart';
 import 'package:holo/entity/user_subscribe.dart';
@@ -17,10 +17,10 @@ class HiveUtil {
   static Box<UserSubscribe>? userSubscribeBox;
   static Box<UserPlayback>? userPlaybackBox;
   static Box<String>? userSearchBox;
-  static Box<SubjectItem>? subjectItemBox;
+  static Box<AnimeInfo>? AnimeInfoBox;
   static Box<UserSetting>? userSettingBox;
-  static Box<SubjectItem>? hotSubjectItemBox;
-  static Box<SubjectItem>? hiScoreSubjectItemBox;
+  static Box<AnimeInfo>? hotAnimeInfoBox;
+  static Box<AnimeInfo>? hiScoreAnimeInfoBox;
   static Box<DailyBroadcast>? dailyBroadcastBox;
   static late String appDBPath;
 
@@ -53,8 +53,8 @@ class HiveUtil {
     if (!Hive.isAdapterRegistered(UserSettingAdapter().typeId)) {
       Hive.registerAdapter(UserSettingAdapter());
     }
-    if (!Hive.isAdapterRegistered(SubjectItemAdapter().typeId)) {
-      Hive.registerAdapter(SubjectItemAdapter());
+    if (!Hive.isAdapterRegistered(AnimeInfoAdapter().typeId)) {
+      Hive.registerAdapter(AnimeInfoAdapter());
     }
     if (!Hive.isAdapterRegistered(RuleAdapter().typeId)) {
       Hive.registerAdapter(RuleAdapter());
@@ -74,9 +74,9 @@ class HiveUtil {
     userSubscribeBox = await Hive.openBox<UserSubscribe>("user_subscribe");
     userPlaybackBox = await Hive.openBox<UserPlayback>("user_playback");
     userSearchBox = await Hive.openBox<String>("user_search");
-    subjectItemBox = await Hive.openBox<SubjectItem>("subject_item");
-    hotSubjectItemBox = await Hive.openBox<SubjectItem>("hot_subject_item");
-    hiScoreSubjectItemBox = await Hive.openBox<SubjectItem>(
+    AnimeInfoBox = await Hive.openBox<AnimeInfo>("subject_item");
+    hotAnimeInfoBox = await Hive.openBox<AnimeInfo>("hot_subject_item");
+    hiScoreAnimeInfoBox = await Hive.openBox<AnimeInfo>(
       "hi_score_subject_item",
     );
     dailyBroadcastBox = await Hive.openBox<DailyBroadcast>("daily_broadcast");
@@ -307,42 +307,40 @@ class HiveUtil {
     await userSettingBox?.clear();
   }
 
-  static Future<void> setSubjectItem(SubjectItem subjectItem) async {
+  static Future<void> setAnimeInfo(AnimeInfo AnimeInfo) async {
     var newList =
-        subjectItemBox?.values
-            .where((item) => item.id != subjectItem.id)
+        AnimeInfoBox?.values
+            .where((item) => item.id != AnimeInfo.id)
             .toList() ??
         [];
-    newList.add(subjectItem);
-    await subjectItemBox?.clear();
-    await subjectItemBox?.addAll(newList);
+    newList.add(AnimeInfo);
+    await AnimeInfoBox?.clear();
+    await AnimeInfoBox?.addAll(newList);
   }
 
-  static SubjectItem? getSubjectItemById(int id) {
-    return subjectItemBox?.values
+  static AnimeInfo? getAnimeInfoById(int id) {
+    return AnimeInfoBox?.values
         .toList()
         .where((element) => element.id == id)
         .firstOrNull;
   }
 
-  static Future<void> setHotSubjectItem(List<SubjectItem> subjectItems) async {
-    await hotSubjectItemBox?.clear();
-    await hotSubjectItemBox?.addAll(subjectItems);
+  static Future<void> setHotAnimeInfo(List<AnimeInfo> animeInfoList) async {
+    await hotAnimeInfoBox?.clear();
+    await hotAnimeInfoBox?.addAll(animeInfoList);
   }
 
-  static List<SubjectItem> getHotSubjectItems() {
-    return hotSubjectItemBox?.values.toList() ?? [];
+  static List<AnimeInfo> getHotAnimeInfos() {
+    return hotAnimeInfoBox?.values.toList() ?? [];
   }
 
-  static Future<void> setHiScoreSubjectItem(
-    List<SubjectItem> subjectItems,
-  ) async {
-    await hiScoreSubjectItemBox?.clear();
-    await hiScoreSubjectItemBox?.addAll(subjectItems);
+  static Future<void> setHiScoreAnimeInfo(List<AnimeInfo> animeInfoList) async {
+    await hiScoreAnimeInfoBox?.clear();
+    await hiScoreAnimeInfoBox?.addAll(animeInfoList);
   }
 
-  static List<SubjectItem> getHiScoreSubjectItems() {
-    return hiScoreSubjectItemBox?.values.toList() ?? [];
+  static List<AnimeInfo> getHiScoreAnimeInfos() {
+    return hiScoreAnimeInfoBox?.values.toList() ?? [];
   }
 
   static Future<void> setDailyBroadcast(

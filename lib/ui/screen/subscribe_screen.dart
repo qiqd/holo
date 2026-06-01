@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
-import 'package:holo/entity/subject_item.dart';
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_subscribe.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
@@ -68,8 +68,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     });
   }
 
-  SubjectItem? _getCacheBySubId(int id) {
-    return HiveUtil.getSubjectItemById(id);
+  AnimeInfo? _getCacheBySubId(int id) {
+    return HiveUtil.getAnimeInfoById(id);
   }
 
   Future<void> _deletePlaybackHistory() async {

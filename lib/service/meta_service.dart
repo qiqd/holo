@@ -1,8 +1,8 @@
+import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/episode_item.dart';
 import 'package:holo/entity/person.dart';
-import 'package:holo/entity/subject_item.dart';
-import 'package:holo/entity/subject_relation.dart';
+import 'package:holo/entity/related_work.dart';
 
 /// 元数据服务抽象类
 /// 定义了所有元数据服务必须实现的方法
@@ -18,11 +18,11 @@ abstract class MetaService {
 
   /// 搜索媒体
   /// [keyword] 搜索关键词
-  /// [exception] 异常处理器
+  /// [exceptionHandler] 异常处理器
   /// 返回搜索结果
-  Future<List<SubjectItem>> fetchSearch(
+  Future<List<AnimeInfo>> fetchSearch(
     String keyword,
-    void Function(dynamic) exception,
+    void Function(Exception ex) exceptionHandler,
   );
 
   /// 获取推荐媒体
@@ -31,66 +31,66 @@ abstract class MetaService {
   /// [year] 年份
   /// [month] 月份
   /// [sort] 排序方式
-  /// [exception] 异常处理器
+  /// [exceptionHandler] 异常处理器
   /// 返回推荐结果
-  Future<List<SubjectItem>> fetchRecommend({
+  Future<List<AnimeInfo>> fetchRecommend({
     int page = 1,
     int size = 10,
     int year = 2019,
     int month = 1,
     String sort = "date",
-    void Function(Exception)? exception,
+    required void Function(Exception ex) exceptionHandler,
   });
 
   /// 获取日历信息
-  /// [exception] 异常处理器
+  /// [exceptionHandler]  错误回调
   /// 返回日历列表
   Future<List<DailyBroadcast>> fetchDailyBroadcast(
-    void Function(dynamic) exception,
+    void Function(Exception ex) exceptionHandler,
   );
 
   /// 获取媒体详情
   /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
+  /// [exceptionHandler] 异常处理器
   /// 返回媒体详情
-  Future<SubjectItem?> fetchSubjectById(
+  Future<AnimeInfo?> fetchAnimeInfoById(
     int subjectId,
-    void Function(dynamic) exception,
+    void Function(Exception ex) exceptionHandler,
   );
 
   /// 获取人物信息
   /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
+  /// [exceptionHandler] 异常处理器
   /// 返回人物列表
-  Future<List<Person>> fetchPerson(
+  Future<List<Person>> fetchStaffs(
     int subjectId,
-    void Function(dynamic) exception,
+    void Function(Exception ex) exceptionHandler,
   );
 
   /// 获取角色信息
   /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
+  /// [exceptionHandler] 异常处理器
   /// 返回角色列表
-  Future<List<Person>> fetchCharacter(
+  Future<List<Person>> fetchCharacters(
     int subjectId,
-    void Function(dynamic) exception,
+    void Function(Exception ex) exceptionHandler,
   );
 
   /// 获取媒体关联信息
   /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
+  /// [exceptionHandler] 异常处理器
   /// 返回关联媒体列表
-  Future<List<SubjectRelation>> fetchSubjectRelation(
+  Future<List<RelatedWork>> fetchRelatedWorks(
     int subjectId,
-    void Function(dynamic) exception,
+    void Function(Exception ex) exceptionHandler,
   );
 
   /// 获取剧集信息
   /// [subjectId] 媒体ID
-  /// [exception] 异常处理器
+  /// [exceptionHandler] 异常处理器
   /// 返回剧集信息
-  Future<List<Episode>> fetchEpisode(
+  Future<List<EpisodeInfo>> fetchEpisodeInfos(
     int subjectId,
-    void Function(dynamic) exception,
+    void Function(Exception ex) exceptionHandler,
   );
 }
