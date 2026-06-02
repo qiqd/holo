@@ -19,7 +19,11 @@ class Image {
   @HiveField(2)
   final String? medium;
 
-  const Image({this.small, this.large, this.medium});
+  /// 宫格尺寸图片URL
+  @HiveField(3)
+  final String? grid;
+
+  const Image({this.small, this.large, this.medium, this.grid});
 
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
 

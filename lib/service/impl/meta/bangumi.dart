@@ -22,7 +22,7 @@ class Bangumi implements MetaService {
 
   @override
   /// 获取网站基础地址
-  String get baseUrl => "https://api.bgm.tv/v0";
+  String get baseUrl => "https://api.bgm.tv";
 
   @override
   /// 获取网站logo地址
@@ -149,7 +149,7 @@ class Bangumi implements MetaService {
     try {
       // 发起获取角色信息的请求
       final response = await _dio!.get(
-        "$baseUrl/subjects/$subjectId/characters",
+        "$baseUrl/v0/subjects/$subjectId/characters",
       );
       if (response.data != null) {
         var data = response.data as List<dynamic>;
@@ -169,7 +169,9 @@ class Bangumi implements MetaService {
   ) async {
     try {
       // 发起获取人物信息的请求
-      final response = await _dio!.get("$baseUrl/subjects/$subjectId/persons");
+      final response = await _dio!.get(
+        "$baseUrl/v0/subjects/$subjectId/persons",
+      );
       if (response.data != null) {
         var data = response.data as List<dynamic>;
         return data.map((e) => Person.fromJson(e)).toList();
@@ -205,7 +207,7 @@ class Bangumi implements MetaService {
     try {
       // 发起获取推荐的请求
       final response = await _dio!.get(
-        "$baseUrl/subjects",
+        "$baseUrl/v0/subjects",
         queryParameters: Map.from(param),
       );
       if (response.data != null) {
@@ -257,7 +259,7 @@ class Bangumi implements MetaService {
     try {
       // 发起搜索请求
       final response = await _dio!.post(
-        "$baseUrl/search/subjects",
+        "$baseUrl/v0/search/subjects",
         data: {
           "keyword": keyword,
           "sort": "match",
@@ -315,7 +317,9 @@ class Bangumi implements MetaService {
   ) async {
     try {
       // 发起获取关联媒体的请求
-      final response = await _dio!.get("$baseUrl/subjects/$subjectId/subjects");
+      final response = await _dio!.get(
+        "$baseUrl/v0/subjects/$subjectId/subjects",
+      );
       if (response.data != null) {
         var data = response.data as List<dynamic>;
         return data.map((e) => RelatedWork.fromJson(e)).toList();
@@ -334,7 +338,7 @@ class Bangumi implements MetaService {
   ) async {
     try {
       // 发起获取媒体详情的请求
-      final response = await _dio!.get("$baseUrl/subjects/$subjectId");
+      final response = await _dio!.get("$baseUrl/v0/subjects/$subjectId");
       if (response.data != null) {
         var data = response.data as Map<String, dynamic>;
         var title = switch (languageCode) {
@@ -378,7 +382,7 @@ class Bangumi implements MetaService {
     try {
       // 发起获取剧集信息的请求
       final response = await _dio!.get(
-        "$baseUrl/episodes",
+        "$baseUrl/v0/episodes",
         queryParameters: {"subject_id": subjectId},
       );
       if (response.data != null) {

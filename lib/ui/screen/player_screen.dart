@@ -707,7 +707,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               title: "player.character".tr(),
               name2Image: {
                 for (var e in widget.character)
-                  e.name ?? '': e.images?.medium ?? "",
+                  e.name ?? '': e.images?.grid ?? "",
               },
               onTap: (index) =>
                   showPersonDetailBottomSheet(widget.character[index], context),
@@ -720,8 +720,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             _buildPersonGrid(
               title: "player.person".tr(),
               name2Image: {
-                for (var e in widget.person)
-                  e.name ?? '': e.images?.medium ?? "",
+                for (var e in widget.person) e.name ?? '': e.images?.grid ?? "",
               },
               onTap: (index) =>
                   showPersonDetailBottomSheet(widget.person[index], context),

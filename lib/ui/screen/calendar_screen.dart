@@ -37,6 +37,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
     setState(() {
       _calendar = dailyBroadcast;
+      _msg = null;
     });
     await HiveUtil.setDailyBroadcast(dailyBroadcast);
   }
