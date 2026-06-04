@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
@@ -82,7 +82,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   LogVarEpisode? _bestDanmakuSourceMatch;
   Danmu? _dammaku;
   bool _isDanmakuLoading = false;
-  bool _isTablet = false;
+  // bool _isTablet = false;
   bool _isEpisodeDrawerOpen = false;
   bool _isSettingDrawerOpen = false;
   bool _isInfoDrawerOpen = false;
@@ -305,7 +305,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
     var newPlaybackHistory = await HiveUtil.setUserPlaybacks([newPlayback]);
     await WebDAV.syncUserPlayback(newPlaybackHistory);
-    _logger.i('updatePlaybackHistory, newPlayback: $newPlayback');
+    //_logger.i('updatePlaybackHistory, newPlayback: $newPlayback');
   }
 
   Future<void> _updateUserSetting() async {
@@ -521,92 +521,89 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   Widget _buildPlayer({
     required bool isFullScreen,
+    required bool isTablet,
     required void Function(bool isFullScreen) onFullScreenChanged,
     required void Function() onBackPressed,
   }) {
-    return Flexible(
-      flex: 1,
-      fit: FlexFit.tight,
-      child: Container(
-        color: Colors.black,
-        height: double.infinity,
-        width: double.infinity,
-        child: Center(
-          child: CapVideoPlayerKit(
-            title: widget.nameCn,
-            subTitle: _episode.isNotEmpty ? _episode[_episodeIndex].title : '',
-            isLoading: _isLoading,
-            centerMsg: _msg,
-            playerNotifier: _playerNotifier,
-            isFullScreen: isFullScreen,
-            currentEpisodeIndex: _episodeIndex,
-            dammaku: _dammaku,
-            isTablet: _isTablet,
-            danmakuSetting: _setting.getDanmakuSetting(),
-            enableAutoFocus: _enableAutoFocus,
-            onEpisodeTab: () {
-              if (_isTablet ||
-                  Platform.isWindows ||
-                  Platform.isMacOS ||
-                  Platform.isLinux) {
-                setState(() {
-                  _isInfoDrawerOpen = true;
-                  _isEpisodeDrawerOpen = false;
-                  _isSettingDrawerOpen = false;
-                });
-                _tabController.animateTo(1);
-              } else {
-                setState(() {
-                  _isEpisodeDrawerOpen = true;
-                  _isInfoDrawerOpen = false;
-                  _isSettingDrawerOpen = false;
-                });
-              }
-              if (_globalScaffoldKey.currentState?.isEndDrawerOpen ?? false) {
-                _globalScaffoldKey.currentState?.closeEndDrawer();
-              } else {
-                _globalScaffoldKey.currentState?.openEndDrawer();
-              }
-            },
-            onSettingTab: () {
+    return Container(
+      color: Colors.black,
+      height: double.infinity,
+      width: double.infinity,
+      child: Center(
+        child: CapVideoPlayerKit(
+          title: widget.nameCn,
+          subTitle: _episode.isNotEmpty ? _episode[_episodeIndex].title : '',
+          isLoading: _isLoading,
+          centerMsg: _msg,
+          playerNotifier: _playerNotifier,
+          isFullScreen: isFullScreen,
+          currentEpisodeIndex: _episodeIndex,
+          dammaku: _dammaku,
+          isTablet: isTablet,
+          danmakuSetting: _setting.getDanmakuSetting(),
+          enableAutoFocus: _enableAutoFocus,
+          onEpisodeTab: () {
+            if (isTablet ||
+                Platform.isWindows ||
+                Platform.isMacOS ||
+                Platform.isLinux) {
               setState(() {
-                _isSettingDrawerOpen = true;
+                _isInfoDrawerOpen = true;
                 _isEpisodeDrawerOpen = false;
-                _isInfoDrawerOpen = false;
+                _isSettingDrawerOpen = false;
               });
-              if (_globalScaffoldKey.currentState?.isEndDrawerOpen ?? false) {
-                _globalScaffoldKey.currentState?.closeEndDrawer();
-              } else {
-                _globalScaffoldKey.currentState?.openEndDrawer();
-              }
-            },
-            onError: (error) => setState(() {
-              _msg = error.toString();
-              _isLoading = false;
-              _logger.e("player.error: $_msg");
-            }),
-
-            onNextTab: () {
-              if (_isLoading ||
-                  _episodeIndex + 1 >
-                      _detail!.lines![_lineIndex].episodes!.length - 1) {
-                return;
-              }
+              _tabController.animateTo(1);
+            } else {
               setState(() {
-                ++_episodeIndex;
+                _isEpisodeDrawerOpen = true;
+                _isInfoDrawerOpen = false;
+                _isSettingDrawerOpen = false;
               });
-              _fetchViewInfo();
-            },
-            onFullScreenChanged: (f) {
-              onFullScreenChanged(f);
-            },
-            onBackPressed: () {
-              onBackPressed();
-            },
-            onPositionChanged: (p) {
-              _position = p;
-            },
-          ),
+            }
+            if (_globalScaffoldKey.currentState?.isEndDrawerOpen ?? false) {
+              _globalScaffoldKey.currentState?.closeEndDrawer();
+            } else {
+              _globalScaffoldKey.currentState?.openEndDrawer();
+            }
+          },
+          onSettingTab: () {
+            setState(() {
+              _isSettingDrawerOpen = true;
+              _isEpisodeDrawerOpen = false;
+              _isInfoDrawerOpen = false;
+            });
+            if (_globalScaffoldKey.currentState?.isEndDrawerOpen ?? false) {
+              _globalScaffoldKey.currentState?.closeEndDrawer();
+            } else {
+              _globalScaffoldKey.currentState?.openEndDrawer();
+            }
+          },
+          onError: (error) => setState(() {
+            _msg = error.toString();
+            _isLoading = false;
+            _logger.e("player.error: $_msg");
+          }),
+
+          onNextTab: () {
+            if (_isLoading ||
+                _episodeIndex + 1 >
+                    _detail!.lines![_lineIndex].episodes!.length - 1) {
+              return;
+            }
+            setState(() {
+              ++_episodeIndex;
+            });
+            _fetchViewInfo();
+          },
+          onFullScreenChanged: (f) {
+            onFullScreenChanged(f);
+          },
+          onBackPressed: () {
+            onBackPressed();
+          },
+          onPositionChanged: (p) {
+            _position = p;
+          },
         ),
       ),
     );
@@ -1140,7 +1137,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   /// 抽屉
-  Widget _buildDrawer() {
+  Widget _buildDrawer(bool isTablet) {
     if (_isEpisodeDrawerOpen) {
       return _buildEpisodeDrawer();
     } else if (_isSettingDrawerOpen) {
@@ -1160,7 +1157,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           );
         }),
       );
-    } else if (_isInfoDrawerOpen && _isTablet) {
+    } else if (_isInfoDrawerOpen && isTablet) {
       return _buildInfo();
     } else {
       return SizedBox.shrink();
@@ -1244,35 +1241,13 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   @override
-  void didChangeDependencies() {
-    //_updatePlaybackHistory();
-    if (Platform.isAndroid || Platform.isIOS) {
-      var info = MediaQuery.of(context);
-      setState(() {
-        _isTablet =
-            Device.get().isTablet && info.orientation == Orientation.landscape;
-      });
-    }
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      setState(() {
-        _isTablet = true;
-        _isFullScreen = true;
-      });
-    }
-    if (_isTablet) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    }
-    super.didChangeDependencies();
-  }
-
-  @override
   void initState() {
     if (!(Platform.isAndroid || Platform.isIOS)) {
       windowManager.setTitle(widget.nameCn);
     }
     _loadPlaybackHistory();
     _fetchEpisode();
-    _isTablet = Device.get().isTablet;
+    //_isTablet = Device.get().isTablet;
     WidgetsBinding.instance.addObserver(this);
     _fetchMediaEpisode().then(
       (value) => _fetchViewInfo(position: _historyPosition),
@@ -1323,114 +1298,125 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return _isTablet
-        // PC端，包含平板
-        ? Scaffold(
-            key: _globalScaffoldKey,
-            resizeToAvoidBottomInset: false,
-            onEndDrawerChanged: (isOpened) {
-              setState(() {
-                _enableAutoFocus = !isOpened;
-              });
-              if (!isOpened && _isSettingDrawerOpen) {
-                _updateUserSetting();
-              }
-            },
-            endDrawerEnableOpenDragGesture: false,
-            endDrawer: Drawer(width: 400, child: _buildDrawer()),
-            body: SafeArea(
-              child: SizedBox.expand(
-                child: Row(
-                  children: [
-                    _buildPlayer(
-                      isFullScreen: true,
-                      onFullScreenChanged: (isFullScreen) {
-                        setState(() {
-                          _isFullScreen = isFullScreen;
-                        });
-                        _toggleFullScreen(isFullScreen);
-                      },
-                      onBackPressed: () {
-                        if (Platform.isWindows ||
-                            Platform.isMacOS ||
-                            Platform.isLinux) {
-                          windowManager.setFullScreen(false);
-                        }
-                        context.pop();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          )
-        // 移动端,不包含平板
-        : Scaffold(
-            key: _globalScaffoldKey,
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              backgroundColor: Colors.black,
-              // foregroundColor: Colors.white,
-              automaticallyImplyActions: false,
-              automaticallyImplyLeading: false,
-              toolbarHeight: 0,
-              systemOverlayStyle:
-                  Theme.of(context).brightness == Brightness.dark
-                  ? _style.copyWith(
-                      systemNavigationBarIconBrightness: Brightness.light,
-                    )
-                  : _style.copyWith(
-                      systemNavigationBarIconBrightness: Brightness.dark,
-                    ),
-            ),
-            endDrawer: Drawer(width: 300, child: _buildDrawer()),
-            onEndDrawerChanged: (isOpened) {
-              if (!isOpened && _isSettingDrawerOpen) {
-                _updateUserSetting();
-              }
-            },
-            endDrawerEnableOpenDragGesture: false,
-            body: SafeArea(
-              child: Center(
-                child: PopScope(
-                  canPop: !_isFullScreen,
-                  onPopInvokedWithResult: (didPop, result) {
-                    setState(() {
-                      _isFullScreen = false;
-                      _toggleFullScreen(false);
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      //视频播放器
-                      _buildPlayer(
-                        isFullScreen: _isFullScreen,
-                        onFullScreenChanged: (isFullScreen) {
-                          setState(() {
-                            _isTablet = false;
-                            _isFullScreen = isFullScreen;
-                            _toggleFullScreen(_isFullScreen);
-                          });
-                        },
-                        onBackPressed: () {
-                          if (_isFullScreen) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var isTablet = min(constraints.maxWidth, constraints.maxHeight) >= 600;
+        if (isTablet) {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+        }
+        return isTablet
+            // PC端，包含平板
+            ? Scaffold(
+                key: _globalScaffoldKey,
+                resizeToAvoidBottomInset: false,
+                onEndDrawerChanged: (isOpened) {
+                  setState(() {
+                    _enableAutoFocus = !isOpened;
+                  });
+                  if (!isOpened && _isSettingDrawerOpen) {
+                    _updateUserSetting();
+                  }
+                },
+                endDrawerEnableOpenDragGesture: false,
+                endDrawer: Drawer(width: 400, child: _buildDrawer(isTablet)),
+                body: SafeArea(
+                  child: SizedBox.expand(
+                    child: Row(
+                      children: [
+                        _buildPlayer(
+                          isFullScreen: true,
+                          isTablet: isTablet,
+                          onFullScreenChanged: (isFullScreen) {
                             setState(() {
-                              _toggleFullScreen(false);
-                              _isFullScreen = false;
+                              _isFullScreen = isFullScreen;
                             });
-                          } else {
+                            _toggleFullScreen(isFullScreen);
+                          },
+                          onBackPressed: () {
+                            if (Platform.isWindows ||
+                                Platform.isMacOS ||
+                                Platform.isLinux) {
+                              windowManager.setFullScreen(false);
+                            }
                             context.pop();
-                          }
-                        },
-                      ),
-                      //剧集列表
-                      if (!_isFullScreen)
-                        Flexible(flex: 2, child: _buildInfo()),
-                    ],
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
+              )
+            // 移动端,不包含平板
+            : Scaffold(
+                key: _globalScaffoldKey,
+                resizeToAvoidBottomInset: false,
+                appBar: AppBar(
+                  backgroundColor: Colors.black,
+                  // foregroundColor: Colors.white,
+                  automaticallyImplyActions: false,
+                  automaticallyImplyLeading: false,
+                  toolbarHeight: 0,
+                  systemOverlayStyle:
+                      Theme.of(context).brightness == Brightness.dark
+                      ? _style.copyWith(
+                          systemNavigationBarIconBrightness: Brightness.light,
+                        )
+                      : _style.copyWith(
+                          systemNavigationBarIconBrightness: Brightness.dark,
+                        ),
+                ),
+                endDrawer: Drawer(width: 300, child: _buildDrawer(isTablet)),
+                onEndDrawerChanged: (isOpened) {
+                  if (!isOpened && _isSettingDrawerOpen) {
+                    _updateUserSetting();
+                  }
+                },
+                endDrawerEnableOpenDragGesture: false,
+                body: Center(
+                  child: PopScope(
+                    canPop: !_isFullScreen,
+                    onPopInvokedWithResult: (didPop, result) {
+                      setState(() {
+                        _isFullScreen = false;
+                        _toggleFullScreen(false);
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        //视频播放器
+                        Flexible(
+                          flex: 1,
+                          fit: FlexFit.tight,
+                          child: _buildPlayer(
+                            isFullScreen: _isFullScreen,
+                            isTablet: isTablet,
+                            onFullScreenChanged: (isFullScreen) {
+                              setState(() {
+                                _isFullScreen = isFullScreen;
+                                _toggleFullScreen(_isFullScreen);
+                              });
+                            },
+                            onBackPressed: () {
+                              if (_isFullScreen) {
+                                setState(() {
+                                  _toggleFullScreen(false);
+                                  _isFullScreen = false;
+                                });
+                              } else {
+                                context.pop();
+                              }
+                            },
+                          ),
+                        ),
+                        //剧集列表
+                        if (!_isFullScreen)
+                          Flexible(flex: 2, child: _buildInfo()),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+      },
+    );
   }
 }

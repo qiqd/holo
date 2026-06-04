@@ -143,31 +143,28 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   }
 
   ///改变音量,仅在移动平台生效
-  void _changeVolumeBy1Percent(
-    SwipeDirection direction,
-    void Function(double)? setVolume,
-  ) async {
+  void _changeVolumeBy1Percent(SwipeDirection direction) async {
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       return;
     }
     if (_isLock) {
       return;
     }
+    double vol = await VolumeController.instance.getVolume();
     _toastShowMode = 1;
     _updateToastShowModeTimer();
-    final current = _currentVolume;
-    double newVolume = current;
 
     if (direction == SwipeDirection.up) {
-      newVolume = current + 0.01;
+      vol = vol + 0.01;
     } else if (direction == SwipeDirection.down) {
-      newVolume = current - 0.01;
+      vol = vol - 0.01;
     }
-    newVolume = newVolume.clamp(0, 1);
-    setVolume?.call(newVolume);
+    vol = vol.clamp(0, 1);
+    await VolumeController.instance.setVolume(vol);
     safeSetState(() {
-      _currentVolume = newVolume;
+      _currentVolume = vol;
     });
+    // log("changeVolumeBy1Percent $_currentVolume");
   }
 
   /// 处理视频进度改变事件
@@ -393,10 +390,16 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           player?.seekTo((player.value.position) - Duration(seconds: 5));
           break;
         case LogicalKeyboardKey.arrowUp:
-          player?.setVolume((player.value.volume + 0.05).clamp(0, 1));
+          // player?.setVolume((player.value.volume + 0.05).clamp(0, 1));
+          VolumeController.instance.setVolume(
+            (_currentVolume + 0.05).clamp(0, 1),
+          );
           break;
         case LogicalKeyboardKey.arrowDown:
-          player?.setVolume((player.value.volume - 0.05).clamp(0, 1));
+          //player?.setVolume((player.value.volume - 0.05).clamp(0, 1));
+          VolumeController.instance.setVolume(
+            (_currentVolume - 0.05).clamp(0, 1),
+          );
           break;
       }
     }
@@ -406,24 +409,19 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   void _initListener() {
     widget.playerNotifier.addListener(() {
       var player = widget.playerNotifier.value;
-      _logger.w('player is null? ${player == null}');
+      //  _logger.w('player is null? ${player == null}');
       if (player == null) {
         safeSetState(() {
           _bufferProgress = 0.0;
         });
         return;
       }
-      safeSetState(() {
-        _currentVolume = _currentVolume == 0.0
-            ? player.value.volume
-            : _currentVolume;
-      });
+
       player.removeListener(() {});
-      player.setVolume(_currentVolume);
+
       player.addListener(() {
         widget.onPositionChanged?.call(player.value.position);
         safeSetState(() {
-          _currentVolume = player.value.volume;
           _bufferProgress = _getBuffered();
         });
       });
@@ -498,60 +496,65 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
             color: Colors.black.withOpacity(0.5),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: _toastShowMode == 1
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _currentVolume > 0.66
-                          ? Icons.volume_up_rounded
-                          : _currentVolume > 0.33
-                          ? Icons.volume_down_rounded
-                          : Icons.volume_mute_rounded,
-                      color: Colors.white,
+          child: SizedBox(
+            height: 40,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              spacing: 10,
+              children: [
+                if (_toastShowMode == 1) ...[
+                  Icon(
+                    _currentVolume == 0
+                        ? Icons.volume_off_rounded
+                        : Icons.volume_up_rounded,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 100,
+                    child: Slider(
+                      value: _currentVolume,
+                      onChanged: (_) {},
+                      padding: EdgeInsets.zero,
+
+                      thumbColor: Colors.transparent,
                     ),
-                    Text(
-                      "${(_currentVolume * 100).toInt()}%",
-                      style: TextStyle(color: Colors.white),
+                  ),
+                ],
+                if (_toastShowMode == 2) ...[
+                  Icon(
+                    _currentBrightness <= 20
+                        ? Icons.brightness_low_rounded
+                        : _currentBrightness <= 80
+                        ? Icons.brightness_medium_rounded
+                        : Icons.brightness_high_rounded,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 100,
+                    child: Slider(
+                      value: _currentBrightness,
+                      onChanged: (_) {},
+                      min: 0,
+                      max: 100,
+                      thumbColor: Colors.transparent,
+                      padding: EdgeInsets.zero,
                     ),
-                  ],
-                )
-              : _toastShowMode == 2
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _currentBrightness > 66
-                          ? Icons.brightness_high_rounded
-                          : _currentBrightness > 33
-                          ? Icons.brightness_medium_rounded
-                          : Icons.brightness_low_rounded,
-                      color: Colors.white,
-                    ),
-                    Text(
-                      "${(_currentBrightness).toInt()}%",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                )
-              : _toastShowMode == 3
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_dragOffset < 0)
-                      Icon(Icons.fast_rewind_rounded, color: Colors.white),
-                    Text(
-                      "${(_dragOffset.abs()).toInt()}s",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    if (_dragOffset > 0)
-                      Icon(Icons.fast_forward_rounded, color: Colors.white),
-                  ],
-                )
-              : SizedBox.shrink(),
+                  ),
+                ],
+                if (_toastShowMode == 3) ...[
+                  if (_dragOffset < 0)
+                    Icon(Icons.fast_rewind_rounded, color: Colors.white),
+                  Text(
+                    "${(_dragOffset.abs()).toInt()}s",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  if (_dragOffset > 0)
+                    Icon(Icons.fast_forward_rounded, color: Colors.white),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -563,7 +566,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       opacity: _showVideoControls ? 1 : 0,
       duration: const Duration(milliseconds: 100),
       child: Padding(
-        padding: EdgeInsets.only(left: 20),
+        padding: EdgeInsets.only(left: 40),
         child: Align(
           alignment: Alignment.centerLeft,
           child: IconButton(
@@ -586,7 +589,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       opacity: _showVideoControls && widget.isFullScreen ? 1 : 0,
       duration: const Duration(milliseconds: 100),
       child: Padding(
-        padding: const EdgeInsets.only(top: 36),
+        padding: const EdgeInsets.only(top: 16),
         child: Align(
           alignment: Alignment.topCenter,
           child: Text(
@@ -606,20 +609,22 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       top: _showVideoControls && !_isLock ? 0 : -73,
       left: 0,
       right: 0,
-      child: IgnorePointer(
-        ignoring: !_showVideoControls,
-        child: AnimatedOpacity(
-          opacity: _showVideoControls && !_isLock ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 300),
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.black.withOpacity(0.5), Colors.transparent],
-              ),
+      child: AnimatedOpacity(
+        opacity: _showVideoControls && !_isLock ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 300),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.black.withOpacity(0.5), Colors.transparent],
             ),
+          ),
+          child: Padding(
+            padding: widget.isFullScreen
+                ? const EdgeInsets.symmetric(horizontal: 40)
+                : EdgeInsets.zero,
             child: ListTile(
               contentPadding: EdgeInsets.zero,
               horizontalTitleGap: 6,
@@ -744,10 +749,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                                   direction == SwipeDirection.right) {
                                 return;
                               }
-                              _changeVolumeBy1Percent(
-                                direction,
-                                player?.setVolume,
-                              );
+                              _changeVolumeBy1Percent(direction);
                             },
 
                             child: Container(color: Colors.transparent),
@@ -789,179 +791,200 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               colors: [Colors.transparent, Colors.black.withOpacity(0.5)],
             ),
           ),
-          child: Column(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // 进度条
-              Row(
-                children: [
-                  Expanded(
-                    child: Slider(
-                      onChanged: (_) {},
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 0,
-                      ),
-                      secondaryTrackValue: _bufferProgress,
-                      value: player?.value.position.inSeconds.toDouble() ?? 0,
-                      max: player?.value.duration.inSeconds.toDouble() ?? 0,
-                      onChangeEnd: (value) {
-                        _showVideoControlsTimer();
-                        player?.seekTo(Duration(seconds: value.toInt()));
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              // 播放按钮
-              Row(
-                children: [
-                  IconButton(
-                    color: Colors.white,
-                    onPressed: () {
-                      _showVideoControlsTimer();
-                      (player?.value.isPlaying ?? false)
-                          ? player?.pause()
-                          : player?.play();
-                    },
-                    icon: Icon(
-                      (player?.value.isPlaying ?? false)
-                          ? Icons.pause_rounded
-                          : Icons.play_arrow_rounded,
-                    ),
-                  ),
-                  // 下一集
-                  IconButton(
-                    color: Colors.white,
-                    onPressed: () {
-                      _showVideoControlsTimer();
-                      widget.onNextTab?.call();
-                    },
-                    icon: const Icon(Icons.skip_next_rounded),
-                  ),
-
-                  //进度
-                  Container(
-                    constraints: const BoxConstraints(minWidth: 100),
-                    child: TextButton(
-                      style: ButtonStyle(
-                        padding: WidgetStatePropertyAll(
-                          EdgeInsets.symmetric(horizontal: 0),
-                        ),
-                      ),
-                      onPressed: null,
-                      child: Text(
-                        "${(player?.value.position.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.position.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}/${(player?.value.duration.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.duration.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  //弹幕开关按钮
-                  IconButton(
-                    tooltip: 'Danmaku Switch',
-                    color: Colors.white,
-                    onPressed: () {
-                      safeSetState(() {
-                        _showDanmaku = !_showDanmaku;
-                      });
-                      _showVideoControlsTimer();
-                    },
-                    icon: Icon(_showDanmaku ? BF.danmakuOn : BF.danmakuOff),
-                  ),
-                  //播放速度按钮
-                  if (widget.isFullScreen) ...[
-                    PopupMenuButton(
-                      tooltip: 'Playback Speed',
-                      padding: .zero,
-                      iconColor: Colors.white,
-                      icon: Text(
-                        player?.value.playbackSpeed
-                                .toStringAsFixed(1)
-                                .padRight(4, 'x') ??
-                            "1.0x",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onSelected: (value) async {
-                        _setPlaybackSpeed(value);
-                      },
-                      itemBuilder: (context) {
-                        var items = <PopupMenuItem<double>>[];
-                        for (var i = 0.5; i <= 4.0; i += 0.5) {
-                          items.add(
-                            PopupMenuItem(
-                              value: i,
-                              child: Text(i.toString().padRight(4, 'x')),
+              if (widget.isFullScreen) SizedBox(width: 40),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 进度条
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Slider(
+                            onChanged: (_) {},
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 0,
                             ),
-                          );
-                        }
-                        return items.reversed.toList();
-                      },
+                            secondaryTrackValue: _bufferProgress,
+                            value:
+                                player?.value.position.inSeconds.toDouble() ??
+                                0,
+                            max:
+                                player?.value.duration.inSeconds.toDouble() ??
+                                0,
+                            onChangeEnd: (value) {
+                              _showVideoControlsTimer();
+                              player?.seekTo(Duration(seconds: value.toInt()));
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    //剧集列表按钮
-                    IconButton(
-                      color: Colors.white,
-                      tooltip: 'Episode List',
-                      onPressed: () {
-                        widget.onEpisodeTab?.call();
-                        _showVideoControlsTimer();
-                      },
-                      icon: Icon(Icons.format_list_bulleted_rounded),
+                    // 播放按钮
+                    Row(
+                      children: [
+                        IconButton(
+                          color: Colors.white,
+                          onPressed: () {
+                            _showVideoControlsTimer();
+                            (player?.value.isPlaying ?? false)
+                                ? player?.pause()
+                                : player?.play();
+                          },
+                          icon: Icon(
+                            (player?.value.isPlaying ?? false)
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded,
+                          ),
+                        ),
+                        // 下一集
+                        IconButton(
+                          color: Colors.white,
+                          onPressed: () {
+                            _showVideoControlsTimer();
+                            widget.onNextTab?.call();
+                          },
+                          icon: const Icon(Icons.skip_next_rounded),
+                        ),
+
+                        //进度
+                        Container(
+                          constraints: const BoxConstraints(minWidth: 100),
+                          child: TextButton(
+                            style: ButtonStyle(
+                              padding: WidgetStatePropertyAll(
+                                EdgeInsets.symmetric(horizontal: 0),
+                              ),
+                            ),
+                            onPressed: null,
+                            child: Text(
+                              "${(player?.value.position.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.position.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}/${(player?.value.duration.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.duration.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        //弹幕开关按钮
+                        IconButton(
+                          tooltip: 'Danmaku Switch',
+                          color: Colors.white,
+                          onPressed: () {
+                            safeSetState(() {
+                              _showDanmaku = !_showDanmaku;
+                            });
+                            _showVideoControlsTimer();
+                          },
+                          icon: Icon(
+                            _showDanmaku ? BF.danmakuOn : BF.danmakuOff,
+                          ),
+                        ),
+                        //播放速度按钮
+                        if (widget.isFullScreen) ...[
+                          PopupMenuButton(
+                            tooltip: 'Playback Speed',
+                            padding: .zero,
+                            iconColor: Colors.white,
+                            icon: Text(
+                              player?.value.playbackSpeed
+                                      .toStringAsFixed(1)
+                                      .padRight(4, 'x') ??
+                                  "1.0x",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onSelected: (value) async {
+                              _setPlaybackSpeed(value);
+                            },
+                            itemBuilder: (context) {
+                              var items = <PopupMenuItem<double>>[];
+                              for (var i = 0.5; i <= 4.0; i += 0.5) {
+                                items.add(
+                                  PopupMenuItem(
+                                    value: i,
+                                    child: Text(i.toString().padRight(4, 'x')),
+                                  ),
+                                );
+                              }
+                              return items.reversed.toList();
+                            },
+                          ),
+                          //剧集列表按钮
+                          IconButton(
+                            color: Colors.white,
+                            tooltip: 'Episode List',
+                            onPressed: () {
+                              widget.onEpisodeTab?.call();
+                              _showVideoControlsTimer();
+                            },
+                            icon: Icon(Icons.format_list_bulleted_rounded),
+                          ),
+                        ],
+                        //音量调整,只在桌面端显示
+                        if (_isLandscape &&
+                            (Platform.isWindows ||
+                                Platform.isMacOS ||
+                                Platform.isLinux)) ...[
+                          IconButton(
+                            tooltip: 'Volume',
+                            color: Colors.white,
+                            onPressed: () {
+                              VolumeController.instance.setVolume(0);
+                            },
+                            icon: Icon(
+                              _currentVolume > 0
+                                  ? Icons.volume_up_rounded
+                                  : Icons.volume_off_rounded,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 120,
+                            child: Slider(
+                              min: 0,
+                              max: 1,
+
+                              padding: .symmetric(horizontal: 10),
+                              value: _currentVolume,
+                              onChanged: (value) {
+                                VolumeController.instance.setVolume(value);
+                                safeSetState(() {
+                                  _currentVolume = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                        Spacer(),
+
+                        // 全屏按钮
+                        IconButton(
+                          color: Colors.white,
+                          onPressed: () async {
+                            _showVideoControlsTimer();
+                            if (Platform.isWindows ||
+                                Platform.isMacOS ||
+                                Platform.isLinux) {
+                              final full = await windowManager.isFullScreen();
+                              await windowManager.setFullScreen(!full);
+                            } else if (Platform.isAndroid || Platform.isIOS) {
+                              widget.onFullScreenChanged?.call(
+                                !widget.isFullScreen,
+                              );
+                            }
+                          },
+                          icon: Icon(
+                            widget.isFullScreen
+                                ? Icons.fullscreen_exit_rounded
+                                : Icons.fullscreen_rounded,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                  //音量调整,只在桌面端显示
-                  if (_isLandscape &&
-                      (Platform.isWindows ||
-                          Platform.isMacOS ||
-                          Platform.isLinux)) ...[
-                    IconButton(
-                      tooltip: 'Volume',
-                      color: Colors.white,
-                      onPressed: () {
-                        player?.setVolume(0);
-                      },
-                      icon: Icon(
-                        _currentVolume > 0
-                            ? Icons.volume_up_rounded
-                            : Icons.volume_off_rounded,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 120,
-                      child: Slider(
-                        min: 0,
-                        max: 1,
-
-                        padding: .symmetric(horizontal: 10),
-                        value: _currentVolume,
-                        onChanged: (value) {
-                          player?.setVolume(value);
-                        },
-                      ),
-                    ),
-                  ],
-                  Spacer(),
-
-                  // 全屏按钮
-                  IconButton(
-                    color: Colors.white,
-                    onPressed: () async {
-                      _showVideoControlsTimer();
-                      if (Platform.isWindows ||
-                          Platform.isMacOS ||
-                          Platform.isLinux) {
-                        final full = await windowManager.isFullScreen();
-                        await windowManager.setFullScreen(!full);
-                      } else if (Platform.isAndroid || Platform.isIOS) {
-                        widget.onFullScreenChanged?.call(!widget.isFullScreen);
-                      }
-                    },
-                    icon: Icon(
-                      widget.isFullScreen
-                          ? Icons.fullscreen_exit_rounded
-                          : Icons.fullscreen_rounded,
-                    ),
-                  ),
-                ],
+                ),
               ),
+              if (widget.isFullScreen) SizedBox(width: 40),
             ],
           ),
         ),
@@ -1005,17 +1028,21 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       _filterDanmakuItems();
       _danmakuOptionTimer?.cancel();
       _danmakuOptionTimer = Timer(const Duration(milliseconds: 200), () {
-        _danmuController?.updateOption(
-          DanmakuOption(
-            area: widget.danmakuSetting.area,
-            opacity: widget.danmakuSetting.opacity,
-            fontSize: widget.danmakuSetting.fontSize,
-            hideBottom: widget.danmakuSetting.hideBottom,
-            hideScroll: widget.danmakuSetting.hideScroll,
-            hideTop: widget.danmakuSetting.hideTop,
-            massiveMode: widget.danmakuSetting.massiveMode,
-          ),
-        );
+        try {
+          _danmuController?.updateOption(
+            DanmakuOption(
+              area: widget.danmakuSetting.area,
+              opacity: widget.danmakuSetting.opacity,
+              fontSize: widget.danmakuSetting.fontSize,
+              hideBottom: widget.danmakuSetting.hideBottom,
+              hideScroll: widget.danmakuSetting.hideScroll,
+              hideTop: widget.danmakuSetting.hideTop,
+              massiveMode: widget.danmakuSetting.massiveMode,
+            ),
+          );
+        } catch (e) {
+          _logger.e(e);
+        }
       });
     }
     super.didUpdateWidget(oldWidget);
@@ -1036,10 +1063,12 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     ScreenBrightness.instance.resetApplicationScreenBrightness();
     widget.playerNotifier.value?.removeListener(() {});
     _danmuTimer?.cancel();
+    _danmakuOptionTimer?.cancel();
     _volumeAndBrightnessToastTimer?.cancel();
     _videoTimer?.cancel();
     _videoControlsTimer?.cancel();
     _settingTimer?.cancel();
+    VolumeController.instance.removeListener();
     super.dispose();
   }
 
