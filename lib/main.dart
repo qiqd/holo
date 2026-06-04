@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -314,75 +315,79 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       // 监听应用设置变化
       valueListenable: MyApp.userSettingNotifier,
       builder: (context, setting, child) {
-        return MaterialApp.router(
-          //showPerformanceOverlay: true,
-          // 本地化代理
-          localizationsDelegates: context.localizationDelegates,
-          // 支持的语言
-          supportedLocales: context.supportedLocales,
-          // 当前语言
-          locale: context.locale,
-          // 隐藏调试横幅
-          debugShowCheckedModeBanner: false,
-          // 路由配置
-          routerConfig: _router,
-          // 主题模式
-          themeMode: ThemeMode.values.firstWhere(
-            (element) => element.index == setting.themeMode,
-            orElse: () => ThemeMode.system,
-          ),
-          // // 背景图片构建器
-          // builder: LocalStorage.getBackgroundImagePath().isEmpty
-          //     ? null
-          //     : (context, child) {
-          //         return Container(
-          //           decoration: BoxDecoration(
-          //             image: DecorationImage(
-          //               image: FileImage(
-          //                 File(LocalStorage.getBackgroundImagePath()),
-          //               ),
-          //               fit: BoxFit.cover,
-          //             ),
-          //           ),
-          //           child: child,
-          //         );
-          //       },
-          // 浅色主题
-          theme: ThemeData(
-            useSystemColors: setting.useSystemColor,
-            brightness: Brightness.light,
-            colorSchemeSeed: setting.useSystemColor
-                ? null
-                : Color(setting.colorSeed),
-            useMaterial3: true,
-            appBarTheme: AppBarTheme(
-              systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
-                systemNavigationBarColor: Colors.transparent,
-                statusBarColor: Colors.transparent,
-                systemNavigationBarContrastEnforced: false,
-                systemStatusBarContrastEnforced: false,
-                systemNavigationBarIconBrightness: Brightness.dark,
+        return DynamicColorBuilder(
+          builder: (lightDynamic, darkDynamic) {
+            return MaterialApp.router(
+              //showPerformanceOverlay: true,
+              // 本地化代理
+              localizationsDelegates: context.localizationDelegates,
+              // 支持的语言
+              supportedLocales: context.supportedLocales,
+              // 当前语言
+              locale: context.locale,
+              // 隐藏调试横幅
+              debugShowCheckedModeBanner: false,
+              // 路由配置
+              routerConfig: _router,
+              // 主题模式
+              themeMode: ThemeMode.values.firstWhere(
+                (element) => element.index == setting.themeMode,
+                orElse: () => ThemeMode.system,
               ),
-            ),
-          ),
-          // 深色主题
-          darkTheme: ThemeData(
-            useSystemColors: setting.useSystemColor,
-            colorSchemeSeed: setting.useSystemColor
-                ? null
-                : Color(setting.colorSeed),
-            brightness: Brightness.dark,
-            useMaterial3: true,
-            appBarTheme: AppBarTheme(
-              systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
-                statusBarColor: Colors.transparent,
-                systemNavigationBarColor: Colors.transparent,
-                systemNavigationBarContrastEnforced: false,
-                systemStatusBarContrastEnforced: false,
-                systemNavigationBarIconBrightness: Brightness.light,
+              // // 背景图片构建器
+              // builder: LocalStorage.getBackgroundImagePath().isEmpty
+              //     ? null
+              //     : (context, child) {
+              //         return Container(
+              //           decoration: BoxDecoration(
+              //             image: DecorationImage(
+              //               image: FileImage(
+              //                 File(LocalStorage.getBackgroundImagePath()),
+              //               ),
+              //               fit: BoxFit.cover,
+              //             ),
+              //           ),
+              //           child: child,
+              //         );
+              //       },
+              // 浅色主题
+              theme: ThemeData(
+                brightness: Brightness.light,
+                colorScheme: setting.useSystemColor ? lightDynamic : null,
+                colorSchemeSeed: setting.useSystemColor
+                    ? null
+                    : Color(setting.colorSeed),
+                useMaterial3: true,
+                appBarTheme: AppBarTheme(
+                  systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+                    systemNavigationBarColor: Colors.transparent,
+                    statusBarColor: Colors.transparent,
+                    systemNavigationBarContrastEnforced: false,
+                    systemStatusBarContrastEnforced: false,
+                    systemNavigationBarIconBrightness: Brightness.dark,
+                  ),
+                ),
               ),
-            ),
-          ),
+              // 深色主题
+              darkTheme: ThemeData(
+                colorScheme: setting.useSystemColor ? darkDynamic : null,
+                colorSchemeSeed: setting.useSystemColor
+                    ? null
+                    : Color(setting.colorSeed),
+                brightness: Brightness.dark,
+                useMaterial3: true,
+                appBarTheme: AppBarTheme(
+                  systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+                    statusBarColor: Colors.transparent,
+                    systemNavigationBarColor: Colors.transparent,
+                    systemNavigationBarContrastEnforced: false,
+                    systemStatusBarContrastEnforced: false,
+                    systemNavigationBarIconBrightness: Brightness.light,
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );

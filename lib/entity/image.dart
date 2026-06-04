@@ -7,23 +7,45 @@ part 'image.g.dart';
 @HiveType(typeId: 7)
 @JsonSerializable()
 class Image {
+  static const String imgServerUrl = String.fromEnvironment("IMG_SERVER_URL");
+
   /// 小尺寸图片URL
   @HiveField(0)
-  final String? small;
+  final String? _small;
 
   /// 大尺寸图片URL
   @HiveField(1)
-  final String? large;
+  final String? _large;
 
   /// 中等尺寸图片URL
   @HiveField(2)
-  final String? medium;
+  final String? _medium;
 
   /// 宫格尺寸图片URL
   @HiveField(3)
-  final String? grid;
+  final String? _grid;
 
-  const Image({this.small, this.large, this.medium, this.grid});
+  String? get small {
+    return _small?.replaceAll("https://lain.bgm.tv", imgServerUrl);
+  }
+
+  String? get large {
+    return _large?.replaceAll("https://lain.bgm.tv", imgServerUrl);
+  }
+
+  String? get medium {
+    return _medium?.replaceAll("https://lain.bgm.tv", imgServerUrl);
+  }
+
+  String? get grid {
+    return _grid?.replaceAll("https://lain.bgm.tv", imgServerUrl);
+  }
+
+  const Image({String? small, String? large, String? medium, String? grid})
+    : _small = small,
+      _large = large,
+      _medium = medium,
+      _grid = grid;
 
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
 

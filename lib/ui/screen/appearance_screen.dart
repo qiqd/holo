@@ -207,7 +207,6 @@ class _AppearanceState extends State<Appearance> {
   // }
 
   List<Widget> _buildThemeModeTile() {
-    var appSetting = MyApp.userSettingNotifier.value;
     return [
       ListTile(
         leading: const Icon(Icons.palette),
@@ -216,16 +215,21 @@ class _AppearanceState extends State<Appearance> {
         onTap: () => _showThemeModeDialog(),
       ),
       if (Platform.isAndroid || Platform.isIOS)
-        SwitchListTile(
-          secondary: Icon(Icons.colorize_rounded),
-          value: MyApp.userSettingNotifier.value.useSystemColor,
-          title: Text('appearance.use_system_color'.tr()),
-          subtitle: Text('appearance.use_system_color_description'.tr()),
-          onChanged: (v) => setState(() {
-            MyApp.userSettingNotifier.value = appSetting.copyWith(
-              useSystemColor: v,
+        ValueListenableBuilder(
+          valueListenable: MyApp.userSettingNotifier,
+          builder: (context, setting, child) {
+            return SwitchListTile(
+              secondary: Icon(Icons.colorize_rounded),
+              value: setting.useSystemColor,
+              title: Text('appearance.use_system_color'.tr()),
+              subtitle: Text('appearance.use_system_color_description'.tr()),
+              onChanged: (v) {
+                final newSetting = setting.copyWith(useSystemColor: v);
+                MyApp.userSettingNotifier.value = newSetting;
+                HiveUtil.setUserSetting(newSetting);
+              },
             );
-          }),
+          },
         ),
       // ListTile(
       //   leading: const Icon(Icons.image_outlined),

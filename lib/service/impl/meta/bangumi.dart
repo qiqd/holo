@@ -15,6 +15,7 @@ import 'package:logger/logger.dart';
 /// 实现了 MetaService 接口，提供 Bangumi 网站的元数据服务
 class Bangumi implements MetaService {
   String languageCode;
+  static const String metaServerUrl = String.fromEnvironment("META_SERVER_URL");
   final Logger _logger = LoggerUtil.logger;
   @override
   /// 获取服务名称
@@ -22,7 +23,7 @@ class Bangumi implements MetaService {
 
   @override
   /// 获取网站基础地址
-  String get baseUrl => "https://api.bgm.tv";
+  String get baseUrl => metaServerUrl;
 
   @override
   /// 获取网站logo地址

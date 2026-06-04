@@ -13,7 +13,16 @@ class LoggerScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12),
         child: log.isEmpty
             ? Center(child: Text("No log found"))
-            : SingleChildScrollView(child: SelectableText(log)),
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SingleChildScrollView(
+                  child: SelectableText(
+                    log,
+                    //softWrap: false,
+                    scrollPhysics: NeverScrollableScrollPhysics(),
+                  ),
+                ),
+              ),
       ),
     );
   }
