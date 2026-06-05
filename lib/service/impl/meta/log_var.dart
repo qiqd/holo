@@ -1,10 +1,11 @@
 import 'dart:developer';
 import 'package:holo/entity/danmu.dart';
 import 'package:holo/entity/log_var_episode.dart';
+import 'package:holo/env/env.dart';
 import 'package:holo/util/http_util.dart';
 
 class LogVar {
-  static const String baseUrl = String.fromEnvironment("DAMMAKU_SERVER_URL");
+  static final String baseUrl = Env.dammakuServerUrl;
   Future<List<LogVarEpisode>> fetchEpisodeFromLogVar(
     String keyword,
     Function(String) exception,

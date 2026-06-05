@@ -1,4 +1,5 @@
 import 'package:hive_ce/hive.dart';
+import 'package:holo/env/env.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'image.g.dart';
@@ -7,7 +8,8 @@ part 'image.g.dart';
 @HiveType(typeId: 7)
 @JsonSerializable()
 class Image {
-  static const String imgServerUrl = String.fromEnvironment("IMG_SERVER_URL");
+  static final String imgServerUrl = Env.imgServerUrl;
+  static final String defaultImgServerHost = "lain.bgm.tv";
 
   /// 小尺寸图片URL
   @HiveField(0)
@@ -26,19 +28,31 @@ class Image {
   final String? _grid;
 
   String? get small {
-    return _small?.replaceAll("https://lain.bgm.tv", imgServerUrl);
+    return _small?.replaceAll(
+      defaultImgServerHost,
+      Uri.parse(imgServerUrl).host,
+    );
   }
 
   String? get large {
-    return _large?.replaceAll("https://lain.bgm.tv", imgServerUrl);
+    return _large?.replaceAll(
+      defaultImgServerHost,
+      Uri.parse(imgServerUrl).host,
+    );
   }
 
   String? get medium {
-    return _medium?.replaceAll("https://lain.bgm.tv", imgServerUrl);
+    return _medium?.replaceAll(
+      defaultImgServerHost,
+      Uri.parse(imgServerUrl).host,
+    );
   }
 
   String? get grid {
-    return _grid?.replaceAll("https://lain.bgm.tv", imgServerUrl);
+    return _grid?.replaceAll(
+      defaultImgServerHost,
+      Uri.parse(imgServerUrl).host,
+    );
   }
 
   const Image({String? small, String? large, String? medium, String? grid})

@@ -5,6 +5,7 @@ import 'package:holo/entity/episode_item.dart';
 import 'package:holo/entity/image.dart';
 import 'package:holo/entity/person.dart';
 import 'package:holo/entity/related_work.dart';
+import 'package:holo/env/env.dart';
 import 'package:holo/service/meta_service.dart';
 import 'package:holo/util/datetime_util.dart';
 import 'package:holo/util/http_util.dart';
@@ -15,7 +16,7 @@ import 'package:logger/logger.dart';
 /// 实现了 MetaService 接口，提供 Bangumi 网站的元数据服务
 class Bangumi implements MetaService {
   String languageCode;
-  static const String metaServerUrl = String.fromEnvironment("META_SERVER_URL");
+  static final String metaServerUrl = Env.metaServerUrl;
   final Logger _logger = LoggerUtil.logger;
   @override
   /// 获取服务名称
