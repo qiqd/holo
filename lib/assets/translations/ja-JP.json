@@ -18,7 +18,8 @@
             "massive_danmaku_subtitle": "弾幕レーンがいっぱいになったら重ねて表示",
             "danmaku_opacity": "弾幕の不透明度",
             "display_area": "表示領域",
-            "danmaku_font_size": "弾幕フォントサイズ"
+            "danmaku_font_size": "弾幕フォントサイズ",
+            "safe_inset": "視頻制御器の安全領域"
         },
         "media_card": {
             "score": "一致度",
@@ -164,7 +165,9 @@
         "preset_colors": "プリセットカラー",
         "auto_check_update": "自動バージョンチェック",
         "match_strategy": "マッチング略",
-        "match_strategy_description": "アプリが再生元をマッチする方法を指定します。有効にすると、最近の再生履歴に基づいて再生元をマッチします。マッチ値が90%以上の場合、自動的に再生元を選択します"
+        "match_strategy_description": "アプリが再生元をマッチする方法を指定します。有効にすると、最近の再生履歴に基づいて再生元をマッチします。マッチ値が90%以上の場合、自動的に再生元を選択します",
+        "data_sync_interval": "データ同期間隔",
+        "data_sync_interval_description": "アプリケーションデータ同期間隔を設定します。秒単位"
     },
     "sign": {
         "title": "お帰りなさい",

@@ -18,7 +18,8 @@
             "massive_danmaku_subtitle": "Stack when danmaku tracks are full",
             "danmaku_opacity": "Danmaku Not Opacity",
             "display_area": "Display Area",
-            "danmaku_font_size": "Danmaku Font Size"
+            "danmaku_font_size": "Danmaku Font Size",
+            "safe_inset": "Safe Inset"
         },
         "media_card": {
             "score": "Match",
@@ -164,7 +165,9 @@
         "preset_colors": "Preset Colors",
         "auto_check_update": "Auto Check Update",
         "match_strategy": "Match Match Strategy",
-        "match_strategy_description": "If enabled, the app will match the playback source based on the recent playback history. If the match value is greater than 90%, the app will automatically select the playback source"
+        "match_strategy_description": "If enabled, the app will match the playback source based on the recent playback history. If the match value is greater than 90%, the app will automatically select the playback source",
+        "data_sync_interval": "Data Sync Interval",
+        "data_sync_interval_description": "Set the interval for data synchronization, unit: seconds"
     },
     "sign": {
         "title": "Welcome Back",

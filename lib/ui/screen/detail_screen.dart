@@ -584,6 +584,7 @@ class _DetailScreenState extends State<DetailScreen>
                           title: _subject!.title,
                           genre: _subject?.genres.join('/'),
                           episode: _subject?.episodes,
+                          latestEpisode: _subject?.latestEpisode,
                           rating: _subject?.rating,
                           isFavorite: isSubscribed,
                           ratingCount: _subject!.ratingCount,

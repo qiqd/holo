@@ -542,6 +542,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           isTablet: isTablet,
           danmakuSetting: _setting.getDanmakuSetting(),
           enableAutoFocus: _enableAutoFocus,
+          safeInset: _setting.playerSafeInset.toDouble(),
           onEpisodeTab: () {
             if (isTablet ||
                 Platform.isWindows ||
@@ -918,9 +919,9 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   ///  弹幕设置
-  Widget _buildDanmakuSettingDrawer({
-    required DanmakuSetting setting,
-    void Function(DanmakuSetting setting)? onSettingChanged,
+  Widget _buildSettingDrawer({
+    required UserSetting setting,
+    void Function(UserSetting setting)? onSettingChanged,
   }) {
     return SizedBox.expand(
       child: SingleChildScrollView(
@@ -984,7 +985,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               // 调整弹幕偏移量-1
               leading: IconButton(
                 onPressed: () {
-                  _logger.d('current offset:${setting.danmakuOffset}');
+                  //  _logger.d('current offset:${setting.danmakuOffset}');
                   safeSetState(() {
                     _danmakuOffset--;
                   });
@@ -1130,6 +1131,29 @@ class _PlayerScreenState extends State<PlayerScreen>
                 ],
               ),
             ),
+            ListTile(
+              title: Text(context.tr('component.cap_video_player.safe_inset')),
+              subtitle: Row(
+                children: [
+                  SizedBox(
+                    width: 36,
+                    child: Text('${(setting.playerSafeInset).round()}'),
+                  ),
+                  Expanded(
+                    child: Slider(
+                      min: 10.0,
+                      max: 100.0,
+                      value: setting.playerSafeInset.toDouble(),
+                      onChanged: (value) {
+                        onSettingChanged?.call(
+                          setting.copyWith(playerSafeInset: value.toInt()),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -1141,20 +1165,10 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (_isEpisodeDrawerOpen) {
       return _buildEpisodeDrawer();
     } else if (_isSettingDrawerOpen) {
-      return _buildDanmakuSettingDrawer(
-        setting: _setting.getDanmakuSetting(),
+      return _buildSettingDrawer(
+        setting: _setting,
         onSettingChanged: (s) => safeSetState(() {
-          _setting = _setting.copyWith(
-            opacity: s.opacity,
-            area: s.area,
-            fontSize: s.fontSize,
-            hideTop: s.hideTop,
-            hideScroll: s.hideScroll,
-            hideBottom: s.hideBottom,
-            massiveMode: s.massiveMode,
-            danmakuOffset: s.danmakuOffset,
-            filterWords: s.filterWords,
-          );
+          _setting = s;
         }),
       );
     } else if (_isInfoDrawerOpen && isTablet) {
@@ -1260,7 +1274,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     //   ),
     // );
     _pausableTimer = PausableTimer.periodic(
-      const Duration(seconds: 10),
+      Duration(seconds: _setting.dataSyncInterval),
       () => _updatePlaybackHistory(),
     );
     _pausableTimer?.start();

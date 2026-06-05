@@ -6,7 +6,6 @@ import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_setting.dart';
 import 'package:holo/entity/user_subscribe.dart';
-import 'package:holo/util/logger_util.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../entity/user.dart' show User, UserAdapter;
@@ -292,7 +291,7 @@ class HiveUtil {
   }
 
   static Future<UserSetting> setUserSetting(UserSetting userSetting) async {
-    LoggerUtil.logger.i("setUserSetting: $userSetting");
+    //LoggerUtil.logger.i("setUserSetting: $userSetting");
     await userSettingBox?.clear();
     await userSettingBox?.add(userSetting);
     return userSetting;

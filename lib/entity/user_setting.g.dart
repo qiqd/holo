@@ -31,13 +31,16 @@ class UserSettingAdapter extends TypeAdapter<UserSetting> {
       colorSeed: (fields[11] as num).toInt(),
       autoUpdate: fields[12] == null ? true : fields[12] as bool,
       useLastSource: fields[13] == null ? true : fields[13] as bool,
+      dataSyncInterval: fields[14] == null ? 10 : (fields[14] as num).toInt(),
+      playerSafeInset: fields[15] == null ? 40 : (fields[15] as num).toInt(),
+      danmakuOffset: fields[16] == null ? 0 : (fields[16] as num).toInt(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserSetting obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.email)
       ..writeByte(1)
@@ -65,7 +68,13 @@ class UserSettingAdapter extends TypeAdapter<UserSetting> {
       ..writeByte(12)
       ..write(obj.autoUpdate)
       ..writeByte(13)
-      ..write(obj.useLastSource);
+      ..write(obj.useLastSource)
+      ..writeByte(14)
+      ..write(obj.dataSyncInterval)
+      ..writeByte(15)
+      ..write(obj.playerSafeInset)
+      ..writeByte(16)
+      ..write(obj.danmakuOffset);
   }
 
   @override
@@ -82,6 +91,47 @@ class UserSettingAdapter extends TypeAdapter<UserSetting> {
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
+
+UserSetting _$UserSettingFromJson(Map<String, dynamic> json) => UserSetting(
+  email: json['email'] as String,
+  opacity: (json['opacity'] as num).toDouble(),
+  area: (json['area'] as num).toDouble(),
+  fontSize: (json['fontSize'] as num).toDouble(),
+  hideTop: json['hideTop'] as bool,
+  hideScroll: json['hideScroll'] as bool,
+  hideBottom: json['hideBottom'] as bool,
+  massiveMode: json['massiveMode'] as bool,
+  filterWords: json['filterWords'] as String,
+  useSystemColor: json['useSystemColor'] as bool,
+  themeMode: (json['themeMode'] as num).toInt(),
+  colorSeed: (json['colorSeed'] as num).toInt(),
+  autoUpdate: json['autoUpdate'] as bool? ?? true,
+  useLastSource: json['useLastSource'] as bool? ?? true,
+  dataSyncInterval: (json['dataSyncInterval'] as num?)?.toInt() ?? 10,
+  playerSafeInset: (json['playerSafeInset'] as num?)?.toInt() ?? 40,
+  danmakuOffset: (json['danmakuOffset'] as num?)?.toInt() ?? 0,
+);
+
+Map<String, dynamic> _$UserSettingToJson(UserSetting instance) =>
+    <String, dynamic>{
+      'email': instance.email,
+      'opacity': instance.opacity,
+      'area': instance.area,
+      'fontSize': instance.fontSize,
+      'hideTop': instance.hideTop,
+      'hideScroll': instance.hideScroll,
+      'hideBottom': instance.hideBottom,
+      'massiveMode': instance.massiveMode,
+      'filterWords': instance.filterWords,
+      'useSystemColor': instance.useSystemColor,
+      'themeMode': instance.themeMode,
+      'colorSeed': instance.colorSeed,
+      'autoUpdate': instance.autoUpdate,
+      'useLastSource': instance.useLastSource,
+      'dataSyncInterval': instance.dataSyncInterval,
+      'playerSafeInset': instance.playerSafeInset,
+      'danmakuOffset': instance.danmakuOffset,
+    };
 
 DanmakuSetting _$DanmakuSettingFromJson(Map<String, dynamic> json) =>
     DanmakuSetting(

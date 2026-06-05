@@ -18,7 +18,8 @@
             "massive_danmaku_subtitle": "弹幕轨道占满时进行叠加",
             "danmaku_opacity": "弹幕不透明度",
             "display_area": "显示区域",
-            "danmaku_font_size": "弹幕字号"
+            "danmaku_font_size": "弹幕字号",
+            "safe_inset": "视频控制器安全区域"
         },
         "media_card": {
             "score": "匹配度",
@@ -164,7 +165,9 @@
         "preset_colors": "预设颜色",
         "auto_check_update": "自动检查更新",
         "match_strategy": "资源匹配策略",
-        "match_strategy_description": "如果开启,将会根据最近播放记录确定最终匹配的播放源;否则,将根据名称匹配,当匹配值大于90%时,将自动选择该播放源"
+        "match_strategy_description": "如果开启,将会根据最近播放记录确定最终匹配的播放源;否则,将根据名称匹配,当匹配值大于90%时,将自动选择该播放源",
+        "data_sync_interval": "数据同步间隔",
+        "data_sync_interval_description": "设置应用数据同步间隔,单位秒"
     },
     "sign": {
         "title": "欢迎回来",

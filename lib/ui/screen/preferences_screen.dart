@@ -359,6 +359,84 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 HiveUtil.setUserSetting(newSetting);
               },
             ),
+            if (value.email.isNotEmpty)
+              ListTile(
+                title: Text('preference.data_sync_interval'.tr()),
+                subtitle: Text(
+                  'preference.data_sync_interval_description'.tr(),
+                ),
+                leading: Icon(Icons.timer_outlined),
+                onTap: () {
+                  _showDataSyncIntervalDialog(value.dataSyncInterval).then((
+                    interval,
+                  ) {
+                    if (interval != null) {
+                      MyApp.userSettingNotifier.value = value.copyWith(
+                        dataSyncInterval: interval,
+                      );
+                      HiveUtil.setUserSetting(MyApp.userSettingNotifier.value);
+                    }
+                  });
+                },
+                trailing: Text(
+                  '${value.dataSyncInterval.toString()}s',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<int?> _showDataSyncIntervalDialog(int initialValue) {
+    var value = initialValue.toDouble();
+    return showDialog<int?>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('preference.data_sync_interval'.tr()),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return SizedBox(
+                height: 40,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('${value.toInt()}s'),
+                    SizedBox(width: 10),
+                    SizedBox(
+                      width: 150,
+                      child: Slider(
+                        value: value,
+                        min: 1,
+                        max: 60,
+                        onChanged: (v) {
+                          setState(() {
+                            value = v;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          actions: [
+            OutlinedButton(
+              onPressed: () {
+                Navigator.pop(context, null);
+              },
+              child: Text('common.dialog.cancel'.tr()),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(context, value.toInt());
+              },
+              child: Text('common.dialog.confirm'.tr()),
+            ),
           ],
         );
       },

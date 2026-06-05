@@ -4,8 +4,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'user_setting.g.dart';
 
-@HiveType(typeId: 3)
 @immutable
+@HiveType(typeId: 3)
+@JsonSerializable(explicitToJson: true)
 class UserSetting {
   @HiveField(0)
   final String email;
@@ -35,6 +36,12 @@ class UserSetting {
   final bool autoUpdate;
   @HiveField(13)
   final bool useLastSource;
+  @HiveField(14)
+  final int dataSyncInterval;
+  @HiveField(15)
+  final int playerSafeInset;
+  @HiveField(16)
+  final int danmakuOffset;
   const UserSetting({
     required this.email,
     required this.opacity,
@@ -50,6 +57,9 @@ class UserSetting {
     required this.colorSeed,
     this.autoUpdate = true,
     this.useLastSource = true,
+    this.dataSyncInterval = 10,
+    this.playerSafeInset = 40,
+    this.danmakuOffset = 0,
   });
 
   static UserSetting createDefaultUserSetting({required String email}) {
@@ -100,6 +110,8 @@ class UserSetting {
     int? colorSeed,
     bool? autoUpdate,
     bool? useLastSource,
+    int? dataSyncInterval,
+    int? playerSafeInset,
   }) {
     return UserSetting(
       email: email ?? this.email,
@@ -116,45 +128,17 @@ class UserSetting {
       colorSeed: colorSeed ?? this.colorSeed,
       autoUpdate: autoUpdate ?? this.autoUpdate,
       useLastSource: useLastSource ?? this.useLastSource,
+      dataSyncInterval: dataSyncInterval ?? this.dataSyncInterval,
+      playerSafeInset: playerSafeInset ?? this.playerSafeInset,
+      danmakuOffset: danmakuOffset ?? this.danmakuOffset,
     );
   }
 
   factory UserSetting.fromJson(Map<String, dynamic> map) {
-    return UserSetting(
-      email: map['email'],
-      opacity: map['opacity'] ?? 1.0,
-      area: map['area'] ?? 1.0,
-      fontSize: map['fontSize'] ?? 16,
-      hideTop: map['hideTop'] ?? false,
-      hideScroll: map['hideScroll'] ?? false,
-      hideBottom: map['hideBottom'] ?? false,
-      massiveMode: map['massiveMode'] ?? false,
-      filterWords: map['filterWords'] ?? '',
-      useSystemColor: map['useSystemColor'] ?? false,
-      themeMode: map['themeMode'] ?? 0,
-      colorSeed: map['colorSeed'] ?? 0xffd08b57,
-      autoUpdate: map['autoUpdate'] ?? true,
-      useLastSource: map['useLastSource'] ?? true,
-    );
+    return _$UserSettingFromJson(map);
   }
-
   Map<String, dynamic> toJson() {
-    return {
-      'email': email,
-      'opacity': opacity,
-      'area': area,
-      'fontSize': fontSize,
-      'hideTop': hideTop,
-      'hideScroll': hideScroll,
-      'hideBottom': hideBottom,
-      'massiveMode': massiveMode,
-      'filterWords': filterWords,
-      'useSystemColor': useSystemColor,
-      'themeMode': themeMode,
-      'colorSeed': colorSeed,
-      'autoUpdate': autoUpdate,
-      'useLastSource': useLastSource,
-    };
+    return _$UserSettingToJson(this);
   }
 }
 

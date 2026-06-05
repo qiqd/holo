@@ -101,7 +101,7 @@ class MediaGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            DateFormat('yyyy-MM-dd').format(airDateTime!),
+                            DateFormat('HH:mm').format(airDateTime!),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -110,7 +110,7 @@ class MediaGrid extends StatelessWidget {
                         ),
                       ),
                     //放送时间
-                    if (airDate != null)
+                    if (currentEpisode != null)
                       Positioned(
                         right: 4,
                         bottom: 4,
@@ -124,11 +124,9 @@ class MediaGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            currentEpisode != null
-                                ? (currentEpisode! > 0
-                                      ? '更新至第${currentEpisode.toString()}话'
-                                      : '暂未更新')
-                                : airDate ?? '',
+                            (currentEpisode! > 0
+                                ? '更新至第${currentEpisode.toString()}话'
+                                : '暂未更新'),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,

@@ -33,6 +33,7 @@ class CapVideoPlayerKit extends StatefulWidget {
   final DanmakuSetting danmakuSetting;
   final String centerMsg;
   final double? aspectRatio;
+  final double safeInset;
   final void Function(bool)? onFullScreenChanged;
   final void Function(String)? onError;
   final void Function()? onNextTab;
@@ -54,6 +55,7 @@ class CapVideoPlayerKit extends StatefulWidget {
     this.enableAutoFocus = true,
     this.aspectRatio,
     this.dammaku,
+    this.safeInset = 40.0,
     this.onFullScreenChanged,
     this.onNextTab,
     this.onError,
@@ -512,12 +514,18 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   ),
                   SizedBox(
                     width: 100,
-                    child: Slider(
-                      value: _currentVolume,
-                      onChanged: (_) {},
-                      padding: EdgeInsets.zero,
-
-                      thumbColor: Colors.transparent,
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        thumbShape: RoundSliderThumbShape(
+                          enabledThumbRadius: 0,
+                        ),
+                        overlayShape: RoundSliderOverlayShape(overlayRadius: 0),
+                      ),
+                      child: Slider(
+                        value: _currentVolume,
+                        onChanged: (_) {},
+                        padding: EdgeInsets.zero,
+                      ),
                     ),
                   ),
                 ],
@@ -532,13 +540,20 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   ),
                   SizedBox(
                     width: 100,
-                    child: Slider(
-                      value: _currentBrightness,
-                      onChanged: (_) {},
-                      min: 0,
-                      max: 100,
-                      thumbColor: Colors.transparent,
-                      padding: EdgeInsets.zero,
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        thumbShape: RoundSliderThumbShape(
+                          enabledThumbRadius: 0,
+                        ),
+                        overlayShape: RoundSliderOverlayShape(overlayRadius: 0),
+                      ),
+                      child: Slider(
+                        value: _currentBrightness,
+                        onChanged: (_) {},
+                        min: 0,
+                        max: 100,
+                        padding: EdgeInsets.zero,
+                      ),
                     ),
                   ),
                 ],
@@ -566,7 +581,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       opacity: _showVideoControls ? 1 : 0,
       duration: const Duration(milliseconds: 100),
       child: Padding(
-        padding: EdgeInsets.only(left: 40),
+        padding: widget.isFullScreen
+            ? EdgeInsets.only(left: widget.safeInset)
+            : EdgeInsets.zero,
         child: Align(
           alignment: Alignment.centerLeft,
           child: IconButton(
@@ -623,7 +640,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           ),
           child: Padding(
             padding: widget.isFullScreen
-                ? const EdgeInsets.symmetric(horizontal: 40)
+                ? EdgeInsets.symmetric(horizontal: widget.safeInset)
                 : EdgeInsets.zero,
             child: ListTile(
               contentPadding: EdgeInsets.zero,
@@ -794,7 +811,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (widget.isFullScreen) SizedBox(width: 40),
+              if (widget.isFullScreen) SizedBox(width: widget.safeInset),
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -984,7 +1001,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   ],
                 ),
               ),
-              if (widget.isFullScreen) SizedBox(width: 40),
+              if (widget.isFullScreen) SizedBox(width: widget.safeInset),
             ],
           ),
         ),

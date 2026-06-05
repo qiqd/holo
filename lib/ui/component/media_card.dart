@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/ui/component/cache_image.dart';
-import 'package:holo/util/datetime_util.dart';
 import 'package:shimmer/shimmer.dart';
 
 /// 媒体卡片
@@ -25,6 +24,7 @@ class MediaCard extends StatelessWidget {
   final bool isChecked;
   final bool showCheckbox;
   final bool isLandscape;
+  final int? latestEpisode;
 
   /// 观看状态 0:无状态 1:想看 2:看过 3:在看
   final int? viewingStatus;
@@ -45,9 +45,8 @@ class MediaCard extends StatelessWidget {
     this.score = 0,
     this.height = 200,
     this.onTap,
-
+    this.latestEpisode = -1,
     this.isFavorite = false,
-
     this.showShimmer = false,
     this.showCheckbox = false,
     this.isChecked = false,
@@ -58,7 +57,6 @@ class MediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var updateTo = checkUpdateAt(airDate) ?? -1;
     return Stack(
       children: [
         InkWell(
@@ -209,9 +207,9 @@ class MediaCard extends StatelessWidget {
                                         ? context.tr(
                                             "component.media_card.status",
                                           )
-                                        : '${updateTo > 0
-                                              ? updateTo <= (episode ?? 0)
-                                                    ? context.tr("component.media_card.current_episode", args: [updateTo.toString()])
+                                        : '${latestEpisode! > 0
+                                              ? latestEpisode! <= (episode ?? 0)
+                                                    ? context.tr("component.media_card.current_episode", args: [latestEpisode.toString()])
                                                     : context.tr("component.media_card.completed")
                                               : ''}/${context.tr("component.media_card.total_episode", args: [episode.toString()])}',
                                     style: const TextStyle(

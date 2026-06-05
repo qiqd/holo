@@ -18,7 +18,8 @@
             "massive_danmaku_subtitle": "彈幕軌道占滿時進行疊加",
             "danmaku_opacity": "彈幕不透明度",
             "display_area": "顯示區域",
-            "danmaku_font_size": "彈幕字號"
+            "danmaku_font_size": "彈幕字號",
+            "safe_inset": "視頻控制器安全區域"
         },
         "media_card": {
             "score": "匹配度",
@@ -164,7 +165,9 @@
         "preset_colors": "預設顏色",
         "auto_check_update": "自動檢查更新",
         "match_strategy": "匹配策略",
-        "match_strategy_description": "如果開啟,將根據最近播放記錄匹配播放源,當匹配值大於90%時,將自動選擇該播放源"
+        "match_strategy_description": "如果開啟,將根據最近播放記錄匹配播放源,當匹配值大於90%時,將自動選擇該播放源",
+        "data_sync_interval": "數據同步間隔",
+        "data_sync_interval_description": "設定應用程式數據同步間隔,單位秒"
     },
     "sign": {
         "title": "歡迎回來",
