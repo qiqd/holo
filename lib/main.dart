@@ -185,7 +185,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             keyword: map['keyword'] as String,
             cover: map['cover'] as String,
             from: map['from'] as String,
-            subject: map['animeInfo'] as AnimeInfo?,
+            subject: map['subject'] as AnimeInfo?,
           );
         },
       ),

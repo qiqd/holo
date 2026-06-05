@@ -868,9 +868,15 @@ class _PlayerScreenState extends State<PlayerScreen>
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
-              child: TabBarView(
-                controller: _tabController,
-                children: [_buildSummary(), _buildEpisode()],
+              child: SafeArea(
+                top: false,
+                right: false,
+                left: false,
+                bottom: true,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [_buildSummary(), _buildEpisode()],
+                ),
               ),
             ),
           ),

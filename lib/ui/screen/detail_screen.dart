@@ -69,7 +69,7 @@ class _DetailScreenState extends State<DetailScreen>
   Future<void> _fetchSubject() async {
     var subject = HiveUtil.getAnimeInfoById(widget.id);
 
-    if (widget.subject == null || subject == null) {
+    if (subject == null) {
       final res = await Api.bangumi.fetchAnimeInfoById(widget.id, (e) {
         safeSetState(() {
           _msg = e.toString();
@@ -81,7 +81,12 @@ class _DetailScreenState extends State<DetailScreen>
         });
         HiveUtil.setAnimeInfo(res);
       }
+    } else {
+      safeSetState(() {
+        _subject = subject;
+      });
     }
+
     _loadSubscribeHistory();
   }
 
