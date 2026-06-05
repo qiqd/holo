@@ -28,31 +28,43 @@ class Image {
   final String? _grid;
 
   String? get small {
-    return _small?.replaceAll(
+    final temp = _small?.replaceAll(
       defaultImgServerHost,
       Uri.parse(imgServerUrl).host,
     );
+    return temp?.contains('https') == true
+        ? temp
+        : temp?.replaceFirst("http", "https");
   }
 
   String? get large {
-    return _large?.replaceAll(
+    final temp = _large?.replaceAll(
       defaultImgServerHost,
       Uri.parse(imgServerUrl).host,
     );
+    return temp?.contains('https') == true
+        ? temp
+        : temp?.replaceFirst("http", "https");
   }
 
   String? get medium {
-    return _medium?.replaceAll(
+    final temp = _medium?.replaceAll(
       defaultImgServerHost,
       Uri.parse(imgServerUrl).host,
     );
+    return temp?.contains('https') == true
+        ? temp
+        : temp?.replaceFirst("http", "https");
   }
 
   String? get grid {
-    return _grid?.replaceAll(
+    final temp = _grid?.replaceAll(
       defaultImgServerHost,
       Uri.parse(imgServerUrl).host,
     );
+    return temp?.contains('https') == true
+        ? temp
+        : temp?.replaceFirst("http", "https");
   }
 
   const Image({String? small, String? large, String? medium, String? grid})
