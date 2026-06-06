@@ -125,8 +125,11 @@ class MediaGrid extends StatelessWidget {
                           ),
                           child: Text(
                             (currentEpisode! > 0
-                                ? '更新至第${currentEpisode.toString()}话'
-                                : '暂未更新'),
+                                ? tr(
+                                    "component.media_card.current_episode",
+                                    args: [currentEpisode.toString()],
+                                  )
+                                : tr("component.media_card.status")),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,

@@ -218,7 +218,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                               MediaQuery.of(context).size.width * 9.0 / 16.0,
                           child: videoController != null
                               ? VideoPlayer(videoController!)
-                              : Container(),
+                              : const SizedBox.shrink(),
                         ),
                       ],
                     ),

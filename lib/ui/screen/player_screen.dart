@@ -626,6 +626,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               imageUrl: _subject.images.large!,
               title: _subject.title,
               genre: _subject.genres.join('/'),
+              latestEpisode: _subject.latestEpisode,
               episode: _subject.episodes,
               rating: _subject.rating,
               ratingCount: _subject.ratingCount,
@@ -889,7 +890,6 @@ class _PlayerScreenState extends State<PlayerScreen>
     final eps = _episode;
     return SizedBox.expand(
       child: ListView.builder(
-        key: const PageStorageKey("player_episodes_list"),
         itemCount: eps.length,
         itemBuilder: (context, index) {
           return ListTile(
@@ -934,7 +934,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: TextFormField(
                 initialValue: setting.filterWords,
                 keyboardType: TextInputType.text,
@@ -946,7 +946,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                   labelText: context.tr(
                     'component.cap_video_player.danmaku_filter_keywords',
                   ),
-                  hintStyle: TextStyle(fontSize: 10),
+                  hintStyle: const TextStyle(fontSize: 10),
                   hint: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
@@ -1071,7 +1071,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               subtitle: Row(
                 children: [
                   SizedBox(
-                    width: 36,
+                    width: 40,
                     child: Text('${(setting.opacity * 100).round()}%'),
                   ),
                   Expanded(
@@ -1096,7 +1096,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               subtitle: Row(
                 children: [
                   SizedBox(
-                    width: 36,
+                    width: 40,
                     child: Text('${(setting.area * 100).round()}%'),
                   ),
                   Expanded(
@@ -1119,7 +1119,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               subtitle: Row(
                 children: [
                   SizedBox(
-                    width: 36,
+                    width: 40,
                     child: Text('${(setting.fontSize).round()}'),
                   ),
                   Expanded(
@@ -1142,7 +1142,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               subtitle: Row(
                 children: [
                   SizedBox(
-                    width: 36,
+                    width: 40,
                     child: Text('${(setting.playerSafeInset).round()}'),
                   ),
                   Expanded(
@@ -1180,7 +1180,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     } else if (_isInfoDrawerOpen && isTablet) {
       return _buildInfo();
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
@@ -1247,7 +1247,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       setState(() {
         _isActive = false;
       });
-      //_updatePlaybackHistory();
+      _updatePlaybackHistory();
       _pausableTimer?.pause();
     }
     if (state == AppLifecycleState.resumed) {
