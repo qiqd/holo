@@ -892,7 +892,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       padding: .zero,
                       iconColor: Colors.white,
                       icon: Text(
-                        "${player?.value.playbackSpeed}x",
+                        "${player?.value.playbackSpeed ?? 1.0}x",
                         style: TextStyle(color: Colors.white),
                       ),
                       onSelected: (value) async {
