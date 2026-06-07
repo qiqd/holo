@@ -19,7 +19,7 @@
             "danmaku_opacity": "弹幕不透明度",
             "display_area": "显示区域",
             "danmaku_font_size": "弹幕字号",
-            "safe_inset": "视频控制器安全区域"
+            "safe_inset": "视频控制器安全距离"
         },
         "media_card": {
             "score": "匹配度",

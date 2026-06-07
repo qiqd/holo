@@ -890,6 +890,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     final eps = _episode;
     return SizedBox.expand(
       child: ListView.builder(
+        key: PageStorageKey("player_episode_drawer_key"),
         itemCount: eps.length,
         itemBuilder: (context, index) {
           return ListTile(

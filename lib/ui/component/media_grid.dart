@@ -9,11 +9,13 @@ class MediaGrid extends StatelessWidget {
   final double? rating;
   final Function? onTap;
   final String? airDate;
-  final DateTime? airDateTime;
+  final String? airTime;
   final bool showCheckBox;
   final bool isChecked;
-  final int? currentEpisode;
+  final int? latestEpisode;
 
+  /// 观看状态 0:无状态 1:想看 2:看过 3:在看
+  final int? status;
   const MediaGrid({
     super.key,
     required this.id,
@@ -21,11 +23,12 @@ class MediaGrid extends StatelessWidget {
     required this.title,
     this.rating,
     this.airDate,
-    this.airDateTime,
-    this.onTap,
-    this.currentEpisode,
+    this.airTime,
+    this.latestEpisode,
     this.showCheckBox = false,
     this.isChecked = false,
+    this.onTap,
+    this.status,
   });
 
   @override
@@ -87,7 +90,7 @@ class MediaGrid extends StatelessWidget {
                         ),
                       ),
                     //更新时间
-                    if (airDateTime != null)
+                    if (airTime != null)
                       Positioned(
                         right: 4,
                         top: 4,
@@ -101,7 +104,7 @@ class MediaGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            DateFormat('HH:mm').format(airDateTime!),
+                            airTime!,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -109,8 +112,8 @@ class MediaGrid extends StatelessWidget {
                           ),
                         ),
                       ),
-                    //放送时间
-                    if (currentEpisode != null)
+                    //最新话/放送日期
+                    if (latestEpisode != null || airDate != null)
                       Positioned(
                         right: 4,
                         bottom: 4,
@@ -124,12 +127,50 @@ class MediaGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            (currentEpisode! > 0
-                                ? tr(
-                                    "component.media_card.current_episode",
-                                    args: [currentEpisode.toString()],
-                                  )
-                                : tr("component.media_card.status")),
+                            airDate != null
+                                ? airDate!
+                                : (latestEpisode! > 0
+                                      ? tr(
+                                          "component.media_card.current_episode",
+                                          args: [latestEpisode.toString()],
+                                        )
+                                      : tr("component.media_card.status")),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    ///
+                    ///Tab(text: tr("subscribe.tab_subs_wish")),
+                    // Tab(text: tr("subscribe.tab_subs_watched")),
+                    //Tab(text: tr("subscribe.tab_subs_watching")),
+                    ///
+                    ///
+                    //观看状态
+                    if (status != null && status != 0)
+                      Positioned(
+                        left: 4,
+                        top: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            status == 1
+                                ? tr("subscribe.tab_subs_wish")
+                                : (status == 2
+                                      ? tr("subscribe.tab_subs_watched")
+                                      : (status == 3
+                                            ? tr("subscribe.tab_subs_watching")
+                                            : "")),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,

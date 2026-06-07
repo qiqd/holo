@@ -116,8 +116,12 @@ class _CalendarScreenState extends State<CalendarScreen>
                             id: "calendar_${item[itemIndex].id}",
                             imageUrl: item[itemIndex].images.large ?? '',
                             title: item[itemIndex].title,
-                            airDateTime: item[itemIndex].airDateTime,
-                            currentEpisode: item[itemIndex].latestEpisode,
+                            airTime: item[itemIndex].airDateTime != null
+                                ? DateFormat.Hm().format(
+                                    item[itemIndex].airDateTime!,
+                                  )
+                                : null,
+                            latestEpisode: item[itemIndex].latestEpisode,
                             onTap: () => context.push(
                               '/detail',
                               extra: {

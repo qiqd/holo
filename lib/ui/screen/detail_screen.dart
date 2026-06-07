@@ -315,13 +315,16 @@ class _DetailScreenState extends State<DetailScreen>
   Future<void> _buildSearchResults() {
     return showModalBottomSheet<void>(
       context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) {
         return SizedBox(
           width: double.infinity,
           child: StatefulBuilder(
             builder: (context, setState) {
               return Padding(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
                   children: [
                     TextField(
@@ -331,6 +334,9 @@ class _DetailScreenState extends State<DetailScreen>
                         hint: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text("detail.search_hint".tr()),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         hintStyle: Theme.of(context).textTheme.bodySmall,
                       ),

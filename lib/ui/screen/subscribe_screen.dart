@@ -23,13 +23,15 @@ class SubscribeScreen extends StatefulWidget {
 }
 
 class _SubscribeScreenState extends State<SubscribeScreen>
-    with SingleTickerProviderStateMixin, RouteAware {
+    with TickerProviderStateMixin, RouteAware {
   final setting = MyApp.userSettingNotifier.value;
   List<UserPlayback> playback = [];
   List<UserSubscribe> subscribe = [];
   List<UserSubscribe> wish = [];
   List<UserSubscribe> watching = [];
   List<UserSubscribe> watched = [];
+  List<UserSubscribe> _subscribeSearchResult = [];
+  List<UserPlayback> _playbackSearchResult = [];
   bool _isEditMode = false;
   final Set<int> _checkedPlaybackIds = {};
   final Set<int> _checkedSubscribeIds = {};
@@ -38,6 +40,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     vsync: this,
     length: 5,
   );
+  late final _bottomSheetTabController = TabController(vsync: this, length: 2);
   ScaffoldMessengerState? _scaffoldMessengerState;
   Future<void> _fetchHistory() async {
     if (MyApp.userSettingNotifier.value.email.isEmpty) {
@@ -98,7 +101,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     await WebDAV.syncUserSubscribe(newList);
   }
 
-  void initTabBarListener() {
+  void _initTabBarListener() {
     _tabController.addListener(() {
       setState(() {
         _isEditMode = false;
@@ -106,6 +109,134 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         _checkedPlaybackIds.clear();
       });
     });
+  }
+
+  Future<void> _showSearchBottomSheet() {
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, s) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: TextField(
+                    textInputAction: TextInputAction.search,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.zero,
+                      hintStyle: Theme.of(context).textTheme.bodySmall,
+                      hint: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text("搜索订阅或者播放记录"),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      s(() {
+                        _subscribeSearchResult = subscribe
+                            .where((item) => item.title.contains(value))
+                            .toList();
+                        _playbackSearchResult = playback
+                            .where((item) => item.title.contains(value))
+                            .toList();
+                      });
+                    },
+                  ),
+                ),
+                TabBar(
+                  controller: _bottomSheetTabController,
+                  tabs: [
+                    Tab(text: tr("subscribe.title")),
+                    Tab(text: tr("subscribe.tab_playback")),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _bottomSheetTabController,
+                    children: [
+                      SizedBox(
+                        child: GridView.builder(
+                          itemCount: _subscribeSearchResult.length,
+                          padding: .all(8),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                                childAspectRatio: 0.6,
+                              ),
+                          itemBuilder: (context, index) {
+                            return MediaGrid(
+                              id: "${_subscribeSearchResult[index].id}",
+                              imageUrl: _subscribeSearchResult[index].imgUrl,
+                              title: _subscribeSearchResult[index].title,
+                              status:
+                                  _subscribeSearchResult[index].viewingStatus,
+                              onTap: () {
+                                final item = _subscribeSearchResult[index];
+                                var cache = _getCacheBySubId(item.id);
+                                context.push(
+                                  '/detail',
+                                  extra: {
+                                    "id": item.id,
+                                    "keyword": item.title,
+                                    "cover": item.imgUrl,
+                                    "from": "subscribe",
+                                    'subject': cache,
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        child: ListView.separated(
+                          itemCount: _playbackSearchResult.length,
+                          padding: EdgeInsets.all(8),
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 8),
+                          itemBuilder: (context, index) {
+                            final item = _playbackSearchResult[index];
+                            return MediaCard(
+                              id: item.id.toString(),
+                              title: item.title,
+                              height: 160,
+                              imageUrl: item.imgUrl,
+                              onTap: () {
+                                var cache = _getCacheBySubId(item.id);
+                                context.push(
+                                  '/detail',
+                                  extra: {
+                                    "id": item.id,
+                                    "keyword": item.title,
+                                    "cover": item.imgUrl,
+                                    "from": "subscribe.history",
+                                    'subject': cache,
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _buildEmptyMsg(String msg, {bool isPlayback = false}) {
@@ -292,6 +423,17 @@ class _SubscribeScreenState extends State<SubscribeScreen>
             icon: Icon(Icons.refresh_rounded),
           ),
         ],
+        IconButton(
+          onPressed: () {
+            _showSearchBottomSheet().then((_) {
+              setState(() {
+                _subscribeSearchResult.clear();
+                _playbackSearchResult.clear();
+              });
+            });
+          },
+          icon: Icon(Icons.search_rounded),
+        ),
       ],
     );
   }
@@ -299,7 +441,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   @override
   void initState() {
     super.initState();
-    initTabBarListener();
+    _initTabBarListener();
     _loadHistory();
     _fetchHistory();
   }
