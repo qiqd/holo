@@ -11,7 +11,6 @@ import 'package:holo/util/hive_util.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
-
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
@@ -93,6 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
       title: TextField(
         controller: _controller,
+        autofocus: _controller.text.isEmpty,
         onSubmitted: (value) {
           _fetchSearch(value, context);
         },
