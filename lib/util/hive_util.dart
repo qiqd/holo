@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:hive_ce/hive.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/daily_broadcast.dart';
@@ -273,7 +275,9 @@ class HiveUtil {
   }
 
   static List<String> getUserSearches() {
-    return userSearchBox?.values.toList() ?? [];
+    return LinkedHashSet<String>.from(
+      userSearchBox?.values ?? [],
+    ).toList().reversed.toList();
   }
 
   /// 清除用户搜索记录

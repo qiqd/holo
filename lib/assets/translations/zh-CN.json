@@ -66,7 +66,8 @@
         "delete_subs_failed": "删除云端追番记录失败",
         "delete_subs_success": "删除云端追番记录成功",
         "delete_view_failed": "删除云端播放记录失败",
-        "delete_view_success": "删除云端播放记录成功"
+        "delete_view_success": "删除云端播放记录成功",
+        "subscribe_playback_search": "搜索订阅或者播放记录"
     },
     "setting": {
         "title": "设置",

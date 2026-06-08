@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
@@ -277,7 +278,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     if (_playUrl == null ||
         _position.inSeconds <= 0 ||
         _isLoading ||
-        !(_playerNotifier.value?.value.isPlaying ?? false) ||
+        _playerNotifier.value?.value.isPlaying == false ||
         _playerNotifier.value?.value.isBuffering == true) {
       return;
     }
@@ -625,7 +626,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               id: "player_${_subject.id}",
               imageUrl: _subject.images.large!,
               title: _subject.title,
-              genre: _subject.genres.join('/'),
+              genre: LinkedHashSet<String>.from(_subject.genres).join('·'),
               latestEpisode: _subject.latestEpisode,
               episode: _subject.episodes,
               rating: _subject.rating,

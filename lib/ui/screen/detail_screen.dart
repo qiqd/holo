@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -593,7 +594,9 @@ class _DetailScreenState extends State<DetailScreen>
                           imageUrl: widget.cover,
                           viewingStatus: isSubscribed ? _viewingStatus : null,
                           title: _subject!.title,
-                          genre: _subject?.genres.join('/'),
+                          genre: LinkedHashSet<String>.from(
+                            _subject?.genres ?? [],
+                          ).join('·'),
                           episode: _subject?.episodes,
                           latestEpisode: _subject?.latestEpisode,
                           rating: _subject?.rating,

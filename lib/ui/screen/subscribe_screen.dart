@@ -133,7 +133,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                       hintStyle: Theme.of(context).textTheme.bodySmall,
                       hint: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text("搜索订阅或者播放记录"),
+                        child: Text(tr("subscribe.subscribe_playback_search")),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(16)),

@@ -66,7 +66,8 @@
         "delete_subs_failed": "クラウド追番記録の削除に失敗",
         "delete_subs_success": "クラウド追番記録の削除に成功",
         "delete_view_failed": "クラウド再生履歴の削除に失敗",
-        "delete_view_success": "クラウド再生履歴の削除に成功"
+        "delete_view_success": "クラウド再生履歴の削除に成功",
+        "subscribe_playback_search": "追番または再生履歴を検索"
     },
     "setting": {
         "title": "設定",

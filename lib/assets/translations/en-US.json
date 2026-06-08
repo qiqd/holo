@@ -66,7 +66,8 @@
         "delete_subs_failed": "Failed to delete cloud subscription records",
         "delete_subs_success": "Successfully deleted cloud subscription records",
         "delete_view_failed": "Failed to delete cloud playback history",
-        "delete_view_success": "Successfully deleted cloud playback history"
+        "delete_view_success": "Successfully deleted cloud playback history",
+        "subscribe_playback_search": "Search subscriptions or playback history"
     },
     "setting": {
         "title": "Settings",
