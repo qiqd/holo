@@ -5,11 +5,15 @@ import 'package:holo/env/env.dart';
 import 'package:holo/util/http_util.dart';
 
 class LogVar {
-  static final String baseUrl = Env.dammakuServerUrl;
+  static final String? baseUrl = Env.dammakuServerUrl;
   Future<List<LogVarEpisode>> fetchEpisodeFromLogVar(
     String keyword,
     Function(String) exception,
   ) async {
+    if (baseUrl == null) {
+      exception("LogVar.baseUrl is not configured");
+      return [];
+    }
     try {
       final response = await HttpUtil.createDio().get(
         '$baseUrl/api/v2/search/episodes',
@@ -35,6 +39,10 @@ class LogVar {
     void Function(String) exception, {
     int chConvert = 0,
   }) async {
+    if (baseUrl == null) {
+      exception("LogVar.baseUrl is not configured");
+      return null;
+    }
     try {
       final response = await HttpUtil.createDio().get(
         '$baseUrl/api/v2/comment/$episodeId',

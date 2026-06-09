@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/episode_item.dart';
@@ -16,14 +17,15 @@ import 'package:logger/logger.dart';
 /// 实现了 MetaService 接口，提供 Bangumi 网站的元数据服务
 class Bangumi implements MetaService {
   String languageCode;
-  static final String metaServerUrl = Env.metaServerUrl;
+  static final String defaultMetaServerUrl = "https://api.bgm.tv";
+  static final String metaServerUrl = Env.metaServerUrl ?? defaultMetaServerUrl;
   final Logger _logger = LoggerUtil.logger;
   @override
   /// 获取服务名称
   String get name => "Bangumi";
 
   @override
-  /// 获取网站基础地址
+  /// 获取网站基础地址,https://api.bgm.tv
   String get baseUrl => metaServerUrl;
 
   @override

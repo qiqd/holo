@@ -8,8 +8,8 @@ part 'image.g.dart';
 @HiveType(typeId: 7)
 @JsonSerializable()
 class Image {
-  static final String imgServerUrl = Env.imgServerUrl;
   static final String defaultImgServerHost = "lain.bgm.tv";
+  static final String imgServerUrl = Env.imgServerUrl ?? defaultImgServerHost;
 
   /// 小尺寸图片URL
   @HiveField(0)
