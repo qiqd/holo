@@ -137,7 +137,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
   }
 
-  Future<void> _fetchViewInfo({
+  Future<void> _fetchVideo({
     int position = 0,
     bool loadDanmaku = true,
     void Function(String e)? onComplete,
@@ -198,6 +198,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         safeSetState(() {
           _msg = '';
         });
+        _playerNotifier.value?.setVolume(1.0);
         _playerNotifier.value?.seekTo(Duration(seconds: position));
         _isActive
             ? _playerNotifier.value?.play()
@@ -223,7 +224,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     setState(() {
       _lineIndex = index;
     });
-    _fetchViewInfo(position: _position.inSeconds, loadDanmaku: false);
+    _fetchVideo(position: _position.inSeconds, loadDanmaku: false);
   }
 
   void _onEpisodeSelected(int index) {
@@ -244,7 +245,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     setState(() {
       _episodeIndex = index;
     });
-    _fetchViewInfo();
+    _fetchVideo();
   }
 
   Future<void> _loadPlaybackHistory() async {
@@ -275,11 +276,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   Future<void> _updatePlaybackHistory() async {
-    if (_playUrl == null ||
-        _position.inSeconds <= 0 ||
-        _isLoading ||
-        _playerNotifier.value?.value.isPlaying == false ||
-        _playerNotifier.value?.value.isBuffering == true) {
+    if (_playUrl == null || _position.inSeconds <= 0 || _isLoading) {
       return;
     }
     final newPlayback = _userPlayback == null
@@ -595,7 +592,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             setState(() {
               ++_episodeIndex;
             });
-            _fetchViewInfo();
+            _fetchVideo();
           },
           onFullScreenChanged: (f) {
             onFullScreenChanged(f);
@@ -736,7 +733,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         ? LoadingOrShowMsg(
             msg: _msg,
             onMsgTab: () {
-              _fetchViewInfo();
+              _fetchVideo();
             },
           )
         : GridView.builder(
@@ -1272,7 +1269,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     //_isTablet = Device.get().isTablet;
     WidgetsBinding.instance.addObserver(this);
     _fetchMediaEpisode().then(
-      (value) => _fetchViewInfo(position: _historyPosition),
+      (value) => _fetchVideo(position: _historyPosition),
     );
     // 设置播放器页面的状态栏样式（深色模式）
     // SystemChrome.setSystemUIOverlayStyle(
