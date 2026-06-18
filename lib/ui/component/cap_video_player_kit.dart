@@ -944,7 +944,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         tooltip: 'Volume',
                         color: Colors.white,
                         onPressed: () {
-                          VolumeController.instance.setVolume(0);
+                          widget.playerNotifier.value?.setVolume(0);
+                          safeSetState(() {
+                            _currentVolume = 0;
+                          });
                         },
                         icon: Icon(
                           _currentVolume > 0
@@ -961,7 +964,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                           padding: .symmetric(horizontal: 10),
                           value: _currentVolume,
                           onChanged: (value) {
-                            VolumeController.instance.setVolume(value);
+                            widget.playerNotifier.value?.setVolume(value);
                             safeSetState(() {
                               _currentVolume = value;
                             });
