@@ -1340,27 +1340,23 @@ class _PlayerScreenState extends State<PlayerScreen>
                 endDrawer: Drawer(width: 400, child: _buildDrawer(isTablet)),
                 body: SafeArea(
                   child: SizedBox.expand(
-                    child: Row(
-                      children: [
-                        _buildPlayer(
-                          isFullScreen: true,
-                          isTablet: isTablet,
-                          onFullScreenChanged: (isFullScreen) {
-                            setState(() {
-                              _isFullScreen = isFullScreen;
-                            });
-                            _toggleFullScreen(isFullScreen);
-                          },
-                          onBackPressed: () {
-                            if (Platform.isWindows ||
-                                Platform.isMacOS ||
-                                Platform.isLinux) {
-                              windowManager.setFullScreen(false);
-                            }
-                            context.pop();
-                          },
-                        ),
-                      ],
+                    child: _buildPlayer(
+                      isFullScreen: true,
+                      isTablet: isTablet,
+                      onFullScreenChanged: (isFullScreen) {
+                        setState(() {
+                          _isFullScreen = isFullScreen;
+                        });
+                        _toggleFullScreen(isFullScreen);
+                      },
+                      onBackPressed: () {
+                        if (Platform.isWindows ||
+                            Platform.isMacOS ||
+                            Platform.isLinux) {
+                          windowManager.setFullScreen(false);
+                        }
+                        context.pop();
+                      },
                     ),
                   ),
                 ),

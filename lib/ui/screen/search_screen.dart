@@ -92,7 +92,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
       title: TextField(
         controller: _controller,
-        autofocus: _controller.text.isEmpty,
+        autofocus: false,
+        textInputAction: TextInputAction.search,
         onSubmitted: (value) {
           _fetchSearch(value, context);
         },
@@ -117,7 +118,6 @@ class _SearchScreenState extends State<SearchScreen> {
             borderRadius: BorderRadius.all(Radius.circular(20.0)),
           ),
         ),
-        textInputAction: TextInputAction.search,
       ),
     );
   }

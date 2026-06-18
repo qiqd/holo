@@ -1065,6 +1065,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
     _initTimerToDanmaku();
     _dammaku = widget.dammaku;
     VolumeController.instance.showSystemUI = false;
+    VolumeController.instance.getVolume().then((v) {
+      _currentVolume = v;
+    });
     _brightnessController = ScreenBrightness.instance;
     super.initState();
   }

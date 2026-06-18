@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/daily_broadcast.dart';
 import 'package:holo/entity/episode_item.dart';
@@ -271,6 +270,7 @@ class Bangumi implements MetaService {
             "type": [2],
           },
         },
+        queryParameters: {"limit": 100},
       );
       if (response.data != null) {
         var data = (response.data as Map<String, dynamic>)["data"] as List;
