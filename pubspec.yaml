@@ -64,9 +64,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - lib/images/launcher_round.png
     - lib/assets/translations/
     - lib/assets/lottie/
+    - lib/images/launcher_round.webp
     - lib/images/splash.webp
   fonts:
     - family: BF
