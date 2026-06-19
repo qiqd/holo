@@ -168,7 +168,9 @@
         "match_strategy": "マッチング略",
         "match_strategy_description": "アプリが再生元をマッチする方法を指定します。有効にすると、最近の再生履歴に基づいて再生元をマッチします。マッチ値が90%以上の場合、自動的に再生元を選択します",
         "data_sync_interval": "データ同期間隔",
-        "data_sync_interval_description": "アプリケーションデータ同期間隔を設定します。秒単位"
+        "data_sync_interval_description": "アプリケーションデータ同期間隔を設定します。秒単位",
+        "enable_splash": "スプラッシュ画面を有効化",
+        "enable_splash_description": "有効にすると、アプリが起動するたびにスプラッシュ画面を表示します"
     },
     "sign": {
         "title": "お帰りなさい",

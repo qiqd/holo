@@ -168,7 +168,9 @@
         "match_strategy": "资源匹配策略",
         "match_strategy_description": "如果开启,将会根据最近播放记录确定最终匹配的播放源;否则,将根据名称匹配,当匹配值大于90%时,将自动选择该播放源",
         "data_sync_interval": "数据同步间隔",
-        "data_sync_interval_description": "设置应用数据同步间隔,单位秒"
+        "data_sync_interval_description": "设置应用数据同步间隔,单位秒",
+        "enable_splash": "开启启动屏",
+        "enable_splash_description": "如果开启,应用启动时将显示启动屏"
     },
     "sign": {
         "title": "欢迎回来",

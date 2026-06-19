@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:hive_ce/hive.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/daily_broadcast.dart';
+import 'package:holo/entity/daily_mantra.dart';
 import 'package:holo/entity/image.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/user_playback.dart';
@@ -24,28 +25,14 @@ class HiveUtil {
   static Box<AnimeInfo>? hotAnimeInfoBox;
   static Box<AnimeInfo>? hiScoreAnimeInfoBox;
   static Box<DailyBroadcast>? dailyBroadcastBox;
+  static Box<DailyMantra>? dailyMantraBox;
   static late String appDBPath;
 
   static Future<void> closeHive() async {
     await Hive.close();
   }
 
-  /// 初始化Hive数据库
-  static Future<void> initHive() async {
-    await Hive.close();
-    appDBPath = '${(await getApplicationDocumentsDirectory()).path}/holo';
-    Hive.init(appDBPath);
-    if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
-      Hive.registerAdapter(UserAdapter());
-    }
-    userBox = await Hive.openBox("user");
-    user = userBox?.values.firstOrNull;
-    await Hive.close();
-    if (user == null) {
-      Hive.init('$appDBPath/common/');
-    } else {
-      Hive.init('$appDBPath/${user!.email}/');
-    }
+  static void _adapterRegister() {
     if (!Hive.isAdapterRegistered(UserSubscribeAdapter().typeId)) {
       Hive.registerAdapter(UserSubscribeAdapter());
     }
@@ -70,6 +57,28 @@ class HiveUtil {
     if (!Hive.isAdapterRegistered(DailyBroadcastAdapter().typeId)) {
       Hive.registerAdapter(DailyBroadcastAdapter());
     }
+    if (!Hive.isAdapterRegistered(DailyMantraAdapter().typeId)) {
+      Hive.registerAdapter(DailyMantraAdapter());
+    }
+  }
+
+  /// 初始化Hive数据库
+  static Future<void> initHive() async {
+    await Hive.close();
+    appDBPath = '${(await getApplicationDocumentsDirectory()).path}/holo';
+    Hive.init(appDBPath);
+    if (!Hive.isAdapterRegistered(UserAdapter().typeId)) {
+      Hive.registerAdapter(UserAdapter());
+    }
+    userBox = await Hive.openBox("user");
+    user = userBox?.values.firstOrNull;
+    await Hive.close();
+    if (user == null) {
+      Hive.init('$appDBPath/common/');
+    } else {
+      Hive.init('$appDBPath/${user!.email}/');
+    }
+    _adapterRegister();
 
     ruleBox = await Hive.openBox<Rule>("rule");
     userSettingBox = await Hive.openBox<UserSetting>("user_setting");
@@ -82,6 +91,7 @@ class HiveUtil {
       "hi_score_subject_item",
     );
     dailyBroadcastBox = await Hive.openBox<DailyBroadcast>("daily_broadcast");
+    dailyMantraBox = await Hive.openBox<DailyMantra>("daily_mantra");
   }
 
   /// 获取用户订阅路径，必须在[initHive]方法后调用
@@ -357,5 +367,14 @@ class HiveUtil {
 
   static List<DailyBroadcast> getDailyBroadcast() {
     return dailyBroadcastBox?.values.toList() ?? [];
+  }
+
+  static Future<void> setDailyMantra(List<DailyMantra> dailyMantra) async {
+    //await dailyMantraBox?.clear();
+    await dailyMantraBox?.addAll(dailyMantra);
+  }
+
+  static List<DailyMantra> getDailyMantra() {
+    return dailyMantraBox?.values.toList() ?? [];
   }
 }

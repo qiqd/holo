@@ -29,7 +29,13 @@ class FileOutput extends LogOutput {
   @override
   void output(OutputEvent event) {
     if (event.level == Level.error) {
-      _logFile.writeAsStringSync(event.lines.join('\r\n'));
+      if (!_logFile.existsSync()) {
+        _logFile.createSync(recursive: true);
+      }
+      _logFile.writeAsStringSync(
+        '${event.lines.join('\r\n')}\r\n',
+        mode: FileMode.append,
+      );
     }
   }
 }

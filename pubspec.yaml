@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.1.17+110
+version: 1.1.17+111
 
 environment:
   sdk: ^3.10.3
@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   go_router: ^17.0.1
-  json_annotation: ^4.9.0
+  json_annotation: ^4.11.0
   cupertino_icons: ^1.0.8
   dio: ^5.9.0
   html: ^0.15.6
@@ -44,6 +44,7 @@ dependencies:
   flex_color_picker: ^3.8.0
   path_provider: ^2.1.5
   hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
   carousel_slider: ^5.1.2
   pausable_timer: ^3.1.0+3
   dynamic_color: ^1.8.1
@@ -66,6 +67,7 @@ flutter:
     - lib/images/launcher_round.png
     - lib/assets/translations/
     - lib/assets/lottie/
+    - lib/images/splash.webp
   fonts:
     - family: BF
       fonts:

@@ -168,7 +168,9 @@
         "match_strategy": "匹配策略",
         "match_strategy_description": "如果開啟,將根據最近播放記錄匹配播放源,當匹配值大於90%時,將自動選擇該播放源",
         "data_sync_interval": "數據同步間隔",
-        "data_sync_interval_description": "設定應用程式數據同步間隔,單位秒"
+        "data_sync_interval_description": "設定應用程式數據同步間隔,單位秒",
+        "enable_splash": "開啟啟動屏",
+        "enable_splash_description": "如果開啟,應用程式在啟動時將顯示啟動屏"
     },
     "sign": {
         "title": "歡迎回來",

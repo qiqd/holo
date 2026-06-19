@@ -34,13 +34,14 @@ class UserSettingAdapter extends TypeAdapter<UserSetting> {
       dataSyncInterval: fields[14] == null ? 10 : (fields[14] as num).toInt(),
       playerSafeInset: fields[15] == null ? 40 : (fields[15] as num).toInt(),
       danmakuOffset: fields[16] == null ? 0 : (fields[16] as num).toInt(),
+      enableSplash: fields[17] == null ? true : fields[17] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserSetting obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.email)
       ..writeByte(1)
@@ -74,7 +75,9 @@ class UserSettingAdapter extends TypeAdapter<UserSetting> {
       ..writeByte(15)
       ..write(obj.playerSafeInset)
       ..writeByte(16)
-      ..write(obj.danmakuOffset);
+      ..write(obj.danmakuOffset)
+      ..writeByte(17)
+      ..write(obj.enableSplash);
   }
 
   @override
@@ -110,6 +113,7 @@ UserSetting _$UserSettingFromJson(Map<String, dynamic> json) => UserSetting(
   dataSyncInterval: (json['dataSyncInterval'] as num?)?.toInt() ?? 10,
   playerSafeInset: (json['playerSafeInset'] as num?)?.toInt() ?? 40,
   danmakuOffset: (json['danmakuOffset'] as num?)?.toInt() ?? 0,
+  enableSplash: json['enableSplash'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$UserSettingToJson(UserSetting instance) =>
@@ -131,6 +135,7 @@ Map<String, dynamic> _$UserSettingToJson(UserSetting instance) =>
       'dataSyncInterval': instance.dataSyncInterval,
       'playerSafeInset': instance.playerSafeInset,
       'danmakuOffset': instance.danmakuOffset,
+      'enableSplash': instance.enableSplash,
     };
 
 DanmakuSetting _$DanmakuSettingFromJson(Map<String, dynamic> json) =>

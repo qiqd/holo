@@ -168,7 +168,9 @@
         "match_strategy": "Match Match Strategy",
         "match_strategy_description": "If enabled, the app will match the playback source based on the recent playback history. If the match value is greater than 90%, the app will automatically select the playback source",
         "data_sync_interval": "Data Sync Interval",
-        "data_sync_interval_description": "Set the interval for data synchronization, unit: seconds"
+        "data_sync_interval_description": "Set the interval for data synchronization, unit: seconds",
+        "enable_splash": "Enable Splash Screen",
+        "enable_splash_description": "If enabled, the app will show the splash screen every time it starts"
     },
     "sign": {
         "title": "Welcome Back",

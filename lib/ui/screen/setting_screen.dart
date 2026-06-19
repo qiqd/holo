@@ -316,7 +316,7 @@ class _SettingScreenState extends State<SettingScreen>
       InkWell(
         child: const Text('Bangumi 番组计划'),
         onTap: () {
-          launchUrl(Uri.parse('https://bangumi.tv'));
+          launchUrl(Uri.parse('https://github.com/bangumi/api'));
         },
       ),
       //弹幕提供
@@ -327,7 +327,7 @@ class _SettingScreenState extends State<SettingScreen>
       InkWell(
         child: const Text('LogVar 弹幕'),
         onTap: () {
-          launchUrl(Uri.parse('https://danmuapi.vercel.app'));
+          launchUrl(Uri.parse('https://github.com/huangxd-/danmu_api'));
         },
       ),
       //番剧图片搜索
@@ -342,16 +342,16 @@ class _SettingScreenState extends State<SettingScreen>
         },
       ),
       //每日一言
-      // Text(
-      //   'setting.app_info.daily_sentence'.tr(),
-      //   style: const TextStyle(fontWeight: FontWeight.bold),
-      // ),
-      // InkWell(
-      //   child: const Text('sekaiai.github.io'),
-      //   onTap: () {
-      //     launchUrl(Uri.parse('https://github.com/sekaiai/sekaiai.github.io'));
-      //   },
-      // ),
+      Text(
+        'setting.app_info.daily_sentence'.tr(),
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      InkWell(
+        child: const Text('sekaiai.github.io'),
+        onTap: () {
+          launchUrl(Uri.parse('https://github.com/sekaiai/sekaiai.github.io'));
+        },
+      ),
     ];
   }
 

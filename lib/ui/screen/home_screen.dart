@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:holo/api/sekaiai.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
@@ -97,6 +98,21 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _fetchDailyMantra() async {
+    final mantra1 = await Sekaiai.fetch();
+    if (mantra1 != null) {
+      mantra1.date = DateTime.now();
+    }
+
+    Timer(const Duration(seconds: 10), () async {
+      final mantra2 = await Sekaiai.fetch();
+      if (mantra2 != null && mantra1 != null) {
+        mantra2.date = DateTime.now().add(const Duration(days: 1));
+        await HiveUtil.setDailyMantra([mantra1, mantra2]);
+      }
+    });
+  }
+
   void _homeScreenInit() {
     final autoCheckUpdate = MyApp.userSettingNotifier.value.autoUpdate;
     if (autoCheckUpdate) {
@@ -121,8 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (DateTime.now().hour % 5 == 0 || _rank.isEmpty) {
       _fetchRank();
     }
-
     _scrollController.addListener(_onScrollToBottom);
+    _fetchDailyMantra();
   }
 
   Widget _buildRankSkeleton(bool isLandscape) {

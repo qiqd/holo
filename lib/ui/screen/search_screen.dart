@@ -20,6 +20,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _loading = false;
   List<String> _searchHistory = [];
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   final userSetting = MyApp.userSettingNotifier.value;
   Future<void> _fetchSearch(String keyword, BuildContext content) async {
     if (keyword.isEmpty) return;
@@ -93,6 +94,7 @@ class _SearchScreenState extends State<SearchScreen> {
       title: TextField(
         controller: _controller,
         autofocus: false,
+        focusNode: _focusNode,
         textInputAction: TextInputAction.search,
         onSubmitted: (value) {
           _fetchSearch(value, context);
@@ -125,6 +127,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    _focusNode.requestFocus();
     _searchHistory = HiveUtil.getUserSearches();
   }
 

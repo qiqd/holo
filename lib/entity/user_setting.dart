@@ -42,6 +42,8 @@ class UserSetting {
   final int playerSafeInset;
   @HiveField(16)
   final int danmakuOffset;
+  @HiveField(17)
+  final bool enableSplash;
   const UserSetting({
     required this.email,
     required this.opacity,
@@ -60,6 +62,7 @@ class UserSetting {
     this.dataSyncInterval = 10,
     this.playerSafeInset = 40,
     this.danmakuOffset = 0,
+    this.enableSplash = true,
   });
 
   static UserSetting createDefaultUserSetting({required String email}) {
@@ -78,6 +81,7 @@ class UserSetting {
       colorSeed: 0xffd08b57,
       autoUpdate: true,
       useLastSource: true,
+      enableSplash: true,
     );
   }
 
@@ -112,6 +116,7 @@ class UserSetting {
     bool? useLastSource,
     int? dataSyncInterval,
     int? playerSafeInset,
+    bool? enableSplash,
   }) {
     return UserSetting(
       email: email ?? this.email,
@@ -131,6 +136,7 @@ class UserSetting {
       dataSyncInterval: dataSyncInterval ?? this.dataSyncInterval,
       playerSafeInset: playerSafeInset ?? this.playerSafeInset,
       danmakuOffset: danmakuOffset ?? this.danmakuOffset,
+      enableSplash: enableSplash ?? this.enableSplash,
     );
   }
 

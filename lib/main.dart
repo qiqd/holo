@@ -29,6 +29,7 @@ import 'package:holo/ui/screen/detail_screen.dart';
 import 'package:holo/ui/screen/home_screen.dart';
 import 'package:holo/ui/screen/search_screen.dart';
 import 'package:holo/ui/screen/setting_screen.dart';
+import 'package:holo/ui/screen/splash_screen.dart';
 import 'package:holo/ui/screen/subscribe_screen.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/logger_util.dart';
@@ -131,9 +132,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   /// 路由配置
   late final GoRouter _router = GoRouter(
     // 初始路由
-    initialLocation: '/home',
+    initialLocation: MyApp.userSettingNotifier.value.enableSplash
+        ? '/splash'
+        : '/home',
     // 路由定义
     routes: [
+      // 启动页路由
+      GoRoute(
+        path: '/splash',
+        builder: (_, _) {
+          return const SplashScreen();
+        },
+      ),
+
       // 底部导航栏路由栈
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

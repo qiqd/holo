@@ -348,12 +348,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               },
             ),
             SwitchListTile(
-              value: value.autoUpdate,
-              title: Text('preference.auto_check_update'.tr()),
-              secondary: Icon(Icons.update_rounded),
+              value: value.enableSplash,
+              title: Text('preference.enable_splash'.tr()),
+              subtitle: Text('preference.enable_splash_description'.tr()),
+              secondary: Icon(Icons.launch_rounded),
               onChanged: (value) {
                 var newSetting = MyApp.userSettingNotifier.value.copyWith(
-                  autoUpdate: value,
+                  enableSplash: value,
                 );
                 MyApp.userSettingNotifier.value = newSetting;
                 HiveUtil.setUserSetting(newSetting);
@@ -383,6 +384,19 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
+
+            SwitchListTile(
+              value: value.autoUpdate,
+              title: Text('preference.auto_check_update'.tr()),
+              secondary: Icon(Icons.update_rounded),
+              onChanged: (value) {
+                var newSetting = MyApp.userSettingNotifier.value.copyWith(
+                  autoUpdate: value,
+                );
+                MyApp.userSettingNotifier.value = newSetting;
+                HiveUtil.setUserSetting(newSetting);
+              },
+            ),
           ],
         );
       },
@@ -441,6 +455,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    WebDAV.syncUserSetting(MyApp.userSettingNotifier.value);
+    super.dispose();
   }
 
   @override
