@@ -10,7 +10,8 @@ class LoggerUtil {
         '${(await getApplicationDocumentsDirectory()).path}/log.txt';
     logFile = File(logPath);
     logger = Logger(
-      output: MultiOutput([ConsoleOutput(), FileOutput(logFile)]),
+      filter: _AcceptAllFilter(),
+      output: MultiOutput([ConsoleOutput(), _FileOutput(logFile)]),
     );
   }
 
@@ -23,19 +24,22 @@ class LoggerUtil {
   }
 }
 
-class FileOutput extends LogOutput {
+class _AcceptAllFilter extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) => true;
+}
+
+class _FileOutput extends LogOutput {
   late final File _logFile;
-  FileOutput(this._logFile);
+  _FileOutput(this._logFile);
   @override
   void output(OutputEvent event) {
-    if (event.level == Level.error) {
-      if (!_logFile.existsSync()) {
-        _logFile.createSync(recursive: true);
-      }
-      _logFile.writeAsStringSync(
-        '${event.lines.join('\r\n')}\r\n',
-        mode: FileMode.append,
-      );
+    if (!_logFile.existsSync()) {
+      _logFile.createSync(recursive: true);
     }
+    _logFile.writeAsStringSync(
+      '${event.lines.join('\r\n')}\r\n',
+      mode: FileMode.append,
+    );
   }
 }
