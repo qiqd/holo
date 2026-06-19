@@ -35,6 +35,13 @@ class _RuleRepositoryState extends State<RuleRepository> {
     );
     safeSetState(() {
       _rules = r;
+      _rules.sort(
+        (a, b) => a.isValid == b.isValid
+            ? 0
+            : a.isValid
+            ? -1
+            : 1,
+      );
       _isLoading = false;
     });
   }
@@ -43,18 +50,20 @@ class _RuleRepositoryState extends State<RuleRepository> {
     await HiveUtil.setRule(rule);
   }
 
-  Widget _buildTileTrailing(Rule rule) {
+  Widget _buildTileTrailing(Rule rule, bool isEnabled) {
     if (_localRules.any(
           (e) => double.parse(e.version) < double.parse(rule.version),
         ) ||
         !_localRules.any((e) => e.name == rule.name)) {
       return IconButton(
-        onPressed: () async {
-          await _saveRule(rule);
-          safeSetState(() {
-            _localRules = HiveUtil.getRules();
-          });
-        },
+        onPressed: isEnabled
+            ? () async {
+                await _saveRule(rule);
+                safeSetState(() {
+                  _localRules = HiveUtil.getRules();
+                });
+              }
+            : null,
         icon: const Icon(Icons.download_rounded),
       );
     } else {
@@ -103,7 +112,10 @@ class _RuleRepositoryState extends State<RuleRepository> {
                         enabled: _rules[index].isValid,
                         title: Text(_rules[index].name),
                         subtitle: Text(_rules[index].version),
-                        trailing: _buildTileTrailing(_rules[index]),
+                        trailing: _buildTileTrailing(
+                          _rules[index],
+                          _rules[index].isValid,
+                        ),
                         onTap: () {},
                         leading: SizedBox(
                           width: 60,
@@ -119,7 +131,9 @@ class _RuleRepositoryState extends State<RuleRepository> {
                                     ),
                                   ),
                             errorBuilder: (context, error, stackTrace) =>
-                                const Center(child: Icon(Icons.error_rounded)),
+                                const Center(
+                                  child: Icon(Icons.broken_image_rounded),
+                                ),
                           ),
                         ),
                       );

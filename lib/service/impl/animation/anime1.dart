@@ -1,6 +1,7 @@
 import 'package:holo/entity/media.dart';
 import 'package:holo/service/source_service.dart';
 
+@Deprecated("该源未实现")
 class Anime1 implements SourceService {
   @override
   String getBaseUrl() {

@@ -150,7 +150,7 @@ class _SettingScreenState extends State<SettingScreen>
         title: Text('setting.language.change'.tr()),
         subtitle: Text('setting.language.change_description'.tr()),
         trailing: PopupMenuButton(
-          child: Icon(Icons.menu_rounded),
+          icon: Icon(Icons.menu_rounded),
           onSelected: (value) {
             context.setLocale(Locale(value.split('-')[0], value.split('-')[1]));
             setState(() {});

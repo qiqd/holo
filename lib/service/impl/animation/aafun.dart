@@ -14,7 +14,7 @@ class AAfun implements SourceService {
   int delay = 9999;
   @override
   String getBaseUrl() {
-    return "https://www.aafun.cc";
+    return "https://www.bbfun.cc";
   }
 
   @override

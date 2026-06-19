@@ -5,6 +5,7 @@ import 'package:holo/service/common.dart';
 import 'package:holo/util/http_util.dart';
 import 'package:html/parser.dart';
 
+@Deprecated("baseurl 不可访问")
 class Jcy extends Common {
   Jcy()
     : super(

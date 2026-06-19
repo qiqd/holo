@@ -10,6 +10,7 @@ import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes.dart';
 import 'package:pointycastle/block/modes/cbc.dart';
 
+@Deprecated("baseurl 不可访问")
 class Mengdao implements SourceService {
   static const String _aesKey = "Mann20230627daoo";
   static const String _aesIv = "2023062720230627";

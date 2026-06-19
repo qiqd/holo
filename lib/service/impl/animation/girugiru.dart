@@ -6,6 +6,7 @@ import 'package:holo/entity/media.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/util/http_util.dart';
 
+@Deprecated("baseurl 不可访问")
 class Girugiru implements SourceService {
   @override
   int delay = 9999;

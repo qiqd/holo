@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:holo/entity/rule.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/util/hive_util.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class RuleManager extends StatefulWidget {
@@ -37,10 +37,12 @@ class _RuleManagerState extends State<RuleManager> {
       Api.initSources();
       Api.delayTest();
     } catch (e) {
-      log('Import rules failed: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('rule_manager.import_failure'.tr())),
-      );
+      LoggerUtil.logger.e('Import rules failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('rule_manager.import_failure'.tr())),
+        );
+      }
     }
   }
 
@@ -122,7 +124,7 @@ class _RuleManagerState extends State<RuleManager> {
                         _rulesStr = value;
                       },
                       decoration: InputDecoration(
-                        hintText: 'rule_manager.import_from_json_hint'.tr(),
+                        // hintText: 'rule_manager.import_from_json_hint'.tr(),
                         border: OutlineInputBorder(),
                       ),
                     ),

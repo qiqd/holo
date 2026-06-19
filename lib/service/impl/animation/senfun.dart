@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:html/parser.dart';
@@ -11,7 +10,7 @@ class Senfun implements SourceService {
   int delay = 9999;
   @override
   String getBaseUrl() {
-    return "https://senfun.in/";
+    return "https://senfun.in";
   }
 
   @override
@@ -59,7 +58,7 @@ class Senfun implements SourceService {
     int size,
     Function(dynamic) exceptionHandler,
   ) async {
-    final searchUrl = "${getBaseUrl()}search.html?wd=$keyword";
+    final searchUrl = "${getBaseUrl()}/search.html?wd=$keyword";
     try {
       final response = await HttpUtil.createDio().get(searchUrl);
       if (response.statusCode == 200) {
@@ -101,34 +100,43 @@ class Senfun implements SourceService {
     Function(dynamic) exceptionHandler,
   ) async {
     try {
-      final response = await HttpUtil.createDio().get(getBaseUrl() + episodeId);
-      if (response.statusCode == 200) {
-        var document = response.data;
-        var html = parse(document as String);
-        var detail = html
-            .querySelectorAll("script[type='text/javascript']")
-            .firstWhere(
-              (item) =>
-                  item.text.contains("(document).ready (function (argument)"),
-            );
-        RegExp pattern1 = RegExp(r'url:"([^"]+)"');
-        RegExpMatch? match1 = pattern1.firstMatch(detail.text);
-        if (match1 == null) {
-          return null;
-        }
-        var url = match1.group(1);
-        final response2 = await HttpUtil.createDio().get(getBaseUrl() + url!);
-        if (response2.statusCode == 200) {
-          var document2 = response2.data;
-          var decode = json.decode(document2 as String) as Map<String, dynamic>;
-          var list = decode["video_plays"] as List<dynamic>;
-          var first = list.first as Map<String, dynamic>;
-          return first["play_data"] as String? ?? "";
-        }
-      }
-      return null;
+      // final response = await HttpUtil.createDio().get(getBaseUrl() + episodeId);
+      // if (response.statusCode == 200) {
+      //   var document = response.data;
+      //   var html = parse(document as String);
+      //   var detail = html
+      //       .querySelectorAll("script[type='text/javascript']")
+      //       .firstWhere(
+      //         (item) =>
+      //             item.text.contains("(document).ready (function (argument)"),
+      //       );
+      //   RegExp pattern1 = RegExp(r'url:"([^"]+)"');
+      //   RegExpMatch? match1 = pattern1.firstMatch(detail.text);
+      //   if (match1 == null) {
+      //     return null;
+      //   }
+      //   var url = match1.group(1);
+      //   final response2 = await HttpUtil.createDio().get(getBaseUrl() + url!);
+      //   if (response2.statusCode == 200) {
+      //     var document2 = response2.data;
+      //     var decode = json.decode(document2 as String) as Map<String, dynamic>;
+      //     var list = decode["video_plays"] as List<dynamic>;
+      //     var first = list.first as Map<String, dynamic>;
+      //     return first["play_data"] as String? ?? "";
+      //   }
+      // }
+      var a = episodeId.split("/").toList();
+      var mediaId = a[2];
+      var ep = a[3].replaceAll(".html", "");
+      final response = await HttpUtil.createDio().get(
+        "https://senfun.in/_senfun_plays/$mediaId/$ep",
+      );
+      var decode = response.data as Map<String, dynamic>;
+      var list = decode["video_plays"] as List<dynamic>;
+      var first = list.first as Map<String, dynamic>;
+      return first["play_data"] as String?;
     } catch (e) {
-      log("Senfen fetchView error: $e");
+      log("Senfen fetchVideoUrl error: $e");
       exceptionHandler(e);
       return null;
     }
