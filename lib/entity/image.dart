@@ -27,45 +27,13 @@ class Image {
   @HiveField(3)
   final String? _grid;
 
-  String? get small {
-    final temp = _small?.replaceAll(
-      defaultImgServerHost,
-      Uri.parse(imgServerUrl).host,
-    );
-    return temp?.contains('https') == true
-        ? temp
-        : temp?.replaceFirst("http", "https");
-  }
+  String? get small => _processUrl(_small);
 
-  String? get large {
-    final temp = _large?.replaceAll(
-      defaultImgServerHost,
-      Uri.parse(imgServerUrl).host,
-    );
-    return temp?.contains('https') == true
-        ? temp
-        : temp?.replaceFirst("http", "https");
-  }
+  String? get large => _processUrl(_large);
 
-  String? get medium {
-    final temp = _medium?.replaceAll(
-      defaultImgServerHost,
-      Uri.parse(imgServerUrl).host,
-    );
-    return temp?.contains('https') == true
-        ? temp
-        : temp?.replaceFirst("http", "https");
-  }
+  String? get medium => _processUrl(_medium);
 
-  String? get grid {
-    final temp = _grid?.replaceAll(
-      defaultImgServerHost,
-      Uri.parse(imgServerUrl).host,
-    );
-    return temp?.contains('https') == true
-        ? temp
-        : temp?.replaceFirst("http", "https");
-  }
+  String? get grid => _processUrl(_grid);
 
   const Image({String? small, String? large, String? medium, String? grid})
     : _small = small,
@@ -76,4 +44,15 @@ class Image {
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ImageToJson(this);
+
+  static String? _processUrl(String? url) {
+    if (url == null) return null;
+    final temp = url.replaceAll(
+      defaultImgServerHost,
+      Uri.parse(imgServerUrl).host,
+    );
+    return temp.contains('https') == true
+        ? temp
+        : temp.replaceFirst("http", "https");
+  }
 }

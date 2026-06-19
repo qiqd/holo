@@ -87,7 +87,8 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "isValid": false
     },
     {
         "id": "6995b8c3068c9abe8b26bfdd",
@@ -137,7 +138,8 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "isValid": false
     },
     {
         "id": "6995b8c3068c9abe8b26bfde",
@@ -311,7 +313,8 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "isValid": false
     },
     {
         "id": "6995b8c3068c9abe8b26bfe2",
@@ -359,7 +362,8 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "isValid": false
     },
     {
         "id": "6995b8c3068c9abe8b26bfe3",
@@ -409,7 +413,8 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "isValid": false
     },
     {
         "id": "699819d8bf379935ed256076",

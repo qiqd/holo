@@ -23,7 +23,7 @@ class Rule {
   @HiveField(3)
   bool useWebView;
 
-  /// 版本号
+  /// 版本号,浮点数,默认值为1.0
   @HiveField(4)
   String version;
 
@@ -159,9 +159,13 @@ class Rule {
   @HiveField(37)
   bool isLocal;
 
-  /// 邮箱
+  /// 邮箱， 默认值为空字符串
   @HiveField(38)
   String email;
+
+  /// 规则是否可用, 默认值为true
+  @HiveField(39)
+  bool isValid;
 
   Rule({
     this.name = '',
@@ -202,6 +206,7 @@ class Rule {
     this.itemGenreSelector = '',
     this.videoUrlSubsChar = '',
     this.email = '',
+    this.isValid = true,
   }) : updateAt = DateTime.now();
 
   factory Rule.fromJson(Map<String, dynamic> json) => _$RuleFromJson(json);

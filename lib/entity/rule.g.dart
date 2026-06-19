@@ -73,13 +73,14 @@ class RuleAdapter extends TypeAdapter<Rule> {
       itemGenreSelector: fields[16] == null ? '' : fields[16] as String?,
       videoUrlSubsChar: fields[34] == null ? '' : fields[34] as String,
       email: fields[38] == null ? '' : fields[38] as String,
+      isValid: fields[39] == null ? true : fields[39] as bool,
     )..updateAt = fields[35] as DateTime;
   }
 
   @override
   void write(BinaryWriter writer, Rule obj) {
     writer
-      ..writeByte(39)
+      ..writeByte(40)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -157,7 +158,9 @@ class RuleAdapter extends TypeAdapter<Rule> {
       ..writeByte(37)
       ..write(obj.isLocal)
       ..writeByte(38)
-      ..write(obj.email);
+      ..write(obj.email)
+      ..writeByte(39)
+      ..write(obj.isValid);
   }
 
   @override
@@ -290,6 +293,7 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   itemGenreSelector: json['itemGenreSelector'] as String? ?? '',
   videoUrlSubsChar: json['videoUrlSubsChar'] as String? ?? '',
   email: json['email'] as String? ?? '',
+  isValid: json['isValid'] as bool? ?? true,
 )..updateAt = DateTime.parse(json['updateAt'] as String);
 
 Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
@@ -332,6 +336,7 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'isEnabled': instance.isEnabled,
   'isLocal': instance.isLocal,
   'email': instance.email,
+  'isValid': instance.isValid,
 };
 
 const _$RequestMethodEnumMap = {

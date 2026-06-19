@@ -100,6 +100,10 @@ class _RuleRepositoryState extends State<RuleRepository> {
                     itemCount: _rules.length,
                     itemBuilder: (context, index) {
                       return ListTile(
+                        enabled: _rules[index].isValid,
+                        title: Text(_rules[index].name),
+                        subtitle: Text(_rules[index].version),
+                        trailing: _buildTileTrailing(_rules[index]),
                         onTap: () {},
                         leading: SizedBox(
                           width: 60,
@@ -118,9 +122,6 @@ class _RuleRepositoryState extends State<RuleRepository> {
                                 const Center(child: Icon(Icons.error_rounded)),
                           ),
                         ),
-                        title: Text(_rules[index].name),
-                        subtitle: Text(_rules[index].version),
-                        trailing: _buildTileTrailing(_rules[index]),
                       );
                     },
                   ),
