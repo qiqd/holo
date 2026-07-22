@@ -119,7 +119,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(18),
                                 child: Image.asset(
-                                  'lib/images/launcher_round.png',
+                                  'lib/images/launcher_round.webp',
                                   width: 100,
                                 ),
                               ),

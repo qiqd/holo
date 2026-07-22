@@ -15,11 +15,19 @@ class LoggerUtil {
     );
   }
 
-  static String getLog() {
+  static Future<String> getLog() async {
     try {
-      return logFile.readAsStringSync();
+      return logFile.readAsString();
     } catch (e) {
       return "";
+    }
+  }
+
+  static Future<void> clearLog() async {
+    try {
+      await logFile.delete();
+    } catch (e) {
+      return;
     }
   }
 }

@@ -42,6 +42,8 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   );
   late final _bottomSheetTabController = TabController(vsync: this, length: 2);
   ScaffoldMessengerState? _scaffoldMessengerState;
+  final FocusNode _focusNode = FocusNode();
+
   Future<void> _fetchHistory() async {
     if (MyApp.userSettingNotifier.value.email.isEmpty) {
       _scaffoldMessengerState?.showSnackBar(
@@ -128,6 +130,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                   child: TextField(
                     textInputAction: TextInputAction.search,
                     textAlign: TextAlign.center,
+                    focusNode: _focusNode,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.zero,
                       hintStyle: Theme.of(context).textTheme.bodySmall,
@@ -162,72 +165,79 @@ class _SubscribeScreenState extends State<SubscribeScreen>
                   child: TabBarView(
                     controller: _bottomSheetTabController,
                     children: [
-                      SizedBox(
-                        child: GridView.builder(
-                          itemCount: _subscribeSearchResult.length,
-                          padding: .all(8),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 8,
-                                mainAxisSpacing: 8,
-                                childAspectRatio: 0.6,
+                      _subscribeSearchResult.isEmpty
+                          ? SizedBox.expand()
+                          : SizedBox(
+                              child: GridView.builder(
+                                itemCount: _subscribeSearchResult.length,
+                                padding: EdgeInsets.all(8),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      crossAxisSpacing: 8,
+                                      mainAxisSpacing: 8,
+                                      childAspectRatio: 0.6,
+                                    ),
+                                itemBuilder: (context, index) {
+                                  return MediaGrid(
+                                    id: "${_subscribeSearchResult[index].id}",
+                                    imageUrl:
+                                        _subscribeSearchResult[index].imgUrl,
+                                    title: _subscribeSearchResult[index].title,
+                                    status: _subscribeSearchResult[index]
+                                        .viewingStatus,
+                                    onTap: () {
+                                      final item =
+                                          _subscribeSearchResult[index];
+                                      var cache = _getCacheBySubId(item.id);
+                                      _focusNode.unfocus();
+                                      context.push(
+                                        '/detail',
+                                        extra: {
+                                          "id": item.id,
+                                          "keyword": item.title,
+                                          "cover": item.imgUrl,
+                                          "from": "subscribe",
+                                          'subject': cache,
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
                               ),
-                          itemBuilder: (context, index) {
-                            return MediaGrid(
-                              id: "${_subscribeSearchResult[index].id}",
-                              imageUrl: _subscribeSearchResult[index].imgUrl,
-                              title: _subscribeSearchResult[index].title,
-                              status:
-                                  _subscribeSearchResult[index].viewingStatus,
-                              onTap: () {
-                                final item = _subscribeSearchResult[index];
-                                var cache = _getCacheBySubId(item.id);
-                                context.push(
-                                  '/detail',
-                                  extra: {
-                                    "id": item.id,
-                                    "keyword": item.title,
-                                    "cover": item.imgUrl,
-                                    "from": "subscribe",
-                                    'subject': cache,
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        child: ListView.separated(
-                          itemCount: _playbackSearchResult.length,
-                          padding: EdgeInsets.all(8),
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 8),
-                          itemBuilder: (context, index) {
-                            final item = _playbackSearchResult[index];
-                            return MediaCard(
-                              id: item.id.toString(),
-                              title: item.title,
-                              height: 160,
-                              imageUrl: item.imgUrl,
-                              onTap: () {
-                                var cache = _getCacheBySubId(item.id);
-                                context.push(
-                                  '/detail',
-                                  extra: {
-                                    "id": item.id,
-                                    "keyword": item.title,
-                                    "cover": item.imgUrl,
-                                    "from": "subscribe.history",
-                                    'subject': cache,
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
+                            ),
+                      _playbackSearchResult.isEmpty
+                          ? SizedBox.expand()
+                          : SizedBox(
+                              child: ListView.separated(
+                                itemCount: _playbackSearchResult.length,
+                                padding: EdgeInsets.all(8),
+                                separatorBuilder: (context, index) =>
+                                    SizedBox(height: 8),
+                                itemBuilder: (context, index) {
+                                  final item = _playbackSearchResult[index];
+                                  return MediaCard(
+                                    id: item.id.toString(),
+                                    title: item.title,
+                                    height: 160,
+                                    imageUrl: item.imgUrl,
+                                    onTap: () {
+                                      var cache = _getCacheBySubId(item.id);
+                                      context.push(
+                                        '/detail',
+                                        extra: {
+                                          "id": item.id,
+                                          "keyword": item.title,
+                                          "cover": item.imgUrl,
+                                          "from": "subscribe.history",
+                                          'subject': cache,
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
                     ],
                   ),
                 ),

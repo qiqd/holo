@@ -228,6 +228,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ? DateFormat.yMd().format(item.airDateTime!)
                                   : null,
                               onTap: () {
+                                _focusNode.unfocus();
                                 context.push(
                                   '/detail',
                                   extra: {

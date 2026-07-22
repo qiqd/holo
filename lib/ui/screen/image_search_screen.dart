@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
   XFile? _image;
   bool _isLoading = false;
   final ImagePicker _picker = ImagePicker();
-  void _fetchAnimeFromImage() async {
+  Future<void> _fetchAnimeFromImage() async {
     if (_isLoading) {
       return;
     }
@@ -59,7 +58,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
     });
   }
 
-  void _imagePick() async {
+  Future<void> _imagePick() async {
     if (_isLoading) {
       return;
     }
@@ -81,179 +80,151 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
     setState(() {
       _image = response;
     });
-    log('pick image: ${response.path}');
-    _fetchAnimeFromImage();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(animateColor: true, title: Text(tr('image_search.title'))),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
-          // spacing: 6,
-          children: [
-            if (_isLoading) LinearProgressIndicator(),
-            Row(
-              spacing: 8,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                OutlinedButton(
-                  onPressed: () {
-                    _imagePick();
-                  },
-                  child: Text(tr('image_search.picker_title')),
-                ),
-                AnimatedSize(
-                  duration: Duration(milliseconds: 300),
-                  child: (_image != null && !_isLoading)
-                      ? FilledButton(
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.red,
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: SizedBox.expand(
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHigh,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          alignment: Alignment.center,
+                          children: [
+                            if (_image != null)
+                              Image.file(File(_image!.path), fit: BoxFit.cover),
+                            InkWell(
+                              onTap: () {
+                                _imagePick();
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child:
+                                    _image == null ||
+                                        _image?.path.isEmpty == true
+                                    ? Icon(Icons.upload_rounded)
+                                    : null,
+                              ),
                             ),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _image = null;
-                              _searchResult = null;
-                              _subject = [];
-                            });
-                          },
-                          child: Text(
-                            tr('image_search.reset'),
-                            style: TextStyle(
-                              color: (_image != null && !_isLoading)
-                                  ? Colors.white
-                                  : Colors.transparent,
-                            ),
-                          ),
-                        )
-                      : SizedBox(),
-                ),
-              ],
-            ),
-            // 显示选中的图片
-            AnimatedContainer(
-              height: _image != null ? 150 : 0,
-              constraints: BoxConstraints(maxHeight: 200),
-              duration: Duration(milliseconds: 300),
-              child: Card(
-                margin: EdgeInsets.all(0),
-                child: Padding(
-                  padding: EdgeInsets.all(4),
-                  child: Row(
-                    spacing: 6,
-                    children: [
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width / 2,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(_image?.path ?? ''),
-                            fit: BoxFit.fitHeight,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Icon(Icons.error_outline_rounded),
-                              );
-                            },
-                          ),
+                          ],
                         ),
                       ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              ListTile(
-                                leading: Icon(Icons.person_outline_rounded),
-                                title: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: AnimatedSwitcher(
-                                    duration: Duration(milliseconds: 300),
-                                    child: Text(
-                                      _searchResult?.first['character'] ??
-                                          tr('image_search.no_character'),
-                                      key: ValueKey<String>(
-                                        _searchResult?.first['character'] ??
-                                            tr('image_search.no_character'),
-                                      ),
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              ListTile(
-                                leading: Icon(Icons.video_label_rounded),
-                                title: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: AnimatedSwitcher(
-                                    duration: Duration(milliseconds: 300),
-                                    child: Text(
-                                      _searchResult?.first['work'] ??
-                                          tr('image_search.no_work'),
-                                      maxLines: 5,
-                                      key: ValueKey<String>(
-                                        _searchResult?.first['work'] ??
-                                            tr('image_search.no_work'),
-                                      ),
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-            // 显示搜索结果
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 6,
-                  crossAxisSpacing: 6,
-                  childAspectRatio: 3 / 4,
+                SliverToBoxAdapter(child: SizedBox(height: 12)),
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              if (_image == null ||
+                                  _image?.path.isEmpty == true) {
+                                return;
+                              }
+
+                              _fetchAnimeFromImage();
+                            },
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 26,
+                                height: 26,
+                                child: CircularProgressIndicator(
+                                  year2023: false,
+                                ),
+                              )
+                            : Text(tr('image_search.search')),
+                      ),
+                    ),
+                  ),
                 ),
-                itemCount: _subject.length,
-                padding: EdgeInsets.symmetric(vertical: 6),
-                itemBuilder: (context, index) {
-                  var data = _subject[index];
-                  return MediaGrid(
-                    id: "image.search_${data.id}",
-                    imageUrl: data.images.large ?? '',
-                    title: data.title,
-                    airDate: data.airDateTime != null
-                        ? DateFormat.yMd().format(data.airDateTime!)
-                        : null,
-                    onTap: () {
-                      context.push(
-                        '/detail',
-                        extra: {
-                          "id": data.id,
-                          "keyword": data.title,
-                          "cover": data.images.large ?? '',
-                          "from": "image.search",
-                          "subject": data,
+                if (_searchResult != null)
+                  SliverToBoxAdapter(
+                    child: Card(
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.person_rounded),
+                            title: Text(
+                              _searchResult?.first['character'] ??
+                                  tr('image_search.no_character'),
+                            ),
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.local_movies_outlined),
+                            title: Text(
+                              _searchResult?.first['work'] ??
+                                  tr('image_search.no_work'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                // 显示搜索结果
+                if (_subject.isNotEmpty) ...[
+                  SliverPadding(
+                    padding: EdgeInsets.symmetric(vertical: 6),
+                    sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 6,
+                        crossAxisSpacing: 6,
+                        childAspectRatio: 0.6,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        childCount: _subject.length,
+                        (context, index) {
+                          var data = _subject[index];
+                          return MediaGrid(
+                            id: "image.search_${data.id}",
+                            imageUrl: data.images.large ?? '',
+                            title: data.title,
+                            airDate: data.airDateTime != null
+                                ? DateFormat.yMd().format(data.airDateTime!)
+                                : null,
+                            onTap: () {
+                              context.push(
+                                '/detail',
+                                extra: {
+                                  "id": data.id,
+                                  "keyword": data.title,
+                                  "cover": data.images.large ?? '',
+                                  "from": "image.search",
+                                  "subject": data,
+                                },
+                              );
+                            },
+                          );
                         },
-                      );
-                    },
-                  );
-                },
-              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
