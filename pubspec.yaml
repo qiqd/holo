@@ -57,7 +57,7 @@ dev_dependencies:
   json_serializable: ^6.11.4
   build_runner: ^2.15.0 # dart run build_runner build --delete-conflicting-outputs --build-filter=lib/entity/**
   package_rename: ^1.10.1 # dart run package_rename
-  flutter_launcher_icons: ^0.14.4 # dart run package_rename
+  flutter_launcher_icons: ^0.14.4 # dart run flutter_launcher_icons
   flutter_lints: ^6.0.0
   envied_generator: ^1.3.5
 
@@ -66,8 +66,8 @@ flutter:
   assets:
     - lib/assets/translations/
     - lib/assets/lottie/
-    - lib/images/launcher_round.webp
-    - lib/images/splash.webp
+    - lib/images/
+    # - lib/images/splash.webp
   fonts:
     - family: BF
       fonts:
