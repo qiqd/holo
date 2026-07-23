@@ -1,5 +1,5 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
@@ -71,12 +71,12 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(bool isTablet) {
     return AppBar(
       actionsPadding: .symmetric(horizontal: 12),
       titleSpacing: 0,
       actions: [
-        if (Device.get().isTablet)
+        if (isTablet)
           IconButton(
             tooltip: "Image Search",
             onPressed: () => context.push('/image_search'),
@@ -254,9 +254,15 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar() as PreferredSizeWidget,
-      body: _buildBody(),
+    return LayoutBuilder(
+      builder: (context, constraints) => Scaffold(
+        appBar:
+            _buildAppBar(
+                  min(constraints.maxHeight, constraints.maxWidth) >= 600,
+                )
+                as PreferredSizeWidget,
+        body: _buildBody(),
+      ),
     );
   }
 }
