@@ -4,18 +4,29 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:holo/entity/daily_mantra.dart';
 import 'package:holo/util/hive_util.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  late DailyMantra? todayMantra;
+  @override
+  initState() {
     final mantra = HiveUtil.getDailyMantra();
-    var todayMantra = mantra.isEmpty
+    todayMantra = mantra.isEmpty
         ? null
         : mantra[Random().nextInt(mantra.length)];
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     Timer(const Duration(seconds: 1), () => context.go("/home"));
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
@@ -42,7 +53,7 @@ class SplashScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      todayMantra.mantra,
+                      todayMantra!.mantra,
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -51,7 +62,7 @@ class SplashScreen extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        "——${todayMantra.who != null ? "${todayMantra.who}·" : ""}${todayMantra.from}",
+                        "——${todayMantra!.who != null ? "${todayMantra!.who}·" : ""}${todayMantra!.from}",
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.primary,

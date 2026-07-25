@@ -1,4 +1,17 @@
 {
+    "common": {
+        "load_failed": "加载失败",
+        "new_version": "发现新版本",
+        "current_version": "当前版本",
+        "latest_version": "最新版本",
+        "no_update": "当前版本已是最新",
+        "would_like_to_update": "是否更新到最新版本？",
+        "dialog": {
+            "update": "更新",
+            "cancel": "取消",
+            "confirm": "确认"
+        }
+    },
     "component": {
         "title": "暂无标题",
         "cap_video_player": {
@@ -109,7 +122,8 @@
             "logger_view": "日志查看",
             "check_version_description": "检查是否有新版本更新",
             "auto_check_update": "自动检查更新",
-            "auto_check_update_description": "开启后每次启动应用都会自动检查更新"
+            "auto_check_update_description": "开启后每次启动应用都会自动检查更新",
+            "no_new_version": "当前版本为最新版本"
         },
         "language": {
             "change": "切换语言",
@@ -359,17 +373,8 @@
         "video_url_subs_char_label": "视频URL截取字符,使用lastIndexOf函数,可选",
         "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分"
     },
-    "common": {
-        "load_failed": "加载失败",
-        "new_version": "发现新版本",
-        "current_version": "当前版本",
-        "latest_version": "最新版本",
-        "no_update": "当前版本已是最新",
-        "would_like_to_update": "是否更新到最新版本？",
-        "dialog": {
-            "update": "更新",
-            "cancel": "取消",
-            "confirm": "确认"
-        }
+    "logger": {
+        "dialog_title": "清空日志?",
+        "dialog_content": "确认清空所有日志?"
     }
 }

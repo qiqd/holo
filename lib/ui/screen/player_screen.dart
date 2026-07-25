@@ -110,6 +110,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   UserPlayback? _userPlayback;
   String _danmakuKeyword = '';
   PausableTimer? _pausableTimer;
+  final ValueNotifier<bool> _isPlaying = ValueNotifier<bool>(false);
 
   Future<void> _fetchMediaEpisode() async {
     _isLoading = true;
@@ -602,6 +603,9 @@ class _PlayerScreenState extends State<PlayerScreen>
           },
           onPositionChanged: (p) {
             _position = p;
+          },
+          onPlayOrPause: (isPlaying) {
+            _isPlaying.value = isPlaying;
           },
         ),
       ),
@@ -1247,13 +1251,12 @@ class _PlayerScreenState extends State<PlayerScreen>
         _isActive = false;
       });
       _updatePlaybackHistory();
-      _pausableTimer?.pause();
     }
+    //TODO bug
     if (state == AppLifecycleState.resumed) {
       setState(() {
         _isActive = true;
       });
-      _pausableTimer?.reset();
     }
 
     super.didChangeAppLifecycleState(state);
@@ -1283,6 +1286,13 @@ class _PlayerScreenState extends State<PlayerScreen>
       () => _updatePlaybackHistory(),
     );
     _pausableTimer?.start();
+    _isPlaying.addListener(() {
+      if (_isPlaying.value) {
+        _pausableTimer?.start();
+      } else {
+        _pausableTimer?.pause();
+      }
+    });
     super.initState();
   }
 

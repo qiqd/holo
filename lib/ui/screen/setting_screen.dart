@@ -37,6 +37,17 @@ class _SettingScreenState extends State<SettingScreen>
     super.dispose();
   }
 
+  Future<void> _versionCheck() async {
+    setState(() => _checkingVersion = true);
+    final isNewVersion = await VersionCheckerUtil.checkVersion(context);
+    setState(() => _checkingVersion = false);
+    if (!isNewVersion && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('common.no_update'.tr())));
+    }
+  }
+
   Future<void> _loadVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
 
@@ -128,10 +139,8 @@ class _SettingScreenState extends State<SettingScreen>
                 ),
         ),
         title: Text('setting.app_info.check_version'.tr()),
-        onTap: () async {
-          setState(() => _checkingVersion = true);
-          await VersionCheckerUtil.checkVersion(context);
-          setState(() => _checkingVersion = false);
+        onTap: () {
+          _versionCheck();
         },
       ),
       ListTile(
@@ -271,26 +280,6 @@ class _SettingScreenState extends State<SettingScreen>
     ];
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('setting.title'.tr())),
-      body: ListView(
-        children: [
-          ..._buildAccountInfo(),
-          // 应用信息部分
-          ..._buildAppInfo(),
-          // 切换语言部分
-          ..._buildLanguage(),
-          // 数据管理部分
-          ..._buildDataManagement(),
-          // 开源项目部分
-          ..._buildOpenSource(),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
@@ -307,6 +296,7 @@ class _SettingScreenState extends State<SettingScreen>
 
   List<Widget> _buildAboutBoxChildren() {
     return [
+      SizedBox(height: 12),
       Text('setting.app_description'.tr()),
       //番剧元数据
       Text(
@@ -433,6 +423,26 @@ class _SettingScreenState extends State<SettingScreen>
             },
             child: Text('setting.account.signout_dialog_confirm'.tr()),
           ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('setting.title'.tr())),
+      body: ListView(
+        children: [
+          ..._buildAccountInfo(),
+          // 应用信息部分
+          ..._buildAppInfo(),
+          // 切换语言部分
+          ..._buildLanguage(),
+          // 数据管理部分
+          ..._buildDataManagement(),
+          // 开源项目部分
+          ..._buildOpenSource(),
         ],
       ),
     );

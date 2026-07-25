@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/util/logger_util.dart';
@@ -11,6 +12,36 @@ class LoggerScreen extends StatefulWidget {
 
 class _LoggerScreenState extends State<LoggerScreen> {
   String _logString = "";
+
+  Future<void> _showConfirmDialog() {
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(tr("logger.dialog_title")),
+          content: Text(tr("logger.dialog_content")),
+          actions: [
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(tr("common.dialog.cancel")),
+            ),
+            FilledButton(
+              onPressed: () {
+                LoggerUtil.clearLog();
+                safeSetState(() {
+                  _logString = "";
+                });
+                Navigator.of(context).pop(true);
+              },
+              child: Text(tr("common.dialog.confirm")),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void didChangeDependencies() {
@@ -33,10 +64,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
             tooltip: "Clear log",
             icon: Icon(Icons.delete_outline_rounded),
             onPressed: () {
-              LoggerUtil.clearLog();
-              setState(() {
-                _logString = "";
-              });
+              _showConfirmDialog();
             },
           ),
         ],

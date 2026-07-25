@@ -488,7 +488,7 @@ class _DetailScreenState extends State<DetailScreen>
   Widget _buildAppBar() {
     return AppBar(
       actionsPadding: EdgeInsets.symmetric(horizontal: 12),
-      //  title: Text("detail.title".tr()),
+      title: Text("detail.title".tr()),
       actions: [
         IconButton(
           tooltip: "Link to Bangumi",

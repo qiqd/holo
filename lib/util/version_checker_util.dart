@@ -92,11 +92,12 @@ class VersionCheckerUtil {
 
   /// 检查版本更新 ，如果自动检查更新为false，则不检查
   /// [context]: 上下文
+  /// 返回是否有新版本; true 表示有新版本, false 表示没有新版本
   /// 如果有新版本，显示更新对话框
-  static Future<void> checkVersion(BuildContext context) async {
+  static Future<bool> checkVersion(BuildContext context) async {
     final asset = await _fetchLatestRelease();
     if (asset != null && context.mounted) {
-      showDialog(
+      await showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text(context.tr("common.new_version")),
@@ -137,6 +138,8 @@ class VersionCheckerUtil {
           ],
         ),
       );
+      return true;
     }
+    return false;
   }
 }

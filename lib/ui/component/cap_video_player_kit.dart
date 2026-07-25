@@ -422,6 +422,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
       player.addListener(() {
         widget.onPositionChanged?.call(player.value.position);
+        widget.onPlayOrPause?.call(player.value.isPlaying);
         safeSetState(() {
           _bufferProgress = _getBuffered();
         });
@@ -729,8 +730,12 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 }),
                 onDoubleTap: () {
                   (player?.value.isPlaying ?? false)
-                      ? player?.pause()
-                      : player?.play();
+                      ? player?.pause().then((_) {
+                          widget.onPlayOrPause?.call(player.value.isPlaying);
+                        })
+                      : player?.play().then((_) {
+                          widget.onPlayOrPause?.call(player.value.isPlaying);
+                        });
                   _showVideoControlsTimer();
                 },
                 onHorizontalSwipe: (direction) =>
@@ -851,8 +856,16 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       onPressed: () {
                         _showVideoControlsTimer();
                         (player?.value.isPlaying ?? false)
-                            ? player?.pause()
-                            : player?.play();
+                            ? player?.pause().then((_) {
+                                widget.onPlayOrPause?.call(
+                                  player.value.isPlaying,
+                                );
+                              })
+                            : player?.play().then((_) {
+                                widget.onPlayOrPause?.call(
+                                  player.value.isPlaying,
+                                );
+                              });
                       },
                       icon: Icon(
                         (player?.value.isPlaying ?? false)

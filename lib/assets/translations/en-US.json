@@ -1,4 +1,17 @@
 {
+    "common": {
+        "load_failed": "Load failed",
+        "new_version": "New version found",
+        "current_version": "Current version",
+        "no_update": "Latest version",
+        "latest_version": "Latest version",
+        "would_like_to_update": "Would you like to update to the new version?",
+        "dialog": {
+            "update": "Update",
+            "cancel": "Cancel",
+            "confirm": "Confirm"
+        }
+    },
     "component": {
         "title": "No Title",
         "cap_video_player": {
@@ -109,7 +122,8 @@
             "logger_view": "Logger View",
             "check_version_description": "Check if there is a new version update",
             "auto_check_update": "Auto Check Update",
-            "auto_check_update_description": "Enable to check check for updates every time the app is started"
+            "auto_check_update_description": "Enable to check check for updates every time the app is started",
+            "no_new_version": "Current version is the latest"
         },
         "language": {
             "change": "Change Language",
@@ -362,17 +376,8 @@
         "video_url_subs_char_label": "Video URL Extraction Rule",
         "video_url_subs_char_hint": "Example: Extract the xxxx part from params=videoUrl=xxxx"
     },
-    "common": {
-        "load_failed": "Load failed",
-        "new_version": "New version found",
-        "current_version": "Current version",
-        "no_update": "Latest version",
-        "latest_version": "Latest version",
-        "would_like_to_update": "Would you like to update to the new version?",
-        "dialog": {
-            "update": "Update",
-            "cancel": "Cancel",
-            "confirm": "Confirm"
-        }
+    "logger": {
+        "dialog_title": "Clear Logs?",
+        "dialog_content": "Are you sure you want to clear all logs?"
     }
 }
