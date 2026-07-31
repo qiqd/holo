@@ -172,14 +172,14 @@ class _AccountScreenState extends State<AccountScreen> {
                                 labelText: 'sign.password'.tr(),
                                 prefixIcon: Icon(Icons.lock_outlined),
                                 border: OutlineInputBorder(),
-                                suffixIcon: InkWell(
+                                suffixIcon: IconButton(
                                   splashColor: Colors.transparent,
-                                  child: Icon(
+                                  icon: Icon(
                                     _isPasswordVisible
                                         ? Icons.visibility
                                         : Icons.visibility_off,
                                   ),
-                                  onTap: () => setState(
+                                  onPressed: () => setState(
                                     () => _isPasswordVisible =
                                         !_isPasswordVisible,
                                   ),

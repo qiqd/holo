@@ -226,6 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
               : AppBar(
                   titleSpacing: 0,
                   animateColor: true,
+                  actionsPadding: EdgeInsets.symmetric(horizontal: 12),
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.image_search_rounded),

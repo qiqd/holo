@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.2.18+117
+version: 1.2.18+118
 
 environment:
   sdk: ^3.10.3
@@ -66,7 +66,10 @@ flutter:
   assets:
     - lib/assets/translations/
     - lib/assets/lottie/
-    - lib/images/
+    - lib/images/launcher_round_dark.webp
+    - lib/images/launcher_round.webp
+    - lib/images/splash.webp
+    # - lib/images/
     # - lib/images/splash.webp
   fonts:
     - family: BF
