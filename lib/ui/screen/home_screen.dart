@@ -17,7 +17,6 @@ import 'package:holo/util/logger_util.dart';
 import 'package:holo/util/version_checker_util.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:logger/logger.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
