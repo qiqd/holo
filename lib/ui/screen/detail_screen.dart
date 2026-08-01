@@ -478,9 +478,9 @@ class _DetailScreenState extends State<DetailScreen>
                 )
               : ListView.separated(
                   separatorBuilder: (context, index) {
-                    return SizedBox(height: 8);
+                    return const SizedBox(height: 4);
                   },
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final p = data[index];

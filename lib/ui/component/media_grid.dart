@@ -51,7 +51,7 @@ class MediaGrid extends StatelessWidget {
                         child: RepaintBoundary(
                           child: CacheImage(
                             imageUrl: imageUrl,
-                            fit: BoxFit.fitHeight,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),

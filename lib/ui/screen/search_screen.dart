@@ -212,8 +212,8 @@ class _SearchScreenState extends State<SearchScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                                mainAxisSpacing: 6,
-                                crossAxisSpacing: 6,
+                                mainAxisSpacing: 4,
+                                crossAxisSpacing: 4,
                                 crossAxisCount: isLandscape ? 6 : 3,
                                 childAspectRatio: 0.6,
                               ),

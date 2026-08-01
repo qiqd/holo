@@ -69,7 +69,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   @override
   Widget build(BuildContext context) {
-    var isLandscape =
+    final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
@@ -99,19 +99,21 @@ class _CalendarScreenState extends State<CalendarScreen>
                 return _msg != null
                     ? LoadingOrShowMsg(msg: _msg)
                     : _calendar.isEmpty
-                    ? const ShimmerGridSkeleton()
+                    ? ShimmerGridSkeleton(
+                        isLandscape: isLandscape,
+                        isSliver: false,
+                      )
                     : GridView.builder(
                         padding: const EdgeInsets.all(8),
                         itemCount: _calendar[index].items.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: isLandscape ? 6 : 3,
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 4,
+                          crossAxisSpacing: 4,
                           childAspectRatio: 0.6,
                         ),
                         itemBuilder: (context, itemIndex) {
                           final item = _calendar[index].items;
-
                           return MediaGrid(
                             id: "calendar_${item[itemIndex].id}",
                             imageUrl: item[itemIndex].images.large ?? '',

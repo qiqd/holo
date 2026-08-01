@@ -2,26 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ShimmerGridSkeleton extends StatelessWidget {
-  const ShimmerGridSkeleton({super.key});
+  final bool isSliver;
+  final bool isLandscape;
+
+  const ShimmerGridSkeleton({
+    super.key,
+    required this.isSliver,
+    required this.isLandscape,
+  });
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isLandscape = constraints.maxWidth > constraints.maxHeight;
-        return GridView.builder(
-          padding: const EdgeInsets.all(8),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: isLandscape ? 6 : 3,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: 0.6,
-          ),
-          itemBuilder: (context, index) {
-            return const ShimmerContainerSkeleton();
-          },
-        );
-      },
+    final gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: isLandscape ? 6 : 3,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      childAspectRatio: 0.6,
     );
+    return isSliver
+        ? SliverGrid.builder(
+            gridDelegate: gridDelegate,
+            itemBuilder: (context, index) => const ShimmerContainerSkeleton(),
+          )
+        : GridView.builder(
+            padding: const EdgeInsets.all(8),
+            gridDelegate: gridDelegate,
+            itemBuilder: (context, index) {
+              return const ShimmerContainerSkeleton();
+            },
+          );
   }
 }
 

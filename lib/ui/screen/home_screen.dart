@@ -141,28 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchDailyMantra();
   }
 
-  Widget _buildRankSkeleton(bool isLandscape) {
-    return SliverGrid.builder(
-      key: const ValueKey('home_rank_grid'),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isLandscape ? 6 : 3,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 0.6,
-      ),
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white38,
-              borderRadius: BorderRadius.circular(6),
-            ),
-          ),
-        );
-      },
-    );
+  Widget _buildRankSkeleton({required bool isLandscape}) {
+    return ShimmerGridSkeleton(isSliver: true, isLandscape: false);
   }
 
   Widget _buildSliverGrid(
@@ -174,8 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
       key: ValueKey('home_rank_grid_$heroKey'),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: isLandscape ? 6 : 3,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
         childAspectRatio: 0.6,
       ),
       itemCount: items.length,
@@ -276,7 +256,7 @@ class _HomeContent extends StatelessWidget {
   ) {
     return CarouselSlider(
       options: CarouselOptions(
-        autoPlay: true,
+        // autoPlay: true,
         viewportFraction: 0.8,
         autoPlayInterval: const Duration(seconds: 5),
       ),
@@ -284,7 +264,7 @@ class _HomeContent extends StatelessWidget {
           ? [1, 2, 3, 4]
                 .map(
                   (e) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: ShimmerContainerSkeleton(),
                   ),
                 )
@@ -293,7 +273,7 @@ class _HomeContent extends StatelessWidget {
               return InkWell(
                 onTap: () => onTap(e),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Stack(
@@ -406,7 +386,7 @@ class _HomeContent extends StatelessWidget {
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 6)),
                     state._rank.isEmpty
-                        ? state._buildRankSkeleton(isLandscape)
+                        ? state._buildRankSkeleton(isLandscape: isLandscape)
                         : state._buildSliverGrid(
                             state._rank,
                             isLandscape: isLandscape,
