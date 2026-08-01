@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/util/logger_util.dart';
 
@@ -60,6 +61,16 @@ class _LoggerScreenState extends State<LoggerScreen> {
         actionsPadding: EdgeInsets.only(right: 12),
         title: Text("Logger"),
         actions: [
+          IconButton(
+            tooltip: "Copy log to clipboard",
+            icon: Icon(Icons.copy_all_rounded),
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: _logString));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Log copied to clipboard")),
+              );
+            },
+          ),
           IconButton(
             tooltip: "Clear log",
             icon: Icon(Icons.delete_outline_rounded),

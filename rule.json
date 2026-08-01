@@ -557,5 +557,53 @@
         "isEnabled": true,
         "isLocal": true,
         "email": ""
+    },
+    {
+        "name": "月之祠",
+        "baseUrl": "https://www.moonci.com",
+        "logoUrl": "https://www.moonci.com/template/conch/asset/img/logo_white.png",
+        "useWebView": true,
+        "version": "1.0",
+        "searchUrl": "/search/-------------.html?wd={keyword}",
+        "searchRequestMethod": "get",
+        "searchRequestBody": {},
+        "searchRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullSearchUrl": false,
+        "timeout": 5,
+        "searchSelector": "div.hl-list-wrap li",
+        "itemImgSelector": "div.hl-item-pic>a",
+        "itemImgFromSrc": false,
+        "itemTitleSelector": "div.hl-item-title>a",
+        "itemIdSelector": "div.hl-item-title>a",
+        "itemGenreSelector": "p.hl-item-sub",
+        "detailUrl": "{mediaId}",
+        "detailRequestMethod": "get",
+        "detailRequestBody": {},
+        "detailRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullDetailUrl": false,
+        "lineSelector": "ul.hl-plays-list",
+        "episodeSelector": "li>a",
+        "episodeReverse": false,
+        "playerUrl": "{episodeId}",
+        "playerRequestMethod": "get",
+        "playerRequestBody": {},
+        "playerRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullPlayerUrl": false,
+        "playerVideoSelector": "td#playleft>iframe",
+        "videoElementAttribute": "src",
+        "embedVideoSelector": "",
+        "waitForTargetElement": true,
+        "videoUrlSubsChar": "",
+        "updateAt": "2026-08-01T17:05:55.450888",
+        "isEnabled": true,
+        "isLocal": true,
+        "email": "",
+        "isValid": true
     }
 ]

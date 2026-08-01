@@ -13,7 +13,6 @@ import 'package:holo/entity/user_subscribe.dart';
 import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
-import 'package:holo/ui/component/cache_image.dart';
 import 'package:holo/ui/component/person_detail.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/jaro_winkler_similarity_util.dart';
@@ -459,29 +458,55 @@ class _DetailScreenState extends State<DetailScreen>
     void Function(String id)? onTap,
   }) {
     return data.isNotEmpty
-        ? ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              final p = data[index];
-              return ListTile(
-                leading: useCircleAvatar
-                    ? CircleAvatar(
+        ? (useCircleAvatar
+              ? ListView.builder(
+                  itemCount: data.length,
+                  padding: useCircleAvatar
+                      ? null
+                      : EdgeInsets.symmetric(horizontal: 6),
+                  itemBuilder: (context, index) {
+                    final p = data[index];
+                    return ListTile(
+                      leading: CircleAvatar(
                         foregroundImage: NetworkImage(p['image'] ?? ''),
-                      )
-                    : SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: CacheImage(
-                          fit: BoxFit.contain,
-                          imageUrl: p['image'] ?? '',
-                        ),
                       ),
-                title: Text(p['title'] ?? "detail.unknown".tr()),
-                subtitle: Text(p['subtitle'] ?? ''),
-                onTap: () => onTap?.call(p['id'] as String),
-              );
-            },
-          )
+                      title: Text(p['title'] ?? "detail.unknown".tr()),
+                      subtitle: Text(p['subtitle'] ?? ''),
+                      onTap: () => onTap?.call(p['id'] as String),
+                    );
+                  },
+                )
+              : ListView.separated(
+                  separatorBuilder: (context, index) {
+                    return SizedBox(height: 8);
+                  },
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    final p = data[index];
+                    return MediaCard(
+                      id: "detail_${p['id'] as String}",
+                      title: p['title'] ?? "detail.unknown".tr(),
+                      imageUrl: p['image'] ?? '',
+                      genre: p['subtitle'] ?? '',
+                      height: 140,
+                      onTap: () {
+                        if (p['id'] == null || p['title'] == null) {
+                          return;
+                        }
+                        context.push(
+                          '/detail',
+                          extra: {
+                            'id': int.parse(p['id'] as String),
+                            'keyword': p['title'],
+                            'cover': p['image'] ?? '',
+                            'from': "detail",
+                          },
+                        );
+                      },
+                    );
+                  },
+                ))
         : Center(child: Text(placeholder));
   }
 
