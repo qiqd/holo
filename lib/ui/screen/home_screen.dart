@@ -255,7 +255,7 @@ class _HomeContent extends StatelessWidget {
   ) {
     return CarouselSlider(
       options: CarouselOptions(
-        // autoPlay: true,
+        autoPlay: true,
         viewportFraction: 0.8,
         autoPlayInterval: const Duration(seconds: 5),
       ),

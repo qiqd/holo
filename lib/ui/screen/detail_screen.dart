@@ -97,10 +97,13 @@ class _DetailScreenState extends State<DetailScreen>
     });
     final sources = Api.getSources();
     final future = sources.map((source) async {
-      final res = await source.fetchSearch(_keyword, 1, 10, (e) {});
+      var res = await source.fetchSearch(_keyword, 1, 10, (e) {});
       double highestScore = 0;
       Media? tempMedia;
       SourceService? tempSource;
+      res = res
+          .where((e) => e.title != null && e.title?.isNotEmpty == true)
+          .toList();
       for (var m in res) {
         double s = JaroWinklerSimilarityUtil.apply(widget.keyword, m.title!);
         m.score = s;
