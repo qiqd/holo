@@ -581,7 +581,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       opacity: _showVideoControls ? 1 : 0,
       duration: const Duration(milliseconds: 100),
       child: Padding(
-        padding: widget.isFullScreen
+        padding: widget.isFullScreen && (Platform.isAndroid || Platform.isIOS)
             ? EdgeInsets.only(left: widget.safeInset)
             : EdgeInsets.zero,
         child: Align(
@@ -639,7 +639,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
             ),
           ),
           child: Padding(
-            padding: widget.isFullScreen
+            padding:
+                widget.isFullScreen && (Platform.isAndroid || Platform.isIOS)
                 ? EdgeInsets.symmetric(horizontal: widget.safeInset)
                 : EdgeInsets.zero,
             child: ListTile(
@@ -821,7 +822,8 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
             ),
           ),
           child: Padding(
-            padding: widget.isFullScreen
+            padding:
+                widget.isFullScreen && (Platform.isAndroid || Platform.isIOS)
                 ? EdgeInsets.symmetric(horizontal: widget.safeInset)
                 : EdgeInsets.zero,
             child: Column(
