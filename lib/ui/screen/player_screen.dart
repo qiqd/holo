@@ -1282,7 +1282,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     //   ),
     // );
     _pausableTimer = PausableTimer.periodic(
-      Duration(seconds: _setting.dataSyncInterval),
+      Duration(minutes: _setting.dataSyncInterval),
       () => _updatePlaybackHistory(),
     );
     _pausableTimer?.start();

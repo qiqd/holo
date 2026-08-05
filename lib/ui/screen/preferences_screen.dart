@@ -380,7 +380,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   });
                 },
                 trailing: Text(
-                  '${value.dataSyncInterval.toString()}s',
+                  '${value.dataSyncInterval.toString()}min',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -418,14 +418,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('${value.toInt()}s'),
-                    SizedBox(width: 10),
-                    SizedBox(
-                      width: 150,
+                    SizedBox(width: 60, child: Text('${value.toInt()}min')),
+                    Expanded(
                       child: Slider(
                         value: value,
                         min: 1,
                         max: 60,
+                        //  divisions: 1,
                         onChanged: (v) {
                           setState(() {
                             value = v;

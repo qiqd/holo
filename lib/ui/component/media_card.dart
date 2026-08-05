@@ -61,6 +61,7 @@ class MediaCard extends StatelessWidget {
       children: [
         InkWell(
           hoverColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
           onTap: () => onTap?.call(),
           child: SizedBox(
             width: double.infinity,
