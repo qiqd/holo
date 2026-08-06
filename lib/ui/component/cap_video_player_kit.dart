@@ -362,7 +362,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   }
 
   /// 键盘事件处理
-  void _handleKeyEvent(KeyEvent event) {
+  Future<void> _handleKeyEvent(KeyEvent event) async {
     if ((event is KeyDownEvent) &&
         widget.enableAutoFocus &&
         (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
@@ -385,22 +385,16 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           });
           break;
         case LogicalKeyboardKey.arrowRight:
-          player?.seekTo(player.value.position + Duration(seconds: 5));
+          await player?.seekTo(player.value.position + Duration(seconds: 5));
           break;
         case LogicalKeyboardKey.arrowLeft:
-          player?.seekTo((player.value.position) - Duration(seconds: 5));
+          await player?.seekTo((player.value.position) - Duration(seconds: 5));
           break;
         case LogicalKeyboardKey.arrowUp:
-          // player?.setVolume((player.value.volume + 0.05).clamp(0, 1));
-          VolumeController.instance.setVolume(
-            (_currentVolume + 0.05).clamp(0, 1),
-          );
+          await player?.setVolume((player.value.volume + 0.05).clamp(0, 1));
           break;
         case LogicalKeyboardKey.arrowDown:
-          //player?.setVolume((player.value.volume - 0.05).clamp(0, 1));
-          VolumeController.instance.setVolume(
-            (_currentVolume - 0.05).clamp(0, 1),
-          );
+          await player?.setVolume((player.value.volume - 0.05).clamp(0, 1));
           break;
       }
     }
@@ -958,14 +952,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       IconButton(
                         tooltip: 'Volume',
                         color: Colors.white,
-                        onPressed: () {
-                          widget.playerNotifier.value?.setVolume(0);
-                          safeSetState(() {
-                            _currentVolume = 0;
-                          });
+                        onPressed: () async {
+                          await widget.playerNotifier.value?.setVolume(0);
                         },
                         icon: Icon(
-                          _currentVolume > 0
+                          (widget.playerNotifier.value?.value.volume ?? 0) > 0
                               ? Icons.volume_up_rounded
                               : Icons.volume_off_rounded,
                         ),
@@ -975,14 +966,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         child: Slider(
                           min: 0,
                           max: 1,
-
                           padding: .symmetric(horizontal: 10),
-                          value: _currentVolume,
-                          onChanged: (value) {
-                            widget.playerNotifier.value?.setVolume(value);
-                            safeSetState(() {
-                              _currentVolume = value;
-                            });
+                          value: widget.playerNotifier.value?.value.volume ?? 0,
+                          onChanged: (value) async {
+                            await widget.playerNotifier.value?.setVolume(value);
                           },
                         ),
                       ),
