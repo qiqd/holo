@@ -737,7 +737,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     return _msg.isNotEmpty
         ? LoadingOrShowMsg(
             msg: _msg,
-            onMsgTab: () {
+            onMsgTab: () async {
+              await _loadPlaybackHistory();
               _fetchVideo();
             },
           )
