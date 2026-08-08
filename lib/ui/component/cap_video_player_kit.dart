@@ -415,6 +415,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       player.removeListener(() {});
 
       player.addListener(() {
+        if (player.value.errorDescription != null) {
+          _logger.e("errorDescription: ${player.value.errorDescription!}");
+          widget.onError?.call(player.value.errorDescription!);
+        }
         widget.onPositionChanged?.call(player.value.position);
         widget.onPlayOrPause?.call(player.value.isPlaying);
         safeSetState(() {

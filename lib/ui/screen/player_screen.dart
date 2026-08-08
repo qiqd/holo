@@ -579,6 +579,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             }
           },
           onError: (error) => setState(() {
+            _updatePlaybackHistory();
             _msg = error.toString();
             _isLoading = false;
             _logger.e("player.error: $_msg");

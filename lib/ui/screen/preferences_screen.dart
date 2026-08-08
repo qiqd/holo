@@ -466,15 +466,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('setting.account.room_preferences'.tr())),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ..._buildThemeModeTile(),
-            _buildOptionTile(),
-            ..._buildPrimaryColorTile(),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ..._buildThemeModeTile(),
+              _buildOptionTile(),
+              ..._buildPrimaryColorTile(),
+            ],
+          ),
         ),
       ),
     );
