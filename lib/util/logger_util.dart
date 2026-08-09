@@ -7,7 +7,7 @@ class LoggerUtil {
   static late File logFile;
   static Future<void> init() async {
     final logPath =
-        '${(await getApplicationDocumentsDirectory()).path}/log.txt';
+        '${(await getApplicationDocumentsDirectory()).path}/holo/log.txt';
     logFile = File(logPath);
     logger = Logger(
       filter: _AcceptAllFilter(),
