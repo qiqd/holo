@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
         var item = items[index];
         return MediaGrid(
           id: '${heroKey}_${item.id}',
-          imageUrl: item.images.medium ?? "",
+          imageUrl: item.images.large ?? "",
           title: item.title,
           onTap: () => context.push(
             '/detail',
