@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/ui/component/cache_image.dart';
+import 'package:holo/util/uri_util.dart';
 import 'package:shimmer/shimmer.dart';
 
 /// 媒体卡片
@@ -79,9 +80,9 @@ class MediaCard extends StatelessWidget {
                       width: height * 0.7,
                       child: CacheImage(
                         fit: BoxFit.cover,
-                        imageUrl: imageUrl!.startsWith('https://')
-                            ? imageUrl!
-                            : imageUrl!.replaceFirst('http://', 'https://'),
+                        memCacheWidth: 500,
+                        memCacheHeight: 700,
+                        imageUrl: http2Https(imageUrl!),
                       ),
                     ),
                   ),

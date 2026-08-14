@@ -281,7 +281,7 @@ class _HomeContent extends StatelessWidget {
                         Hero(
                           tag: 'home-hot_${e.id}',
                           child: CacheImage(
-                            imageUrl: e.images.medium ?? '',
+                            imageUrl: e.images.large ?? '',
                             fit: BoxFit.cover,
                             memCacheWidth: 700,
                             memCacheHeight: 900,

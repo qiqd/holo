@@ -221,7 +221,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             final item = _searchResult[index];
                             return MediaGrid(
                               id: "search_${item.id}",
-                              imageUrl: item.images.medium!,
+                              imageUrl: item.images.large!,
                               title: item.title,
                               rating: item.rating,
                               airDate: item.airDateTime != null

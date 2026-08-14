@@ -1,6 +1,7 @@
 import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/ui/component/shimmer.dart';
+import 'package:holo/util/uri_util.dart';
 
 class CacheImage extends StatelessWidget {
   final String imageUrl;
@@ -19,9 +20,8 @@ class CacheImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      imageUrl: imageUrl.startsWith('https://')
-          ? imageUrl
-          : imageUrl.replaceFirst('http://', 'https://'),
+      imageUrl: http2Https(imageUrl),
+      //httpHeaders: {":authority": "lain.bgm.tv"},
       width: double.infinity,
       height: double.infinity,
       memCacheHeight: memCacheHeight,

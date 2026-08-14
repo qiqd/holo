@@ -19,6 +19,7 @@ import 'package:holo/util/jaro_winkler_similarity_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:holo/util/uri_util.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
@@ -471,7 +472,7 @@ class _DetailScreenState extends State<DetailScreen>
                     final p = data[index];
                     return ListTile(
                       leading: CircleAvatar(
-                        foregroundImage: NetworkImage(p['image'] ?? ''),
+                        foregroundImage: NetworkImage(http2Https(p['image'])),
                       ),
                       title: Text(p['title'] ?? "detail.unknown".tr()),
                       subtitle: Text(p['subtitle'] ?? ''),

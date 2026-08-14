@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holo/util/uri_util.dart';
 
 class CircleAvatarWithText extends StatelessWidget {
   final String imageUrl;
@@ -23,7 +24,7 @@ class CircleAvatarWithText extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 30,
-            foregroundImage: NetworkImage(imageUrl),
+            foregroundImage: NetworkImage(http2Https(imageUrl)),
             onForegroundImageError: (_, _) => const Icon(Icons.error),
           ),
 
