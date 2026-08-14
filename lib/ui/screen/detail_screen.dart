@@ -716,7 +716,7 @@ class _DetailScreenState extends State<DetailScreen>
                                               'id': e.id.toString(),
                                               'title': e.nameCn,
                                               'subtitle': e.relation,
-                                              'image': e.images!.medium!,
+                                              'image': e.images!.large!,
                                             },
                                           )
                                           .toList(),
