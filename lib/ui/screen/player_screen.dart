@@ -284,7 +284,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         ? UserPlayback(
             id: widget.subject.id,
             email: _setting.email,
-            title: _nameCn,
+            title: _nameCn.trim(),
             isSync: true,
             episodeIndex: _episodeIndex,
             lineIndex: _lineIndex,
@@ -295,6 +295,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             sourceName: _source.getName(),
           )
         : _userPlayback!.copyWith(
+            title: _nameCn.trim(),
             position: _position.inSeconds,
             episodeIndex: _episodeIndex,
             lineIndex: _lineIndex,

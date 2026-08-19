@@ -33,6 +33,7 @@ import 'package:holo/ui/screen/splash_screen.dart';
 import 'package:holo/ui/screen/subscribe_screen.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/logger_util.dart';
+import 'package:holo/util/observer_navigator.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -131,6 +132,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   /// 路由配置
   late final GoRouter _router = GoRouter(
+    observers: [ObserverNavigator()],
     // 初始路由
     initialLocation: MyApp.userSettingNotifier.value.enableSplash
         ? '/splash'

@@ -4,20 +4,20 @@ import 'package:path_provider/path_provider.dart';
 
 class LoggerUtil {
   static late Logger logger;
-  static late File logFile;
+  static late File _logFile;
   static Future<void> init() async {
     final logPath =
         '${(await getApplicationDocumentsDirectory()).path}/holo/log.txt';
-    logFile = File(logPath);
+    _logFile = File(logPath);
     logger = Logger(
       filter: _AcceptAllFilter(),
-      output: MultiOutput([ConsoleOutput(), _FileOutput(logFile)]),
+      output: MultiOutput([ConsoleOutput(), _FileOutput(_logFile)]),
     );
   }
 
   static Future<String> getLog() async {
     try {
-      return logFile.readAsString();
+      return _logFile.readAsString();
     } catch (e) {
       return "";
     }
@@ -25,7 +25,7 @@ class LoggerUtil {
 
   static Future<void> clearLog() async {
     try {
-      await logFile.delete();
+      await _logFile.delete();
     } catch (e) {
       return;
     }
