@@ -73,13 +73,18 @@ lib/
    flutter pub get
    ```
 
-3. 生成 JSON 序列化文件
+3. 配置环境变量
+
+在项目根目录创建.env文件
+
+1. 生成 JSON 序列化文件
 
    ```bash
    flutter pub run build_runner build
    ```
 
-4. 运行应用
+2. 运行应用
+
    ```bash
    flutter run
    ```
@@ -93,6 +98,7 @@ lib/
   ```
 
 - iOS
+
   ```bash
   flutter build ios
   ```

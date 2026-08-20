@@ -38,7 +38,7 @@ An open-source anime streaming application built with Flutter, Supports Windows,
 
 ## Project Structure
 
-```
+```bash
 lib/
 ├── entity/          # Data models
 ├── service/         # API services and business logic
@@ -73,13 +73,18 @@ lib/
    flutter pub get
    ```
 
-3. Generate JSON serialization files
+3. Configure environment variables
+
+   Create a `.env` file in the root directory of the project.
+
+4. Generate JSON serialization files
 
    ```bash
    flutter pub run build_runner build
    ```
 
-4. Run the application
+5. Run the application
+
    ```bash
    flutter run
    ```
@@ -93,6 +98,7 @@ lib/
   ```
 
 - iOS
+
   ```bash
   flutter build ios
   ```
