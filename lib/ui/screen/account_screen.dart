@@ -105,110 +105,115 @@ class _AccountScreenState extends State<AccountScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: IntrinsicHeight(
-                child: Column(
-                  children: [
-                    if (_isLoading) LinearProgressIndicator(),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0).copyWith(top: 10),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          spacing: 20,
-                          children: [
-                            Center(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(18),
-                                child: Image.asset(
-                                  'lib/images/launcher_round.webp',
-                                  width: 100,
+                child: AutofillGroup(
+                  child: Column(
+                    children: [
+                      if (_isLoading) LinearProgressIndicator(),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0).copyWith(top: 10),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            spacing: 20,
+                            children: [
+                              Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(18),
+                                  child: Image.asset(
+                                    'lib/images/launcher_round.webp',
+                                    width: 100,
+                                  ),
                                 ),
                               ),
-                            ),
-                            // Server Url
-                            TextFormField(
-                              controller: _serverUrlController,
-                              decoration: InputDecoration(
-                                labelText: "sign.server_url".tr(),
-                                // hintText: "sign.server_url_hint".tr(),
-                                prefixIcon: Icon(Icons.link_rounded),
-                                border: OutlineInputBorder(),
+                              // Server Url
+                              TextFormField(
+                                controller: _serverUrlController,
+                                autofillHints: [AutofillHints.url],
+                                decoration: InputDecoration(
+                                  labelText: "sign.server_url".tr(),
+                                  // hintText: "sign.server_url_hint".tr(),
+                                  prefixIcon: Icon(Icons.link_rounded),
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.url,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'sign.please_enter_server_url'.tr();
+                                  }
+                                  if (!value.contains('://')) {
+                                    return 'sign.please_enter_valid_server_url'
+                                        .tr();
+                                  }
+                                  return null;
+                                },
                               ),
-                              keyboardType: TextInputType.url,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'sign.please_enter_server_url'.tr();
-                                }
-                                if (!value.contains('://')) {
-                                  return 'sign.please_enter_valid_server_url'
-                                      .tr();
-                                }
-                                return null;
-                              },
-                            ),
-                            // 邮箱输入框
-                            TextFormField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                labelText: 'sign.email'.tr(),
-                                prefixIcon: Icon(Icons.email_outlined),
-                                border: OutlineInputBorder(),
+                              // 邮箱输入框
+                              TextFormField(
+                                controller: _emailController,
+                                autofillHints: [AutofillHints.email],
+                                decoration: InputDecoration(
+                                  labelText: 'sign.email'.tr(),
+                                  prefixIcon: Icon(Icons.email_outlined),
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'sign.please_enter_email'.tr();
+                                  }
+                                  if (!value.contains('@')) {
+                                    return 'sign.please_enter_valid_email'.tr();
+                                  }
+                                  return null;
+                                },
                               ),
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'sign.please_enter_email'.tr();
-                                }
-                                if (!value.contains('@')) {
-                                  return 'sign.please_enter_valid_email'.tr();
-                                }
-                                return null;
-                              },
-                            ),
 
-                            // 密码输入框
-                            TextFormField(
-                              controller: _passwordController,
-                              decoration: InputDecoration(
-                                labelText: 'sign.password'.tr(),
-                                prefixIcon: Icon(Icons.lock_outlined),
-                                border: OutlineInputBorder(),
-                                suffixIcon: IconButton(
-                                  splashColor: Colors.transparent,
-                                  icon: Icon(
-                                    _isPasswordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                  ),
-                                  onPressed: () => setState(
-                                    () => _isPasswordVisible =
-                                        !_isPasswordVisible,
+                              // 密码输入框
+                              TextFormField(
+                                controller: _passwordController,
+                                autofillHints: [AutofillHints.password],
+                                decoration: InputDecoration(
+                                  labelText: 'sign.password'.tr(),
+                                  prefixIcon: Icon(Icons.lock_outlined),
+                                  border: OutlineInputBorder(),
+                                  suffixIcon: IconButton(
+                                    splashColor: Colors.transparent,
+                                    icon: Icon(
+                                      _isPasswordVisible
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: () => setState(
+                                      () => _isPasswordVisible =
+                                          !_isPasswordVisible,
+                                    ),
                                   ),
                                 ),
+                                obscureText: !_isPasswordVisible,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'sign.please_enter_password'.tr();
+                                  }
+                                  return null;
+                                },
                               ),
-                              obscureText: !_isPasswordVisible,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'sign.please_enter_password'.tr();
-                                }
-                                return null;
-                              },
-                            ),
-                            // 验证按钮
-                            SizedBox(
-                              width: double.infinity,
-                              height: 48,
-                              child: ElevatedButton(
-                                onPressed: _isLoading
-                                    ? null
-                                    : () => _verifyWebDAV(),
-                                child: Text("sign.verify".tr()),
+                              // 验证按钮
+                              SizedBox(
+                                width: double.infinity,
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: _isLoading
+                                      ? null
+                                      : () => _verifyWebDAV(),
+                                  child: Text("sign.verify".tr()),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
