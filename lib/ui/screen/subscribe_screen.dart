@@ -106,12 +106,14 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
   Widget _buildTabWithChip(String label, int count) {
     return Tab(
-      child: Badge(
-        label: Text(count.toString()),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        offset: Offset(10, -10),
-        child: Text(label),
-      ),
+      child: _showChip
+          ? Badge(
+              label: Text(count.toString()),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              offset: Offset(10, -10),
+              child: Text(label),
+            )
+          : Text(label),
     );
   }
 
