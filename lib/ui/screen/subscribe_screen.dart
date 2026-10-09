@@ -43,6 +43,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   late final _bottomSheetTabController = TabController(vsync: this, length: 2);
   ScaffoldMessengerState? _scaffoldMessengerState;
   final FocusNode _focusNode = FocusNode();
+  bool _showChip = false;
 
   Future<void> _fetchHistory() async {
     if (MyApp.userSettingNotifier.value.email.isEmpty) {
@@ -101,6 +102,17 @@ class _SubscribeScreenState extends State<SubscribeScreen>
     _checkedSubscribeIds.clear();
     _loadHistory();
     await WebDAV.syncUserSubscribe(newList);
+  }
+
+  Widget _buildTabWithChip(String label, int count) {
+    return Tab(
+      child: Badge(
+        label: Text(count.toString()),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        offset: Offset(10, -10),
+        child: Text(label),
+      ),
+    );
   }
 
   void _initTabBarListener() {
@@ -368,6 +380,17 @@ class _SubscribeScreenState extends State<SubscribeScreen>
       actionsPadding: .symmetric(horizontal: 12),
       title: Text(tr("subscribe.title")),
       actions: [
+        IconButton(
+          tooltip: "Toggle Chip Visibility",
+          icon: Icon(
+            _showChip ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+          ),
+          onPressed: () {
+            setState(() {
+              _showChip = !_showChip;
+            });
+          },
+        ),
         if (_checkedSubscribeIds.isNotEmpty)
           PopupMenuButton(
             tooltip: "Change Subscribe Status",
@@ -475,11 +498,23 @@ class _SubscribeScreenState extends State<SubscribeScreen>
               tabAlignment: .center,
               controller: _tabController,
               tabs: [
-                Tab(text: tr("subscribe.tab_subs_all")),
-                Tab(text: tr("subscribe.tab_subs_wish")),
-                Tab(text: tr("subscribe.tab_subs_watched")),
-                Tab(text: tr("subscribe.tab_subs_watching")),
-                Tab(text: tr("subscribe.tab_playback")),
+                _buildTabWithChip(
+                  tr("subscribe.tab_subs_all"),
+                  subscribe.length,
+                ),
+                _buildTabWithChip(tr("subscribe.tab_subs_wish"), wish.length),
+                _buildTabWithChip(
+                  tr("subscribe.tab_subs_watched"),
+                  watched.length,
+                ),
+                _buildTabWithChip(
+                  tr("subscribe.tab_subs_watching"),
+                  watching.length,
+                ),
+                _buildTabWithChip(
+                  tr("subscribe.tab_playback"),
+                  playback.length,
+                ),
               ],
             ),
             if (_isUpdating) const LinearProgressIndicator(),

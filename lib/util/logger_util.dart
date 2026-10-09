@@ -6,29 +6,26 @@ class LoggerUtil {
   static late Logger logger;
   static late File _logFile;
   static Future<void> init() async {
-    final logPath =
-        '${(await getApplicationDocumentsDirectory()).path}/holo/log.txt';
-    _logFile = File(logPath);
-    logger = Logger(
-      filter: _AcceptAllFilter(),
-      output: MultiOutput([ConsoleOutput(), _FileOutput(_logFile)]),
-    );
+    try {
+      final logPath =
+          '${(await getApplicationDocumentsDirectory()).path}/holo/log.txt';
+
+      _logFile = File(logPath);
+      logger = Logger(
+        filter: _AcceptAllFilter(),
+        output: MultiOutput([ConsoleOutput(), _FileOutput(_logFile)]),
+      );
+    } catch (_) {
+      return;
+    }
   }
 
   static Future<String> getLog() async {
-    try {
-      return _logFile.readAsString();
-    } catch (e) {
-      return "";
-    }
+    return _logFile.readAsString().catchError((e) => "");
   }
 
   static Future<void> clearLog() async {
-    try {
-      await _logFile.delete();
-    } catch (e) {
-      return;
-    }
+    await _logFile.delete().catchError((_) => _logFile);
   }
 }
 

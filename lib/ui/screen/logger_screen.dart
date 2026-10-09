@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +15,7 @@ class LoggerScreen extends StatefulWidget {
 
 class _LoggerScreenState extends State<LoggerScreen> {
   String _logString = "";
+  bool _isLoading = false;
 
   Future<void> _showConfirmDialog() {
     return showDialog<void>(
@@ -44,14 +47,20 @@ class _LoggerScreenState extends State<LoggerScreen> {
     );
   }
 
-  @override
-  void didChangeDependencies() {
-    LoggerUtil.getLog().then((value) {
-      safeSetState(() {
-        _logString = value;
-      });
+  Future<void> _getLog() async {
+    safeSetState(() {
+      _isLoading = true;
     });
-    super.didChangeDependencies();
+    _logString = await LoggerUtil.getLog();
+    safeSetState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getLog();
   }
 
   @override
@@ -80,21 +89,23 @@ class _LoggerScreenState extends State<LoggerScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        child: _logString.isEmpty
-            ? Center(child: Text("No log found"))
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SingleChildScrollView(
-                  child: SelectableText(
-                    _logString,
-                    //softWrap: false,
-                    scrollPhysics: NeverScrollableScrollPhysics(),
-                  ),
-                ),
-              ),
-      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator(year2023: false))
+          : Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: _logString.isEmpty
+                  ? Center(child: Text("No log found"))
+                  : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SingleChildScrollView(
+                        child: SelectableText(
+                          _logString,
+                          //softWrap: false,
+                          scrollPhysics: NeverScrollableScrollPhysics(),
+                        ),
+                      ),
+                    ),
+            ),
     );
   }
 }

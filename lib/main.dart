@@ -132,7 +132,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   /// 路由配置
   late final GoRouter _router = GoRouter(
-    observers: [ObserverNavigator()],
+    //observers: [ObserverNavigator()],
     // 初始路由
     initialLocation: MyApp.userSettingNotifier.value.enableSplash
         ? '/splash'
