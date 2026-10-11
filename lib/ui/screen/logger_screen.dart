@@ -14,8 +14,8 @@ class LoggerScreen extends StatefulWidget {
 }
 
 class _LoggerScreenState extends State<LoggerScreen> {
-  String _logString = "";
   bool _isLoading = false;
+  List<String> _logLines = [];
 
   Future<void> _showConfirmDialog() {
     return showDialog<void>(
@@ -35,7 +35,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
               onPressed: () {
                 LoggerUtil.clearLog();
                 safeSetState(() {
-                  _logString = "";
+                  _logLines = [];
                 });
                 Navigator.of(context).pop(true);
               },
@@ -51,7 +51,8 @@ class _LoggerScreenState extends State<LoggerScreen> {
     safeSetState(() {
       _isLoading = true;
     });
-    _logString = await LoggerUtil.getLog();
+    final logString = await LoggerUtil.getLog();
+    _logLines = logString.split("\n");
     safeSetState(() {
       _isLoading = false;
     });
@@ -74,7 +75,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
             tooltip: "Copy log to clipboard",
             icon: Icon(Icons.copy_all_rounded),
             onPressed: () {
-              Clipboard.setData(ClipboardData(text: _logString));
+              Clipboard.setData(ClipboardData(text: _logLines.join("\n")));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Log copied to clipboard")),
               );
@@ -93,17 +94,13 @@ class _LoggerScreenState extends State<LoggerScreen> {
           ? Center(child: CircularProgressIndicator(year2023: false))
           : Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
-              child: _logString.isEmpty
+              child: _logLines.isEmpty
                   ? Center(child: Text("No log found"))
-                  : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SingleChildScrollView(
-                        child: SelectableText(
-                          _logString,
-                          //softWrap: false,
-                          scrollPhysics: NeverScrollableScrollPhysics(),
-                        ),
-                      ),
+                  : ListView.builder(
+                      itemCount: _logLines.length,
+                      itemBuilder: (context, index) {
+                        return SelectableText(_logLines[index]);
+                      },
                     ),
             ),
     );
