@@ -165,6 +165,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   Expanded(
                                     child: Wrap(
                                       spacing: 8,
+                                      runSpacing: 8,
                                       children: _searchHistory.map((
                                         historyItem,
                                       ) {

@@ -33,7 +33,6 @@ import 'package:holo/ui/screen/splash_screen.dart';
 import 'package:holo/ui/screen/subscribe_screen.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/logger_util.dart';
-import 'package:holo/util/observer_navigator.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -61,7 +60,7 @@ void main() async {
     }
     // 配置窗口选项
     WindowOptions windowOptions = WindowOptions(
-      size: Size(1000, 800),
+      size: Size(1200, 800),
       //minimumSize: Size(800, 600),
       center: true,
       skipTaskbar: false,
