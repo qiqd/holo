@@ -14,6 +14,7 @@ import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/person_detail.dart';
+import 'package:holo/util/datetime_util.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/jaro_winkler_similarity_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -627,7 +628,9 @@ class _DetailScreenState extends State<DetailScreen>
                             _subject?.genres ?? [],
                           ).join('·'),
                           episode: _subject?.episodes,
-                          latestEpisode: _subject?.latestEpisode,
+                          latestEpisode: checkUpdateAt(
+                            _subject?.airDateTime?.toIso8601String(),
+                          ),
                           rating: _subject?.rating,
                           isFavorite: isSubscribed,
                           ratingCount: _subject!.ratingCount,

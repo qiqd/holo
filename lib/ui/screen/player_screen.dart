@@ -23,6 +23,7 @@ import 'package:holo/ui/component/cap_video_player_kit.dart';
 import 'package:holo/ui/component/circle_avatar_with_text.dart';
 import 'package:holo/ui/component/media_card.dart';
 import 'package:holo/ui/component/person_detail.dart';
+import 'package:holo/util/datetime_util.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/jaro_winkler_similarity_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';
@@ -630,7 +631,9 @@ class _PlayerScreenState extends State<PlayerScreen>
               imageUrl: _subject.images.large!,
               title: _subject.title,
               genre: LinkedHashSet<String>.from(_subject.genres).join('·'),
-              latestEpisode: _subject.latestEpisode,
+              latestEpisode: checkUpdateAt(
+                _subject.airDateTime?.toIso8601String(),
+              ),
               episode: _subject.episodes,
               rating: _subject.rating,
               ratingCount: _subject.ratingCount,

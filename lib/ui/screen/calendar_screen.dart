@@ -8,6 +8,7 @@ import 'package:holo/service/api.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
+import 'package:holo/util/datetime_util.dart';
 import 'package:holo/util/hive_util.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -123,7 +124,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                                     item[itemIndex].airDateTime!,
                                   )
                                 : null,
-                            latestEpisode: item[itemIndex].latestEpisode,
+                            latestEpisode: checkUpdateAt(
+                              item[itemIndex].airDateTime?.toIso8601String(),
+                            ),
                             onTap: () => context.push(
                               '/detail',
                               extra: {

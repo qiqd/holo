@@ -21,7 +21,6 @@ class AnimeInfoAdapter extends TypeAdapter<AnimeInfo> {
       title: fields[1] as String,
       images: fields[2] as Image,
       episodes: (fields[6] as num?)?.toInt(),
-      latestEpisode: (fields[10] as num?)?.toInt(),
       type: fields[9] as String?,
       summary: fields[3] as String?,
       genres: fields[7] == null ? const [] : (fields[7] as List).cast<String>(),
@@ -34,7 +33,7 @@ class AnimeInfoAdapter extends TypeAdapter<AnimeInfo> {
   @override
   void write(BinaryWriter writer, AnimeInfo obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -54,9 +53,7 @@ class AnimeInfoAdapter extends TypeAdapter<AnimeInfo> {
       ..writeByte(8)
       ..write(obj.airDateTime)
       ..writeByte(9)
-      ..write(obj.type)
-      ..writeByte(10)
-      ..write(obj.latestEpisode);
+      ..write(obj.type);
   }
 
   @override
@@ -79,7 +76,6 @@ AnimeInfo _$AnimeInfoFromJson(Map<String, dynamic> json) => AnimeInfo(
   title: json['title'] as String,
   images: Image.fromJson(json['images'] as Map<String, dynamic>),
   episodes: (json['episodes'] as num?)?.toInt(),
-  latestEpisode: (json['latestEpisode'] as num?)?.toInt(),
   type: json['type'] as String?,
   summary: json['summary'] as String?,
   genres:
@@ -103,5 +99,4 @@ Map<String, dynamic> _$AnimeInfoToJson(AnimeInfo instance) => <String, dynamic>{
   'genres': instance.genres,
   'airDateTime': instance.airDateTime?.toIso8601String(),
   'type': instance.type,
-  'latestEpisode': instance.latestEpisode,
 };

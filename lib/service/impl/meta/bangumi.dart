@@ -7,7 +7,6 @@ import 'package:holo/entity/person.dart';
 import 'package:holo/entity/related_work.dart';
 import 'package:holo/env/env.dart';
 import 'package:holo/service/meta_service.dart';
-import 'package:holo/util/datetime_util.dart';
 import 'package:holo/util/http_util.dart';
 import 'package:holo/util/logger_util.dart';
 import 'package:logger/logger.dart';
@@ -101,15 +100,12 @@ class Bangumi implements MetaService {
                     : itemData["name"] ?? '',
               _ => itemData["name"] ?? '',
             };
-            var currentEpisode = checkUpdateAt(itemData['air_date']);
             var images = itemData["images"] as Map<String, dynamic>?;
             var airDate = itemData['air_date'] as String?;
             return AnimeInfo(
               id: itemData["id"],
               title: title,
               images: Image.fromJson(images ?? {}),
-              latestEpisode: currentEpisode,
-
               airDateTime: airDate != null ? DateTime.parse(airDate) : null,
             );
           }).toList();
@@ -240,9 +236,6 @@ class Bangumi implements MetaService {
                     .toList() ??
                 [],
             type: subject["platform"] as String,
-            latestEpisode:
-                checkUpdateAt(subject["date"] as String?) ??
-                subject["eps"] as int,
           );
         }).toList();
       }
@@ -299,9 +292,6 @@ class Bangumi implements MetaService {
                     .toList() ??
                 [],
             type: subject["platform"] as String,
-            latestEpisode:
-                checkUpdateAt(subject["date"] as String?) ??
-                subject["eps"] as int,
           );
         }).toList();
       }
@@ -358,7 +348,7 @@ class Bangumi implements MetaService {
           summary: data["summary"] as String,
           rating: double.tryParse(data["rating"]["score"].toString()),
           ratingCount: data["rating"]?["total"] as int,
-          episodes: data["eps"] as int,
+          episodes: data["total_episodes"] as int,
           genres:
               (data["meta_tags"] as List?)?.map((e) => e as String).toList() ??
               [],
@@ -366,8 +356,6 @@ class Bangumi implements MetaService {
               ? DateTime.tryParse(data["date"] as String)
               : null,
           type: data["platform"] as String,
-          latestEpisode:
-              checkUpdateAt(data["date"] as String?) ?? data["eps"] as int,
         );
       }
       return null;

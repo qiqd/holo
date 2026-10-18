@@ -37,8 +37,8 @@
         "media_card": {
             "score": "匹配度",
             "status": "待更新",
-            "total_episode": "共{}集",
-            "lastviewAtEpisode": "观看至第{}集",
+            "total_episode": "共{}话",
+            "lastviewAtEpisode": "观看至第{}话",
             "lastviewAtTime": "上次观看时间{}",
             "days_ago": "{}天前",
             "hours_ago": "{}小时前",

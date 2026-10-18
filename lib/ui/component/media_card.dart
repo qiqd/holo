@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/ui/component/cache_image.dart';
+import 'package:holo/util/datetime_util.dart';
+import 'package:holo/util/logger_util.dart';
 import 'package:holo/util/uri_util.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -58,6 +60,7 @@ class MediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LoggerUtil.logger.i("MediaCard build $episode");
     return Stack(
       children: [
         InkWell(

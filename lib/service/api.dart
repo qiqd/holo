@@ -33,7 +33,7 @@ class Api {
     // 清空现有源
     _sources.clear();
     // 添加内置动画源
-    _sources.addAll([AAfun(), Mwcy(), Skr(), Gugu(), Senfun()]);
+    // _sources.addAll([AAfun(), Mwcy(), Skr(), Gugu(), Senfun()]);
     // 获取用户规则
     var ruleList = HiveUtil.getRules();
     // 构建启用的规则源

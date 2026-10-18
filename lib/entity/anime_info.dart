@@ -26,14 +26,11 @@ class AnimeInfo {
   DateTime? airDateTime;
   @HiveField(9)
   String? type;
-  @HiveField(10)
-  int? latestEpisode;
   AnimeInfo({
     required this.id,
     required this.title,
     required this.images,
     this.episodes,
-    this.latestEpisode,
     this.type,
     this.summary,
     this.genres = const [],
