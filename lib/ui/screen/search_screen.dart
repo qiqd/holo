@@ -170,10 +170,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                         historyItem,
                                       ) {
                                         return Chip(
-                                          label: InkWell(
+                                          label: GestureDetector(
                                             child: Text(historyItem),
                                             onTap: () {
                                               _controller.text = historyItem;
+                                              _focusNode.unfocus();
                                               _fetchSearch(
                                                 historyItem,
                                                 context,

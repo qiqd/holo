@@ -62,7 +62,7 @@ void main() async {
     WindowOptions windowOptions = WindowOptions(
       size: Size(1200, 800),
       //minimumSize: Size(800, 600),
-      center: true,
+      // center: true,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
     );
