@@ -1311,11 +1311,17 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
     _updatePlaybackHistory();
     WidgetsBinding.instance.removeObserver(this);
-    SystemChrome.setPreferredOrientations([
+    if(Platform.isIOS){
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+    }else{
+       SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    }
     // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _tabController.dispose();

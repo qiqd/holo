@@ -624,10 +624,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       top: _showVideoControls && !_isLock ? 0 : -73,
       left: 0,
       right: 0,
-      child: AnimatedOpacity(
-        opacity: _showVideoControls && !_isLock ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 300),
-        child: Container(
+      child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -642,7 +639,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 ? EdgeInsets.symmetric(horizontal: widget.safeInset)
                 : EdgeInsets.zero,
             child: ListTile(
-              contentPadding: EdgeInsets.zero,
+                contentPadding: EdgeInsets.zero,
               horizontalTitleGap: 6,
               titleAlignment: ListTileTitleAlignment.center,
               leading: IconButton(
@@ -700,7 +697,6 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
             ),
           ),
         ),
-      ),
     );
   }
 

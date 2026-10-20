@@ -60,7 +60,7 @@ class MediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LoggerUtil.logger.i("MediaCard build $episode");
+   // LoggerUtil.logger.i("MediaCard build $episode");
     return Stack(
       children: [
         InkWell(

@@ -74,9 +74,13 @@ class _RuleRepositoryState extends State<RuleRepository> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  if (Platform.isAndroid||Platform.isIOS) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshIndicatorKey.currentState?.show();
     });
+  }else{
+    _getRules();
+  }
   }
 
   @override
