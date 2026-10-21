@@ -52,8 +52,8 @@ void main() async {
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     // 初始化窗口管理器
     await windowManager.ensureInitialized();
-    // 检查是否已有实例运行
-    if (!await FlutterSingleInstance().isFirstInstance()) {
+    // 检查是否已有实例运行（macOS Sandbox 不支持子进程，跳过）
+    if (!Platform.isMacOS && !await FlutterSingleInstance().isFirstInstance()) {
       // 如果已有实例，聚焦到该实例并退出当前进程
       await FlutterSingleInstance().focus();
       exit(0);

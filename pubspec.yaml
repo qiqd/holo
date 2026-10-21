@@ -4,7 +4,7 @@ description: "An open source anime tracking app!"
 
 publish_to: "none"
 
-version: 1.2.18+120
+version: 1.2.19+121
 
 environment:
   sdk: ^3.10.3
@@ -97,3 +97,5 @@ package_rename_config:
     organization: "com.github.qiqd.holo"
     copyright_notice: "Copyright © 2025"
     exe_name: "Holo"
+
+
