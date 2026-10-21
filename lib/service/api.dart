@@ -1,9 +1,4 @@
 import 'package:holo/service/common.dart';
-import 'package:holo/service/impl/animation/aafun.dart';
-import 'package:holo/service/impl/animation/gugu.dart';
-import 'package:holo/service/impl/animation/mwcy.dart';
-import 'package:holo/service/impl/animation/senfun.dart';
-import 'package:holo/service/impl/animation/skr.dart';
 import 'package:holo/service/impl/meta/anime_trace.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/impl/meta/log_var.dart';
