@@ -16,6 +16,14 @@ class VersionCheckerUtil {
   static const MethodChannel _channel = MethodChannel('abi_detector');
   static final Logger _logger = LoggerUtil.logger;
 
+  static bool versionIsGreater(List<int> server, List<int> local) {
+    for (int i = 0; i < 3; i++) {
+      if (server[i] > local[i]) return true;
+      if (server[i] < local[i]) return false;
+    }
+    return false;
+  }
+
   /// 获取设备ABI信息
   static Future<String?> getDeviceAbi() async {
     try {
@@ -36,12 +44,16 @@ class VersionCheckerUtil {
       return null;
     }
     final packageInfo = await PackageInfo.fromPlatform();
-    final versionCode = packageInfo.version.split('.').toList();
+    final versionCode = packageInfo.version
+        .split('.')
+        .map((value) => int.parse(value))
+        .toList();
 
-    final latestVersionCode = latestRelease.tagName!.split('.').toList();
-    final isNewVersion = latestVersionCode.asMap().entries.any((element) {
-      return int.parse(element.value) > int.parse(versionCode[element.key]);
-    });
+    final latestVersionCode = latestRelease.tagName!
+        .split('.')
+        .map((value) => int.parse(value))
+        .toList();
+    final isNewVersion = versionIsGreater(latestVersionCode, versionCode);
     if (!isNewVersion) {
       return null;
     }
