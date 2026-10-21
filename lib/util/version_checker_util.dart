@@ -55,7 +55,7 @@ class VersionCheckerUtil {
       final androidAsset = latestRelease.assets
           ?.where(
             (element) =>
-                element.name?.contains('.apk') == true &&
+                element.name?.contains('android') == true &&
                 element.name?.contains(abi ?? 'release') == true,
           )
           .firstOrNull;
@@ -64,7 +64,7 @@ class VersionCheckerUtil {
       return androidAsset == null ? null : simpleGitHubAsset;
     } else if (Platform.isIOS) {
       final iosAsset = latestRelease.assets
-          ?.where((element) => element.name?.contains('.ipa') == true)
+          ?.where((element) => element.name?.contains('ios') == true)
           .firstOrNull;
       simpleGitHubAsset.browserDownloadUrl = iosAsset?.browserDownloadUrl;
       return iosAsset == null ? null : simpleGitHubAsset;

@@ -97,5 +97,3 @@ package_rename_config:
     organization: "com.github.qiqd.holo"
     copyright_notice: "Copyright © 2025"
     exe_name: "Holo"
-
-
