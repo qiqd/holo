@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:holo/entity/media.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/service/source_service.dart';
@@ -31,7 +33,7 @@ class Common extends SourceService {
   /// [rule] 规则配置对象
   Common({required this.rule}) {
     if (rule.useWebView) {
-      webviewUtil.fetchHtml(rule.baseUrl);
+      webviewUtil.fetchHtmlOrJson(rule.baseUrl);
     }
   }
 
@@ -81,18 +83,18 @@ class Common extends SourceService {
       var searchUrl = rule.baseUrl + rule.searchUrl.replaceAll(reg, keyword);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await webviewUtil.fetchHtml(
+        true => await webviewUtil.fetchHtmlOrJson(
           keyword.contains('http') ? keyword : searchUrl,
           requestMethod: rule.searchRequestMethod,
           requestBody: rule.searchRequestBody.map(
-            (key, value) =>
-                MapEntry(key, value.replaceAll('{keyword}', keyword)),
+            (key, value) => MapEntry(key, value.replaceAll(reg, keyword)),
           ),
           timeout: Duration(seconds: rule.timeout),
           headers: rule.searchRequestHeaders,
           waitingForTargetElement: rule.waitForTargetElement,
           targetElementSelector: rule.searchSelector,
           onError: exceptionHandler,
+          injectedScript: rule.decodedSearchScript,
         ),
         false =>
           (await HttpUtil.createDio().get(
@@ -100,6 +102,32 @@ class Common extends SourceService {
               )).data
               as String,
       };
+
+      // 如果配置了搜索JS脚本，优先使用JS脚本返回的JSON数据
+      if (rule.searchScript != null && rule.searchScript!.isNotEmpty) {
+        try {
+          final List<dynamic> jsonList = jsonDecode(htmlStr);
+          return jsonList.map((e) {
+            final map = e as Map<String, dynamic>;
+            var imgUrl = map['coverUrl']?.toString() ?? '';
+            imgUrl = imgUrl.contains('http') ? imgUrl : rule.baseUrl + imgUrl;
+            imgUrl = imgUrl.contains("https") ? imgUrl : ('https://$imgUrl');
+            var id = map['id']?.toString() ?? '';
+            id = id.contains('http') ? id : rule.baseUrl + id;
+            return Media(
+              id: id,
+              title: map['title']?.toString() ?? '',
+              coverUrl: imgUrl,
+              type: map['type']?.toString(),
+            );
+          }).toList();
+        } catch (e) {
+          _logger.e('JS脚本返回的JSON解析失败: $e');
+          exceptionHandler('JS脚本返回的JSON解析失败: $e');
+          return [];
+        }
+      }
+
       // 解析HTML文档
       var doc = parse(htmlStr);
       // 图片属性列表
@@ -156,18 +184,18 @@ class Common extends SourceService {
       var detailUrl = rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await webviewUtil.fetchHtml(
+        true => await webviewUtil.fetchHtmlOrJson(
           mediaId.contains('http') ? mediaId : detailUrl,
           requestMethod: rule.detailRequestMethod,
           timeout: Duration(seconds: rule.timeout),
           headers: rule.detailRequestHeaders,
           requestBody: rule.detailRequestBody.map(
-            (key, value) =>
-                MapEntry(key, value.replaceAll('{mediaId}', mediaId)),
+            (key, value) => MapEntry(key, value.replaceAll(reg, mediaId)),
           ),
           waitingForTargetElement: rule.waitForTargetElement,
           targetElementSelector: rule.lineSelector,
           onError: exceptionHandler,
+          injectedScript: rule.decodedDetailScript,
         ),
         false =>
           (await HttpUtil.createDio().get(
@@ -175,6 +203,30 @@ class Common extends SourceService {
               )).data
               as String,
       };
+
+      // 如果配置了详情JS脚本，优先使用JS脚本返回的JSON数据
+      if (rule.detailScript != null && rule.detailScript!.isNotEmpty) {
+        try {
+          final Map<String, dynamic> jsonMap = jsonDecode(htmlStr);
+          final List<dynamic> linesJson =
+              jsonMap['lines'] as List<dynamic>? ?? [];
+          final lines = linesJson.map((line) {
+            final List<dynamic> episodesJson =
+                (line as Map<String, dynamic>)['episodes'] as List<dynamic>? ??
+                [];
+            var episodes = episodesJson.map((e) => e.toString()).toList();
+            if (rule.episodeReverse) {
+              episodes = episodes.reversed.toList();
+            }
+            return Line(episodes: episodes);
+          }).toList();
+          return Detail(lines: lines);
+        } catch (e) {
+          _logger.e('JS脚本返回的JSON解析失败: $e');
+          exceptionHandler('JS脚本返回的JSON解析失败: $e');
+          return null;
+        }
+      }
 
       // 解析HTML文档
       var doc = parse(htmlStr);
@@ -210,19 +262,19 @@ class Common extends SourceService {
       var viewUrl = rule.baseUrl + rule.playerUrl.replaceAll(reg, episodeId);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await webviewUtil.fetchHtml(
+        true => await webviewUtil.fetchHtmlOrJson(
           episodeId.contains('http') ? episodeId : viewUrl,
           timeout: Duration(seconds: rule.timeout),
           requestMethod: rule.playerRequestMethod,
           requestBody: rule.playerRequestBody.map(
-            (key, value) =>
-                MapEntry(key, value.replaceAll('{episodeId}', episodeId)),
+            (key, value) => MapEntry(key, value.replaceAll(reg, episodeId)),
           ),
           isPlayerPage: true,
           headers: rule.playerRequestHeaders,
           waitingForTargetElement: rule.waitForTargetElement,
           targetElementSelector: rule.playerVideoSelector,
           onError: exceptionHandler,
+          injectedScript: rule.decodedPlayerScript,
         ),
         false =>
           (await HttpUtil.createDio().get(
@@ -230,6 +282,25 @@ class Common extends SourceService {
               )).data
               as String,
       };
+
+      // 如果配置了播放JS脚本，优先使用JS脚本返回的JSON数据
+      if (rule.playerScript != null && rule.playerScript!.isNotEmpty) {
+        try {
+          final Map<String, dynamic> jsonMap = jsonDecode(htmlStr);
+          var videoUrl = jsonMap['videoUrl']?.toString() ?? '';
+          // 补全URL
+          if (videoUrl.isNotEmpty && !videoUrl.contains('http')) {
+            videoUrl = rule.baseUrl + videoUrl;
+          }
+          _logger.d("JS脚本返回的videoUrl:$videoUrl");
+          return videoUrl.isNotEmpty ? videoUrl : null;
+        } catch (e) {
+          _logger.e('JS脚本返回的JSON解析失败: $e');
+          exceptionHandler('JS脚本返回的JSON解析失败: $e');
+          return null;
+        }
+      }
+
       // 解析HTML文档
       var doc = parse(htmlStr);
       // 处理嵌入式视频
@@ -241,7 +312,7 @@ class Common extends SourceService {
               ? tempUrl
               : (rule.baseUrl + tempUrl);
           var tempHtmlStr = switch (rule.useWebView) {
-            true => await webviewUtil.fetchHtml(
+            true => await webviewUtil.fetchHtmlOrJson(
               tempUrl,
               isPlayerPage: true,
               headers: rule.playerRequestHeaders,

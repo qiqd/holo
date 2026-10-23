@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive_ce/hive.dart';
 import 'package:holo/util/http_option_util.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -167,6 +169,26 @@ class Rule {
   @HiveField(39)
   bool isValid;
 
+  /// 是否使用JS脚本获取数据, 默认值为false
+  /// 如果为true, 将使用searchScript/detailScript/playerScript中的JS代码获取数据
+  @HiveField(40)
+  bool useJsScript;
+
+  /// 搜索页JS脚本
+  /// 在页面加载完成后执行, 返回JSON字符串
+  @HiveField(41)
+  String? searchScript;
+
+  /// 详情页JS脚本
+  /// 在页面加载完成后执行, 返回JSON字符串
+  @HiveField(42)
+  String? detailScript;
+
+  /// 播放页JS脚本
+  /// 在页面加载完成后执行, 返回JSON字符串
+  @HiveField(43)
+  String? playerScript;
+
   Rule({
     this.name = '',
     this.logoUrl = '',
@@ -207,10 +229,52 @@ class Rule {
     this.videoUrlSubsChar = '',
     this.email = '',
     this.isValid = true,
+    this.useJsScript = false,
+    this.searchScript,
+    this.detailScript,
+    this.playerScript,
   }) : updateAt = DateTime.now();
 
   factory Rule.fromJson(Map<String, dynamic> json) => _$RuleFromJson(json);
   Map<String, dynamic> toJson() => _$RuleToJson(this);
+
+  /// 获取解码后的搜索页JS脚本
+  String? get decodedSearchScript {
+    if (searchScript == null || searchScript!.isEmpty) return null;
+    try {
+      return utf8.decode(base64Decode(searchScript!));
+    } catch (e) {
+      // 如果不是Base64编码，直接返回原值（兼容旧数据）
+      return searchScript;
+    }
+  }
+
+  /// 获取解码后的详情页JS脚本
+  String? get decodedDetailScript {
+    if (detailScript == null || detailScript!.isEmpty) return null;
+    try {
+      return utf8.decode(base64Decode(detailScript!));
+    } catch (e) {
+      // 如果不是Base64编码，直接返回原值（兼容旧数据）
+      return detailScript;
+    }
+  }
+
+  /// 获取解码后的播放页JS脚本
+  String? get decodedPlayerScript {
+    if (playerScript == null || playerScript!.isEmpty) return null;
+    try {
+      return utf8.decode(base64Decode(playerScript!));
+    } catch (e) {
+      // 如果不是Base64编码，直接返回原值（兼容旧数据）
+      return playerScript;
+    }
+  }
+
+  /// 将JS脚本编码为Base64
+  static String encodeScript(String script) {
+    return base64Encode(utf8.encode(script));
+  }
 }
 
 @HiveType(typeId: 6)

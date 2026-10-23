@@ -31,7 +31,7 @@
         "lineSelector": "div.tab-content>div",
         "episodeSelector": "li>a",
         "episodeReverse": false,
-        "playerUrl": "{peisodeId}",
+        "playerUrl": "{episodeId}",
         "playerRequestMethod": "get",
         "playerRequestBody": {},
         "playerRequestHeaders": {
@@ -45,7 +45,11 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "6995b8c3068c9abe8b26bfdc",
@@ -88,7 +92,11 @@
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
         "isLocal": true,
-        "isValid": false
+        "isValid": false,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "6995b8c3068c9abe8b26bfdd",
@@ -139,7 +147,11 @@
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
         "isLocal": true,
-        "isValid": false
+        "isValid": false,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "6995b8c3068c9abe8b26bfde",
@@ -163,7 +175,7 @@
         "itemTitleSelector": "h3.title a",
         "itemIdSelector": "h3.title a",
         "itemGenreSelector": "div.detail p",
-        "detailUrl": "{meidaId}",
+        "detailUrl": "{mediaId}",
         "detailRequestMethod": "get",
         "detailRequestBody": {},
         "detailRequestHeaders": {
@@ -173,7 +185,7 @@
         "lineSelector": "div.tab-content>div",
         "episodeSelector": "li>a",
         "episodeReverse": false,
-        "playerUrl": "{epiaodeId}",
+        "playerUrl": "{episodeId}",
         "playerRequestMethod": "get",
         "playerRequestBody": {},
         "playerRequestHeaders": {
@@ -187,7 +199,11 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "6995b8c3068c9abe8b26bfdf",
@@ -229,7 +245,11 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "6995b8c3068c9abe8b26bfe0",
@@ -271,7 +291,11 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "6995b8c3068c9abe8b26bfe1",
@@ -314,7 +338,10 @@
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
         "isLocal": true,
-        "isValid": false
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "6995b8c3068c9abe8b26bfe2",
@@ -363,7 +390,11 @@
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
         "isLocal": true,
-        "isValid": false
+        "isValid": false,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "6995b8c3068c9abe8b26bfe3",
@@ -414,7 +445,11 @@
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
         "isLocal": true,
-        "isValid": false
+        "isValid": false,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "id": "699819d8bf379935ed256076",
@@ -462,7 +497,11 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:26:25.212Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "userId": "",
@@ -509,7 +548,11 @@
         "videoUrlSubsChar": "",
         "updateAt": "2026-03-19T11:24:36.672Z",
         "isEnabled": true,
-        "isLocal": true
+        "isLocal": true,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "name": "aowo",
@@ -531,7 +574,7 @@
         "itemTitleSelector": "h3>a",
         "itemIdSelector": "h3>a",
         "itemGenreSelector": "p",
-        "detailUrl": "{mediaid}",
+        "detailUrl": "{mediaId}",
         "detailRequestMethod": "get",
         "detailRequestBody": {},
         "detailRequestHeaders": {
@@ -556,7 +599,11 @@
         "updateAt": "2026-05-06T20:32:16.481",
         "isEnabled": true,
         "isLocal": true,
-        "email": ""
+        "email": "",
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
     },
     {
         "name": "月之祠",
@@ -604,6 +651,110 @@
         "isEnabled": true,
         "isLocal": true,
         "email": "",
-        "isValid": true
+        "isValid": true,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
+    },
+    {
+        "name": "森之屋动漫",
+        "baseUrl": "https://senfun.in",
+        "logoUrl": "https://senfun.in/static/senfun/upload/dyxscms/20211201-1/41c4d0a159b80ec48e50a26de1374041.gif",
+        "useWebView": true,
+        "version": "1.0",
+        "searchUrl": "/search.html?wd={keyword}",
+        "searchRequestMethod": "get",
+        "searchRequestBody": {},
+        "searchRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullSearchUrl": false,
+        "timeout": 10,
+        "searchSelector": "div.module-card-item.module-item",
+        "itemImgSelector": "div.module-item-pic img",
+        "itemImgFromSrc": false,
+        "itemTitleSelector": "div.module-card-item-title a",
+        "itemIdSelector": "div.module-card-item-title a",
+        "itemGenreSelector": "div.module-info-item-content",
+        "detailUrl": "{mediaId}",
+        "detailRequestMethod": "get",
+        "detailRequestBody": {},
+        "detailRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullDetailUrl": false,
+        "lineSelector": "div.module-play-list-content",
+        "episodeSelector": "a.module-play-list-link",
+        "episodeReverse": false,
+        "playerUrl": "{episodeId}",
+        "playerRequestMethod": "get",
+        "playerRequestBody": {},
+        "playerRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullPlayerUrl": false,
+        "playerVideoSelector": "video.dplayer-video",
+        "videoElementAttribute": "src",
+        "embedVideoSelector": "",
+        "waitForTargetElement": true,
+        "videoUrlSubsChar": "",
+        "updateAt": "2026-10-23T12:00:00.000Z",
+        "isEnabled": true,
+        "isLocal": true,
+        "useJsScript": false,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": ""
+    },
+    {
+        "name": "卡拉动漫",
+        "baseUrl": "https://www.kaladmtv.com",
+        "logoUrl": "https://www.kaladmtv.com/upload/mxprocms/20250810-1/04c0e9b15c412a023d375e1355bde200.png",
+        "useWebView": true,
+        "version": "1.0",
+        "searchUrl": "/search/wd/{keyword}.html",
+        "searchRequestMethod": "get",
+        "searchRequestBody": {},
+        "searchRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullSearchUrl": false,
+        "timeout": 15,
+        "searchSelector": "div.module-card-item.module-item",
+        "itemImgSelector": "div.module-item-cover img",
+        "itemImgFromSrc": false,
+        "itemTitleSelector": "div.module-card-item-title a",
+        "itemIdSelector": "div.module-card-item-title a",
+        "itemGenreSelector": "div.module-card-item-class",
+        "detailUrl": "{mediaId}",
+        "detailRequestMethod": "get",
+        "detailRequestBody": {},
+        "detailRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullDetailUrl": false,
+        "lineSelector": "div.module-list.sort-list.tab-list.his-tab-list",
+        "episodeSelector": "a.module-play-list-link",
+        "episodeReverse": false,
+        "playerUrl": "{episodeId}",
+        "playerRequestMethod": "get",
+        "playerRequestBody": {},
+        "playerRequestHeaders": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+        },
+        "fullPlayerUrl": false,
+        "playerVideoSelector": "",
+        "videoElementAttribute": "",
+        "embedVideoSelector": "",
+        "waitForTargetElement": true,
+        "videoUrlSubsChar": "",
+        "updateAt": "2026-10-23T12:00:00.000Z",
+        "isEnabled": true,
+        "isLocal": true,
+        "isValid": true,
+        "searchScript": "",
+        "detailScript": "",
+        "playerScript": "KGZ1bmN0aW9uKCkgewogIGlmICh0eXBlb2YgcGxheWVyX2FhYWEgIT09ICd1bmRlZmluZWQnICYmIHBsYXllcl9hYWFhLnVybCkgewogICAgcmV0dXJuIEpTT04uc3RyaW5naWZ5KHsgdmlkZW9Vcmw6IHBsYXllcl9hYWFhLnVybCB9KTsKICB9CiAgdmFyIHNjcmlwdHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCdzY3JpcHQnKTsKICBmb3IgKHZhciBpID0gMDsgaSA8IHNjcmlwdHMubGVuZ3RoOyBpKyspIHsKICAgIHZhciB0ZXh0ID0gc2NyaXB0c1tpXS50ZXh0Q29udGVudDsKICAgIHZhciBtYXRjaCA9IHRleHQubWF0Y2goL3ZhciBwbGF5ZXJfYWFhYT1ce1tefV0qInVybCI6IihbXiJdKykiLykgfHwKICAgICAgICAgICAgICAgIHRleHQubWF0Y2goLyJ1cmwiOiIoW14iXStcLm0zdThbXiJdKikiLykgfHwKICAgICAgICAgICAgICAgIHRleHQubWF0Y2goLyhodHRwcz86XC9cL1teXHMiXStcLm0zdThbXlxzIl0qKS8pOwogICAgaWYgKG1hdGNoKSB7CiAgICAgIHJldHVybiBKU09OLnN0cmluZ2lmeSh7IHZpZGVvVXJsOiBtYXRjaFsxXSB9KTsKICAgIH0KICB9CiAgcmV0dXJuIEpTT04uc3RyaW5naWZ5KHsgdmlkZW9Vcmw6ICcnIH0pOwp9KSgpOw=="
     }
 ]
