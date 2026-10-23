@@ -24,6 +24,9 @@ class FlutterInappwebviewUtil {
   /// 当前请求的目标元素选择器
   String? _currentTargetElementSelector;
 
+  /// 当前请求注入的脚本
+  String? _injectedScript;
+
   /// 检查字符串是否包含 Unicode 字符
   /// [str]: 要检查的字符串
   /// 返回是否包含 Unicode 字符
@@ -75,7 +78,7 @@ class FlutterInappwebviewUtil {
     }
   }
 
-  /// 获取网页 HTML 内容
+  /// 获取网页 HTML 内容或执行 JS 脚本返回 JSON
   /// [url]: 要访问的 URL
   /// [requestMethod]: 请求方法，默认为 GET
   /// [isPlayerPage]: 是否为播放器页面
@@ -84,10 +87,11 @@ class FlutterInappwebviewUtil {
   /// [headers]: 请求头
   /// [requestBody]: 请求体，仅用于 POST 请求
   /// [onError]: 错误回调
-  ///[waitingForTargetElement]: 是否等待目标元素加载完成，默认为 false
+  /// [waitingForTargetElement]: 是否等待目标元素加载完成，默认为 false
   /// [targetElementSelector]: 目标元素选择器，默认为空 null,当waitingForTargetElement为true时必填
-  /// 返回获取的 HTML 内容
-  Future<String> fetchHtml(
+  /// [injectedScript]: 注入的JS脚本，在页面加载完成后执行，返回结果作为JSON或HTML内容
+  /// 返回获取的 HTML 内容或 JS 执行结果
+  Future<String> fetchHtmlOrJson(
     String url, {
     RequestMethod requestMethod = RequestMethod.get,
     bool isPlayerPage = false,
@@ -97,12 +101,13 @@ class FlutterInappwebviewUtil {
     bool waitingForTargetElement = false,
     String? targetElementSelector,
     void Function(String error)? onError,
+    String? injectedScript,
   }) async {
     final completer = Completer<String>();
     _currentCompleter = completer;
     _currentWaitForMediaElement = waitingForTargetElement;
     _currentTargetElementSelector = targetElementSelector;
-
+    _injectedScript = injectedScript;
     try {
       final webUri = WebUri(url.startsWith('http') ? url : 'https://$url');
 
@@ -160,6 +165,52 @@ class FlutterInappwebviewUtil {
             }
 
             try {
+              // 如果提供了注入脚本，先执行脚本获取数据
+              if (_injectedScript != null && _injectedScript!.isNotEmpty) {
+                log('执行注入的JS脚本...');
+                // 先等待一下，确保页面异步脚本已加载
+                await Future.delayed(const Duration(milliseconds: 1500));
+                try {
+                  var jsResult = await controller.evaluateJavascript(
+                    source: _injectedScript!,
+                  );
+                  log('JS脚本原始返回: $jsResult');
+                  if (jsResult != null && jsResult.toString().isNotEmpty) {
+                    String result = jsResult.toString();
+                    if (containsUnicode(result)) {
+                      result = unescapeUnicodeString(result);
+                    }
+                    log('JS脚本执行成功，返回数据长度: ${result.length}');
+                    _currentCompleter?.complete(result);
+                    return;
+                  } else {
+                    log('JS脚本返回空结果，尝试再次执行...');
+                    // 等待一段时间后重试，某些变量可能异步加载
+                    await Future.delayed(const Duration(seconds: 2));
+                    jsResult = await controller.evaluateJavascript(
+                      source: _injectedScript!,
+                    );
+                    log('JS脚本重试原始返回: $jsResult');
+                    if (jsResult != null && jsResult.toString().isNotEmpty) {
+                      String result = jsResult.toString();
+                      if (containsUnicode(result)) {
+                        result = unescapeUnicodeString(result);
+                      }
+                      log('JS脚本重试成功，返回数据长度: ${result.length}');
+                      _currentCompleter?.complete(result);
+                      return;
+                    }
+                    log('JS脚本重试仍返回空，返回空JSON');
+                    _currentCompleter?.complete('{"videoUrl":""}');
+                    return;
+                  }
+                } catch (e) {
+                  log('JS脚本执行异常: $e');
+                  _currentCompleter?.complete('{"videoUrl":""}');
+                  return;
+                }
+              }
+
               String? html =
                   await controller.evaluateJavascript(
                         source: 'document.documentElement.outerHTML',
@@ -176,8 +227,9 @@ class FlutterInappwebviewUtil {
                 htmlContent = unescapeUnicodeString(htmlContent);
               }
 
-              // 如果需要等待媒体元素
+              // 如果需要等待媒体元素（仅在未使用JS脚本时等待）
               if (_currentTargetElementSelector != null &&
+                  _currentTargetElementSelector!.isNotEmpty &&
                   _currentWaitForMediaElement) {
                 int count = 0;
                 int maxWait = timeout.inMilliseconds ~/ 500;

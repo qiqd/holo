@@ -74,13 +74,13 @@ class _RuleRepositoryState extends State<RuleRepository> {
   @override
   void initState() {
     super.initState();
-  if (Platform.isAndroid||Platform.isIOS) {
+    if (Platform.isAndroid || Platform.isIOS) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-      _refreshIndicatorKey.currentState?.show();
-    });
-  }else{
-    _getRules();
-  }
+        _refreshIndicatorKey.currentState?.show();
+      });
+    } else {
+      _getRules();
+    }
   }
 
   @override
@@ -117,7 +117,9 @@ class _RuleRepositoryState extends State<RuleRepository> {
                       return ListTile(
                         enabled: _rules[index].isValid,
                         title: Text(_rules[index].name),
-                        subtitle: Text(_rules[index].version),
+                        subtitle: Text(
+                          '${_rules[index].version}${_rules[index].useJsScript ? " [JS]" : ""}',
+                        ),
                         trailing: _buildTileTrailing(
                           _rules[index],
                           _rules[index].isValid,

@@ -74,13 +74,17 @@ class RuleAdapter extends TypeAdapter<Rule> {
       videoUrlSubsChar: fields[34] == null ? '' : fields[34] as String,
       email: fields[38] == null ? '' : fields[38] as String,
       isValid: fields[39] == null ? true : fields[39] as bool,
+      useJsScript: fields[40] == null ? false : fields[40] as bool,
+      searchScript: fields[41] as String?,
+      detailScript: fields[42] as String?,
+      playerScript: fields[43] as String?,
     )..updateAt = fields[35] as DateTime;
   }
 
   @override
   void write(BinaryWriter writer, Rule obj) {
     writer
-      ..writeByte(40)
+      ..writeByte(44)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -160,7 +164,15 @@ class RuleAdapter extends TypeAdapter<Rule> {
       ..writeByte(38)
       ..write(obj.email)
       ..writeByte(39)
-      ..write(obj.isValid);
+      ..write(obj.isValid)
+      ..writeByte(40)
+      ..write(obj.useJsScript)
+      ..writeByte(41)
+      ..write(obj.searchScript)
+      ..writeByte(42)
+      ..write(obj.detailScript)
+      ..writeByte(43)
+      ..write(obj.playerScript);
   }
 
   @override
@@ -294,6 +306,10 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   videoUrlSubsChar: json['videoUrlSubsChar'] as String? ?? '',
   email: json['email'] as String? ?? '',
   isValid: json['isValid'] as bool? ?? true,
+  useJsScript: json['useJsScript'] as bool? ?? false,
+  searchScript: json['searchScript'] as String?,
+  detailScript: json['detailScript'] as String?,
+  playerScript: json['playerScript'] as String?,
 )..updateAt = DateTime.parse(json['updateAt'] as String);
 
 Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
@@ -337,6 +353,10 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'isLocal': instance.isLocal,
   'email': instance.email,
   'isValid': instance.isValid,
+  'useJsScript': instance.useJsScript,
+  'searchScript': instance.searchScript,
+  'detailScript': instance.detailScript,
+  'playerScript': instance.playerScript,
 };
 
 const _$RequestMethodEnumMap = {

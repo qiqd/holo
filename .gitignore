@@ -54,3 +54,4 @@ key.properties
 /build_log/*
 /build-log/*
 .trae/
+/html/

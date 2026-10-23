@@ -25,6 +25,16 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
     if (!_formKey.currentState!.validate() || !_isEditMode) {
       return;
     }
+    // 如果有JS脚本内容，编码为Base64存储
+    if (_rule.searchScript != null && _rule.searchScript!.isNotEmpty) {
+      _rule.searchScript = Rule.encodeScript(_rule.searchScript!);
+    }
+    if (_rule.detailScript != null && _rule.detailScript!.isNotEmpty) {
+      _rule.detailScript = Rule.encodeScript(_rule.detailScript!);
+    }
+    if (_rule.playerScript != null && _rule.playerScript!.isNotEmpty) {
+      _rule.playerScript = Rule.encodeScript(_rule.playerScript!);
+    }
     if (_rule.name.isNotEmpty) {
       HiveUtil.setRule(_rule);
     }
@@ -86,6 +96,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 Divider(),
                 Text(
                   '\n${'rule_edit.help_enable_rule'.tr()}',
+                  style: TextStyle(fontSize: 14),
+                ),
+                SizedBox(height: 10),
+                Divider(),
+                Text(
+                  '\n${'rule_edit.help_js_script_config'.tr()}',
                   style: TextStyle(fontSize: 14),
                 ),
               ],
@@ -281,6 +297,11 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   : null,
               title: Text('rule_edit.wait_for_target_element_label'.tr()),
               subtitle: Text('rule_edit.wait_for_target_element_subtitle'.tr()),
+            ),
+            // JS脚本配置说明
+            ListTile(
+              title: Text('rule_edit.js_script_config_title'.tr()),
+              subtitle: Text('rule_edit.js_script_config_subtitle'.tr()),
             ),
           ],
         ),
@@ -571,6 +592,25 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 _rule.searchRequestHeaders = {'User-Agent': value};
               },
             ),
+            // 搜索页JS脚本
+            TextFormField(
+              enabled: widget.isEditMode,
+              maxLines: 8,
+              minLines: 3,
+              initialValue: widget.rule?.searchScript ?? '',
+              decoration: InputDecoration(
+                labelText: 'rule_edit.search_script_label'.tr(),
+                hintText: 'rule_edit.search_script_hint'.tr(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _rule.searchScript = value;
+                });
+              },
+            ),
           ],
         ),
       ),
@@ -779,6 +819,25 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               ),
               onChanged: (value) {
                 _rule.detailRequestHeaders = {'User-Agent': value};
+              },
+            ),
+            // 详情页JS脚本
+            TextFormField(
+              enabled: widget.isEditMode,
+              maxLines: 8,
+              minLines: 3,
+              initialValue: widget.rule?.detailScript ?? '',
+              decoration: InputDecoration(
+                labelText: 'rule_edit.detail_script_label'.tr(),
+                hintText: 'rule_edit.detail_script_hint'.tr(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _rule.detailScript = value;
+                });
               },
             ),
           ],
@@ -1018,6 +1077,25 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                 _rule.playerRequestHeaders = {'User-Agent': value};
               },
             ),
+            // 播放页JS脚本
+            TextFormField(
+              enabled: widget.isEditMode,
+              maxLines: 8,
+              minLines: 3,
+              initialValue: widget.rule?.playerScript ?? '',
+              decoration: InputDecoration(
+                labelText: 'rule_edit.player_script_label'.tr(),
+                hintText: 'rule_edit.player_script_hint'.tr(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _rule.playerScript = value;
+                });
+              },
+            ),
           ],
         ),
       ),
@@ -1032,6 +1110,16 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
     );
     if (services.isNotEmpty) {
       _service = services.first;
+    }
+    // 解码Base64脚本以便编辑
+    if (_rule.searchScript != null && _rule.searchScript!.isNotEmpty) {
+      _rule.searchScript = _rule.decodedSearchScript;
+    }
+    if (_rule.detailScript != null && _rule.detailScript!.isNotEmpty) {
+      _rule.detailScript = _rule.decodedDetailScript;
+    }
+    if (_rule.playerScript != null && _rule.playerScript!.isNotEmpty) {
+      _rule.playerScript = _rule.decodedPlayerScript;
     }
     super.initState();
   }

@@ -175,7 +175,9 @@ class _RuleManagerState extends State<RuleManager> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(_rules[index].name),
-                    subtitle: Text('v${_rules[index].version}'),
+                    subtitle: Text(
+                      'v${_rules[index].version}${_rules[index].useJsScript ? " [JS]" : ""}',
+                    ),
                     onTap: () {
                       context.push(
                         '/rule_edit',
