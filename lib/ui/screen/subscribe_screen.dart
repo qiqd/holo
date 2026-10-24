@@ -48,7 +48,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   Future<void> _fetchHistory() async {
     if (MyApp.userSettingNotifier.value.email.isEmpty) {
       _scaffoldMessengerState?.showSnackBar(
-        SnackBar(content: Text("WebDAV is not configured")),
+        SnackBar(content: Text('subscribe.webdav_not_configured'.tr())),
       );
       return;
     }

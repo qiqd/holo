@@ -53,7 +53,7 @@ class Rule {
   @HiveField(10)
   int timeout;
 
-  /// 搜索结果选择器
+  /// 搜索结果选择器,匹配之后返回一个数组
   @HiveField(11)
   String searchSelector;
 
@@ -65,15 +65,15 @@ class Rule {
   @HiveField(13)
   bool itemImgFromSrc;
 
-  /// 项目标题选择器
+  /// 搜索结果中每一项项目标题选择器
   @HiveField(14)
   String itemTitleSelector;
 
-  /// 项目ID选择器
+  /// 搜索结果中每一项项目ID选择器
   @HiveField(15)
   String itemIdSelector;
 
-  /// 项目类型选择器
+  /// 搜索结果中每一项项目类型选择器
   @HiveField(16)
   String? itemGenreSelector;
 
@@ -189,6 +189,11 @@ class Rule {
   @HiveField(43)
   String? playerScript;
 
+  /// 是否为纯JS规则
+  /// 如果为true,将只使用JS脚本获取数据,不解析CSS选择器
+  @HiveField(44)
+  bool isPureJs;
+
   Rule({
     this.name = '',
     this.logoUrl = '',
@@ -233,6 +238,7 @@ class Rule {
     this.searchScript,
     this.detailScript,
     this.playerScript,
+    this.isPureJs = false,
   }) : updateAt = DateTime.now();
 
   factory Rule.fromJson(Map<String, dynamic> json) => _$RuleFromJson(json);

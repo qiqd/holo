@@ -303,40 +303,40 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       builder: (context) {
         return AlertDialog(
           surfaceTintColor: Colors.transparent,
-          title: Text('Keyboard Shortcuts'),
+          title: Text('cap_video_player.keyboard_shortcuts'.tr()),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: Icon(Icons.play_arrow_rounded),
-                title: Text('Play/Pause'),
-                subtitle: Text('Space'),
+                title: Text('cap_video_player.play_pause'.tr()),
+                subtitle: Text('cap_video_player.space'.tr()),
               ),
 
               ListTile(
                 leading: Icon(Icons.volume_up_rounded),
-                title: Text('Volume Up'),
-                subtitle: Text('Up Arrow'),
+                title: Text('cap_video_player.volume_up'.tr()),
+                subtitle: Text('cap_video_player.up_arrow'.tr()),
               ),
               ListTile(
                 leading: Icon(Icons.volume_down_rounded),
-                title: Text('Volume Down'),
-                subtitle: Text('Down Arrow'),
+                title: Text('cap_video_player.volume_down'.tr()),
+                subtitle: Text('cap_video_player.down_arrow'.tr()),
               ),
               ListTile(
                 leading: Icon(Icons.fast_forward_rounded),
-                title: Text('Seek Forward'),
-                subtitle: Text('Right Arrow'),
+                title: Text('cap_video_player.seek_forward'.tr()),
+                subtitle: Text('cap_video_player.right_arrow'.tr()),
               ),
               ListTile(
                 leading: Icon(Icons.fast_rewind_rounded),
-                title: Text('Seek Backward'),
-                subtitle: Text('Left Arrow'),
+                title: Text('cap_video_player.seek_backward'.tr()),
+                subtitle: Text('cap_video_player.left_arrow'.tr()),
               ),
               ListTile(
                 leading: Icon(Icons.list),
-                title: Text('Show Episode List'),
-                subtitle: Text('E'),
+                title: Text('cap_video_player.show_episode_list'.tr()),
+                subtitle: Text('cap_video_player.e_key'.tr()),
               ),
             ],
           ),
@@ -625,78 +625,74 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       left: 0,
       right: 0,
       child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.black.withOpacity(0.5), Colors.transparent],
-            ),
-          ),
-          child: Padding(
-            padding:
-                widget.isFullScreen && (Platform.isAndroid || Platform.isIOS)
-                ? EdgeInsets.symmetric(horizontal: widget.safeInset)
-                : EdgeInsets.zero,
-            child: ListTile(
-                contentPadding: EdgeInsets.zero,
-              horizontalTitleGap: 6,
-              titleAlignment: ListTileTitleAlignment.center,
-              leading: IconButton(
-                color: Colors.white,
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  _showVideoControlsTimer();
-                  widget.onBackPressed?.call();
-                },
-              ),
-              title: Text(
-                widget.title ?? context.tr("component.title"),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(color: Colors.white),
-              ),
-              subtitle: widget.subTitle != null && widget.subTitle!.isNotEmpty
-                  ? Text(
-                      widget.subTitle!,
-                      style: TextStyle(color: Colors.white),
-                    )
-                  : null,
-              trailing: widget.isFullScreen
-                  ? SizedBox(
-                      width: 100,
-                      child: Row(
-                        mainAxisAlignment: .end,
-                        children: [
-                          if (Platform.isLinux ||
-                              Platform.isWindows ||
-                              Platform.isMacOS)
-                            IconButton(
-                              color: Colors.white,
-                              tooltip: 'Keyboard Shortcuts',
-                              onPressed: () {
-                                _showKeyboardShortcuts();
-                              },
-                              icon: const Icon(Icons.help_outline_rounded),
-                            ),
-                          IconButton(
-                            color: Colors.white,
-                            tooltip: 'Settings',
-                            onPressed: () {
-                              widget.onSettingTab?.call();
-                              _showVideoControlsTimer();
-                            },
-                            icon: const Icon(Icons.settings_rounded),
-                          ),
-                        ],
-                      ),
-                    )
-                  : null,
-            ),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black.withOpacity(0.5), Colors.transparent],
           ),
         ),
+        child: Padding(
+          padding: widget.isFullScreen && (Platform.isAndroid || Platform.isIOS)
+              ? EdgeInsets.symmetric(horizontal: widget.safeInset)
+              : EdgeInsets.zero,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            horizontalTitleGap: 6,
+            titleAlignment: ListTileTitleAlignment.center,
+            leading: IconButton(
+              color: Colors.white,
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                _showVideoControlsTimer();
+                widget.onBackPressed?.call();
+              },
+            ),
+            title: Text(
+              widget.title ?? context.tr("component.title"),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(color: Colors.white),
+            ),
+            subtitle: widget.subTitle != null && widget.subTitle!.isNotEmpty
+                ? Text(widget.subTitle!, style: TextStyle(color: Colors.white))
+                : null,
+            trailing: widget.isFullScreen
+                ? SizedBox(
+                    width: 100,
+                    child: Row(
+                      mainAxisAlignment: .end,
+                      children: [
+                        if (Platform.isLinux ||
+                            Platform.isWindows ||
+                            Platform.isMacOS)
+                          IconButton(
+                            color: Colors.white,
+                            tooltip: 'Keyboard Shortcuts',
+                            onPressed: () {
+                              _showKeyboardShortcuts();
+                            },
+                            icon: const Icon(Icons.help_outline_rounded),
+                          ),
+                        IconButton(
+                          color: Colors.white,
+                          tooltip: 'Settings',
+                          onPressed: () {
+                            widget.onSettingTab?.call();
+                            _showVideoControlsTimer();
+                          },
+                          icon: const Icon(Icons.settings_rounded),
+                        ),
+                      ],
+                    ),
+                  )
+                : null,
+          ),
+        ),
+      ),
     );
   }
 

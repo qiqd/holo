@@ -20,6 +20,7 @@ import 'package:holo/ui/screen/logger_screen.dart';
 import 'package:holo/ui/screen/player_screen.dart';
 import 'package:holo/ui/screen/preferences_screen.dart';
 import 'package:holo/ui/screen/rule_edit_screen.dart';
+import 'package:holo/ui/screen/rule_guide_screen.dart';
 import 'package:holo/ui/screen/rule_manager_screen.dart';
 import 'package:holo/ui/screen/rule_repository_screen.dart';
 import 'package:holo/ui/screen/rule_test_screen.dart';
@@ -216,6 +217,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             person: map['person'] ?? [] as List<Person>,
             character: map['character'] ?? [] as List<Person>,
             relation: map['relation'] ?? [] as List<RelatedWork>,
+            httpHeaders: map['httpHeaders'] ?? {} as Map<String, String>,
           );
         },
       ),
@@ -272,6 +274,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         path: '/rule_test',
         builder: (context, state) {
           return RuleTestScreen(source: state.extra as SourceService);
+        },
+      ),
+      // 规则编辑说明页路由
+      GoRoute(
+        path: '/rule_guide',
+        builder: (context, state) {
+          return RuleGuideScreen();
         },
       ),
       // 外观设置页路由

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/entity/media.dart' as media;
 import 'package:holo/service/source_service.dart';
@@ -34,7 +35,11 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
       var search = await widget.source.fetchSearch(_keyword, 1, 10, (e) {
         hasError = true;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('fetch search error: ${e.toString()}')),
+          SnackBar(
+            content: Text(
+              'rule_test.fetch_search_error'.tr(args: [e.toString()]),
+            ),
+          ),
         );
       });
       setState(() {
@@ -46,7 +51,11 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
       var detail = await widget.source.fetchDetail(_mediaList[0].id!, (e) {
         hasError = true;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('fetch detail error: ${e.toString()}')),
+          SnackBar(
+            content: Text(
+              'rule_test.fetch_detail_error'.tr(args: [e.toString()]),
+            ),
+          ),
         );
       });
       log('detail: ${detail?.toJson()}');
@@ -61,14 +70,18 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         (e) {
           hasError = true;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('fetch view error: ${e.toString()}')),
+            SnackBar(
+              content: Text(
+                'rule_test.fetch_view_error'.tr(args: [e.toString()]),
+              ),
+            ),
           );
         },
       );
       if (url == null && mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('video url is null')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('rule_test.video_url_null'.tr())),
+        );
         return;
       }
 
@@ -85,9 +98,11 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         setState(() {
           _isloading = false;
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('test error: ${e.toString()}')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('rule_test.test_error'.tr(args: [e.toString()])),
+          ),
+        );
       }
     }
   }
@@ -203,14 +218,14 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        Text('url: $_playUrl'),
+                        Text('rule_test.url_label'.tr(args: [_playUrl ?? ''])),
                         FilledButton(
                           onPressed: () {
                             videoController?.value.isPlaying ?? false
                                 ? videoController?.pause()
                                 : videoController?.play();
                           },
-                          child: const Text('Play'),
+                          child: Text('rule_test.play'.tr()),
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width,

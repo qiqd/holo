@@ -167,10 +167,22 @@ class _SettingScreenState extends State<SettingScreen>
           },
           itemBuilder: (content) {
             return [
-              PopupMenuItem(value: 'zh-CN', child: Text('中文简体')),
-              PopupMenuItem(value: 'zh-TW', child: Text('中文繁體')),
-              PopupMenuItem(value: 'en-US', child: Text('English')),
-              PopupMenuItem(value: 'ja-JP', child: Text('日本語')),
+              PopupMenuItem(
+                value: 'zh-CN',
+                child: Text('setting.language.zh_CN'.tr()),
+              ),
+              PopupMenuItem(
+                value: 'zh-TW',
+                child: Text('setting.language.zh_TW'.tr()),
+              ),
+              PopupMenuItem(
+                value: 'en-US',
+                child: Text('setting.language.en_US'.tr()),
+              ),
+              PopupMenuItem(
+                value: 'ja-JP',
+                child: Text('setting.language.ja_JP'.tr()),
+              ),
             ];
           },
         ),
@@ -304,7 +316,7 @@ class _SettingScreenState extends State<SettingScreen>
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       InkWell(
-        child: const Text('Bangumi 番组计划'),
+        child: Text('setting.metadata.bangumi'.tr()),
         onTap: () {
           launchUrl(Uri.parse('https://github.com/bangumi/api'));
         },
@@ -315,7 +327,7 @@ class _SettingScreenState extends State<SettingScreen>
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       InkWell(
-        child: const Text('LogVar 弹幕'),
+        child: Text('setting.metadata.logvar'.tr()),
         onTap: () {
           launchUrl(Uri.parse('https://github.com/huangxd-/danmu_api'));
         },
@@ -326,7 +338,7 @@ class _SettingScreenState extends State<SettingScreen>
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       InkWell(
-        child: const Text('AnimeTrace'),
+        child: Text('setting.metadata.animetrace'.tr()),
         onTap: () {
           launchUrl(Uri.parse('https://ai.animedb.cn'));
         },
@@ -337,7 +349,7 @@ class _SettingScreenState extends State<SettingScreen>
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       InkWell(
-        child: const Text('sekaiai.github.io'),
+        child: Text('setting.metadata.daily_sentence'.tr()),
         onTap: () {
           launchUrl(Uri.parse('https://github.com/sekaiai/sekaiai.github.io'));
         },

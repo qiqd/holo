@@ -80,7 +80,8 @@
         "delete_subs_success": "刪除雲端追番記錄成功",
         "delete_view_failed": "刪除雲端播放記錄失敗",
         "delete_view_success": "刪除雲端播放記錄成功",
-        "subscribe_playback_search": "搜索追番或者播放記錄"
+        "subscribe_playback_search": "搜索訂閱或者播放記錄",
+        "webdav_not_configured": "WebDAV未配置"
     },
     "setting": {
         "title": "設定",
@@ -127,7 +128,11 @@
         },
         "language": {
             "change": "切換語言",
-            "change_description": "切換語言後需要重新啟動應用才能生效"
+            "change_description": "切換語言後需要重新啟動應用才能生效",
+            "zh_CN": "中文简体",
+            "zh_TW": "中文繁體",
+            "en_US": "English",
+            "ja_JP": "日本語"
         },
         "data_management": {
             "clear_playback_history": "清除觀看歷史",
@@ -157,6 +162,12 @@
             "report_issue_description": "提交Bug或功能建議",
             "star_project": "給專案按讚",
             "star_project_description": "在GitHub上為專案點星"
+        },
+        "metadata": {
+            "bangumi": "Bangumi 番組計劃",
+            "logvar": "LogVar 彈幕",
+            "animetrace": "AnimeTrace",
+            "daily_sentence": "sekaiai.github.io"
         }
     },
     "appearance": {
@@ -241,7 +252,9 @@
         "no_person_data": "人物暫無資料",
         "no_character_data": "角色暫無資料",
         "no_related_works_data": "關聯作品暫無資料",
-        "air_date_key": "放送開始"
+        "air_date_key": "放送開始",
+        "continue_playing": "繼續從第{}話播放",
+        "save_rule_to_test": "保存規則後即可測試"
     },
     "player": {
         "summary": "簡介",
@@ -372,6 +385,8 @@
         "video_element_attribute_hint": "例如：data-play 或 data-src",
         "wait_for_target_element_label": "等待元素載入完成",
         "wait_for_target_element_subtitle": "如果啟用，將等待目標元素載入完成後再返回",
+        "pure_js_label": "純JS規則",
+        "pure_js_subtitle": "開啟後完全使用JS腳本獲取數據，隱藏CSS選擇器輸入框",
         "js_script_config_title": "JS腳本配置",
         "js_script_config_subtitle": "在下方可獨立配置搜索/詳情/播放的JS腳本，有腳本則優先使用JS，無則使用CSS選擇器",
         "search_script_label": "搜索頁JS腳本（可選）",
@@ -383,10 +398,44 @@
         "embed_video_selector_label": "內嵌影片選擇器",
         "embed_video_selector_hint": "多個選擇器用英文逗號分隔，例如：iframe, #embed-player",
         "video_url_subs_char_label": "影片URL提取規則",
-        "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分"
+        "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分",
+        "test": "測試",
+        "no_source_instance": "未檢測到數據源實例,請在規則管理頁面刷新試試"
+    },
+    "rule_test": {
+        "fetch_search_error": "獲取搜索失敗: {}",
+        "fetch_detail_error": "獲取詳情失敗: {}",
+        "fetch_view_error": "獲取播放失敗: {}",
+        "video_url_null": "視頻地址為空",
+        "test_error": "測試出錯: {}",
+        "play": "播放",
+        "url_label": "地址: {}"
+    },
+    "rule_repository": {
+        "title": "規則倉庫"
     },
     "logger": {
         "dialog_title": "清空日誌?",
-        "dialog_content": "確認清空所有日誌?"
+        "dialog_content": "確認清空所有日誌?",
+        "title": "日誌",
+        "copied": "日誌已複製到剪貼板",
+        "no_log": "暫無日誌",
+        "copy_tooltip": "複製日誌到剪貼板",
+        "clear_tooltip": "清空日誌"
+    },
+    "cap_video_player": {
+        "keyboard_shortcuts": "鍵盤快捷鍵",
+        "play_pause": "播放/暫停",
+        "space": "空格鍵",
+        "volume_up": "音量增加",
+        "up_arrow": "上方向鍵",
+        "volume_down": "音量減少",
+        "down_arrow": "下方向鍵",
+        "seek_forward": "快進",
+        "right_arrow": "右方向鍵",
+        "seek_backward": "快退",
+        "left_arrow": "左方向鍵",
+        "show_episode_list": "顯示選集",
+        "e_key": "E鍵"
     }
 }

@@ -80,7 +80,8 @@
         "delete_subs_success": "Successfully deleted cloud subscription records",
         "delete_view_failed": "Failed to delete cloud playback history",
         "delete_view_success": "Successfully deleted cloud playback history",
-        "subscribe_playback_search": "Search subscriptions or playback history"
+        "subscribe_playback_search": "Search subscriptions or playback history",
+        "webdav_not_configured": "WebDAV is not configured"
     },
     "setting": {
         "title": "Settings",
@@ -157,6 +158,20 @@
             "report_issue_description": "Submit bugs or feature requests",
             "star_project": "Star Project",
             "star_project_description": "Star the project on GitHub"
+        },
+        "language": {
+            "change": "Change Language",
+            "change_description": "Change language and restart app to apply",
+            "zh_CN": "中文简体",
+            "zh_TW": "中文繁體",
+            "en_US": "English",
+            "ja_JP": "日本語"
+        },
+        "metadata": {
+            "bangumi": "Bangumi",
+            "logvar": "LogVar Danmaku",
+            "animetrace": "AnimeTrace",
+            "daily_sentence": "sekaiai.github.io"
         }
     },
     "appearance": {
@@ -241,7 +256,9 @@
         "no_person_data": "No person data",
         "no_character_data": "No character data",
         "no_related_works_data": "No related works data",
-        "air_date_key": "Air Date"
+        "air_date_key": "Air Date",
+        "continue_playing": "Continue from episode {}",
+        "save_rule_to_test": "Save the rule to test"
     },
     "player": {
         "summary": "Summary",
@@ -372,6 +389,8 @@
         "video_element_attribute_hint": "Example: data-play or data-src",
         "wait_for_target_element_label": "Wait for element to load completely",
         "wait_for_target_element_subtitle": "If enabled, will wait for the target element to load completely before returning",
+        "pure_js_label": "Pure JS Rule",
+        "pure_js_subtitle": "When enabled, only JS scripts are used to fetch data, CSS selector inputs are hidden",
         "js_script_config_title": "JS Script Configuration",
         "js_script_config_subtitle": "Configure JS scripts for search/detail/player independently. Scripts take priority over CSS selectors.",
         "search_script_label": "Search Page JS Script (Optional)",
@@ -383,10 +402,44 @@
         "embed_video_selector_label": "Embedded Video Selector",
         "embed_video_selector_hint": "Multiple selectors separated by commas, e.g.: iframe, #embed-player",
         "video_url_subs_char_label": "Video URL Extraction Rule",
-        "video_url_subs_char_hint": "Example: Extract the xxxx part from params=videoUrl=xxxx"
+        "video_url_subs_char_hint": "Example: Extract the xxxx part from params=videoUrl=xxxx",
+        "test": "Test",
+        "no_source_instance": "No source instance detected, please refresh on the rule management page"
+    },
+    "rule_test": {
+        "fetch_search_error": "Fetch search error: {}",
+        "fetch_detail_error": "Fetch detail error: {}",
+        "fetch_view_error": "Fetch view error: {}",
+        "video_url_null": "Video URL is null",
+        "test_error": "Test error: {}",
+        "play": "Play",
+        "url_label": "URL: {}"
+    },
+    "rule_repository": {
+        "title": "Rule Repository"
     },
     "logger": {
         "dialog_title": "Clear Logs?",
-        "dialog_content": "Are you sure you want to clear all logs?"
+        "dialog_content": "Are you sure you want to clear all logs?",
+        "title": "Logger",
+        "copied": "Log copied to clipboard",
+        "no_log": "No log found",
+        "copy_tooltip": "Copy log to clipboard",
+        "clear_tooltip": "Clear log"
+    },
+    "cap_video_player": {
+        "keyboard_shortcuts": "Keyboard Shortcuts",
+        "play_pause": "Play/Pause",
+        "space": "Space",
+        "volume_up": "Volume Up",
+        "up_arrow": "Up Arrow",
+        "volume_down": "Volume Down",
+        "down_arrow": "Down Arrow",
+        "seek_forward": "Seek Forward",
+        "right_arrow": "Right Arrow",
+        "seek_backward": "Seek Backward",
+        "left_arrow": "Left Arrow",
+        "show_episode_list": "Show Episode List",
+        "e_key": "E"
     }
 }

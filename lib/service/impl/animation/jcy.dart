@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:holo/entity/rule.dart';
-import 'package:holo/service/common.dart';
+import 'package:holo/service/common_source_service.dart';
 import 'package:holo/util/http_util.dart';
 import 'package:html/parser.dart';
 
 @Deprecated("baseurl 不可访问")
-class Jcy extends Common {
+class Jcy extends CommonSourceService {
   Jcy()
     : super(
         rule: Rule(

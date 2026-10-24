@@ -69,20 +69,20 @@ class _LoggerScreenState extends State<LoggerScreen> {
     return Scaffold(
       appBar: AppBar(
         actionsPadding: EdgeInsets.only(right: 12),
-        title: Text("Logger"),
+        title: Text('logger.title'.tr()),
         actions: [
           IconButton(
-            tooltip: "Copy log to clipboard",
+            tooltip: 'logger.copy_tooltip'.tr(),
             icon: Icon(Icons.copy_all_rounded),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: _logLines.join("\n")));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Log copied to clipboard")),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('logger.copied'.tr())));
             },
           ),
           IconButton(
-            tooltip: "Clear log",
+            tooltip: 'logger.clear_tooltip'.tr(),
             icon: Icon(Icons.delete_outline_rounded),
             onPressed: () {
               _showConfirmDialog();
@@ -95,7 +95,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
           : Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: _logLines.isEmpty
-                  ? Center(child: Text("No log found"))
+                  ? Center(child: Text('logger.no_log'.tr()))
                   : ListView.builder(
                       itemCount: _logLines.length,
                       itemBuilder: (context, index) {

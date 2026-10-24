@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:holo/api/rule_api.dart';
 import 'package:holo/entity/rule.dart';
@@ -87,7 +88,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("规则仓库"),
+        title: Text('rule_repository.title'.tr()),
         actionsPadding: .symmetric(horizontal: 12),
         actions: [
           if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)

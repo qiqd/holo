@@ -78,13 +78,14 @@ class RuleAdapter extends TypeAdapter<Rule> {
       searchScript: fields[41] as String?,
       detailScript: fields[42] as String?,
       playerScript: fields[43] as String?,
+      isPureJs: fields[44] == null ? false : fields[44] as bool,
     )..updateAt = fields[35] as DateTime;
   }
 
   @override
   void write(BinaryWriter writer, Rule obj) {
     writer
-      ..writeByte(44)
+      ..writeByte(45)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -172,7 +173,9 @@ class RuleAdapter extends TypeAdapter<Rule> {
       ..writeByte(42)
       ..write(obj.detailScript)
       ..writeByte(43)
-      ..write(obj.playerScript);
+      ..write(obj.playerScript)
+      ..writeByte(44)
+      ..write(obj.isPureJs);
   }
 
   @override
@@ -310,6 +313,7 @@ Rule _$RuleFromJson(Map<String, dynamic> json) => Rule(
   searchScript: json['searchScript'] as String?,
   detailScript: json['detailScript'] as String?,
   playerScript: json['playerScript'] as String?,
+  isPureJs: json['isPureJs'] as bool? ?? false,
 )..updateAt = DateTime.parse(json['updateAt'] as String);
 
 Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
@@ -357,6 +361,7 @@ Map<String, dynamic> _$RuleToJson(Rule instance) => <String, dynamic>{
   'searchScript': instance.searchScript,
   'detailScript': instance.detailScript,
   'playerScript': instance.playerScript,
+  'isPureJs': instance.isPureJs,
 };
 
 const _$RequestMethodEnumMap = {
