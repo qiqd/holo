@@ -11,7 +11,7 @@ import 'package:logger/web.dart';
 
 /// 通用动画源服务类
 /// 根据规则配置构建动画源服务
-class Common extends SourceService {
+class CommonSourceService extends SourceService {
   /// 规则配置对象
   final Rule rule;
 
@@ -31,7 +31,7 @@ class Common extends SourceService {
 
   /// 构造函数
   /// [rule] 规则配置对象
-  Common({required this.rule}) {
+  CommonSourceService({required this.rule}) {
     if (rule.useWebView) {
       webviewUtil.fetchHtmlOrJson(rule.baseUrl);
     }
@@ -39,7 +39,8 @@ class Common extends SourceService {
 
   /// 工厂构造函数
   /// [rule] 规则配置对象
-  factory Common.build(Rule rule) => Common(rule: rule);
+  factory CommonSourceService.build(Rule rule) =>
+      CommonSourceService(rule: rule);
 
   /// 获取网站基础地址
   @override
@@ -84,7 +85,10 @@ class Common extends SourceService {
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
         true => await webviewUtil.fetchHtmlOrJson(
-          keyword.contains('http') ? keyword : searchUrl,
+          // 纯JS规则时加载首页执行脚本，否则加载搜索页
+          rule.isPureJs
+              ? rule.baseUrl
+              : (keyword.contains('http') ? keyword : searchUrl),
           requestMethod: rule.searchRequestMethod,
           requestBody: rule.searchRequestBody.map(
             (key, value) => MapEntry(key, value.replaceAll(reg, keyword)),
@@ -94,7 +98,9 @@ class Common extends SourceService {
           waitingForTargetElement: rule.waitForTargetElement,
           targetElementSelector: rule.searchSelector,
           onError: exceptionHandler,
-          injectedScript: rule.decodedSearchScript,
+          injectedScript: rule.isPureJs
+              ? rule.decodedSearchScript?.replaceAll('{keyword}', keyword)
+              : rule.decodedSearchScript,
         ),
         false =>
           (await HttpUtil.createDio().get(
@@ -104,6 +110,7 @@ class Common extends SourceService {
       };
 
       // 如果配置了搜索JS脚本，优先使用JS脚本返回的JSON数据
+      // 纯JS规则时强制使用JS脚本
       if (rule.searchScript != null && rule.searchScript!.isNotEmpty) {
         try {
           final List<dynamic> jsonList = jsonDecode(htmlStr);
@@ -126,6 +133,11 @@ class Common extends SourceService {
           exceptionHandler('JS脚本返回的JSON解析失败: $e');
           return [];
         }
+      }
+
+      // 纯JS规则时，不解析CSS选择器
+      if (rule.isPureJs) {
+        return [];
       }
 
       // 解析HTML文档
@@ -152,9 +164,13 @@ class Common extends SourceService {
         // 补全图片URL
         imgUrl = imgUrl.contains('http') ? imgUrl : rule.baseUrl + imgUrl;
         imgUrl = imgUrl.contains("https") ? imgUrl : ('https://$imgUrl');
+        //先尝试在子元素中查找，如果找不到，再尝试从当前元素自身获取：
+        var idElement = e.querySelector(rule.itemIdSelector);
+        var mediaId =
+            idElement?.attributes['href'] ?? e.attributes['href'] ?? '';
         // 构建媒体对象
         return Media(
-          id: e.querySelector(rule.itemIdSelector)?.attributes['href'] ?? '',
+          id: mediaId,
           title: e.querySelector(rule.itemTitleSelector)?.text ?? '',
           coverUrl: imgUrl,
           type:
@@ -185,7 +201,10 @@ class Common extends SourceService {
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
         true => await webviewUtil.fetchHtmlOrJson(
-          mediaId.contains('http') ? mediaId : detailUrl,
+          // 纯JS规则时加载首页执行脚本，否则加载详情页
+          rule.isPureJs
+              ? rule.baseUrl
+              : (mediaId.contains('http') ? mediaId : detailUrl),
           requestMethod: rule.detailRequestMethod,
           timeout: Duration(seconds: rule.timeout),
           headers: rule.detailRequestHeaders,
@@ -195,7 +214,9 @@ class Common extends SourceService {
           waitingForTargetElement: rule.waitForTargetElement,
           targetElementSelector: rule.lineSelector,
           onError: exceptionHandler,
-          injectedScript: rule.decodedDetailScript,
+          injectedScript: rule.isPureJs
+              ? rule.decodedDetailScript?.replaceAll('{mediaId}', mediaId)
+              : rule.decodedDetailScript,
         ),
         false =>
           (await HttpUtil.createDio().get(
@@ -205,6 +226,7 @@ class Common extends SourceService {
       };
 
       // 如果配置了详情JS脚本，优先使用JS脚本返回的JSON数据
+      // 纯JS规则时强制使用JS脚本
       if (rule.detailScript != null && rule.detailScript!.isNotEmpty) {
         try {
           final Map<String, dynamic> jsonMap = jsonDecode(htmlStr);
@@ -226,6 +248,11 @@ class Common extends SourceService {
           exceptionHandler('JS脚本返回的JSON解析失败: $e');
           return null;
         }
+      }
+
+      // 纯JS规则时，不解析CSS选择器
+      if (rule.isPureJs) {
+        return null;
       }
 
       // 解析HTML文档
@@ -263,7 +290,10 @@ class Common extends SourceService {
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
         true => await webviewUtil.fetchHtmlOrJson(
-          episodeId.contains('http') ? episodeId : viewUrl,
+          // 纯JS规则时加载首页执行脚本，否则加载播放页
+          rule.isPureJs
+              ? rule.baseUrl
+              : (episodeId.contains('http') ? episodeId : viewUrl),
           timeout: Duration(seconds: rule.timeout),
           requestMethod: rule.playerRequestMethod,
           requestBody: rule.playerRequestBody.map(
@@ -274,7 +304,9 @@ class Common extends SourceService {
           waitingForTargetElement: rule.waitForTargetElement,
           targetElementSelector: rule.playerVideoSelector,
           onError: exceptionHandler,
-          injectedScript: rule.decodedPlayerScript,
+          injectedScript: rule.isPureJs
+              ? rule.decodedPlayerScript?.replaceAll('{episodeId}', episodeId)
+              : rule.decodedPlayerScript,
         ),
         false =>
           (await HttpUtil.createDio().get(
@@ -284,6 +316,7 @@ class Common extends SourceService {
       };
 
       // 如果配置了播放JS脚本，优先使用JS脚本返回的JSON数据
+      // 纯JS规则时强制使用JS脚本
       if (rule.playerScript != null && rule.playerScript!.isNotEmpty) {
         try {
           final Map<String, dynamic> jsonMap = jsonDecode(htmlStr);

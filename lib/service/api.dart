@@ -1,4 +1,4 @@
-import 'package:holo/service/common.dart';
+import 'package:holo/service/common_source_service.dart';
 import 'package:holo/service/impl/meta/anime_trace.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/impl/meta/log_var.dart';
@@ -34,7 +34,7 @@ class Api {
     // 构建启用的规则源
     var commonSources = ruleList
         .where((rule) => rule.isEnabled)
-        .map((rule) => Common.build(rule))
+        .map((rule) => CommonSourceService.build(rule))
         .toList();
     // 添加规则源
     _sources.addAll(commonSources);

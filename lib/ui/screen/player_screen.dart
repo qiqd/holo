@@ -45,6 +45,7 @@ class PlayerScreen extends StatefulWidget {
   final List<Person> person;
   final List<Person> character;
   final List<RelatedWork> relation;
+  final Map<String, String> httpHeaders;
   const PlayerScreen({
     super.key,
     required this.mediaId,
@@ -55,6 +56,7 @@ class PlayerScreen extends StatefulWidget {
     this.person = const [],
     this.character = const [],
     this.relation = const [],
+    this.httpHeaders = const {},
   });
 
   @override
@@ -193,6 +195,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         _playUrl = newUrl;
         final newController = VideoPlayerController.networkUrl(
           Uri.parse(newUrl),
+          httpHeaders: widget.httpHeaders,
         );
         await newController.initialize();
 
@@ -1311,16 +1314,14 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
     _updatePlaybackHistory();
     WidgetsBinding.instance.removeObserver(this);
-    if(Platform.isIOS){
+    if (Platform.isIOS) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    } else {
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
       ]);
-    }else{
-       SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
     }
     // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);

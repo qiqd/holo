@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/service/common.dart';
+import 'package:holo/service/common_source_service.dart';
 import 'package:holo/util/http_util.dart';
 import 'package:html/parser.dart';
 
-class Gugu extends Common {
+class Gugu extends CommonSourceService {
   Gugu()
     : super(
         rule: Rule(

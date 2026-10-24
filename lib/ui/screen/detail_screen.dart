@@ -12,6 +12,7 @@ import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_subscribe.dart';
 import 'package:holo/main.dart';
 import 'package:holo/service/api.dart';
+import 'package:holo/service/common_source_service.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/person_detail.dart';
 import 'package:holo/util/datetime_util.dart';
@@ -67,6 +68,14 @@ class _DetailScreenState extends State<DetailScreen>
   int _viewingStatus = 0;
   final userSetting = MyApp.userSettingNotifier.value;
   UserSubscribe? _userSubscribe;
+  UserPlayback? _userPlayback;
+
+  void _loadPlaybackHistory(int id) async {
+    if (widget.subject != null) {
+      final temp = HiveUtil.getUserPlaybacks(id: widget.subject!.id);
+      safeSetState(() => _userPlayback = temp.first);
+    }
+  }
 
   Future<void> _fetchSubject() async {
     var subject = HiveUtil.getAnimeInfoById(widget.id);
@@ -116,12 +125,11 @@ class _DetailScreenState extends State<DetailScreen>
         }
       }
       //如果启用了最近源播放并且有播放记录，则使用最近源的视频
-      final playbackHistory = _loadPlaybackHistory(widget.id);
       if (MyApp.userSettingNotifier.value.useLastSource &&
-          playbackHistory.isNotEmpty) {
+          _userPlayback != null) {
         if (tempMedia != null &&
             tempSource != null &&
-            tempSource.getName() == playbackHistory.first.sourceName) {
+            tempSource.getName() == _userPlayback!.sourceName) {
           defaultMedia = tempMedia;
           defaultSource = tempSource;
           safeSetState(() {
@@ -201,10 +209,6 @@ class _DetailScreenState extends State<DetailScreen>
         _userSubscribe = subs.first;
       });
     }
-  }
-
-  List<UserPlayback> _loadPlaybackHistory(int id) {
-    return HiveUtil.getUserPlaybacks(id: id);
   }
 
   Future<void> _updateSubscribeHistory() async {
@@ -425,6 +429,7 @@ class _DetailScreenState extends State<DetailScreen>
       ).showSnackBar(SnackBar(content: Text("detail.no_source_found".tr())));
       return;
     }
+    final commonSourceService = defaultSource as CommonSourceService;
     context.push(
       "/player",
       extra: {
@@ -436,6 +441,7 @@ class _DetailScreenState extends State<DetailScreen>
         'person': _person,
         'character': _character,
         'relation': _relation,
+        'httpHeaders': commonSourceService.rule.playerRequestHeaders,
       },
     );
   }
@@ -445,11 +451,14 @@ class _DetailScreenState extends State<DetailScreen>
         ? SizedBox(
             width: double.infinity,
             child: SingleChildScrollView(
-              padding: EdgeInsets.only(top: 8),
-              child: Text(
-                _subject?.summary!.isEmpty == true
-                    ? "detail.no_summary".tr()
-                    : _subject!.summary!,
+              padding: EdgeInsets.only(bottom: 80),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  _subject?.summary!.isEmpty == true
+                      ? "detail.no_summary".tr()
+                      : _subject!.summary!,
+                ),
               ),
             ),
           )
@@ -465,11 +474,14 @@ class _DetailScreenState extends State<DetailScreen>
     return data.isNotEmpty
         ? (useCircleAvatar
               ? ListView.builder(
-                  itemCount: data.length,
+                  itemCount: data.length + 1,
                   padding: useCircleAvatar
                       ? null
                       : EdgeInsets.symmetric(horizontal: 6),
                   itemBuilder: (context, index) {
+                    if (index == data.length) {
+                      return ListTile();
+                    }
                     final p = data[index];
                     return ListTile(
                       leading: CircleAvatar(
@@ -489,26 +501,32 @@ class _DetailScreenState extends State<DetailScreen>
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final p = data[index];
-                    return MediaCard(
-                      id: "detail_${p['id'] as String}",
-                      title: p['title'] ?? "detail.unknown".tr(),
-                      imageUrl: p['image'] ?? '',
-                      genre: p['subtitle'] ?? '',
-                      height: 140,
-                      onTap: () {
-                        if (p['id'] == null || p['title'] == null) {
-                          return;
-                        }
-                        context.push(
-                          '/detail',
-                          extra: {
-                            'id': int.parse(p['id'] as String),
-                            'keyword': p['title'],
-                            'cover': p['image'] ?? '',
-                            'from': "detail",
+                    return Column(
+                      children: [
+                        MediaCard(
+                          id: "detail_${p['id'] as String}",
+                          title: p['title'] ?? "detail.unknown".tr(),
+                          imageUrl: p['image'] ?? '',
+                          genre: p['subtitle'] ?? '',
+                          height: 140,
+                          onTap: () {
+                            if (p['id'] == null || p['title'] == null) {
+                              return;
+                            }
+                            context.push(
+                              '/detail',
+                              extra: {
+                                'id': int.parse(p['id'] as String),
+                                'keyword': p['title'],
+                                'cover': p['image'] ?? '',
+                                'from': "detail",
+                              },
+                            );
                           },
-                        );
-                      },
+                        ),
+                        if (index == data.length - 1)
+                          const SizedBox(height: 80),
+                      ],
                     );
                   },
                 ))
@@ -518,7 +536,7 @@ class _DetailScreenState extends State<DetailScreen>
   Widget _buildAppBar() {
     return AppBar(
       actionsPadding: EdgeInsets.symmetric(horizontal: 12),
-      title: Text("detail.title".tr()),
+      //title: Text("detail.title".tr()),
       actions: [
         IconButton(
           tooltip: "Link to Bangumi",
@@ -582,6 +600,7 @@ class _DetailScreenState extends State<DetailScreen>
   @override
   void initState() {
     super.initState();
+    _loadPlaybackHistory(widget.id);
     _fetchSubject();
     _fetchPerson();
     _fetchCharacter();
@@ -593,20 +612,26 @@ class _DetailScreenState extends State<DetailScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       //浮动播放按钮
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _goToPlayer,
-        child: AnimatedSwitcher(
-          duration: Duration(milliseconds: 500),
-          child: _isLoading
-              ? const CircularProgressIndicator(
-                  year2023: false,
-                  key: ValueKey("detail_floating_loading"),
-                )
-              : const Icon(
-                  Icons.play_arrow_rounded,
-                  key: ValueKey("detail_floating_icon"),
-                ),
-        ),
+        isExtended: true,
+        label: _isLoading
+            ? const CircularProgressIndicator(
+                year2023: false,
+                key: ValueKey("detail_floating_loading"),
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.play_arrow),
+                  if (_userPlayback?.episodeIndex != null)
+                    Text(
+                      "detail.continue_playing".tr(
+                        args: [(_userPlayback!.episodeIndex + 1).toString()],
+                      ),
+                    ),
+                ],
+              ),
       ),
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: LayoutBuilder(

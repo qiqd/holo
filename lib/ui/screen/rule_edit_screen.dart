@@ -41,95 +41,16 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
     context.pop();
   }
 
-  Future<void> _showHelpDialog() async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('rule_edit.help_title'.tr()),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'rule_edit.help_rule_name'.tr(),
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                Text(
-                  '\n${'rule_edit.help_base_url'.tr()}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                Text(
-                  '\n${'rule_edit.help_logo_url'.tr()}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                Text(
-                  '\n${'rule_edit.help_search_img_selector'.tr()}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                Text(
-                  '\n${'rule_edit.help_detail_title_selector'.tr()}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                Text(
-                  '\n${'rule_edit.help_detail_desc_selector'.tr()}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                Text(
-                  '\n${'rule_edit.help_detail_content_selector'.tr()}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                Text(
-                  '\n${'rule_edit.help_enable_rule'.tr()}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Divider(),
-                Text(
-                  '\n${'rule_edit.help_js_script_config'.tr()}',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            FilledButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('rule_edit.help_ok_button'.tr()),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   List<Widget> _buildAppBarActions(bool isOrientation) {
     return [
       if (widget.rule != null && !isOrientation)
-        IconButton(
-          icon: Text('Test'),
+        TextButton(
+          child: Text('rule_edit.test'.tr()),
           onPressed: () {
             if (_service == null) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('未检测到数据源实例,请在规则管理页面刷新试试')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('rule_edit.no_source_instance'.tr())),
+              );
               return;
             }
             context.push('/rule_test', extra: _service!);
@@ -144,7 +65,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
         tooltip: 'Help',
         icon: const Icon(Icons.help_outline_outlined),
         onPressed: () {
-          _showHelpDialog();
+          context.push('/rule_guide');
         },
       ),
     ];
@@ -298,6 +219,24 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               title: Text('rule_edit.wait_for_target_element_label'.tr()),
               subtitle: Text('rule_edit.wait_for_target_element_subtitle'.tr()),
             ),
+            // 纯JS规则开关
+            SwitchListTile(
+              title: Text('rule_edit.pure_js_label'.tr()),
+              subtitle: Text('rule_edit.pure_js_subtitle'.tr()),
+              value: _rule.isPureJs,
+              onChanged: widget.isEditMode
+                  ? (value) {
+                      setState(() {
+                        _rule.isPureJs = value;
+                        // 开启纯JS模式时自动启用WebView和JS脚本
+                        if (value) {
+                          _rule.useWebView = true;
+                          _rule.useJsScript = true;
+                        }
+                      });
+                    }
+                  : null,
+            ),
             // JS脚本配置说明
             ListTile(
               title: Text('rule_edit.js_script_config_title'.tr()),
@@ -373,11 +312,19 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               },
             ),
             //请求体
-            AnimatedSize(
+            AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
+                  child: child,
+                );
+              },
               child: _rule.searchRequestMethod == RequestMethod.get
-                  ? SizedBox.shrink()
+                  ? SizedBox.shrink(key: ValueKey('search_body_empty'))
                   : TextFormField(
+                      key: ValueKey('search_body_field'),
                       enabled: widget.isEditMode,
                       initialValue: widget.rule?.searchRequestBody.entries
                           .map((e) => '${e.key}=${e.value}')
@@ -417,147 +364,195 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       },
                     ),
             ),
-            //搜索元素选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.searchSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.search_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.search_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.searchSelector = value;
-                });
+            // CSS选择器区域（纯JS规则时隐藏）
+            AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
+                  child: child,
+                );
               },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'rule_edit.search_selector_validator'.tr();
-                }
-                return null;
-              },
-            ),
-            //  搜索元素图片选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.itemImgSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.item_img_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.item_img_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.itemImgSelector = value;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'rule_edit.item_img_selector_validator'.tr();
-                }
-                return null;
-              },
-            ),
-            //  搜索元素图片是否从src获取
-            SwitchListTile(
-              title: Text('rule_edit.item_img_from_src_label'.tr()),
-              subtitle: Text('rule_edit.item_img_from_src_subtitle'.tr()),
-              value: widget.rule?.itemImgFromSrc ?? _rule.itemImgFromSrc,
-              onChanged: widget.isEditMode
-                  ? (value) {
-                      setState(() {
-                        _rule.itemImgFromSrc = value;
-                      });
-                    }
-                  : null,
-            ),
-            //  搜索元素标题选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.itemTitleSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.item_title_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.item_title_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.itemTitleSelector = value;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'rule_edit.item_title_selector_validator'.tr();
-                }
-                return null;
-              },
-            ),
-            //  搜索元素id选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.itemIdSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.item_id_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.item_id_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.itemIdSelector = value;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'rule_edit.item_id_selector_validator'.tr();
-                }
-                return null;
-              },
-            ),
-            //  搜索元素类型选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.itemGenreSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.item_genre_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.item_genre_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.itemGenreSelector = value;
-                });
-              },
+              child: _rule.isPureJs
+                  ? SizedBox.shrink(key: ValueKey('search_css_empty'))
+                  : Column(
+                      key: ValueKey('search_css_column'),
+                      spacing: 12,
+                      children: [
+                        //搜索元素选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.searchSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.search_selector_label'.tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.search_selector_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.searchSelector = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'rule_edit.search_selector_validator'.tr();
+                            }
+                            return null;
+                          },
+                        ),
+                        //  搜索元素图片选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.itemImgSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.item_img_selector_label'.tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.item_img_selector_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.itemImgSelector = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'rule_edit.item_img_selector_validator'
+                                  .tr();
+                            }
+                            return null;
+                          },
+                        ),
+                        //  搜索元素图片是否从src获取
+                        SwitchListTile(
+                          title: Text('rule_edit.item_img_from_src_label'.tr()),
+                          subtitle: Text(
+                            'rule_edit.item_img_from_src_subtitle'.tr(),
+                          ),
+                          value:
+                              widget.rule?.itemImgFromSrc ??
+                              _rule.itemImgFromSrc,
+                          onChanged: widget.isEditMode
+                              ? (value) {
+                                  setState(() {
+                                    _rule.itemImgFromSrc = value;
+                                  });
+                                }
+                              : null,
+                        ),
+                        //  搜索元素标题选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.itemTitleSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.item_title_selector_label'
+                                .tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.item_title_selector_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.itemTitleSelector = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'rule_edit.item_title_selector_validator'
+                                  .tr();
+                            }
+                            return null;
+                          },
+                        ),
+                        //  搜索元素id选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.itemIdSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.item_id_selector_label'.tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.item_id_selector_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.itemIdSelector = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'rule_edit.item_id_selector_validator'
+                                  .tr();
+                            }
+                            return null;
+                          },
+                        ),
+                        //  搜索元素类型选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.itemGenreSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.item_genre_selector_label'
+                                .tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.item_genre_selector_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.itemGenreSelector = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
             ),
             //  搜索请求头Referer
             TextFormField(
@@ -689,11 +684,19 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               },
             ),
             //请求体
-            AnimatedSize(
+            AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
+                  child: child,
+                );
+              },
               child: _rule.detailRequestMethod == RequestMethod.get
-                  ? SizedBox()
+                  ? SizedBox(key: ValueKey('detail_body_empty'))
                   : TextFormField(
+                      key: ValueKey('detail_body_field'),
                       enabled: widget.isEditMode,
                       initialValue: widget.rule?.detailRequestBody.entries
                           .map((e) => '${e.key}=${e.value}')
@@ -733,59 +736,85 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       },
                     ),
             ),
-            //详情页播放路线选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.lineSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.line_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.line_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.lineSelector = value;
-                });
+            // CSS选择器区域（纯JS规则时隐藏）
+            AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
+                  child: child,
+                );
               },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'rule_edit.line_selector_validator'.tr();
-                }
-                return null;
-              },
-            ),
-            //详情页剧集选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.episodeSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.episode_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.episode_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.episodeSelector = value;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'rule_edit.episode_selector_validator'.tr();
-                }
-                return null;
-              },
+              child: _rule.isPureJs
+                  ? SizedBox.shrink(key: ValueKey('detail_css_empty'))
+                  : Column(
+                      key: ValueKey('detail_css_column'),
+                      spacing: 12,
+                      children: [
+                        //详情页播放路线选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.lineSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.line_selector_label'.tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text('rule_edit.line_selector_hint'.tr()),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.lineSelector = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'rule_edit.line_selector_validator'.tr();
+                            }
+                            return null;
+                          },
+                        ),
+                        //详情页剧集选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.episodeSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.episode_selector_label'.tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.episode_selector_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.episodeSelector = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'rule_edit.episode_selector_validator'
+                                  .tr();
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
             ),
 
             //  详情页请求头Referer
@@ -910,11 +939,19 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
               },
             ),
             //请求体
-            AnimatedSize(
+            AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
+                  child: child,
+                );
+              },
               child: _rule.playerRequestMethod == RequestMethod.get
-                  ? SizedBox()
+                  ? SizedBox(key: ValueKey('player_body_empty'))
                   : TextFormField(
+                      key: ValueKey('player_body_field'),
                       enabled: widget.isEditMode,
                       initialValue: widget.rule?.playerRequestBody.entries
                           .map((e) => '${e.key}=${e.value}')
@@ -954,74 +991,109 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                       },
                     ),
             ),
-            //播放页面视频选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.playerVideoSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.player_video_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.player_video_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.playerVideoSelector = value;
-                });
+            // CSS选择器区域（纯JS规则时隐藏）
+            AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
+                  child: child,
+                );
               },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'rule_edit.player_video_selector_validator'.tr();
-                }
-                return null;
-              },
-            ),
-            //详情页视频元素属性选择器
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.videoElementAttribute,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.video_element_attribute_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.video_element_attribute_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.videoElementAttribute = value;
-                });
-              },
-            ),
+              child: _rule.isPureJs
+                  ? SizedBox.shrink(key: ValueKey('player_css_empty'))
+                  : Column(
+                      key: ValueKey('player_css_column'),
+                      spacing: 12,
+                      children: [
+                        //播放页面视频选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.playerVideoSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.player_video_selector_label'
+                                .tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.player_video_selector_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.playerVideoSelector = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'rule_edit.player_video_selector_validator'
+                                  .tr();
+                            }
+                            return null;
+                          },
+                        ),
+                        //详情页视频元素属性选择器
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.videoElementAttribute,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.video_element_attribute_label'
+                                .tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.video_element_attribute_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.videoElementAttribute = value;
+                            });
+                          },
+                        ),
 
-            TextFormField(
-              enabled: widget.isEditMode,
-              initialValue: widget.rule?.embedVideoSelector,
-              decoration: InputDecoration(
-                labelText: 'rule_edit.embed_video_selector_label'.tr(),
-                hint: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('rule_edit.embed_video_selector_hint'.tr()),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _rule.embedVideoSelector = value;
-                });
-              },
+                        TextFormField(
+                          enabled: widget.isEditMode,
+                          initialValue: widget.rule?.embedVideoSelector,
+                          decoration: InputDecoration(
+                            labelText: 'rule_edit.embed_video_selector_label'
+                                .tr(),
+                            hint: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'rule_edit.embed_video_selector_hint'.tr(),
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _rule.embedVideoSelector = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
             ),
 
             // TextFormField(

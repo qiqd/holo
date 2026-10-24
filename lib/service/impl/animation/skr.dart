@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:holo/entity/rule.dart';
-import 'package:holo/service/common.dart';
+import 'package:holo/service/common_source_service.dart';
 import 'package:holo/util/http_util.dart';
 import 'package:html/parser.dart';
 
-class Skr extends Common {
+class Skr extends CommonSourceService {
   Skr()
     : super(
         rule: Rule(

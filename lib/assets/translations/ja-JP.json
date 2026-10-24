@@ -80,7 +80,8 @@
         "delete_subs_success": "クラウド追番記録の削除に成功",
         "delete_view_failed": "クラウド再生履歴の削除に失敗",
         "delete_view_success": "クラウド再生履歴の削除に成功",
-        "subscribe_playback_search": "追番または再生履歴を検索"
+        "subscribe_playback_search": "追番または再生履歴を検索",
+        "webdav_not_configured": "WebDAVが設定されていません"
     },
     "setting": {
         "title": "設定",
@@ -125,9 +126,21 @@
             "auto_check_update_description": "アプリを起動するたびに自動バージョンをチェック",
             "no_new_version": "最新バージョンです"
         },
+        "open_source": {
+            "source_code": "ソースコード",
+            "source_code_description": "GitHubでソースコードを見る",
+            "report_issue": "問題を報告",
+            "report_issue_description": "バグや機能リクエストを送信",
+            "star_project": "プロジェクトにスターを付ける",
+            "star_project_description": "GitHubでプロジェクトにスターを付ける"
+        },
         "language": {
             "change": "言語切替",
-            "change_description": "言語を切り替えると、アプリを再起動する必要があります"
+            "change_description": "言語を切り替えると、アプリを再起動する必要があります",
+            "zh_CN": "中文简体",
+            "zh_TW": "中文繁體",
+            "en_US": "English",
+            "ja_JP": "日本語"
         },
         "data_management": {
             "clear_playback_history": "視聴履歴をクリア",
@@ -150,13 +163,11 @@
             "rule_manager": "ルール管理",
             "rule_manager_description": "カスタムルールを管理"
         },
-        "open_source": {
-            "source_code": "ソースコード",
-            "source_code_description": "GitHubでソースコードを見る",
-            "report_issue": "問題を報告",
-            "report_issue_description": "バグや機能リクエストを送信",
-            "star_project": "プロジェクトにスターを付ける",
-            "star_project_description": "GitHubでプロジェクトにスターを付ける"
+        "metadata": {
+            "bangumi": "Bangumi",
+            "logvar": "LogVar 弾幕",
+            "animetrace": "AnimeTrace",
+            "daily_sentence": "sekaiai.github.io"
         }
     },
     "appearance": {
@@ -241,7 +252,9 @@
         "no_person_data": "人物情報なし",
         "no_character_data": "キャラクター情報なし",
         "no_related_works_data": "関連作品情報なし",
-        "air_date_key": "放送開始"
+        "air_date_key": "放送開始",
+        "continue_playing": "第{}話から続ける",
+        "save_rule_to_test": "ルールを保存してテスト"
     },
     "player": {
         "summary": "概要",
@@ -372,6 +385,8 @@
         "video_element_attribute_hint": "例：data-play または data-src",
         "wait_for_target_element_label": "要素の読み込み完了を待機",
         "wait_for_target_element_subtitle": "有効にすると、返答する前に目標要素の読み込み完了を待ちます",
+        "pure_js_label": "純JSルール",
+        "pure_js_subtitle": "有効にすると、JSスクリプトのみを使用してデータを取得し、CSSセレクタ入力は非表示になります",
         "js_script_config_title": "JSスクリプト設定",
         "js_script_config_subtitle": "検索/詳細/再生のJSスクリプトを個別に設定。スクリプトはCSSセレクタより優先されます。",
         "search_script_label": "検索ページJSスクリプト（任意）",
@@ -383,10 +398,44 @@
         "embed_video_selector_label": "埋め込みビデオセレクタ",
         "embed_video_selector_hint": "複数のセレクタは英語のカンマで区切ります。例：iframe, #embed-player",
         "video_url_subs_char_label": "ビデオURL抽出ルール",
-        "video_url_subs_char_hint": "例：params=videoUrl=xxxx から xxxx 部分を抽出"
+        "video_url_subs_char_hint": "例：params=videoUrl=xxxx から xxxx 部分を抽出",
+        "test": "テスト",
+        "no_source_instance": "データソースインスタンスが検出されませんでした。ルール管理ページで更新してください"
+    },
+    "rule_test": {
+        "fetch_search_error": "検索取得エラー: {}",
+        "fetch_detail_error": "詳細取得エラー: {}",
+        "fetch_view_error": "再生取得エラー: {}",
+        "video_url_null": "ビデオURLがnullです",
+        "test_error": "テストエラー: {}",
+        "play": "再生",
+        "url_label": "URL: {}"
+    },
+    "rule_repository": {
+        "title": "ルールリポジトリ"
     },
     "logger": {
         "dialog_title": "ログを空にしますか？？",
-        "dialog_content": "確認しますか？"
+        "dialog_content": "確認しますか？",
+        "title": "ログ",
+        "copied": "ログをクリップボードにコピーしました",
+        "no_log": "ログがありません",
+        "copy_tooltip": "ログをクリップボードにコピー",
+        "clear_tooltip": "ログをクリア"
+    },
+    "cap_video_player": {
+        "keyboard_shortcuts": "キーボードショートカット",
+        "play_pause": "再生/一時停止",
+        "space": "スペース",
+        "volume_up": "音量アップ",
+        "up_arrow": "上矢印",
+        "volume_down": "音量ダウン",
+        "down_arrow": "下矢印",
+        "seek_forward": "早送り",
+        "right_arrow": "右矢印",
+        "seek_backward": "巻き戻し",
+        "left_arrow": "左矢印",
+        "show_episode_list": "エピソードリスト表示",
+        "e_key": "E"
     }
 }

@@ -80,7 +80,8 @@
         "delete_subs_success": "删除云端追番记录成功",
         "delete_view_failed": "删除云端播放记录失败",
         "delete_view_success": "删除云端播放记录成功",
-        "subscribe_playback_search": "搜索订阅或者播放记录"
+        "subscribe_playback_search": "搜索订阅或者播放记录",
+        "webdav_not_configured": "WebDAV未配置"
     },
     "setting": {
         "title": "设置",
@@ -157,6 +158,20 @@
             "report_issue_description": "提交Bug或功能建议",
             "star_project": "给项目点赞",
             "star_project_description": "在GitHub上为项目点星"
+        },
+        "language": {
+            "change": "切换语言",
+            "change_description": "变更后需要重启应用才能生效",
+            "zh_CN": "中文简体",
+            "zh_TW": "中文繁體",
+            "en_US": "English",
+            "ja_JP": "日本語"
+        },
+        "metadata": {
+            "bangumi": "Bangumi 番组计划",
+            "logvar": "LogVar 弹幕",
+            "animetrace": "AnimeTrace",
+            "daily_sentence": "sekaiai.github.io"
         }
     },
     "appearance": {
@@ -241,7 +256,9 @@
         "no_person_data": "人物暂无数据",
         "no_character_data": "角色暂无数据",
         "no_related_works_data": "关联作品暂无数据",
-        "air_date_key": "放送开始"
+        "air_date_key": "放送开始",
+        "continue_playing": "继续从第{}话播放",
+        "save_rule_to_test": "保存规则后即可测试"
     },
     "player": {
         "summary": "简介",
@@ -369,6 +386,8 @@
         "video_element_attribute_hint": "例如：data-src",
         "wait_for_target_element_label": "等待元素加载完成",
         "wait_for_target_element_subtitle": "如果启用，将等待目标元素加载完成后再返回",
+        "pure_js_label": "纯JS规则",
+        "pure_js_subtitle": "开启后完全使用JS脚本获取数据，隐藏CSS选择器输入框",
         "js_script_config_title": "JS脚本配置",
         "js_script_config_subtitle": "在下方可独立配置搜索/详情/播放的JS脚本，有脚本则优先使用JS，无则使用CSS选择器",
         "search_script_label": "搜索页JS脚本（可选）",
@@ -380,10 +399,44 @@
         "embed_video_selector_label": "嵌入式视频选择器,可选",
         "embed_video_selector_hint": "多个选择器用英文逗号分隔，例如：iframe, #embed-player",
         "video_url_subs_char_label": "视频URL截取字符,使用lastIndexOf函数,可选",
-        "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分"
+        "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分",
+        "test": "测试",
+        "no_source_instance": "未检测到数据源实例,请在规则管理页面刷新试试"
+    },
+    "rule_test": {
+        "fetch_search_error": "获取搜索失败: {}",
+        "fetch_detail_error": "获取详情失败: {}",
+        "fetch_view_error": "获取播放失败: {}",
+        "video_url_null": "视频地址为空",
+        "test_error": "测试出错: {}",
+        "play": "播放",
+        "url_label": "地址: {}"
+    },
+    "rule_repository": {
+        "title": "规则仓库"
     },
     "logger": {
         "dialog_title": "清空日志?",
-        "dialog_content": "确认清空所有日志?"
+        "dialog_content": "确认清空所有日志?",
+        "title": "日志",
+        "copied": "日志已复制到剪贴板",
+        "no_log": "暂无日志",
+        "copy_tooltip": "复制日志到剪贴板",
+        "clear_tooltip": "清空日志"
+    },
+    "cap_video_player": {
+        "keyboard_shortcuts": "键盘快捷键",
+        "play_pause": "播放/暂停",
+        "space": "空格键",
+        "volume_up": "音量增加",
+        "up_arrow": "上方向键",
+        "volume_down": "音量减少",
+        "down_arrow": "下方向键",
+        "seek_forward": "快进",
+        "right_arrow": "右方向键",
+        "seek_backward": "快退",
+        "left_arrow": "左方向键",
+        "show_episode_list": "显示选集",
+        "e_key": "E键"
     }
 }
