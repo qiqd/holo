@@ -8,8 +8,6 @@ import 'package:holo/service/source_service.dart';
 import 'package:holo/extension/dio_timing_extension.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/http_util.dart';
-import 'package:holo/util/logger_util.dart';
-import 'package:logger/web.dart';
 
 /// API服务管理类
 /// 负责管理各种元数据服务和动画源服务
