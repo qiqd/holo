@@ -25,7 +25,7 @@ class CommonSourceService extends SourceService {
   final RegExp reg = RegExp(r'\{[^}]*\}');
 
   /// WebView工具类实例
-  final FlutterInappwebviewUtil webviewUtil = FlutterInappwebviewUtil();
+  final FlutterInappwebviewUtil? webviewUtil = FlutterInappwebviewUtil();
 
   final Logger _logger = LoggerUtil.logger;
 
@@ -33,7 +33,7 @@ class CommonSourceService extends SourceService {
   /// [rule] 规则配置对象
   CommonSourceService({required this.rule}) {
     if (rule.useWebView) {
-      webviewUtil.fetchHtmlOrJson(rule.baseUrl);
+      webviewUtil!.fetchHtmlOrJson(rule.baseUrl);
     }
   }
 
@@ -76,15 +76,15 @@ class CommonSourceService extends SourceService {
     String keyword,
     int page,
     int size,
-    Function(String) exceptionHandler, {
-    timeout = const Duration(seconds: 60),
+    void Function(String) exceptionHandler, {
+    Duration timeout = const Duration(seconds: 60),
   }) async {
     try {
       // 构建搜索URL
       var searchUrl = rule.baseUrl + rule.searchUrl.replaceAll(reg, keyword);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await webviewUtil.fetchHtmlOrJson(
+        true => await webviewUtil!.fetchHtmlOrJson(
           // 纯JS规则时加载首页执行脚本，否则加载搜索页
           rule.isPureJs
               ? rule.baseUrl
@@ -193,14 +193,14 @@ class CommonSourceService extends SourceService {
   @override
   Future<Detail?> fetchDetail(
     String mediaId,
-    Function(String) exceptionHandler,
+    void Function(String) exceptionHandler,
   ) async {
     try {
       // 构建详情页URL
       var detailUrl = rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await webviewUtil.fetchHtmlOrJson(
+        true => await webviewUtil!.fetchHtmlOrJson(
           // 纯JS规则时加载首页执行脚本，否则加载详情页
           rule.isPureJs
               ? rule.baseUrl
@@ -282,14 +282,14 @@ class CommonSourceService extends SourceService {
   /// 返回播放地址字符串
   Future<String?> fetchVideoUrl(
     String episodeId,
-    Function(String) exceptionHandler,
+    void Function(String) exceptionHandler,
   ) async {
     try {
       // 构建播放页URL
       var viewUrl = rule.baseUrl + rule.playerUrl.replaceAll(reg, episodeId);
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
-        true => await webviewUtil.fetchHtmlOrJson(
+        true => await webviewUtil!.fetchHtmlOrJson(
           // 纯JS规则时加载首页执行脚本，否则加载播放页
           rule.isPureJs
               ? rule.baseUrl
@@ -345,7 +345,7 @@ class CommonSourceService extends SourceService {
               ? tempUrl
               : (rule.baseUrl + tempUrl);
           var tempHtmlStr = switch (rule.useWebView) {
-            true => await webviewUtil.fetchHtmlOrJson(
+            true => await webviewUtil!.fetchHtmlOrJson(
               tempUrl,
               isPlayerPage: true,
               headers: rule.playerRequestHeaders,

@@ -1,4 +1,6 @@
 import 'package:holo/service/common_source_service.dart';
+import 'package:holo/service/impl/animation/senfun.dart';
+import 'package:holo/service/impl/animation/sorane.dart';
 import 'package:holo/service/impl/meta/anime_trace.dart';
 import 'package:holo/service/impl/meta/bangumi.dart';
 import 'package:holo/service/impl/meta/log_var.dart';
@@ -6,10 +8,12 @@ import 'package:holo/service/source_service.dart';
 import 'package:holo/extension/dio_timing_extension.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/http_util.dart';
+import 'package:holo/util/logger_util.dart';
+import 'package:logger/web.dart';
 
 /// API服务管理类
 /// 负责管理各种元数据服务和动画源服务
-class Api {
+class ApiService {
   /// Bangumi元数据服务实例
   static Bangumi bangumi = Bangumi();
 
@@ -28,7 +32,7 @@ class Api {
     // 清空现有源
     _sources.clear();
     // 添加内置动画源
-    // _sources.addAll([AAfun(), Mwcy(), Skr(), Gugu(), Senfun()]);
+    _sources.addAll([Sorane(), Senfun()]);
     // 获取用户规则
     var ruleList = HiveUtil.getRules();
     // 构建启用的规则源

@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/api/sekaiai.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/main.dart';
-import 'package:holo/service/api.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/ui/component/cache_image.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<AnimeInfo> _rank = [];
 
   Future<void> _fetchHot() async {
-    final hot = await Api.bangumi.fetchRecommend(
+    final hot = await ApiService.bangumi.fetchRecommend(
       year: DateTime.now().year,
       sort: "rank",
       page: _page,
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_isLoading) return;
     safeSetState(() => _isLoading = true);
 
-    final rank = await Api.bangumi.fetchRecommend(
+    final rank = await ApiService.bangumi.fetchRecommend(
       sort: "rank",
       page: page,
       size: Platform.isWindows || Platform.isLinux || Platform.isMacOS

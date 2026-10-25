@@ -11,7 +11,7 @@ import 'package:holo/entity/related_work.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_subscribe.dart';
 import 'package:holo/main.dart';
-import 'package:holo/service/api.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/service/common_source_service.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/person_detail.dart';
@@ -59,7 +59,7 @@ class _DetailScreenState extends State<DetailScreen>
   late TabController tabController = TabController(vsync: this, length: 4);
   late TabController subTabController = TabController(
     vsync: this,
-    length: Api.getSources().length,
+    length: ApiService.getSources().length,
   );
   String _msg = "";
   Media? defaultMedia;
@@ -81,7 +81,7 @@ class _DetailScreenState extends State<DetailScreen>
     var subject = HiveUtil.getAnimeInfoById(widget.id);
 
     if (subject == null) {
-      final res = await Api.bangumi.fetchAnimeInfoById(widget.id, (e) {
+      final res = await ApiService.bangumi.fetchAnimeInfoById(widget.id, (e) {
         safeSetState(() {
           _msg = e.toString();
         });
@@ -106,7 +106,7 @@ class _DetailScreenState extends State<DetailScreen>
       _isLoading = true;
       _isCompleted = false;
     });
-    final sources = Api.getSources();
+    final sources = ApiService.getSources();
     final future = sources.map((source) async {
       var res = await source.fetchSearch(_keyword, 1, 10, (e) {});
       double highestScore = 0;
@@ -164,7 +164,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Future<void> _fetchPerson() async {
-    final res = await Api.bangumi.fetchStaffs(widget.id, (e) {
+    final res = await ApiService.bangumi.fetchStaffs(widget.id, (e) {
       safeSetState(() {
         _msg = e.toString();
       });
@@ -175,7 +175,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Future<void> _fetchCharacter() async {
-    final res = await Api.bangumi.fetchCharacters(widget.id, (e) {
+    final res = await ApiService.bangumi.fetchCharacters(widget.id, (e) {
       safeSetState(() {
         _msg = e.toString();
       });
@@ -186,7 +186,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Future<void> _fetchRelation() async {
-    final res = await Api.bangumi.fetchRelatedWorks(widget.id, (e) {
+    final res = await ApiService.bangumi.fetchRelatedWorks(widget.id, (e) {
       setState(() {
         _msg = e.toString();
       });

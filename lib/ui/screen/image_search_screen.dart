@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
-import 'package:holo/service/api.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -30,7 +30,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       _searchResult = null;
       _subject = [];
     });
-    var result = await Api.animeTrace.findAnimeFromImage(
+    var result = await ApiService.animeTrace.findAnimeFromImage(
       image: _image!,
       onError: (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -43,7 +43,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
       setState(() {
         _searchResult = result;
       });
-      var res = await Api.bangumi.fetchSearch(result.first['work'], (e) {
+      var res = await ApiService.bangumi.fetchSearch(result.first['work'], (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(tr('image_search.subject_search_error'))),
         );
