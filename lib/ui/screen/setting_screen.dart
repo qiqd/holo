@@ -109,17 +109,6 @@ class _SettingScreenState extends State<SettingScreen>
   List<Widget> _buildAppInfo() {
     return [
       _buildSectionHeader('setting.section.app_info'.tr()),
-      AboutListTile(
-        icon: const Icon(Icons.info_outline),
-        applicationName: 'Holo',
-        applicationVersion: 'v$_version.$_buildNumber',
-        applicationIcon: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
-          child: Image.asset('lib/images/launcher_round.webp', width: 100),
-        ),
-        applicationLegalese: 'AGPL-3.0 license',
-        aboutBoxChildren: _buildAboutBoxChildren(),
-      ),
       ListTile(
         leading: AnimatedSwitcher(
           duration: Duration(milliseconds: 300),
@@ -147,6 +136,23 @@ class _SettingScreenState extends State<SettingScreen>
         leading: Icon(Icons.message_outlined),
         title: Text('setting.app_info.logger_view'.tr()),
         onTap: () => context.push('/logger'),
+      ),
+      AboutListTile(
+        icon: const Icon(Icons.info_outline),
+        applicationName: 'Holo',
+        applicationVersion: 'v$_version.$_buildNumber',
+        applicationIcon: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Image.asset('lib/images/launcher_round.webp', width: 100),
+        ),
+        applicationLegalese: 'AGPL-3.0 license',
+        aboutBoxChildren: _buildAboutBoxChildren(),
+      ),
+      ListTile(
+        leading: const Icon(Icons.code),
+        title: Text('setting.open_source.source_code'.tr()),
+        subtitle: Text('setting.open_source.source_code_description'.tr()),
+        onTap: () => _openGitHub('https://github.com/qiqd/holo'),
       ),
     ];
   }
@@ -249,6 +255,13 @@ class _SettingScreenState extends State<SettingScreen>
       //   subtitle: const Text('取消所有收藏'),
       //   onTap: () => _clearFavorites(),
       // ),
+      // 规则管理部分
+      ListTile(
+        leading: const Icon(Icons.rule_rounded),
+        title: Text('setting.data_management.rule_manager'.tr()),
+        subtitle: Text('setting.data_management.rule_manager_description'.tr()),
+        onTap: () => context.push('/rule_manager'),
+      ),
       if (Platform.isAndroid || Platform.isIOS)
         ListTile(
           leading: const Icon(Icons.delete_outline),
@@ -258,25 +271,13 @@ class _SettingScreenState extends State<SettingScreen>
           ),
           onTap: () => _showClearCacheDialog(),
         ),
-      // 规则管理部分
-      ListTile(
-        leading: const Icon(Icons.rule_rounded),
-        title: Text('setting.data_management.rule_manager'.tr()),
-        subtitle: Text('setting.data_management.rule_manager_description'.tr()),
-        onTap: () => context.push('/rule_manager'),
-      ),
     ];
   }
 
   List<Widget> _buildOpenSource() {
     return [
       _buildSectionHeader('setting.section.open_source'.tr()),
-      ListTile(
-        leading: const Icon(Icons.code),
-        title: Text('setting.open_source.source_code'.tr()),
-        subtitle: Text('setting.open_source.source_code_description'.tr()),
-        onTap: () => _openGitHub('https://github.com/qiqd/holo'),
-      ),
+
       // ListTile(
       //   leading: const Icon(Icons.bug_report),
       //   title: Text('setting.open_source.report_issue'.tr()),
@@ -447,14 +448,13 @@ class _SettingScreenState extends State<SettingScreen>
       body: ListView(
         children: [
           ..._buildAccountInfo(),
-          // 应用信息部分
-          ..._buildAppInfo(),
-          // 切换语言部分
-          ..._buildLanguage(),
           // 数据管理部分
           ..._buildDataManagement(),
-          // 开源项目部分
-          ..._buildOpenSource(),
+
+          // 切换语言部分
+          ..._buildLanguage(),
+          // 应用信息部分
+          ..._buildAppInfo(),
         ],
       ),
     );

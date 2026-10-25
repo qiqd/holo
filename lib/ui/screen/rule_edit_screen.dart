@@ -19,7 +19,9 @@ class RuleEditScreen extends StatefulWidget {
 class _RuleEditScreenState extends State<RuleEditScreen> {
   final _formKey = GlobalKey<FormState>();
   SourceService? _service;
-  late final Rule _rule = widget.rule ?? Rule();
+  late final Rule _rule = widget.rule == null
+      ? Rule()
+      : Rule.fromJson(widget.rule!.toJson());
   void _saveRule() {
     if (!_formKey.currentState!.validate()) {
       return;
