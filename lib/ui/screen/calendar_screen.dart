@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/daily_broadcast.dart';
-import 'package:holo/service/api.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/ui/component/loading_msg.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:holo/ui/component/shimmer.dart';
@@ -31,7 +31,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     setState(() {
       _calendar = [];
     });
-    final dailyBroadcast = await Api.bangumi.fetchDailyBroadcast(
+    final dailyBroadcast = await ApiService.bangumi.fetchDailyBroadcast(
       (e) => setState(() {
         _msg = e.toString();
       }),

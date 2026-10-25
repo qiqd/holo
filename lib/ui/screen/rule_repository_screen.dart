@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:holo/api/rule_api.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/util/hive_util.dart';
 
 class RuleRepository extends StatefulWidget {
@@ -82,6 +83,12 @@ class _RuleRepositoryState extends State<RuleRepository> {
     } else {
       _getRules();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    ApiService.initSources();
   }
 
   @override

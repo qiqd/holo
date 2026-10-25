@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
-import 'package:holo/service/api.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/util/logger_util.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -34,8 +34,8 @@ class _RuleManagerState extends State<RuleManager> {
       safeSetState(() {
         _rules = HiveUtil.getRules();
       });
-      Api.initSources();
-      Api.delayTest();
+      ApiService.initSources();
+      ApiService.delayTest();
     } catch (e) {
       LoggerUtil.logger.e('Import rules failed: $e');
       if (mounted) {
@@ -51,8 +51,8 @@ class _RuleManagerState extends State<RuleManager> {
       _isUpdating = true;
     });
     _rules = HiveUtil.getRules();
-    Api.initSources();
-    await Api.delayTest();
+    ApiService.initSources();
+    await ApiService.delayTest();
     safeSetState(() {
       _isUpdating = false;
     });

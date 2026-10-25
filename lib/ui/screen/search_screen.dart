@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/main.dart';
-import 'package:holo/service/api.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/ui/component/media_grid.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:holo/util/hive_util.dart';
@@ -32,7 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _loading = true;
     });
-    final result = await Api.bangumi.fetchSearch(keyword, (e) {
+    final result = await ApiService.bangumi.fetchSearch(keyword, (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("search.error_searching".tr(args: [e.toString()])),

@@ -17,7 +17,7 @@ import 'package:holo/entity/person.dart';
 import 'package:holo/entity/related_work.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_setting.dart';
-import 'package:holo/service/api.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/cap_video_player_kit.dart';
 import 'package:holo/ui/component/circle_avatar_with_text.dart';
@@ -210,7 +210,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             : _playerNotifier.value?.pause();
       }
     } catch (e) {
-      _logger.e("fetchView error: $e");
+      _logger.e("fetchPlayUrl error: $e");
       safeSetState(() {
         _msg = "player.playback_error".tr();
         onComplete?.call(_msg);
@@ -266,7 +266,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   Future<void> _fetchEpisode() async {
-    final res = await Api.bangumi.fetchEpisodeInfos(
+    final res = await ApiService.bangumi.fetchEpisodeInfos(
       widget.subject.id,
       (e) => setState(() {
         _logger.e("fetchEpisode error: $e");
@@ -347,7 +347,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       _isDanmakuLoading = true;
     });
     if (isFirstLoad) {
-      var data = await Api.logvar.fetchEpisodeFromLogVar(
+      var data = await ApiService.logvar.fetchEpisodeFromLogVar(
         keyword ?? _subject.title,
         (e) {
           hasError = true;
@@ -396,7 +396,7 @@ class _PlayerScreenState extends State<PlayerScreen>
       });
       return;
     }
-    final danmu = await Api.logvar.fetchDanmakuSync(
+    final danmu = await ApiService.logvar.fetchDanmakuSync(
       _bestDanmakuSourceMatch!.episodes![remainder].episodeId!,
       (e) {
         hasError = true;

@@ -12,7 +12,7 @@ import 'package:holo/entity/person.dart';
 import 'package:holo/entity/rule.dart';
 import 'package:holo/entity/related_work.dart';
 import 'package:holo/entity/user_setting.dart';
-import 'package:holo/service/api.dart';
+import 'package:holo/service/api_service.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/appearance_screen.dart';
 import 'package:holo/ui/screen/image_search_screen.dart';
@@ -78,7 +78,7 @@ void main() async {
   // 初始化Hive数据库
   await HiveUtil.initHive();
   // 初始化动画源服务
-  Api.initSources();
+  ApiService.initSources();
 
   // 运行应用
   runApp(
@@ -309,7 +309,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   /// 初始化动画源服务并测试延迟
   void initSource() async {
-    await Api.delayTest();
+    await ApiService.delayTest();
   }
 
   @override
