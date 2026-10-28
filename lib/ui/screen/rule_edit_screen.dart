@@ -203,6 +203,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             SwitchListTile(
               title: Text('rule_edit.base_use_webview_label'.tr()),
               value: _rule.useWebView,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               onChanged: (value) {
                 setState(() {
                   _rule.useWebView = value;
@@ -211,16 +214,15 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             ),
             //详情页等待视频元素加载开关
             SwitchListTile(
-              value:
-                  widget.rule?.waitForTargetElement ??
-                  _rule.waitForTargetElement,
-              onChanged: widget.isEditMode && _rule.useWebView
-                  ? (value) {
-                      setState(() {
-                        _rule.waitForTargetElement = value;
-                      });
-                    }
-                  : null,
+              value: _rule.waitForTargetElement,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _rule.waitForTargetElement = value;
+                });
+              },
               title: Text('rule_edit.wait_for_target_element_label'.tr()),
               subtitle: Text('rule_edit.wait_for_target_element_subtitle'.tr()),
             ),
@@ -228,6 +230,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             SwitchListTile(
               title: Text('rule_edit.pure_js_label'.tr()),
               subtitle: Text('rule_edit.pure_js_subtitle'.tr()),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               value: _rule.isPureJs,
               onChanged: widget.isEditMode
                   ? (value) {
@@ -246,6 +251,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             ListTile(
               title: Text('rule_edit.js_script_config_title'.tr()),
               subtitle: Text('rule_edit.js_script_config_subtitle'.tr()),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
           ],
         ),
@@ -297,6 +305,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             DropdownButtonFormField<RequestMethod>(
               //  enabled: widget.isEditMode,
               initialValue: _rule.searchRequestMethod,
+              borderRadius: BorderRadius.circular(20),
               decoration: InputDecoration(
                 labelText: 'rule_edit.request_method_label'.tr(),
                 border: OutlineInputBorder(
@@ -449,9 +458,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           subtitle: Text(
                             'rule_edit.item_img_from_src_subtitle'.tr(),
                           ),
-                          value:
-                              widget.rule?.itemImgFromSrc ??
-                              _rule.itemImgFromSrc,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          value: _rule.itemImgFromSrc,
                           onChanged: widget.isEditMode
                               ? (value) {
                                   setState(() {
@@ -625,6 +635,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             SwitchListTile(
               title: Text('rule_edit.episode_reverse_label'.tr()),
               value: _rule.episodeReverse,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               onChanged: (value) {
                 setState(() {
                   _rule.episodeReverse = value;
