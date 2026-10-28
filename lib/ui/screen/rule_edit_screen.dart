@@ -327,13 +327,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             //请求体
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.searchRequestMethod == RequestMethod.get
                   ? SizedBox.shrink(key: ValueKey('search_body_empty'))
                   : TextFormField(
@@ -379,13 +372,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             // CSS选择器区域（纯JS规则时隐藏）
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.isPureJs
                   ? SizedBox.shrink(key: ValueKey('search_css_empty'))
                   : Column(
@@ -694,13 +680,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             //请求体
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.detailRequestMethod == RequestMethod.get
                   ? SizedBox(key: ValueKey('detail_body_empty'))
                   : TextFormField(
@@ -746,13 +725,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             // CSS选择器区域（纯JS规则时隐藏）
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.isPureJs
                   ? SizedBox.shrink(key: ValueKey('detail_css_empty'))
                   : Column(
@@ -944,13 +916,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             //请求体
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.playerRequestMethod == RequestMethod.get
                   ? SizedBox(key: ValueKey('player_body_empty'))
                   : TextFormField(
@@ -996,13 +961,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             // CSS选择器区域（纯JS规则时隐藏）
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.isPureJs
                   ? SizedBox.shrink(key: ValueKey('player_css_empty'))
                   : Column(
