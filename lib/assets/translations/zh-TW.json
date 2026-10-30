@@ -50,6 +50,9 @@
             "wish": "想看",
             "watched": "看過",
             "watching": "在看"
+        },
+        "person_detail": {
+            "cv": "CV：{}"
         }
     },
     "home": {
@@ -61,7 +64,8 @@
     },
     "calendar": {
         "title": "週更表",
-        "week": "一,二,三,四,五,六,日"
+        "week": "一,二,三,四,五,六,日",
+        "refresh_calendar": "重新整理日曆"
     },
     "subscribe": {
         "title": "追番",
@@ -81,7 +85,12 @@
         "delete_view_failed": "刪除雲端播放記錄失敗",
         "delete_view_success": "刪除雲端播放記錄成功",
         "subscribe_playback_search": "搜索訂閱或者播放記錄",
-        "webdav_not_configured": "WebDAV未配置"
+        "webdav_not_configured": "WebDAV未配置",
+        "toggle_chip_visibility": "切換篩選標籤顯示",
+        "change_subscribe_status": "修改收藏狀態",
+        "delete_playback_history": "刪除播放歷史",
+        "toggle_edit_mode": "切換編輯模式",
+        "refresh_all": "重新整理全部"
     },
     "setting": {
         "title": "設定",
@@ -195,7 +204,17 @@
         "data_sync_interval": "數據同步間隔",
         "data_sync_interval_description": "設定應用程式數據同步間隔",
         "enable_splash": "開啟啟動屏",
-        "enable_splash_description": "如果開啟,應用程式在啟動時將顯示啟動屏"
+        "enable_splash_description": "如果開啟,應用程式在啟動時將顯示啟動屏",
+        "color_purple": "紫色",
+        "color_teal": "青色",
+        "color_dark_teal": "深青綠色",
+        "color_very_dark_teal": "極深青綠色",
+        "color_light_purple": "淺紫色",
+        "color_dark_purple": "深紫色",
+        "color_accent_teal": "強調青綠色",
+        "color_cyan_accent": "青色強調",
+        "color_deep_purple": "暗紫色",
+        "color_aqua_green": "水綠色"
     },
     "sign": {
         "title": "歡迎回來",
@@ -233,7 +252,8 @@
         "confirm_delete_search_history": "確定刪除所有搜尋記錄嗎？",
         "error_searching": "搜尋出錯: {}",
         "cancel": "取消",
-        "confirm": "確定"
+        "confirm": "確定",
+        "image_search": "圖片搜尋"
     },
     "detail": {
         "title": "詳情",
@@ -254,7 +274,10 @@
         "no_related_works_data": "關聯作品暫無資料",
         "air_date_key": "放送開始",
         "continue_playing": "繼續從第{}話播放",
-        "save_rule_to_test": "保存規則後即可測試"
+        "save_rule_to_test": "保存規則後即可測試",
+        "link_to_bangumi": "開啟 Bangumi",
+        "subscribe_unsubscribe": "收藏/取消收藏",
+        "all_search_results": "所有搜尋結果"
     },
     "player": {
         "summary": "簡介",
@@ -296,7 +319,7 @@
         "title": " 規則管理",
         "import_failure": "導入失敗,格式錯誤",
         "copy_to_clipboard": "已複製所有本地規則到剪貼板",
-        "import_from_json": "從JSON導入",
+        "import_from_json": "從 JSON 匯入規則",
         "input_json_placeholder": "請輸入規則JSON字符串",
         "cancel": "取消",
         "confirm": "確認",
@@ -307,7 +330,11 @@
         "repository": "規則倉庫",
         "import_json": "導入JSON",
         "delete_rule": "刪除規則",
-        "enable_rule": "啟用規則"
+        "enable_rule": "啟用規則",
+        "refresh_rules": "重新整理規則",
+        "share_all_rules": "分享所有規則",
+        "import_from_repository": "從規則庫匯入",
+        "add_local_rule": "新增本機規則"
     },
     "rule_edit": {
         "title": "規則編輯",
@@ -400,7 +427,10 @@
         "video_url_subs_char_label": "影片URL提取規則",
         "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分",
         "test": "測試",
-        "no_source_instance": "未檢測到數據源實例,請在規則管理頁面刷新試試"
+        "no_source_instance": "未檢測到數據源實例,請在規則管理頁面刷新試試",
+        "save_rule_to_local": "儲存規則到本機",
+        "help": "幫助",
+        "save_rule_to_test": "儲存規則後即可測試"
     },
     "rule_test": {
         "fetch_search_error": "獲取搜索失敗: {}",
@@ -409,7 +439,12 @@
         "video_url_null": "視頻地址為空",
         "test_error": "測試出錯: {}",
         "play": "播放",
-        "url_label": "地址: {}"
+        "url_label": "地址: {}",
+        "title": "{} 測試",
+        "input_keyword": "輸入關鍵字",
+        "search_result": "搜尋結果：",
+        "detail_result": "詳情結果：",
+        "player_result": "播放結果："
     },
     "rule_repository": {
         "title": "規則倉庫"
@@ -436,6 +471,107 @@
         "seek_backward": "快退",
         "left_arrow": "左方向鍵",
         "show_episode_list": "顯示選集",
-        "e_key": "E鍵"
+        "e_key": "E鍵",
+        "settings": "設定",
+        "playback_speed": "播放速度",
+        "danmaku_switch": "彈幕開關",
+        "episode_list": "劇集列表",
+        "volume": "音量"
+    },
+    "rule_guide": {
+        "title": "Holo 規則編寫指南",
+        "intro": "Holo 使用規則驅動架構，透過 JSON 配置適配不同動漫網站。每個規則定義了如何搜尋、取得詳情、解析播放位址的完整流程。",
+        "section_basic_info": "基礎資訊",
+        "section_search_rules": "搜尋頁規則",
+        "section_detail_rules": "詳情頁規則",
+        "section_player_rules": "播放頁規則",
+        "section_js_scripts": "JS腳本規則（進階）",
+        "section_placeholders": "佔位符說明",
+        "section_debug_tips": "偵錯技巧",
+        "section_faq": "常見問題",
+        "sub_url_config": "URL配置",
+        "sub_selector_config": "選擇器配置",
+        "sub_key_logic": "關鍵邏輯",
+        "sub_search_selector_ways": "重要：searchSelector 的兩種寫法",
+        "sub_common_errors": "常見錯誤",
+        "sub_config_fields": "配置欄位",
+        "sub_priority": "優先順序",
+        "sub_pure_js": "純JS規則（isPureJs）",
+        "sub_encoding": "編碼方式",
+        "th_field": "欄位",
+        "th_type": "類型",
+        "th_required": "必填",
+        "th_description": "說明",
+        "th_example": "範例",
+        "th_return_format": "回傳值格式",
+        "th_placeholder": "佔位符",
+        "th_used_in": "使用位置",
+        "fd_name": "規則名稱，用於介面顯示",
+        "fd_base_url": "網站網域",
+        "fd_logo_url": "網站圖示URL",
+        "fd_use_webview": "是否使用WebView載入",
+        "fd_timeout": "請求逾時時間（秒），預設15",
+        "fd_is_pure_js": "是否為純JS規則，預設false",
+        "fd_search_url": "搜尋路徑，使用{keyword}佔位符",
+        "fd_search_req_method": "請求方法：get/post",
+        "fd_req_headers": "請求標頭",
+        "fd_full_url": "是否使用完整URL",
+        "fd_search_selector": "搜尋結果列表容器的選擇器",
+        "fd_item_img_selector": "在條目內查找圖片的選擇器",
+        "fd_item_img_from_src": "圖片是否從src屬性取得",
+        "fd_item_title_selector": "在條目內查找標題的選擇器",
+        "fd_item_id_selector": "在條目內查找詳情頁連結的選擇器",
+        "fd_item_genre_selector": "在條目內查找分類的選擇器（可選）",
+        "fd_detail_url": "詳情頁路徑，使用{mediaId}佔位符",
+        "fd_req_method": "請求方法",
+        "fd_line_selector": "播放線路列表的選擇器",
+        "fd_episode_selector": "在線路內查找劇集連結的選擇器",
+        "fd_episode_reverse": "是否反轉劇集順序",
+        "fd_player_url": "播放頁路徑，使用{episodeId}佔位符",
+        "fd_player_video_selector": "影片元素的選擇器",
+        "fd_video_element_attr": "影片元素上儲存URL的屬性",
+        "fd_embed_video_selector": "嵌入式影片選擇器（iframe等）",
+        "fd_wait_for_target": "是否等待目標元素載入完成",
+        "fd_video_url_subs_char": "影片URL截取規則",
+        "logic_search": "1. searchSelector 匹配到的每個元素是一個搜尋結果條目（entry）\n2. 在每個條目（entry）內，使用 itemIdSelector 查找子元素，提取其 href 屬性作為 mediaId\n3. mediaId 將用於拼接詳情頁URL",
+        "logic_detail": "1. lineSelector 匹配到的每個元素是一個播放線路\n2. 在每個線路內，使用 episodeSelector 查找<a>標籤，提取其 href 屬性作為 episodeId\n3. episodeId 將用於拼接播放頁URL",
+        "logic_player": "1. 載入播放頁後，首先查找 playerVideoSelector 匹配的影片元素\n2. 從影片元素的 videoElementAttribute 屬性中取得影片URL\n3. 如果找不到影片元素，嘗試查找 embedVideoSelector 匹配的 iframe\n4. 如果配置了 videoUrlSubsChar，則從URL中截取指定部分",
+        "way1_container": "寫法1：選擇容器（推薦）",
+        "way2_direct": "寫法2：直接選擇條目",
+        "code_search_example_1": "<div class=\"search-results\">  <!-- searchSelector: \"div.search-results\" -->\n  <a class=\"item\" href=\"/anime/1234\">  <!-- itemIdSelector: \"a.item\" -->\n    <img src=\"cover.jpg\">\n    <h3>番劇名稱</h3>\n  </a>\n</div>",
+        "code_search_example_2": "<div class=\"search-results\">\n  <div class=\"item\">  <!-- searchSelector: \"div.search-results > div.item\" -->\n    <img src=\"cover.jpg\">\n    <h3>番劇名稱</h3>\n    <a href=\"/anime/1234\">詳情</a>  <!-- itemIdSelector: \"a\" -->\n  </div>\n</div>",
+        "error_same_selector": "❌ 錯誤：searchSelector 和 itemIdSelector 選擇同一個元素",
+        "ok_container": "✅ 正確：使用容器方式",
+        "js_intro": "當CSS選擇器無法取得資料時（如影片位址在JS變數中），可以使用JS腳本注入。",
+        "fd_search_script": "搜尋頁JS腳本",
+        "fd_detail_script": "詳情頁JS腳本",
+        "fd_player_script": "播放頁JS腳本",
+        "priority_text": "• 配置了JS腳本的頁面：優先使用JS回傳的JSON資料\n• 未配置JS腳本的頁面：使用CSS選擇器解析",
+        "pure_js_desc": "當設定 isPureJs: true 時，規則將完全依賴JS腳本取得資料，不再使用CSS選擇器解析。",
+        "pure_js_features_title": "純JS規則的特點：",
+        "pure_js_features": "• 自動啟用WebView和JS腳本功能\n• 隱藏所有CSS選擇器輸入框，只顯示JS腳本輸入\n• 搜尋、詳情、播放頁面都透過JS腳本取得資料\n• 適合REST API或純資料介面類型的網站",
+        "pure_js_example_title": "純JS規則示例：",
+        "code_pure_js": "{\n  \"name\": \"Sorani動漫\",\n  \"baseUrl\": \"https://example.com\",\n  \"isPureJs\": true,\n  \"useWebView\": true,\n  \"searchScript\": \"(function() { ... })();\",\n  \"detailScript\": \"(function() { ... })();\",\n  \"playerScript\": \"(function() { ... })();\"\n}",
+        "encoding_desc": "JS腳本使用 Base64編碼 儲存在JSON中，避免轉義問題。",
+        "original_js_title": "原始JS腳本：",
+        "usage_scenarios_title": "使用場景：",
+        "usage_scenarios": "• 影片位址在JS變數中\n• 需要非同步載入\n• 複雜的解析邏輯\n• 網站提供REST API介面（純JS規則）",
+        "fd_ph_keyword": "搜尋關鍵字",
+        "fd_ph_media_id": "詳情頁ID（從搜尋結果提取的href）",
+        "fd_ph_episode_id": "劇集ID（從詳情頁提取的href）",
+        "placeholder_note": "注意：mediaId 和 episodeId 提取的是完整的 href 路徑，如 /anime/1234 或 /play/1234/1。",
+        "debug_tips": "1. 使用WebView：動態渲染的頁面必須設定 useWebView: true\n2. 檢查選擇器：在瀏覽器主控台使用 document.querySelectorAll(\"你的選擇器\") 測試\n3. 查看日誌：應用程式日誌會輸出HTML解析結果和JS執行結果\n4. 逐步測試：先測試搜尋，再測試詳情，最後測試播放\n5. 使用JS腳本：當CSS選擇器無法取得時，嘗試使用JS腳本注入",
+        "faq_q_empty_search": "Q: 搜尋結果顯示為空？",
+        "faq_a_empty_search": "A: 檢查 searchSelector 是否正確，確保能匹配到搜尋結果條目。",
+        "faq_q_no_episodes": "Q: 詳情頁沒有劇集？",
+        "faq_a_no_episodes": "A: 檢查 lineSelector 和 episodeSelector，確保能匹配到線路和劇集連結。",
+        "faq_q_no_video": "Q: 播放頁取得不到影片位址？",
+        "faq_a_no_video": "A: \n• 檢查 playerVideoSelector 和 videoElementAttribute 是否正確\n• 如果影片在iframe中，配置 embedVideoSelector\n• 如果影片位址在JS變數中，使用 playerScript 注入取得",
+        "faq_q_js_empty": "Q: JS腳本回傳空？",
+        "faq_a_js_empty": "A: \n• 確保JS變數已載入（可能需要等待非同步載入）\n• 檢查JS變數名稱是否正確\n• 在瀏覽器主控台手動執行JS腳本測試",
+        "faq_q_base64": "Q: 如何取得Base64編碼的JS腳本？",
+        "faq_a_base64": "A: 使用Python編碼：",
+        "yes": "是",
+        "no": "否"
     }
 }

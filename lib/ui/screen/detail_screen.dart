@@ -539,12 +539,12 @@ class _DetailScreenState extends State<DetailScreen>
       //title: Text("detail.title".tr()),
       actions: [
         IconButton(
-          tooltip: "Link to Bangumi",
+          tooltip: "detail.link_to_bangumi".tr(),
           onPressed: _openBangumiUrl,
           icon: Icon(Icons.link_rounded),
         ),
         IconButton(
-          tooltip: "Subscribe/Unsubscribe",
+          tooltip: "detail.subscribe_unsubscribe".tr(),
           onPressed: () {
             if (_subject == null) {
               return;
@@ -558,7 +558,7 @@ class _DetailScreenState extends State<DetailScreen>
           ),
         ),
         IconButton(
-          tooltip: 'All search results',
+          tooltip: 'detail.all_search_results'.tr(),
           onPressed: () {
             if (!_isCompleted) {
               return;

@@ -671,7 +671,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                             Platform.isMacOS)
                           IconButton(
                             color: Colors.white,
-                            tooltip: 'Keyboard Shortcuts',
+                            tooltip: 'cap_video_player.keyboard_shortcuts'.tr(),
                             onPressed: () {
                               _showKeyboardShortcuts();
                             },
@@ -679,7 +679,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                           ),
                         IconButton(
                           color: Colors.white,
-                          tooltip: 'Settings',
+                          tooltip: 'cap_video_player.settings'.tr(),
                           onPressed: () {
                             widget.onSettingTab?.call();
                             _showVideoControlsTimer();
@@ -893,7 +893,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                     ),
                     //播放速度按钮
                     PopupMenuButton(
-                      tooltip: 'Playback Speed',
+                      tooltip: 'cap_video_player.playback_speed'.tr(),
                       padding: .zero,
                       iconColor: Colors.white,
                       icon: Text(
@@ -916,7 +916,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
 
                     //弹幕开关按钮
                     IconButton(
-                      tooltip: 'Danmaku Switch',
+                      tooltip: 'cap_video_player.danmaku_switch'.tr(),
                       color: Colors.white,
                       onPressed: () {
                         safeSetState(() {
@@ -931,7 +931,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       //剧集列表按钮
                       IconButton(
                         color: Colors.white,
-                        tooltip: 'Episode List',
+                        tooltip: 'cap_video_player.episode_list'.tr(),
                         onPressed: () {
                           widget.onEpisodeTab?.call();
                           _showVideoControlsTimer();
@@ -946,7 +946,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                             Platform.isMacOS ||
                             Platform.isLinux)) ...[
                       IconButton(
-                        tooltip: 'Volume',
+                        tooltip: 'cap_video_player.volume'.tr(),
                         color: Colors.white,
                         onPressed: () async {
                           await widget.playerNotifier.value?.setVolume(0);

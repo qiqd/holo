@@ -383,7 +383,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
       title: Text(tr("subscribe.title")),
       actions: [
         IconButton(
-          tooltip: "Toggle Chip Visibility",
+          tooltip: 'subscribe.toggle_chip_visibility'.tr(),
           icon: Icon(
             _showChip ? Icons.visibility_off_rounded : Icons.visibility_rounded,
           ),
@@ -395,7 +395,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         ),
         if (_checkedSubscribeIds.isNotEmpty)
           PopupMenuButton(
-            tooltip: "Change Subscribe Status",
+            tooltip: 'subscribe.change_subscribe_status'.tr(),
             icon: Icon(Icons.menu_rounded),
             itemBuilder: (context) => [
               PopupMenuItem(
@@ -422,7 +422,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
 
         if (_checkedPlaybackIds.isNotEmpty)
           IconButton(
-            tooltip: "Delete Playback History",
+            tooltip: 'subscribe.delete_playback_history'.tr(),
             icon: Icon(Icons.delete),
             onPressed: () {
               setState(() {
@@ -431,7 +431,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
             },
           ),
         IconButton(
-          tooltip: "Toggle Edit Mode",
+          tooltip: 'subscribe.toggle_edit_mode'.tr(),
           icon: Icon(_isEditMode ? Icons.done_all : Icons.edit_rounded),
           onPressed: () {
             setState(() {
@@ -445,7 +445,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
         ),
         if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
           IconButton(
-            tooltip: 'Refresh All',
+            tooltip: 'subscribe.refresh_all'.tr(),
             onPressed: () async {
               setState(() {
                 _isUpdating = true;

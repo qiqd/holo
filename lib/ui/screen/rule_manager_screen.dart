@@ -90,26 +90,26 @@ class _RuleManagerState extends State<RuleManager> {
         actions: [
           if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
             IconButton(
-              tooltip: "Refresh Rules",
+              tooltip: 'rule_manager.refresh_rules'.tr(),
               onPressed: _refreshRulesAndSourceService,
               icon: Icon(Icons.refresh_rounded),
             ),
           IconButton(
-            tooltip: 'Share All rules',
+            tooltip: 'rule_manager.share_all_rules'.tr(),
             icon: const Icon(Icons.share_rounded),
             onPressed: () {
               _clipboardRulesToJson();
             },
           ),
           IconButton(
-            tooltip: "Import Rules From Repository",
+            tooltip: 'rule_manager.import_from_repository'.tr(),
             icon: const Icon(Icons.inventory_2_rounded),
             onPressed: () {
               context.push('/rule_repository');
             },
           ),
           IconButton(
-            tooltip: 'Import Rules from JSON',
+            tooltip: 'rule_manager.import_from_json'.tr(),
             icon: const Icon(Icons.content_copy_rounded),
             onPressed: () {
               showDialog(
@@ -149,7 +149,7 @@ class _RuleManagerState extends State<RuleManager> {
             },
           ),
           IconButton(
-            tooltip: "Add Local Rule",
+            tooltip: 'rule_manager.add_local_rule'.tr(),
             icon: const Icon(Icons.add_rounded),
             onPressed: () {
               context.push('/rule_edit', extra: {'isEditMode': true});

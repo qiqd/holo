@@ -50,6 +50,9 @@
             "wish": "想看",
             "watched": "看过",
             "watching": "在看"
+        },
+        "person_detail": {
+            "cv": "CV：{}"
         }
     },
     "home": {
@@ -61,7 +64,8 @@
     },
     "calendar": {
         "title": "周更表",
-        "week": "一,二,三,四,五,六,日"
+        "week": "一,二,三,四,五,六,日",
+        "refresh_calendar": "刷新日历"
     },
     "subscribe": {
         "title": "追番",
@@ -81,7 +85,12 @@
         "delete_view_failed": "删除云端播放记录失败",
         "delete_view_success": "删除云端播放记录成功",
         "subscribe_playback_search": "搜索订阅或者播放记录",
-        "webdav_not_configured": "WebDAV未配置"
+        "webdav_not_configured": "WebDAV未配置",
+        "toggle_chip_visibility": "切换筛选标签显示",
+        "change_subscribe_status": "修改收藏状态",
+        "delete_playback_history": "删除播放历史",
+        "toggle_edit_mode": "切换编辑模式",
+        "refresh_all": "刷新全部"
     },
     "setting": {
         "title": "设置",
@@ -128,7 +137,11 @@
         },
         "language": {
             "change": "切换语言",
-            "change_description": "变更后需要重启应用才能生效"
+            "change_description": "变更后需要重启应用才能生效",
+            "zh_CN": "中文简体",
+            "zh_TW": "中文繁體",
+            "en_US": "English",
+            "ja_JP": "日本語"
         },
         "data_management": {
             "clear_playback_history": "清除观看历史",
@@ -158,14 +171,6 @@
             "report_issue_description": "提交Bug或功能建议",
             "star_project": "给项目点赞",
             "star_project_description": "在GitHub上为项目点星"
-        },
-        "language": {
-            "change": "切换语言",
-            "change_description": "变更后需要重启应用才能生效",
-            "zh_CN": "中文简体",
-            "zh_TW": "中文繁體",
-            "en_US": "English",
-            "ja_JP": "日本語"
         },
         "metadata": {
             "bangumi": "Bangumi 番组计划",
@@ -199,7 +204,17 @@
         "data_sync_interval": "数据同步间隔",
         "data_sync_interval_description": "设置应用数据同步间隔",
         "enable_splash": "开启启动屏",
-        "enable_splash_description": "如果开启,应用启动时将显示启动屏"
+        "enable_splash_description": "如果开启,应用启动时将显示启动屏",
+        "color_purple": "紫色",
+        "color_teal": "青色",
+        "color_dark_teal": "深青绿色",
+        "color_very_dark_teal": "极深青绿色",
+        "color_light_purple": "浅紫色",
+        "color_dark_purple": "深紫色",
+        "color_accent_teal": "强调青绿色",
+        "color_cyan_accent": "青色强调",
+        "color_deep_purple": "暗紫色",
+        "color_aqua_green": "水绿色"
     },
     "sign": {
         "title": "欢迎回来",
@@ -237,7 +252,8 @@
         "confirm_delete_search_history": "确定删除所有搜索记录吗？",
         "error_searching": "搜索出错: {}",
         "cancel": "取消",
-        "confirm": "确定"
+        "confirm": "确定",
+        "image_search": "图片搜索"
     },
     "detail": {
         "title": "详情",
@@ -258,7 +274,10 @@
         "no_related_works_data": "关联作品暂无数据",
         "air_date_key": "放送开始",
         "continue_playing": "继续从第{}话播放",
-        "save_rule_to_test": "保存规则后即可测试"
+        "save_rule_to_test": "保存规则后即可测试",
+        "link_to_bangumi": "打开 Bangumi",
+        "subscribe_unsubscribe": "收藏/取消收藏",
+        "all_search_results": "所有搜索结果"
     },
     "player": {
         "summary": "简介",
@@ -300,7 +319,7 @@
         "title": "规则管理",
         "import_failure": "导入失败,格式有误",
         "copy_to_clipboard": "所有本地规则已复制到剪贴板",
-        "import_from_json": "从JSON导入",
+        "import_from_json": "从 JSON 导入规则",
         "input_json_placeholder": "请输入规则JSON字符串",
         "cancel": "取消",
         "confirm": "确认",
@@ -311,7 +330,11 @@
         "repository": "规则仓库",
         "import_json": "导入JSON",
         "delete_rule": "删除规则",
-        "enable_rule": "启用规则"
+        "enable_rule": "启用规则",
+        "refresh_rules": "刷新规则",
+        "share_all_rules": "分享所有规则",
+        "import_from_repository": "从规则库导入",
+        "add_local_rule": "添加本地规则"
     },
     "rule_edit": {
         "title": "规则编辑",
@@ -401,7 +424,10 @@
         "video_url_subs_char_label": "视频URL截取字符,使用lastIndexOf函数,可选",
         "video_url_subs_char_hint": "例如：提取 params=videoUrl=xxxx 中的 xxxx 部分",
         "test": "测试",
-        "no_source_instance": "未检测到数据源实例,请在规则管理页面刷新试试"
+        "no_source_instance": "未检测到数据源实例,请在规则管理页面刷新试试",
+        "save_rule_to_local": "保存规则到本地",
+        "help": "帮助",
+        "save_rule_to_test": "保存规则后即可测试"
     },
     "rule_test": {
         "fetch_search_error": "获取搜索失败: {}",
@@ -410,7 +436,12 @@
         "video_url_null": "视频地址为空",
         "test_error": "测试出错: {}",
         "play": "播放",
-        "url_label": "地址: {}"
+        "url_label": "地址: {}",
+        "title": "{} 测试",
+        "input_keyword": "输入关键词",
+        "search_result": "搜索结果：",
+        "detail_result": "详情结果：",
+        "player_result": "播放结果："
     },
     "rule_repository": {
         "title": "规则仓库"
@@ -437,6 +468,107 @@
         "seek_backward": "快退",
         "left_arrow": "左方向键",
         "show_episode_list": "显示选集",
-        "e_key": "E键"
+        "e_key": "E键",
+        "settings": "设置",
+        "playback_speed": "播放速度",
+        "danmaku_switch": "弹幕开关",
+        "episode_list": "剧集列表",
+        "volume": "音量"
+    },
+    "rule_guide": {
+        "title": "Holo 规则编写指南",
+        "intro": "Holo 使用规则驱动架构，通过 JSON 配置适配不同动漫网站。每个规则定义了如何搜索、获取详情、解析播放地址的完整流程。",
+        "section_basic_info": "基础信息",
+        "section_search_rules": "搜索页规则",
+        "section_detail_rules": "详情页规则",
+        "section_player_rules": "播放页规则",
+        "section_js_scripts": "JS脚本规则（高级）",
+        "section_placeholders": "占位符说明",
+        "section_debug_tips": "调试技巧",
+        "section_faq": "常见问题",
+        "sub_url_config": "URL配置",
+        "sub_selector_config": "选择器配置",
+        "sub_key_logic": "关键逻辑",
+        "sub_search_selector_ways": "重要：searchSelector 的两种写法",
+        "sub_common_errors": "常见错误",
+        "sub_config_fields": "配置字段",
+        "sub_priority": "优先级",
+        "sub_pure_js": "纯JS规则（isPureJs）",
+        "sub_encoding": "编码方式",
+        "th_field": "字段",
+        "th_type": "类型",
+        "th_required": "必填",
+        "th_description": "说明",
+        "th_example": "示例",
+        "th_return_format": "返回值格式",
+        "th_placeholder": "占位符",
+        "th_used_in": "使用位置",
+        "fd_name": "规则名称，用于界面显示",
+        "fd_base_url": "网站域名",
+        "fd_logo_url": "网站图标URL",
+        "fd_use_webview": "是否使用WebView加载",
+        "fd_timeout": "请求超时时间（秒），默认15",
+        "fd_is_pure_js": "是否为纯JS规则，默认false",
+        "fd_search_url": "搜索路径，使用{keyword}占位符",
+        "fd_search_req_method": "请求方法：get/post",
+        "fd_req_headers": "请求头",
+        "fd_full_url": "是否使用完整URL",
+        "fd_search_selector": "搜索结果列表容器的选择器",
+        "fd_item_img_selector": "在条目内查找图片的选择器",
+        "fd_item_img_from_src": "图片是否从src属性获取",
+        "fd_item_title_selector": "在条目内查找标题的选择器",
+        "fd_item_id_selector": "在条目内查找详情页链接的选择器",
+        "fd_item_genre_selector": "在条目内查找分类的选择器（可选）",
+        "fd_detail_url": "详情页路径，使用{mediaId}占位符",
+        "fd_req_method": "请求方法",
+        "fd_line_selector": "播放线路列表的选择器",
+        "fd_episode_selector": "在线路内查找剧集链接的选择器",
+        "fd_episode_reverse": "是否反转剧集顺序",
+        "fd_player_url": "播放页路径，使用{episodeId}占位符",
+        "fd_player_video_selector": "视频元素的选择器",
+        "fd_video_element_attr": "视频元素上存储URL的属性",
+        "fd_embed_video_selector": "嵌入式视频选择器（iframe等）",
+        "fd_wait_for_target": "是否等待目标元素加载完成",
+        "fd_video_url_subs_char": "视频URL截取规则",
+        "logic_search": "1. searchSelector 匹配到的每个元素是一个搜索结果条目（entry）\n2. 在每个条目（entry）内，使用 itemIdSelector 查找子元素，提取其 href 属性作为 mediaId\n3. mediaId 将用于拼接详情页URL",
+        "logic_detail": "1. lineSelector 匹配到的每个元素是一个播放线路\n2. 在每个线路内，使用 episodeSelector 查找<a>标签，提取其 href 属性作为 episodeId\n3. episodeId 将用于拼接播放页URL",
+        "logic_player": "1. 加载播放页后，首先查找 playerVideoSelector 匹配的视频元素\n2. 从视频元素的 videoElementAttribute 属性中获取视频URL\n3. 如果找不到视频元素，尝试查找 embedVideoSelector 匹配的 iframe\n4. 如果配置了 videoUrlSubsChar，则从URL中截取指定部分",
+        "way1_container": "写法1：选择容器（推荐）",
+        "way2_direct": "写法2：直接选择条目",
+        "code_search_example_1": "<div class=\"search-results\">  <!-- searchSelector: \"div.search-results\" -->\n  <a class=\"item\" href=\"/anime/1234\">  <!-- itemIdSelector: \"a.item\" -->\n    <img src=\"cover.jpg\">\n    <h3>番剧名称</h3>\n  </a>\n</div>",
+        "code_search_example_2": "<div class=\"search-results\">\n  <div class=\"item\">  <!-- searchSelector: \"div.search-results > div.item\" -->\n    <img src=\"cover.jpg\">\n    <h3>番剧名称</h3>\n    <a href=\"/anime/1234\">详情</a>  <!-- itemIdSelector: \"a\" -->\n  </div>\n</div>",
+        "error_same_selector": "❌ 错误：searchSelector 和 itemIdSelector 选择同一个元素",
+        "ok_container": "✅ 正确：使用容器方式",
+        "js_intro": "当CSS选择器无法获取数据时（如视频地址在JS变量中），可以使用JS脚本注入。",
+        "fd_search_script": "搜索页JS脚本",
+        "fd_detail_script": "详情页JS脚本",
+        "fd_player_script": "播放页JS脚本",
+        "priority_text": "• 配置了JS脚本的页面：优先使用JS返回的JSON数据\n• 未配置JS脚本的页面：使用CSS选择器解析",
+        "pure_js_desc": "当设置 isPureJs: true 时，规则将完全依赖JS脚本获取数据，不再使用CSS选择器解析。",
+        "pure_js_features_title": "纯JS规则的特点：",
+        "pure_js_features": "• 自动启用WebView和JS脚本功能\n• 隐藏所有CSS选择器输入框，只显示JS脚本输入\n• 搜索、详情、播放页面都通过JS脚本获取数据\n• 适合REST API或纯数据接口类型的网站",
+        "pure_js_example_title": "纯JS规则示例：",
+        "code_pure_js": "{\n  \"name\": \"Sorani动漫\",\n  \"baseUrl\": \"https://example.com\",\n  \"isPureJs\": true,\n  \"useWebView\": true,\n  \"searchScript\": \"(function() { ... })();\",\n  \"detailScript\": \"(function() { ... })();\",\n  \"playerScript\": \"(function() { ... })();\"\n}",
+        "encoding_desc": "JS脚本使用 Base64编码 存储在JSON中，避免转义问题。",
+        "original_js_title": "原始JS脚本：",
+        "usage_scenarios_title": "使用场景：",
+        "usage_scenarios": "• 视频地址在JS变量中\n• 需要异步加载\n• 复杂的解析逻辑\n• 网站提供REST API接口（纯JS规则）",
+        "fd_ph_keyword": "搜索关键词",
+        "fd_ph_media_id": "详情页ID（从搜索结果提取的href）",
+        "fd_ph_episode_id": "剧集ID（从详情页提取的href）",
+        "placeholder_note": "注意：mediaId 和 episodeId 提取的是完整的 href 路径，如 /anime/1234 或 /play/1234/1。",
+        "debug_tips": "1. 使用WebView：动态渲染的页面必须设置 useWebView: true\n2. 检查选择器：在浏览器控制台使用 document.querySelectorAll(\"你的选择器\") 测试\n3. 查看日志：应用日志会输出HTML解析结果和JS执行结果\n4. 逐步测试：先测试搜索，再测试详情，最后测试播放\n5. 使用JS脚本：当CSS选择器无法获取时，尝试使用JS脚本注入",
+        "faq_q_empty_search": "Q: 搜索结果显示为空？",
+        "faq_a_empty_search": "A: 检查 searchSelector 是否正确，确保能匹配到搜索结果条目。",
+        "faq_q_no_episodes": "Q: 详情页没有剧集？",
+        "faq_a_no_episodes": "A: 检查 lineSelector 和 episodeSelector，确保能匹配到线路和剧集链接。",
+        "faq_q_no_video": "Q: 播放页获取不到视频地址？",
+        "faq_a_no_video": "A: \n• 检查 playerVideoSelector 和 videoElementAttribute 是否正确\n• 如果视频在iframe中，配置 embedVideoSelector\n• 如果视频地址在JS变量中，使用 playerScript 注入获取",
+        "faq_q_js_empty": "Q: JS脚本返回空？",
+        "faq_a_js_empty": "A: \n• 确保JS变量已经加载（可能需要等待异步加载）\n• 检查JS变量名是否正确\n• 在浏览器控制台手动执行JS脚本测试",
+        "faq_q_base64": "Q: 如何获取Base64编码的JS脚本？",
+        "faq_a_base64": "A: 使用Python编码：",
+        "yes": "是",
+        "no": "否"
     }
 }

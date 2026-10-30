@@ -45,7 +45,11 @@ Future<void> showPersonDetailBottomSheet(Person person, BuildContext context) {
                       ),
                       if (person.actors?.isNotEmpty ?? false)
                         Text(
-                          'CV: ${person.actors?.map((e) => e.name).join('·') ?? ''}',
+                          'component.person_detail.cv'.tr(
+                            args: [
+                              person.actors?.map((e) => e.name).join('·') ?? '',
+                            ],
+                          ),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       Text(

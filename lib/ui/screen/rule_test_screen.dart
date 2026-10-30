@@ -118,7 +118,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: widget.showNavBtn,
-        title: Text('${widget.source.getName()} Test'),
+        title: Text('rule_test.title'.tr(args: [widget.source.getName()])),
       ),
       body: Container(
         padding: .only(bottom: 20),
@@ -141,7 +141,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                   },
                   textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
-                    hintText: 'Input keyword',
+                    hintText: 'rule_test.input_keyword'.tr(),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -149,7 +149,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                 ),
                 if (_isloading) const LinearProgressIndicator(),
                 Text(
-                  'Search Result:',
+                  'rule_test.search_result'.tr(),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(
@@ -173,7 +173,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                   ),
                 ),
                 Text(
-                  'Detail Result:',
+                  'rule_test.detail_result'.tr(),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(
@@ -210,7 +210,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
                   ),
                 ),
                 Text(
-                  'Player Result:',
+                  'rule_test.player_result'.tr(),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(

@@ -39,17 +39,17 @@ class _AppearanceState extends State<Appearance> {
   // 自定义颜色样本
   final Map<ColorSwatch<Object>, String> _customSwatches =
       <ColorSwatch<Object>, String>{
-        ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'Purple',
-        ColorTools.createPrimarySwatch(const Color(0xFF03DAC6)): 'Teal',
-        ColorTools.createPrimarySwatch(const Color(0xFF018786)): 'Dark Teal',
+        ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'preference.color_purple'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF03DAC6)): 'preference.color_teal'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF018786)): 'preference.color_dark_teal'.tr(),
         ColorTools.createPrimarySwatch(const Color(0xFF005457)):
-            'Very Dark Teal',
-        ColorTools.createPrimarySwatch(const Color(0xFFBB86FC)): 'Light Purple',
-        ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'Dark Purple',
-        ColorTools.createPrimarySwatch(const Color(0xFF03DAC5)): 'Accent Teal',
-        ColorTools.createPrimarySwatch(const Color(0xFF00E5FF)): 'Cyan Accent',
-        ColorTools.createPrimarySwatch(const Color(0xFF6200EA)): 'Deep Purple',
-        ColorTools.createPrimarySwatch(const Color(0xFF64FFDA)): 'Aqua Green',
+            'preference.color_very_dark_teal'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFFBB86FC)): 'preference.color_light_purple'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'preference.color_dark_purple'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF03DAC5)): 'preference.color_accent_teal'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF00E5FF)): 'preference.color_cyan_accent'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF6200EA)): 'preference.color_deep_purple'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF64FFDA)): 'preference.color_aqua_green'.tr(),
       };
   String _getThemeModeText() {
     final themeMode = MyApp.userSettingNotifier.value.themeMode;

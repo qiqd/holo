@@ -50,6 +50,9 @@
             "wish": "想見る",
             "watched": "見た",
             "watching": "見ている"
+        },
+        "person_detail": {
+            "cv": "CV: {}"
         }
     },
     "home": {
@@ -61,7 +64,8 @@
     },
     "calendar": {
         "title": "週間更新表",
-        "week": "月,火,水,木,金,土,日"
+        "week": "月,火,水,木,金,土,日",
+        "refresh_calendar": "カレンダーを更新"
     },
     "subscribe": {
         "title": "追番",
@@ -81,7 +85,12 @@
         "delete_view_failed": "クラウド再生履歴の削除に失敗",
         "delete_view_success": "クラウド再生履歴の削除に成功",
         "subscribe_playback_search": "追番または再生履歴を検索",
-        "webdav_not_configured": "WebDAVが設定されていません"
+        "webdav_not_configured": "WebDAVが設定されていません",
+        "toggle_chip_visibility": "フィルターチップの表示切替",
+        "change_subscribe_status": "お気に入り状態の変更",
+        "delete_playback_history": "視聴履歴を削除",
+        "toggle_edit_mode": "編集モード切替",
+        "refresh_all": "すべて更新"
     },
     "setting": {
         "title": "設定",
@@ -195,7 +204,17 @@
         "data_sync_interval": "データ同期間隔",
         "data_sync_interval_description": "アプリケーションデータ同期間隔を設定します。",
         "enable_splash": "スプラッシュ画面を有効化",
-        "enable_splash_description": "有効にすると、アプリが起動するたびにスプラッシュ画面を表示します"
+        "enable_splash_description": "有効にすると、アプリが起動するたびにスプラッシュ画面を表示します",
+        "color_purple": "紫",
+        "color_teal": "ティール",
+        "color_dark_teal": "ダークティール",
+        "color_very_dark_teal": "極暗ティール",
+        "color_light_purple": "薄紫",
+        "color_dark_purple": "濃紫",
+        "color_accent_teal": "アクセントティール",
+        "color_cyan_accent": "シアンアクセント",
+        "color_deep_purple": "ディープパープル",
+        "color_aqua_green": "アクアグリーン"
     },
     "sign": {
         "title": "お帰りなさい",
@@ -233,7 +252,8 @@
         "confirm_delete_search_history": "すべての検索記録を削除してもよろしいですか？",
         "error_searching": "検索エラー: {}",
         "cancel": "キャンセル",
-        "confirm": "確認"
+        "confirm": "確認",
+        "image_search": "画像検索"
     },
     "detail": {
         "title": "詳細",
@@ -254,7 +274,10 @@
         "no_related_works_data": "関連作品情報なし",
         "air_date_key": "放送開始",
         "continue_playing": "第{}話から続ける",
-        "save_rule_to_test": "ルールを保存してテスト"
+        "save_rule_to_test": "ルールを保存してテスト",
+        "link_to_bangumi": "Bangumi を開く",
+        "subscribe_unsubscribe": "お気に入り/解除",
+        "all_search_results": "すべての検索結果"
     },
     "player": {
         "summary": "概要",
@@ -307,7 +330,11 @@
         "repository": "ルールリポジトリ",
         "import_json": "JSONをインポート",
         "delete_rule": "ルールを削除",
-        "enable_rule": "ルールを有効化"
+        "enable_rule": "ルールを有効化",
+        "refresh_rules": "ルールを更新",
+        "share_all_rules": "すべてのルールを共有",
+        "import_from_repository": "リポジトリからインポート",
+        "add_local_rule": "ローカルルールを追加"
     },
     "rule_edit": {
         "title": "ルール編集",
@@ -400,7 +427,10 @@
         "video_url_subs_char_label": "ビデオURL抽出ルール",
         "video_url_subs_char_hint": "例：params=videoUrl=xxxx から xxxx 部分を抽出",
         "test": "テスト",
-        "no_source_instance": "データソースインスタンスが検出されませんでした。ルール管理ページで更新してください"
+        "no_source_instance": "データソースインスタンスが検出されませんでした。ルール管理ページで更新してください",
+        "save_rule_to_local": "ルールをローカルに保存",
+        "help": "ヘルプ",
+        "save_rule_to_test": "ルールを保存するとテストできます"
     },
     "rule_test": {
         "fetch_search_error": "検索取得エラー: {}",
@@ -409,7 +439,12 @@
         "video_url_null": "ビデオURLがnullです",
         "test_error": "テストエラー: {}",
         "play": "再生",
-        "url_label": "URL: {}"
+        "url_label": "URL: {}",
+        "title": "{} テスト",
+        "input_keyword": "キーワードを入力",
+        "search_result": "検索結果：",
+        "detail_result": "詳細結果：",
+        "player_result": "播放結果："
     },
     "rule_repository": {
         "title": "ルールリポジトリ"
@@ -436,6 +471,107 @@
         "seek_backward": "巻き戻し",
         "left_arrow": "左矢印",
         "show_episode_list": "エピソードリスト表示",
-        "e_key": "E"
+        "e_key": "E",
+        "settings": "設定",
+        "playback_speed": "再生速度",
+        "danmaku_switch": "弾幕スイッチ",
+        "episode_list": "話数リスト",
+        "volume": "音量"
+    },
+    "rule_guide": {
+        "title": "Holo ルール作成ガイド",
+        "intro": "Holo はルール駆動型のアーキテクチャを採用し、JSON 設定を通じてさまざまなアニメサイトに対応します。各ルールは、検索、詳細取得、再生 URL の解析の完全なフローを定義します。",
+        "section_basic_info": "基本情報",
+        "section_search_rules": "検索ページのルール",
+        "section_detail_rules": "詳細ページのルール",
+        "section_player_rules": "播放ページのルール",
+        "section_js_scripts": "JS スクリプトルール（上級）",
+        "section_placeholders": "プレースホルダーの説明",
+        "section_debug_tips": "デバッグのコツ",
+        "section_faq": "よくある質問",
+        "sub_url_config": "URL 設定",
+        "sub_selector_config": "セレクター設定",
+        "sub_key_logic": "主要ロジック",
+        "sub_search_selector_ways": "重要：searchSelector の2つの書き方",
+        "sub_common_errors": "よくある間違い",
+        "sub_config_fields": "設定フィールド",
+        "sub_priority": "優先順位",
+        "sub_pure_js": "純JSルール（isPureJs）",
+        "sub_encoding": "エンコード方式",
+        "th_field": "フィールド",
+        "th_type": "型",
+        "th_required": "必須",
+        "th_description": "説明",
+        "th_example": "例",
+        "th_return_format": "戻り値の形式",
+        "th_placeholder": "プレースホルダー",
+        "th_used_in": "使用場所",
+        "fd_name": "ルール名、画面表示に使用",
+        "fd_base_url": "ウェブサイトのドメイン",
+        "fd_logo_url": "サイトのロゴURL",
+        "fd_use_webview": "WebViewを使用して読み込むか",
+        "fd_timeout": "リクエストタイムアウト（秒）、デフォルト15",
+        "fd_is_pure_js": "純JSルールかどうか、デフォルトfalse",
+        "fd_search_url": "検索パス、{keyword}プレースホルダーを使用",
+        "fd_search_req_method": "リクエストメソッド：get/post",
+        "fd_req_headers": "リクエストヘッダー",
+        "fd_full_url": "完全なURLを使用するか",
+        "fd_search_selector": "検索結果リストコンテナのセレクター",
+        "fd_item_img_selector": "アイテム内で画像を探すセレクター",
+        "fd_item_img_from_src": "画像をsrc属性から取得するか",
+        "fd_item_title_selector": "アイテム内でタイトルを探すセレクター",
+        "fd_item_id_selector": "アイテム内で詳細ページリンクを探すセレクター",
+        "fd_item_genre_selector": "アイテム内でジャンルを探すセレクター（任意）",
+        "fd_detail_url": "詳細ページパス、{mediaId}プレースホルダーを使用",
+        "fd_req_method": "リクエストメソッド",
+        "fd_line_selector": "播放ラインリストのセレクター",
+        "fd_episode_selector": "ライン内でエピソードリンクを探すセレクター",
+        "fd_episode_reverse": "エピソード順を反転するか",
+        "fd_player_url": "播放ページパス、{episodeId}プレースホルダーを使用",
+        "fd_player_video_selector": "ビデオ要素のセレクター",
+        "fd_video_element_attr": "ビデオ要素上でURLを格納する属性",
+        "fd_embed_video_selector": "埋め込みビデオセレクター（iframeなど）",
+        "fd_wait_for_target": "ターゲット要素の読み込み完了を待つか",
+        "fd_video_url_subs_char": "ビデオURL抽出ルール",
+        "logic_search": "1. searchSelector が一致する各要素は検索結果の項目（entry）です\n2. 各項目（entry）内で itemIdSelector を使って子要素を探し、その href 属性を mediaId として抽出します\n3. mediaId は詳細ページURLの構築に使用されます",
+        "logic_detail": "1. lineSelector が一致する各要素は播放ラインです\n2. 各ライン内で episodeSelector を使って <a> タグを探し、その href 属性を episodeId として抽出します\n3. episodeId は播放ページURLの構築に使用されます",
+        "logic_player": "1. 播放ページを読み込んだら、まず playerVideoSelector が一致するビデオ要素を探します\n2. ビデオ要素の videoElementAttribute 属性からビデオURLを取得します\n3. ビデオ要素が見つからない場合、embedVideoSelector が一致する iframe を探します\n4. videoUrlSubsChar が設定されている場合、URLから指定部分を抽出します",
+        "way1_container": "方法1：コンテナを選択（推奨）",
+        "way2_direct": "方法2：項目を直接選択",
+        "code_search_example_1": "<div class=\"search-results\">  <!-- searchSelector: \"div.search-results\" -->\n  <a class=\"item\" href=\"/anime/1234\">  <!-- itemIdSelector: \"a.item\" -->\n    <img src=\"cover.jpg\">\n    <h3>アニメ名</h3>\n  </a>\n</div>",
+        "code_search_example_2": "<div class=\"search-results\">\n  <div class=\"item\">  <!-- searchSelector: \"div.search-results > div.item\" -->\n    <img src=\"cover.jpg\">\n    <h3>アニメ名</h3>\n    <a href=\"/anime/1234\">詳細</a>  <!-- itemIdSelector: \"a\" -->\n  </div>\n</div>",
+        "error_same_selector": "❌ エラー：searchSelector と itemIdSelector が同じ要素を選択",
+        "ok_container": "✅ 正解：コンテナ方式を使用",
+        "js_intro": "CSSセレクターでデータを取得できない場合（例：ビデオURLがJS変数にある）、JSスクリプトの注入を使用できます。",
+        "fd_search_script": "検索ページJSスクリプト",
+        "fd_detail_script": "詳細ページJSスクリプト",
+        "fd_player_script": "播放ページJSスクリプト",
+        "priority_text": "• JSスクリプトを設定したページ：JSが返すJSONデータを優先使用\n• JSスクリプトを設定していないページ：CSSセレクターで解析",
+        "pure_js_desc": "isPureJs: true を設定すると、ルールは完全にJSスクリプトに依存してデータを取得し、CSSセレクターによる解析は使用されません。",
+        "pure_js_features_title": "純JSルールの特徴：",
+        "pure_js_features": "• WebViewとJSスクリプト機能を自動で有効化\n• すべてのCSSセレクター入力欄を非表示にし、JSスクリプト入力のみ表示\n• 検索、詳細、播放ページはすべてJSスクリプトでデータを取得\n• REST APIや純データインターフェース型のサイトに適しています",
+        "pure_js_example_title": "純JSルールの例：",
+        "code_pure_js": "{\n  \"name\": \"Soraniアニメ\",\n  \"baseUrl\": \"https://example.com\",\n  \"isPureJs\": true,\n  \"useWebView\": true,\n  \"searchScript\": \"(function() { ... })();\",\n  \"detailScript\": \"(function() { ... })();\",\n  \"playerScript\": \"(function() { ... })();\"\n}",
+        "encoding_desc": "JSスクリプトはエスケープ問題を避けるため、JSON に Base64 エンコードで格納します。",
+        "original_js_title": "元のJSスクリプト：",
+        "usage_scenarios_title": "使用シーン：",
+        "usage_scenarios": "• ビデオURLがJS変数にある\n• 非同期読み込みが必要\n• 複雑な解析ロジック\n• サイトがREST APIインターフェースを提供（純JSルール）",
+        "fd_ph_keyword": "検索キーワード",
+        "fd_ph_media_id": "詳細ページID（検索結果から抽出したhref）",
+        "fd_ph_episode_id": "エピソードID（詳細ページから抽出したhref）",
+        "placeholder_note": "注意：mediaId と episodeId は完全な href パス（例：/anime/1234 や /play/1234/1）を抽出します。",
+        "debug_tips": "1. WebViewを使用：動的レンダリングのページでは useWebView: true を設定する必要があります\n2. セレクターを確認：ブラウザのコンソールで document.querySelectorAll(\"あなたのセレクター\") をテスト\n3. ログを確認：アプリログにHTML解析結果とJS実行結果が出力されます\n4. 段階的にテスト：検索→詳細→播放の順にテスト\n5. JSスクリプトを使用：CSSセレクターで取得できない場合は、JSスクリプト注入を試す",
+        "faq_q_empty_search": "Q: 検索結果が空ですか？",
+        "faq_a_empty_search": "A: searchSelector が正しく、検索結果項目に一致しているか確認してください。",
+        "faq_q_no_episodes": "Q: 詳細ページにエピソードがありませんか？",
+        "faq_a_no_episodes": "A: lineSelector と episodeSelector を確認し、ラインとエピソードリンクに一致するようにしてください。",
+        "faq_q_no_video": "Q: 播放ページでビデオURLを取得できませんか？",
+        "faq_a_no_video": "A: \n• playerVideoSelector と videoElementAttribute が正しいか確認\n• ビデオがiframe内にある場合、embedVideoSelector を設定\n• ビデオURLがJS変数にある場合、playerScript 注入で取得",
+        "faq_q_js_empty": "Q: JSスクリプトが空を返しますか？",
+        "faq_a_js_empty": "A: \n• JS変数が読み込まれていることを確認（非同期読み込みを待つ必要があるかもしれません）\n• JS変数名が正しいか確認\n• ブラウザのコンソールでJSスクリプトを手動実行",
+        "faq_q_base64": "Q: Base64エンコードされたJSスクリプトを取得するには？",
+        "faq_a_base64": "A: Pythonでエンコードします：",
+        "yes": "はい",
+        "no": "いいえ"
     }
 }

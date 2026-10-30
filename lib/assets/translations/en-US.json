@@ -50,6 +50,9 @@
             "wish": "Wish",
             "watched": "Watched",
             "watching": "Watching"
+        },
+        "person_detail": {
+            "cv": "CV: {}"
         }
     },
     "home": {
@@ -61,7 +64,8 @@
     },
     "calendar": {
         "title": "Weekly Schedule",
-        "week": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+        "week": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+        "refresh_calendar": "Refresh Calendar"
     },
     "subscribe": {
         "title": "Subscriptions",
@@ -81,7 +85,12 @@
         "delete_view_failed": "Failed to delete cloud playback history",
         "delete_view_success": "Successfully deleted cloud playback history",
         "subscribe_playback_search": "Search subscriptions or playback history",
-        "webdav_not_configured": "WebDAV is not configured"
+        "webdav_not_configured": "WebDAV is not configured",
+        "toggle_chip_visibility": "Toggle Chip Visibility",
+        "change_subscribe_status": "Change Subscribe Status",
+        "delete_playback_history": "Delete Playback History",
+        "toggle_edit_mode": "Toggle Edit Mode",
+        "refresh_all": "Refresh All"
     },
     "setting": {
         "title": "Settings",
@@ -128,7 +137,11 @@
         },
         "language": {
             "change": "Change Language",
-            "change_description": "Change language and restart app to apply"
+            "change_description": "Change language and restart app to apply",
+            "zh_CN": "中文简体",
+            "zh_TW": "中文繁體",
+            "en_US": "English",
+            "ja_JP": "日本語"
         },
         "data_management": {
             "clear_playback_history": "Clear Playback History",
@@ -158,14 +171,6 @@
             "report_issue_description": "Submit bugs or feature requests",
             "star_project": "Star Project",
             "star_project_description": "Star the project on GitHub"
-        },
-        "language": {
-            "change": "Change Language",
-            "change_description": "Change language and restart app to apply",
-            "zh_CN": "中文简体",
-            "zh_TW": "中文繁體",
-            "en_US": "English",
-            "ja_JP": "日本語"
         },
         "metadata": {
             "bangumi": "Bangumi",
@@ -199,7 +204,17 @@
         "data_sync_interval": "Data Sync Interval",
         "data_sync_interval_description": "Set the interval for data synchronization",
         "enable_splash": "Enable Splash Screen",
-        "enable_splash_description": "If enabled, the app will show the splash screen every time it starts"
+        "enable_splash_description": "If enabled, the app will show the splash screen every time it starts",
+        "color_purple": "Purple",
+        "color_teal": "Teal",
+        "color_dark_teal": "Dark Teal",
+        "color_very_dark_teal": "Very Dark Teal",
+        "color_light_purple": "Light Purple",
+        "color_dark_purple": "Dark Purple",
+        "color_accent_teal": "Accent Teal",
+        "color_cyan_accent": "Cyan Accent",
+        "color_deep_purple": "Deep Purple",
+        "color_aqua_green": "Aqua Green"
     },
     "sign": {
         "title": "Welcome Back",
@@ -237,7 +252,8 @@
         "confirm_delete_search_history": "Are you sure you want to delete all search records?",
         "error_searching": "Search error: {}",
         "cancel": "Cancel",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "image_search": "Image Search"
     },
     "detail": {
         "title": "Details",
@@ -258,7 +274,10 @@
         "no_related_works_data": "No related works data",
         "air_date_key": "Air Date",
         "continue_playing": "Continue from episode {}",
-        "save_rule_to_test": "Save the rule to test"
+        "save_rule_to_test": "Save the rule to test",
+        "link_to_bangumi": "Link to Bangumi",
+        "subscribe_unsubscribe": "Subscribe/Unsubscribe",
+        "all_search_results": "All search results"
     },
     "player": {
         "summary": "Summary",
@@ -300,7 +319,7 @@
         "title": "Rule Manager",
         "import_failure": "Import failed, format error",
         "copy_to_clipboard": "All local rules have been copied to the clipboard",
-        "import_from_json": "Import from JSON",
+        "import_from_json": "Import Rules from JSON",
         "input_json_placeholder": "Please enter rule JSON string",
         "cancel": "Cancel",
         "confirm": "Confirm",
@@ -311,7 +330,11 @@
         "repository": "Rule Repository",
         "import_json": "Import JSON",
         "delete_rule": "Delete Rule",
-        "enable_rule": "Enable Rule"
+        "enable_rule": "Enable Rule",
+        "refresh_rules": "Refresh Rules",
+        "share_all_rules": "Share All rules",
+        "import_from_repository": "Import Rules From Repository",
+        "add_local_rule": "Add Local Rule"
     },
     "rule_edit": {
         "title": "Rule Editing",
@@ -404,7 +427,10 @@
         "video_url_subs_char_label": "Video URL Extraction Rule",
         "video_url_subs_char_hint": "Example: Extract the xxxx part from params=videoUrl=xxxx",
         "test": "Test",
-        "no_source_instance": "No source instance detected, please refresh on the rule management page"
+        "no_source_instance": "No source instance detected, please refresh on the rule management page",
+        "save_rule_to_local": "Save Rule To Local",
+        "help": "Help",
+        "save_rule_to_test": "Save the rule to test"
     },
     "rule_test": {
         "fetch_search_error": "Fetch search error: {}",
@@ -413,7 +439,12 @@
         "video_url_null": "Video URL is null",
         "test_error": "Test error: {}",
         "play": "Play",
-        "url_label": "URL: {}"
+        "url_label": "URL: {}",
+        "title": "{} Test",
+        "input_keyword": "Input keyword",
+        "search_result": "Search Result:",
+        "detail_result": "Detail Result:",
+        "player_result": "Player Result:"
     },
     "rule_repository": {
         "title": "Rule Repository"
@@ -440,6 +471,107 @@
         "seek_backward": "Seek Backward",
         "left_arrow": "Left Arrow",
         "show_episode_list": "Show Episode List",
-        "e_key": "E"
+        "e_key": "E",
+        "settings": "Settings",
+        "playback_speed": "Playback Speed",
+        "danmaku_switch": "Danmaku Switch",
+        "episode_list": "Episode List",
+        "volume": "Volume"
+    },
+    "rule_guide": {
+        "title": "Holo Rule Authoring Guide",
+        "intro": "Holo uses a rule-driven architecture, adapting to different anime websites through JSON configuration. Each rule defines the complete flow of how to search, fetch details, and parse playback URLs.",
+        "section_basic_info": "Basic Information",
+        "section_search_rules": "Search Page Rules",
+        "section_detail_rules": "Detail Page Rules",
+        "section_player_rules": "Play Page Rules",
+        "section_js_scripts": "JS Script Rules (Advanced)",
+        "section_placeholders": "Placeholder Description",
+        "section_debug_tips": "Debugging Tips",
+        "section_faq": "FAQ",
+        "sub_url_config": "URL Configuration",
+        "sub_selector_config": "Selector Configuration",
+        "sub_key_logic": "Key Logic",
+        "sub_search_selector_ways": "Important: Two Ways to Write searchSelector",
+        "sub_common_errors": "Common Errors",
+        "sub_config_fields": "Configuration Fields",
+        "sub_priority": "Priority",
+        "sub_pure_js": "Pure JS Rule (isPureJs)",
+        "sub_encoding": "Encoding Method",
+        "th_field": "Field",
+        "th_type": "Type",
+        "th_required": "Required",
+        "th_description": "Description",
+        "th_example": "Example",
+        "th_return_format": "Return Value Format",
+        "th_placeholder": "Placeholder",
+        "th_used_in": "Used In",
+        "fd_name": "Rule name, used for display in the interface",
+        "fd_base_url": "Website domain",
+        "fd_logo_url": "Website logo URL",
+        "fd_use_webview": "Whether to use WebView to load",
+        "fd_timeout": "Request timeout (seconds), default 15",
+        "fd_is_pure_js": "Whether it is a pure JS rule, default false",
+        "fd_search_url": "Search path, using {keyword} placeholder",
+        "fd_search_req_method": "Request method: get/post",
+        "fd_req_headers": "Request headers",
+        "fd_full_url": "Whether to use full URL",
+        "fd_search_selector": "Selector for the search results list container",
+        "fd_item_img_selector": "Selector to find the image within an item",
+        "fd_item_img_from_src": "Whether the image is obtained from the src attribute",
+        "fd_item_title_selector": "Selector to find the title within an item",
+        "fd_item_id_selector": "Selector to find the detail page link within an item",
+        "fd_item_genre_selector": "Selector to find the genre within an item (optional)",
+        "fd_detail_url": "Detail page path, using {mediaId} placeholder",
+        "fd_req_method": "Request method",
+        "fd_line_selector": "Selector for the playback route list",
+        "fd_episode_selector": "Selector to find episode links within a route",
+        "fd_episode_reverse": "Whether to reverse the episode order",
+        "fd_player_url": "Play page path, using {episodeId} placeholder",
+        "fd_player_video_selector": "Selector for the video element",
+        "fd_video_element_attr": "Attribute on the video element that stores the URL",
+        "fd_embed_video_selector": "Embedded video selector (iframe, etc.)",
+        "fd_wait_for_target": "Whether to wait for the target element to load completely",
+        "fd_video_url_subs_char": "Video URL extraction rule",
+        "logic_search": "1. Each element matched by searchSelector is a search result item (entry)\n2. Within each item (entry), use itemIdSelector to find child elements and extract their href attribute as mediaId\n3. mediaId will be used to build the detail page URL",
+        "logic_detail": "1. Each element matched by lineSelector is a playback route\n2. Within each route, use episodeSelector to find <a> tags and extract their href attribute as episodeId\n3. episodeId will be used to build the play page URL",
+        "logic_player": "1. After loading the play page, first find the video element matched by playerVideoSelector\n2. Get the video URL from the videoElementAttribute attribute of the video element\n3. If the video element is not found, try to find the iframe matched by embedVideoSelector\n4. If videoUrlSubsChar is configured, extract the specified part from the URL",
+        "way1_container": "Method 1: Select a container (recommended)",
+        "way2_direct": "Method 2: Directly select items",
+        "code_search_example_1": "<div class=\"search-results\">  <!-- searchSelector: \"div.search-results\" -->\n  <a class=\"item\" href=\"/anime/1234\">  <!-- itemIdSelector: \"a.item\" -->\n    <img src=\"cover.jpg\">\n    <h3>Anime Name</h3>\n  </a>\n</div>",
+        "code_search_example_2": "<div class=\"search-results\">\n  <div class=\"item\">  <!-- searchSelector: \"div.search-results > div.item\" -->\n    <img src=\"cover.jpg\">\n    <h3>Anime Name</h3>\n    <a href=\"/anime/1234\">Details</a>  <!-- itemIdSelector: \"a\" -->\n  </div>\n</div>",
+        "error_same_selector": "❌ Error: searchSelector and itemIdSelector select the same element",
+        "ok_container": "✅ Correct: use the container approach",
+        "js_intro": "When CSS selectors cannot obtain data (e.g. video URLs are in JS variables), JS script injection can be used.",
+        "fd_search_script": "Search page JS script",
+        "fd_detail_script": "Detail page JS script",
+        "fd_player_script": "Play page JS script",
+        "priority_text": "• Pages configured with JS scripts: use the JSON data returned by JS first\n• Pages without JS scripts: parsed using CSS selectors",
+        "pure_js_desc": "When isPureJs: true is set, the rule will completely rely on JS scripts to obtain data, and CSS selector parsing will no longer be used.",
+        "pure_js_features_title": "Features of pure JS rules:",
+        "pure_js_features": "• Automatically enable WebView and JS script features\n• Hide all CSS selector input boxes, only show JS script input\n• Search, detail, and play pages all obtain data through JS scripts\n• Suitable for REST API or pure data interface type websites",
+        "pure_js_example_title": "Pure JS rule example:",
+        "code_pure_js": "{\n  \"name\": \"Sorani Anime\",\n  \"baseUrl\": \"https://example.com\",\n  \"isPureJs\": true,\n  \"useWebView\": true,\n  \"searchScript\": \"(function() { ... })();\",\n  \"detailScript\": \"(function() { ... })();\",\n  \"playerScript\": \"(function() { ... })();\"\n}",
+        "encoding_desc": "JS scripts are stored in JSON using Base64 encoding to avoid escaping issues.",
+        "original_js_title": "Original JS script:",
+        "usage_scenarios_title": "Usage scenarios:",
+        "usage_scenarios": "• Video URL is in a JS variable\n• Requires async loading\n• Complex parsing logic\n• Website provides a REST API interface (pure JS rule)",
+        "fd_ph_keyword": "Search keyword",
+        "fd_ph_media_id": "Detail page ID (href extracted from search results)",
+        "fd_ph_episode_id": "Episode ID (href extracted from detail page)",
+        "placeholder_note": "Note: mediaId and episodeId extract the complete href path, such as /anime/1234 or /play/1234/1.",
+        "debug_tips": "1. Use WebView: dynamically rendered pages must set useWebView: true\n2. Check selectors: test in the browser console with document.querySelectorAll(\"your selector\")\n3. View logs: the app log outputs HTML parsing results and JS execution results\n4. Test step by step: first search, then detail, finally play\n5. Use JS scripts: when CSS selectors cannot obtain data, try JS script injection",
+        "faq_q_empty_search": "Q: Search results are empty?",
+        "faq_a_empty_search": "A: Check whether searchSelector is correct and matches search result items.",
+        "faq_q_no_episodes": "Q: No episodes on the detail page?",
+        "faq_a_no_episodes": "A: Check lineSelector and episodeSelector, ensure they match routes and episode links.",
+        "faq_q_no_video": "Q: Cannot get the video URL on the play page?",
+        "faq_a_no_video": "A: \n• Check whether playerVideoSelector and videoElementAttribute are correct\n• If the video is in an iframe, configure embedVideoSelector\n• If the video URL is in a JS variable, use playerScript injection",
+        "faq_q_js_empty": "Q: JS script returns empty?",
+        "faq_a_js_empty": "A: \n• Ensure the JS variable has been loaded (may need to wait for async loading)\n• Check whether the JS variable name is correct\n• Manually execute the JS script in the browser console",
+        "faq_q_base64": "Q: How to get the Base64-encoded JS script?",
+        "faq_a_base64": "A: Use Python to encode:",
+        "yes": "Yes",
+        "no": "No"
     }
 }

@@ -73,12 +73,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
           },
         ),
       IconButton(
-        tooltip: 'Save Rule To Local',
+        tooltip: 'rule_edit.save_rule_to_local'.tr(),
         icon: const Icon(Icons.save_outlined),
         onPressed: _saveRule,
       ),
       IconButton(
-        tooltip: 'Help',
+        tooltip: 'rule_edit.help'.tr(),
         icon: const Icon(Icons.help_outline_outlined),
         onPressed: () {
           context.push('/rule_guide');
@@ -1191,7 +1191,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   Flexible(
                     fit: FlexFit.tight,
                     child: widget.rule == null || _service == null
-                        ? Center(child: Text('保存规则后即可测试'))
+                        ? Center(child: Text('rule_edit.save_rule_to_test'.tr()))
                         : RuleTestScreen(source: _service!, showNavBtn: false),
                   ),
               ],
