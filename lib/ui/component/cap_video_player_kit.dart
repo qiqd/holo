@@ -101,7 +101,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   void _showVideoControlsTimer() {
     // log("showVideoControlsTimer");
     _videoControlsTimer?.cancel();
-    _videoControlsTimer = Timer(Duration(seconds: 5), () {
+    _videoControlsTimer = Timer(Duration(seconds: 500), () {
       safeSetState(() {
         _showVideoControls = false;
       });
@@ -626,6 +626,10 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       right: 0,
       child: Container(
         width: double.infinity,
+        padding: widget.isFullScreen
+            ? EdgeInsets.symmetric(horizontal: widget.safeInset)
+            : EdgeInsets.zero,
+        height: 72,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -633,15 +637,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
             colors: [Colors.black.withOpacity(0.5), Colors.transparent],
           ),
         ),
-        child: Padding(
-          padding: widget.isFullScreen && (Platform.isAndroid || Platform.isIOS)
-              ? EdgeInsets.symmetric(horizontal: widget.safeInset)
-              : EdgeInsets.zero,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            horizontalTitleGap: 6,
-            titleAlignment: ListTileTitleAlignment.center,
-            leading: IconButton(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            IconButton(
               color: Colors.white,
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
@@ -649,48 +649,53 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 widget.onBackPressed?.call();
               },
             ),
-            title: Text(
-              widget.title ?? context.tr("component.title"),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: Colors.white),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.title ?? context.tr("component.title"),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(color: Colors.white),
+                ),
+                if (widget.subTitle != null && widget.subTitle!.isNotEmpty)
+                  Text(widget.subTitle!, style: TextStyle(color: Colors.white)),
+              ],
             ),
-            subtitle: widget.subTitle != null && widget.subTitle!.isNotEmpty
-                ? Text(widget.subTitle!, style: TextStyle(color: Colors.white))
-                : null,
-            trailing: widget.isFullScreen
-                ? SizedBox(
-                    width: 100,
-                    child: Row(
-                      mainAxisAlignment: .end,
-                      children: [
-                        if (Platform.isLinux ||
-                            Platform.isWindows ||
-                            Platform.isMacOS)
-                          IconButton(
-                            color: Colors.white,
-                            tooltip: 'cap_video_player.keyboard_shortcuts'.tr(),
-                            onPressed: () {
-                              _showKeyboardShortcuts();
-                            },
-                            icon: const Icon(Icons.help_outline_rounded),
-                          ),
-                        IconButton(
-                          color: Colors.white,
-                          tooltip: 'cap_video_player.settings'.tr(),
-                          onPressed: () {
-                            widget.onSettingTab?.call();
-                            _showVideoControlsTimer();
-                          },
-                          icon: const Icon(Icons.settings_rounded),
-                        ),
-                      ],
+            const Spacer(),
+            if (widget.isFullScreen)
+              SizedBox(
+                width: 100,
+                child: Row(
+                  mainAxisAlignment: .end,
+                  children: [
+                    if (Platform.isLinux ||
+                        Platform.isWindows ||
+                        Platform.isMacOS)
+                      IconButton(
+                        color: Colors.white,
+                        tooltip: 'cap_video_player.keyboard_shortcuts'.tr(),
+                        onPressed: () {
+                          _showKeyboardShortcuts();
+                        },
+                        icon: const Icon(Icons.help_outline_rounded),
+                      ),
+                    IconButton(
+                      color: Colors.white,
+                      tooltip: 'cap_video_player.settings'.tr(),
+                      onPressed: () {
+                        widget.onSettingTab?.call();
+                        _showVideoControlsTimer();
+                      },
+                      icon: const Icon(Icons.settings_rounded),
                     ),
-                  )
-                : null,
-          ),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -803,7 +808,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
         curve: Curves.easeInOut,
         duration: const Duration(milliseconds: 100),
         child: Container(
-          // padding: .symmetric(horizontal: 16),
+          padding: widget.isFullScreen
+              ? EdgeInsets.symmetric(horizontal: widget.safeInset)
+              : EdgeInsets.zero,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -811,193 +818,185 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               colors: [Colors.transparent, Colors.black.withOpacity(0.5)],
             ),
           ),
-          child: Padding(
-            padding:
-                widget.isFullScreen && (Platform.isAndroid || Platform.isIOS)
-                ? EdgeInsets.symmetric(horizontal: widget.safeInset)
-                : EdgeInsets.zero,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 进度条
-                Row(
-                  children: [
-                    Expanded(
-                      child: Slider(
-                        onChanged: (_) {},
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 0,
-                        ),
-                        secondaryTrackValue: _bufferProgress,
-                        value: player?.value.position.inSeconds.toDouble() ?? 0,
-                        max: player?.value.duration.inSeconds.toDouble() ?? 0,
-                        onChangeEnd: (value) {
-                          _showVideoControlsTimer();
-                          player?.seekTo(Duration(seconds: value.toInt()));
-                        },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 进度条
+              Row(
+                children: [
+                  Expanded(
+                    child: Slider(
+                      onChanged: (_) {},
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 0,
                       ),
-                    ),
-                  ],
-                ),
-                // 播放按钮
-                Row(
-                  children: [
-                    IconButton(
-                      color: Colors.white,
-                      onPressed: () {
+                      secondaryTrackValue: _bufferProgress,
+                      value: player?.value.position.inSeconds.toDouble() ?? 0,
+                      max: player?.value.duration.inSeconds.toDouble() ?? 0,
+                      onChangeEnd: (value) {
                         _showVideoControlsTimer();
-                        (player?.value.isPlaying ?? false)
-                            ? player?.pause().then((_) {
-                                widget.onPlayOrPause?.call(
-                                  player.value.isPlaying,
-                                );
-                              })
-                            : player?.play().then((_) {
-                                widget.onPlayOrPause?.call(
-                                  player.value.isPlaying,
-                                );
-                              });
+                        player?.seekTo(Duration(seconds: value.toInt()));
                       },
-                      icon: Icon(
-                        (player?.value.isPlaying ?? false)
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                      ),
                     ),
-                    // 下一集
-                    IconButton(
-                      color: Colors.white,
-                      onPressed: () {
-                        _showVideoControlsTimer();
-                        widget.onNextTab?.call();
-                      },
-                      icon: const Icon(Icons.skip_next_rounded),
+                  ),
+                ],
+              ),
+              // 播放按钮
+              Row(
+                children: [
+                  IconButton(
+                    color: Colors.white,
+                    onPressed: () {
+                      _showVideoControlsTimer();
+                      (player?.value.isPlaying ?? false)
+                          ? player?.pause().then((_) {
+                              widget.onPlayOrPause?.call(
+                                player.value.isPlaying,
+                              );
+                            })
+                          : player?.play().then((_) {
+                              widget.onPlayOrPause?.call(
+                                player.value.isPlaying,
+                              );
+                            });
+                    },
+                    icon: Icon(
+                      (player?.value.isPlaying ?? false)
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
                     ),
+                  ),
+                  // 下一集
+                  IconButton(
+                    color: Colors.white,
+                    onPressed: () {
+                      _showVideoControlsTimer();
+                      widget.onNextTab?.call();
+                    },
+                    icon: const Icon(Icons.skip_next_rounded),
+                  ),
 
-                    //进度
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(minWidth: 100),
-                      child: TextButton(
-                        style: ButtonStyle(
-                          padding: WidgetStatePropertyAll(
-                            EdgeInsets.symmetric(horizontal: 0),
-                          ),
-                        ),
-                        onPressed: null,
-                        child: Text(
-                          "${(player?.value.position.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.position.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}/${(player?.value.duration.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.duration.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}",
-                          style: TextStyle(color: Colors.white),
+                  //进度
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 100),
+                    child: TextButton(
+                      style: ButtonStyle(
+                        padding: WidgetStatePropertyAll(
+                          EdgeInsets.symmetric(horizontal: 0),
                         ),
                       ),
-                    ),
-                    //播放速度按钮
-                    PopupMenuButton(
-                      tooltip: 'cap_video_player.playback_speed'.tr(),
-                      padding: .zero,
-                      iconColor: Colors.white,
-                      icon: Text(
-                        "${player?.value.playbackSpeed ?? 1.0}x",
+                      onPressed: null,
+                      child: Text(
+                        "${(player?.value.position.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.position.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}/${(player?.value.duration.inMinutes ?? 0).toString().padLeft(2, '0')}:${(player?.value.duration.inSeconds.remainder(60) ?? 0).toString().padLeft(2, '0')}",
                         style: TextStyle(color: Colors.white),
                       ),
-                      onSelected: (value) async {
-                        _setPlaybackSpeed(value);
-                      },
-                      itemBuilder: (context) {
-                        var items = <PopupMenuItem<double>>[];
-                        for (var i = 0.5; i <= 4.0; i += 0.25) {
-                          items.add(
-                            PopupMenuItem(value: i, child: Text(i.toString())),
-                          );
-                        }
-                        return items.reversed.toList();
-                      },
                     ),
+                  ),
+                  //播放速度按钮
+                  PopupMenuButton(
+                    tooltip: 'cap_video_player.playback_speed'.tr(),
+                    padding: .zero,
+                    iconColor: Colors.white,
+                    icon: Text(
+                      "${player?.value.playbackSpeed ?? 1.0}x",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onSelected: (value) async {
+                      _setPlaybackSpeed(value);
+                    },
+                    itemBuilder: (context) {
+                      var items = <PopupMenuItem<double>>[];
+                      for (var i = 0.5; i <= 4.0; i += 0.25) {
+                        items.add(
+                          PopupMenuItem(value: i, child: Text(i.toString())),
+                        );
+                      }
+                      return items.reversed.toList();
+                    },
+                  ),
 
-                    //弹幕开关按钮
+                  //弹幕开关按钮
+                  IconButton(
+                    tooltip: 'cap_video_player.danmaku_switch'.tr(),
+                    color: Colors.white,
+                    onPressed: () {
+                      safeSetState(() {
+                        _showDanmaku = !_showDanmaku;
+                      });
+                      _showVideoControlsTimer();
+                    },
+                    icon: Icon(_showDanmaku ? BF.danmakuOn : BF.danmakuOff),
+                  ),
+
+                  if (widget.isFullScreen) ...[
+                    //剧集列表按钮
                     IconButton(
-                      tooltip: 'cap_video_player.danmaku_switch'.tr(),
                       color: Colors.white,
+                      tooltip: 'cap_video_player.episode_list'.tr(),
                       onPressed: () {
-                        safeSetState(() {
-                          _showDanmaku = !_showDanmaku;
-                        });
+                        widget.onEpisodeTab?.call();
                         _showVideoControlsTimer();
                       },
-                      icon: Icon(_showDanmaku ? BF.danmakuOn : BF.danmakuOff),
+                      icon: Icon(Icons.format_list_bulleted_rounded),
                     ),
+                  ],
 
-                    if (widget.isFullScreen) ...[
-                      //剧集列表按钮
-                      IconButton(
-                        color: Colors.white,
-                        tooltip: 'cap_video_player.episode_list'.tr(),
-                        onPressed: () {
-                          widget.onEpisodeTab?.call();
-                          _showVideoControlsTimer();
-                        },
-                        icon: Icon(Icons.format_list_bulleted_rounded),
-                      ),
-                    ],
-
-                    //音量调整,只在桌面端显示
-                    if (_isLandscape &&
-                        (Platform.isWindows ||
-                            Platform.isMacOS ||
-                            Platform.isLinux)) ...[
-                      IconButton(
-                        tooltip: 'cap_video_player.volume'.tr(),
-                        color: Colors.white,
-                        onPressed: () async {
-                          await widget.playerNotifier.value?.setVolume(0);
-                        },
-                        icon: Icon(
-                          (widget.playerNotifier.value?.value.volume ?? 0) > 0
-                              ? Icons.volume_up_rounded
-                              : Icons.volume_off_rounded,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 120,
-                        child: Slider(
-                          min: 0,
-                          max: 1,
-                          padding: .symmetric(horizontal: 10),
-                          value: widget.playerNotifier.value?.value.volume ?? 0,
-                          onChanged: (value) async {
-                            await widget.playerNotifier.value?.setVolume(value);
-                          },
-                        ),
-                      ),
-                    ],
-                    Spacer(),
-
-                    // 全屏按钮
+                  //音量调整,只在桌面端显示
+                  if (_isLandscape &&
+                      (Platform.isWindows ||
+                          Platform.isMacOS ||
+                          Platform.isLinux)) ...[
                     IconButton(
+                      tooltip: 'cap_video_player.volume'.tr(),
                       color: Colors.white,
                       onPressed: () async {
-                        _showVideoControlsTimer();
-                        if (Platform.isWindows ||
-                            Platform.isMacOS ||
-                            Platform.isLinux) {
-                          final full = await windowManager.isFullScreen();
-                          await windowManager.setFullScreen(!full);
-                        } else if (Platform.isAndroid || Platform.isIOS) {
-                          widget.onFullScreenChanged?.call(
-                            !widget.isFullScreen,
-                          );
-                        }
+                        await widget.playerNotifier.value?.setVolume(0);
                       },
                       icon: Icon(
-                        widget.isFullScreen
-                            ? Icons.fullscreen_exit_rounded
-                            : Icons.fullscreen_rounded,
+                        (widget.playerNotifier.value?.value.volume ?? 0) > 0
+                            ? Icons.volume_up_rounded
+                            : Icons.volume_off_rounded,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 120,
+                      child: Slider(
+                        min: 0,
+                        max: 1,
+                        padding: .symmetric(horizontal: 10),
+                        value: widget.playerNotifier.value?.value.volume ?? 0,
+                        onChanged: (value) async {
+                          await widget.playerNotifier.value?.setVolume(value);
+                        },
                       ),
                     ),
                   ],
-                ),
-              ],
-            ),
+                  Spacer(),
+
+                  // 全屏按钮
+                  IconButton(
+                    color: Colors.white,
+                    onPressed: () async {
+                      _showVideoControlsTimer();
+                      if (Platform.isWindows ||
+                          Platform.isMacOS ||
+                          Platform.isLinux) {
+                        final full = await windowManager.isFullScreen();
+                        await windowManager.setFullScreen(!full);
+                      } else if (Platform.isAndroid || Platform.isIOS) {
+                        widget.onFullScreenChanged?.call(!widget.isFullScreen);
+                      }
+                    },
+                    icon: Icon(
+                      widget.isFullScreen
+                          ? Icons.fullscreen_exit_rounded
+                          : Icons.fullscreen_rounded,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

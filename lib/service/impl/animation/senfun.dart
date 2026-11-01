@@ -4,7 +4,6 @@ import 'package:holo/entity/rule.dart';
 import 'package:holo/service/common_source_service.dart';
 import 'package:html/parser.dart';
 import 'package:holo/entity/media.dart';
-import 'package:holo/service/source_service.dart';
 import 'package:holo/util/http_util.dart';
 
 class Senfun extends CommonSourceService {

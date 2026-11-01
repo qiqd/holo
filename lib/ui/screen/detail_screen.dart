@@ -509,20 +509,7 @@ class _DetailScreenState extends State<DetailScreen>
                           imageUrl: p['image'] ?? '',
                           genre: p['subtitle'] ?? '',
                           height: 140,
-                          onTap: () {
-                            if (p['id'] == null || p['title'] == null) {
-                              return;
-                            }
-                            context.push(
-                              '/detail',
-                              extra: {
-                                'id': int.parse(p['id'] as String),
-                                'keyword': p['title'],
-                                'cover': p['image'] ?? '',
-                                'from': "detail",
-                              },
-                            );
-                          },
+                          onTap: () => onTap?.call(p['id'] as String),
                         ),
                         if (index == data.length - 1)
                           const SizedBox(height: 80),
@@ -615,23 +602,32 @@ class _DetailScreenState extends State<DetailScreen>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _goToPlayer,
         isExtended: true,
-        label: _isLoading
-            ? const CircularProgressIndicator(
-                year2023: false,
-                key: ValueKey("detail_floating_loading"),
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.play_arrow),
-                  if (_userPlayback?.episodeIndex != null)
-                    Text(
-                      "detail.continue_playing".tr(
-                        args: [(_userPlayback!.episodeIndex + 1).toString()],
+        label: AnimatedSize(
+          curve: Curves.fastOutSlowIn,
+          duration: const Duration(milliseconds: 300),
+          child: _isLoading
+              ? const SizedBox.square(
+                  dimension: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4,
+                    padding: .zero,
+                    year2023: false,
+                    key: ValueKey("detail_floating_loading"),
+                  ),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.play_arrow),
+                    if (_userPlayback?.episodeIndex != null)
+                      Text(
+                        "detail.continue_playing".tr(
+                          args: [(_userPlayback!.episodeIndex + 1).toString()],
+                        ),
                       ),
-                    ),
-                ],
-              ),
+                  ],
+                ),
+        ),
       ),
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: LayoutBuilder(
@@ -742,7 +738,9 @@ class _DetailScreenState extends State<DetailScreen>
                                           .map(
                                             (e) => {
                                               'id': e.id.toString(),
-                                              'title': e.nameCn,
+                                              'title': e.nameCn.isNotEmpty
+                                                  ? e.nameCn
+                                                  : e.name,
                                               'subtitle': e.relation,
                                               'image': e.images!.large!,
                                             },
@@ -750,6 +748,21 @@ class _DetailScreenState extends State<DetailScreen>
                                           .toList(),
                                       placeholder:
                                           "detail.no_related_works_data".tr(),
+                                      onTap: (id) {
+                                        final p = _relation.firstWhere(
+                                          (e) => e.id.toString() == id,
+                                        );
+                                        if (p.name.isEmpty) return;
+                                        context.push(
+                                          '/detail',
+                                          extra: {
+                                            'id': p.id,
+                                            'keyword': p.name,
+                                            'cover': p.images!.large!,
+                                            'from': "detail",
+                                          },
+                                        );
+                                      },
                                     ),
                                     // ListView.builder(
                                     //   itemCount: _relation.length,
