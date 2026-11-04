@@ -476,7 +476,17 @@
         "playback_speed": "播放速度",
         "danmaku_switch": "彈幕開關",
         "episode_list": "劇集列表",
-        "volume": "音量"
+        "volume": "音量",
+        "play": "播放",
+        "pause": "暫停",
+        "next_episode": "下一集",
+        "enter_full_screen": "進入全螢幕",
+        "exit_full_screen": "退出全螢幕",
+        "mute": "靜音",
+        "unmute": "取消靜音",
+        "lock": "鎖定",
+        "unlock": "取消鎖定",
+        "back": "返回"
     },
     "rule_guide": {
         "title": "Holo 規則編寫指南",

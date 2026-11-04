@@ -476,7 +476,17 @@
         "playback_speed": "再生速度",
         "danmaku_switch": "弾幕スイッチ",
         "episode_list": "話数リスト",
-        "volume": "音量"
+        "volume": "音量",
+        "play": "再生",
+        "pause": "一時停止",
+        "next_episode": "次の話",
+        "enter_full_screen": "全画面表示",
+        "exit_full_screen": "全画面解除",
+        "mute": "ミュート",
+        "unmute": "ミュート解除",
+        "lock": "ロック",
+        "unlock": "ロック解除",
+        "back": "戻る"
     },
     "rule_guide": {
         "title": "Holo ルール作成ガイド",

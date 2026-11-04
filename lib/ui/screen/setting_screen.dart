@@ -143,7 +143,10 @@ class _SettingScreenState extends State<SettingScreen>
         applicationVersion: 'v$_version.$_buildNumber',
         applicationIcon: ClipRRect(
           borderRadius: BorderRadius.circular(18),
-          child: Image.asset('lib/images/launcher_round.webp', width: 100),
+          child: Image.asset(
+            'lib/assets/images/launcher_round_transparent.webp',
+            width: 100,
+          ),
         ),
         applicationLegalese: 'AGPL-3.0 license',
         aboutBoxChildren: _buildAboutBoxChildren(),

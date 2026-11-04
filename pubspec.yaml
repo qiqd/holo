@@ -66,11 +66,11 @@ flutter:
   assets:
     - lib/assets/translations/
     - lib/assets/lottie/
-    - lib/images/launcher_round_dark.webp
-    - lib/images/launcher_round.webp
-    - lib/images/splash.webp
-    # - lib/images/
-    # - lib/images/splash.webp
+    - lib/assets/images/launcher_round_transparent.webp
+    - lib/assets/images/launcher_round.webp
+    - lib/assets/images/splash.webp
+    # - lib/assets/images/
+    # - lib/assets/images/splash.webp
   fonts:
     - family: BF
       fonts:

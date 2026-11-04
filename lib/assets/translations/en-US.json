@@ -476,7 +476,17 @@
         "playback_speed": "Playback Speed",
         "danmaku_switch": "Danmaku Switch",
         "episode_list": "Episode List",
-        "volume": "Volume"
+        "volume": "Volume",
+        "play": "Play",
+        "pause": "Pause",
+        "next_episode": "Next Episode",
+        "enter_full_screen": "Enter Full Screen",
+        "exit_full_screen": "Exit Full Screen",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "lock": "Lock",
+        "unlock": "Unlock",
+        "back": "Back"
     },
     "rule_guide": {
         "title": "Holo Rule Authoring Guide",

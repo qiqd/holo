@@ -39,17 +39,26 @@ class _AppearanceState extends State<Appearance> {
   // 自定义颜色样本
   final Map<ColorSwatch<Object>, String> _customSwatches =
       <ColorSwatch<Object>, String>{
-        ColorTools.createPrimarySwatch(const Color(0xFF6200EE)): 'preference.color_purple'.tr(),
-        ColorTools.createPrimarySwatch(const Color(0xFF03DAC6)): 'preference.color_teal'.tr(),
-        ColorTools.createPrimarySwatch(const Color(0xFF018786)): 'preference.color_dark_teal'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF6200EE)):
+            'preference.color_purple'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF03DAC6)):
+            'preference.color_teal'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF018786)):
+            'preference.color_dark_teal'.tr(),
         ColorTools.createPrimarySwatch(const Color(0xFF005457)):
             'preference.color_very_dark_teal'.tr(),
-        ColorTools.createPrimarySwatch(const Color(0xFFBB86FC)): 'preference.color_light_purple'.tr(),
-        ColorTools.createPrimarySwatch(const Color(0xFF3700B3)): 'preference.color_dark_purple'.tr(),
-        ColorTools.createPrimarySwatch(const Color(0xFF03DAC5)): 'preference.color_accent_teal'.tr(),
-        ColorTools.createPrimarySwatch(const Color(0xFF00E5FF)): 'preference.color_cyan_accent'.tr(),
-        ColorTools.createPrimarySwatch(const Color(0xFF6200EA)): 'preference.color_deep_purple'.tr(),
-        ColorTools.createPrimarySwatch(const Color(0xFF64FFDA)): 'preference.color_aqua_green'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFFBB86FC)):
+            'preference.color_light_purple'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF3700B3)):
+            'preference.color_dark_purple'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF03DAC5)):
+            'preference.color_accent_teal'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF00E5FF)):
+            'preference.color_cyan_accent'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF6200EA)):
+            'preference.color_deep_purple'.tr(),
+        ColorTools.createPrimarySwatch(const Color(0xFF64FFDA)):
+            'preference.color_aqua_green'.tr(),
       };
   String _getThemeModeText() {
     final themeMode = MyApp.userSettingNotifier.value.themeMode;
@@ -193,7 +202,7 @@ class _AppearanceState extends State<Appearance> {
   /// 更新主题颜色
   Future<void> _updatePrimaryColor(Color color) async {
     var appSetting = MyApp.userSettingNotifier.value;
-    var newSetting = appSetting.copyWith(colorSeed: color.value);
+    var newSetting = appSetting.copyWith(colorSeed: color.toARGB32());
     MyApp.userSettingNotifier.value = newSetting;
     await HiveUtil.setUserSetting(newSetting);
     await WebDAV.syncUserSetting(newSetting);
@@ -265,7 +274,7 @@ class _AppearanceState extends State<Appearance> {
                 ),
                 title: Text('appearance.custom_color'.tr()),
                 subtitle: Text(
-                  '#${Theme.of(context).colorScheme.primary.value.toRadixString(16)}',
+                  '#${Theme.of(context).colorScheme.primary.toARGB32().toRadixString(16)}',
                 ),
                 trailing: Icon(
                   Icons.colorize,

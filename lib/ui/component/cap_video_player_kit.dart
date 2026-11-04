@@ -71,7 +71,8 @@ class CapVideoPlayerKit extends StatefulWidget {
   State<CapVideoPlayerKit> createState() => _CapVideoPlayerKitState();
 }
 
-class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
+class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
+    with WindowListener {
   final FocusNode _focusNode = FocusNode(
     skipTraversal: true,
     descendantsAreTraversable: false,
@@ -87,6 +88,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   Timer? _videoTimer;
   Timer? _danmuTimer;
   double _currentVolume = 0.0;
+  double _lastVolumeBeforeMute = 1.0;
   double _currentBrightness = 0.0;
   bool _showDanmaku = true;
   double _bufferProgress = 0.0;
@@ -96,6 +98,28 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
   int _toastShowMode = 0; //0:无,1:音量,2:亮度,3:进度
   final List<DanmakuContentItem<double>> _danmakuItems = [];
   Timer? _danmakuOptionTimer;
+  bool _isSystemFullScreen = false;
+
+  bool get _isDesktop =>
+      Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+
+  /// 实际全屏状态:桌面端跟随系统窗口状态,移动端跟随外部传入的状态
+  bool get _effectiveFullScreen =>
+      _isDesktop ? _isSystemFullScreen : widget.isFullScreen;
+
+  @override
+  void onWindowEnterFullScreen() {
+    safeSetState(() {
+      _isSystemFullScreen = true;
+    });
+  }
+
+  @override
+  void onWindowLeaveFullScreen() {
+    safeSetState(() {
+      _isSystemFullScreen = false;
+    });
+  }
 
   /// 显示视频控制条定时器
   void _showVideoControlsTimer() {
@@ -493,7 +517,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
               ? EdgeInsets.zero
               : const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
           ),
           child: SizedBox(
@@ -586,6 +610,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           alignment: Alignment.centerLeft,
           child: IconButton(
             color: Colors.white,
+            tooltip: _isLock
+                ? 'cap_video_player.unlock'.tr()
+                : 'cap_video_player.lock'.tr(),
             onPressed: () {
               safeSetState(() {
                 _isLock = !_isLock;
@@ -634,7 +661,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.black.withOpacity(0.5), Colors.transparent],
+            colors: [Colors.black.withValues(alpha: 0.5), Colors.transparent],
           ),
         ),
         child: Row(
@@ -643,12 +670,14 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
           children: [
             IconButton(
               color: Colors.white,
+              tooltip: 'cap_video_player.back'.tr(),
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 _showVideoControlsTimer();
                 widget.onBackPressed?.call();
               },
             ),
+            const SizedBox(width: 16),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -815,7 +844,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.transparent, Colors.black.withOpacity(0.5)],
+              colors: [Colors.transparent, Colors.black.withValues(alpha: 0.5)],
             ),
           ),
           child: Column(
@@ -847,6 +876,9 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                 children: [
                   IconButton(
                     color: Colors.white,
+                    tooltip: (player?.value.isPlaying ?? false)
+                        ? 'cap_video_player.pause'.tr()
+                        : 'cap_video_player.play'.tr(),
                     onPressed: () {
                       _showVideoControlsTimer();
                       (player?.value.isPlaying ?? false)
@@ -870,6 +902,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   // 下一集
                   IconButton(
                     color: Colors.white,
+                    tooltip: 'cap_video_player.next_episode'.tr(),
                     onPressed: () {
                       _showVideoControlsTimer();
                       widget.onNextTab?.call();
@@ -948,15 +981,29 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                           Platform.isMacOS ||
                           Platform.isLinux)) ...[
                     IconButton(
-                      tooltip: 'cap_video_player.volume'.tr(),
+                      tooltip:
+                          (widget.playerNotifier.value?.value.volume ?? 0) > 0
+                          ? 'cap_video_player.mute'.tr()
+                          : 'cap_video_player.unmute'.tr(),
                       color: Colors.white,
                       onPressed: () async {
-                        await widget.playerNotifier.value?.setVolume(0);
+                        final player = widget.playerNotifier.value;
+                        if (player == null) return;
+                        final current = player.value.volume;
+                        if (current > 0) {
+                          _lastVolumeBeforeMute = current;
+                          await player.setVolume(0);
+                        } else {
+                          await player.setVolume(_lastVolumeBeforeMute);
+                        }
                       },
                       icon: Icon(
-                        (widget.playerNotifier.value?.value.volume ?? 0) > 0
-                            ? Icons.volume_up_rounded
-                            : Icons.volume_off_rounded,
+                        switch (widget.playerNotifier.value?.value.volume ??
+                            0) {
+                          0 => Icons.volume_off_rounded,
+                          final v when v < 0.5 => Icons.volume_down_rounded,
+                          _ => Icons.volume_up_rounded,
+                        },
                       ),
                     ),
                     SizedBox(
@@ -967,6 +1014,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                         padding: .symmetric(horizontal: 10),
                         value: widget.playerNotifier.value?.value.volume ?? 0,
                         onChanged: (value) async {
+                          if (value > 0) _lastVolumeBeforeMute = value;
                           await widget.playerNotifier.value?.setVolume(value);
                         },
                       ),
@@ -977,11 +1025,12 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                   // 全屏按钮
                   IconButton(
                     color: Colors.white,
+                    tooltip: _effectiveFullScreen
+                        ? 'cap_video_player.exit_full_screen'.tr()
+                        : 'cap_video_player.enter_full_screen'.tr(),
                     onPressed: () async {
                       _showVideoControlsTimer();
-                      if (Platform.isWindows ||
-                          Platform.isMacOS ||
-                          Platform.isLinux) {
+                      if (_isDesktop) {
                         final full = await windowManager.isFullScreen();
                         await windowManager.setFullScreen(!full);
                       } else if (Platform.isAndroid || Platform.isIOS) {
@@ -989,7 +1038,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
                       }
                     },
                     icon: Icon(
-                      widget.isFullScreen
+                      _effectiveFullScreen
                           ? Icons.fullscreen_exit_rounded
                           : Icons.fullscreen_rounded,
                     ),
@@ -1069,11 +1118,23 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit> {
       _currentVolume = v;
     });
     _brightnessController = ScreenBrightness.instance;
+    _isSystemFullScreen = widget.isFullScreen;
+    if (_isDesktop) {
+      windowManager.addListener(this);
+      windowManager.isFullScreen().then((full) {
+        safeSetState(() {
+          _isSystemFullScreen = full;
+        });
+      });
+    }
     super.initState();
   }
 
   @override
   void dispose() {
+    if (_isDesktop) {
+      windowManager.removeListener(this);
+    }
     ScreenBrightness.instance.resetApplicationScreenBrightness();
     widget.playerNotifier.value?.removeListener(() {});
     _danmuTimer?.cancel();
