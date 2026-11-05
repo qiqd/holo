@@ -445,15 +445,14 @@ class _PlayerScreenState extends State<PlayerScreen>
     return showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
+      showDragHandle: true,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, s) {
             return Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 10,
-                  ).copyWith(top: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Center(
                     child: TextFormField(
                       textInputAction: TextInputAction.search,

@@ -75,6 +75,9 @@ flutter:
     - family: BF
       fonts:
         - asset: lib/assets/fonts/BF.otf
+
+# package_rename configuration:
+# dart run package_rename
 package_rename_config:
   android:
     app_name: "Holo"
