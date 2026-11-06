@@ -125,7 +125,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
   void _showVideoControlsTimer() {
     // log("showVideoControlsTimer");
     _videoControlsTimer?.cancel();
-    _videoControlsTimer = Timer(Duration(seconds: 500), () {
+    _videoControlsTimer = Timer(Duration(seconds: 5), () {
       safeSetState(() {
         _showVideoControls = false;
       });
@@ -677,7 +677,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
                 widget.onBackPressed?.call();
               },
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
