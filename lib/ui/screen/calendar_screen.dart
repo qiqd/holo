@@ -79,7 +79,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         actions: [
           if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ...[
             IconButton(
-              tooltip: 'Refresh Calendar',
+              tooltip: 'calendar.refresh_calendar'.tr(),
               onPressed: () => _fetchCalendar(refresh: true),
               icon: Icon(Icons.refresh_rounded),
             ),

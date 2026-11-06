@@ -78,7 +78,7 @@ class _SearchScreenState extends State<SearchScreen> {
       actions: [
         if (isTablet)
           IconButton(
-            tooltip: "Image Search",
+            tooltip: 'search.image_search'.tr(),
             onPressed: () => context.push('/image_search'),
             icon: Icon(Icons.image_search_rounded),
           ),
@@ -185,7 +185,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           backgroundColor: Theme.of(context)
                                               .colorScheme
                                               .surfaceContainerHighest
-                                              .withOpacity(0.5),
+                                              .withValues(alpha: 0.5),
                                           deleteIcon: Icon(
                                             Icons.close,
                                             size: 18,

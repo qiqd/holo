@@ -92,16 +92,18 @@ class _LoggerScreenState extends State<LoggerScreen> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(year2023: false))
-          : Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: _logLines.isEmpty
-                  ? Center(child: Text('logger.no_log'.tr()))
-                  : ListView.builder(
-                      itemCount: _logLines.length,
-                      itemBuilder: (context, index) {
-                        return SelectableText(_logLines[index]);
-                      },
-                    ),
+          : SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: _logLines.isEmpty
+                    ? Center(child: Text('logger.no_log'.tr()))
+                    : ListView.builder(
+                        itemCount: _logLines.length,
+                        itemBuilder: (context, index) {
+                          return SelectableText(_logLines[index]);
+                        },
+                      ),
+              ),
             ),
     );
   }

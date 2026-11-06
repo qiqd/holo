@@ -1,11 +1,12 @@
 import 'dart:developer';
 
+import 'package:holo/entity/rule.dart';
+import 'package:holo/service/common_source_service.dart';
 import 'package:html/parser.dart';
 import 'package:holo/entity/media.dart';
-import 'package:holo/service/source_service.dart';
 import 'package:holo/util/http_util.dart';
 
-class Senfun implements SourceService {
+class Senfun extends CommonSourceService {
   @override
   int delay = 9999;
   @override
@@ -23,10 +24,12 @@ class Senfun implements SourceService {
     return "Senfun(ad)";
   }
 
+  Senfun() : super(rule: Rule());
+
   @override
   Future<Detail?> fetchDetail(
     String mediaId,
-    Function(dynamic) exceptionHandler,
+    void Function(String) exceptionHandler,
   ) async {
     try {
       final response = await HttpUtil.createDio().get(getBaseUrl() + mediaId);
@@ -46,7 +49,7 @@ class Senfun implements SourceService {
       return null;
     } catch (e) {
       log("Senfen fetchDetail error: $e");
-      exceptionHandler(e);
+      exceptionHandler(e.toString());
       return null;
     }
   }
@@ -56,8 +59,9 @@ class Senfun implements SourceService {
     String keyword,
     int page,
     int size,
-    Function(dynamic) exceptionHandler,
-  ) async {
+    void Function(String) exceptionHandler, {
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
     final searchUrl = "${getBaseUrl()}/search.html?wd=$keyword";
     try {
       final response = await HttpUtil.createDio().get(searchUrl);
@@ -89,7 +93,7 @@ class Senfun implements SourceService {
       return [];
     } catch (e) {
       log("Senfen fetchSearch error: $e");
-      exceptionHandler(e);
+      exceptionHandler(e.toString());
       return [];
     }
   }
@@ -97,7 +101,7 @@ class Senfun implements SourceService {
   @override
   Future<String?> fetchVideoUrl(
     String episodeId,
-    Function(dynamic) exceptionHandler,
+    void Function(String) exceptionHandler,
   ) async {
     try {
       // final response = await HttpUtil.createDio().get(getBaseUrl() + episodeId);
@@ -137,7 +141,7 @@ class Senfun implements SourceService {
       return first["play_data"] as String?;
     } catch (e) {
       log("Senfen fetchVideoUrl error: $e");
-      exceptionHandler(e);
+      exceptionHandler(e.toString());
       return null;
     }
   }

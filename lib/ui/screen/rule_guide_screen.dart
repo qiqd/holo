@@ -13,84 +13,75 @@ class RuleGuideScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTitle('Holo 规则编写指南'),
-            _buildParagraph(
-              'Holo 使用规则驱动架构，通过 JSON 配置适配不同动漫网站。'
-              '每个规则定义了如何搜索、获取详情、解析播放地址的完整流程。',
-            ),
+            _buildTitle('rule_guide.title'.tr()),
+            _buildParagraph('rule_guide.intro'.tr()),
             _buildDivider(),
 
             // 基础信息
-            _buildSectionTitle('基础信息'),
+            _buildSectionTitle('rule_guide.section_basic_info'.tr()),
             _buildTable([
-              ['字段', '类型', '必填', '说明'],
-              ['name', 'string', '是', '规则名称，用于界面显示'],
-              ['baseUrl', 'string', '是', '网站域名'],
-              ['logoUrl', 'string', '否', '网站图标URL'],
-              ['useWebView', 'boolean', '否', '是否使用WebView加载'],
-              ['timeout', 'number', '否', '请求超时时间（秒），默认15'],
-              ['isPureJs', 'boolean', '否', '是否为纯JS规则，默认false'],
+              [
+                'rule_guide.th_field'.tr(),
+                'rule_guide.th_type'.tr(),
+                'rule_guide.th_required'.tr(),
+                'rule_guide.th_description'.tr(),
+              ],
+              ['name', 'string', 'rule_guide.yes'.tr(), 'rule_guide.fd_name'.tr()],
+              ['baseUrl', 'string', 'rule_guide.yes'.tr(), 'rule_guide.fd_base_url'.tr()],
+              ['logoUrl', 'string', 'rule_guide.no'.tr(), 'rule_guide.fd_logo_url'.tr()],
+              ['useWebView', 'boolean', 'rule_guide.no'.tr(), 'rule_guide.fd_use_webview'.tr()],
+              ['timeout', 'number', 'rule_guide.no'.tr(), 'rule_guide.fd_timeout'.tr()],
+              ['isPureJs', 'boolean', 'rule_guide.no'.tr(), 'rule_guide.fd_is_pure_js'.tr()],
             ]),
             _buildDivider(),
 
             // 搜索页规则
-            _buildSectionTitle('搜索页规则'),
-            _buildSubTitle('URL配置'),
+            _buildSectionTitle('rule_guide.section_search_rules'.tr()),
+            _buildSubTitle('rule_guide.sub_url_config'.tr()),
             _buildTable([
-              ['字段', '说明', '示例'],
-              ['searchUrl', '搜索路径，使用{keyword}占位符', '/search?keyword={keyword}'],
-              ['searchRequestMethod', '请求方法：get/post', 'get'],
-              ['searchRequestHeaders', '请求头', '{"User-Agent": "..."}'],
-              ['fullSearchUrl', '是否使用完整URL', 'false'],
+              [
+                'rule_guide.th_field'.tr(),
+                'rule_guide.th_description'.tr(),
+                'rule_guide.th_example'.tr(),
+              ],
+              ['searchUrl', 'rule_guide.fd_search_url'.tr(), '/search?keyword={keyword}'],
+              ['searchRequestMethod', 'rule_guide.fd_search_req_method'.tr(), 'get'],
+              ['searchRequestHeaders', 'rule_guide.fd_req_headers'.tr(), '{"User-Agent": "..."}'],
+              ['fullSearchUrl', 'rule_guide.fd_full_url'.tr(), 'false'],
             ]),
             SizedBox(height: 12),
-            _buildSubTitle('选择器配置'),
+            _buildSubTitle('rule_guide.sub_selector_config'.tr()),
             _buildTable([
-              ['字段', '说明', '示例'],
-              ['searchSelector', '搜索结果列表容器的选择器', 'div.search-results'],
-              ['itemImgSelector', '在条目内查找图片的选择器', 'img'],
-              ['itemImgFromSrc', '图片是否从src属性获取', 'true/false'],
-              ['itemTitleSelector', '在条目内查找标题的选择器', 'h3.title'],
-              ['itemIdSelector', '在条目内查找详情页链接的选择器', 'a.detail-link'],
-              ['itemGenreSelector', '在条目内查找分类的选择器（可选）', 'span.genre'],
+              [
+                'rule_guide.th_field'.tr(),
+                'rule_guide.th_description'.tr(),
+                'rule_guide.th_example'.tr(),
+              ],
+              ['searchSelector', 'rule_guide.fd_search_selector'.tr(), 'div.search-results'],
+              ['itemImgSelector', 'rule_guide.fd_item_img_selector'.tr(), 'img'],
+              ['itemImgFromSrc', 'rule_guide.fd_item_img_from_src'.tr(), 'true/false'],
+              ['itemTitleSelector', 'rule_guide.fd_item_title_selector'.tr(), 'h3.title'],
+              ['itemIdSelector', 'rule_guide.fd_item_id_selector'.tr(), 'a.detail-link'],
+              ['itemGenreSelector', 'rule_guide.fd_item_genre_selector'.tr(), 'span.genre'],
             ]),
             SizedBox(height: 12),
-            _buildSubTitle('关键逻辑'),
-            _buildParagraph(
-              '1. searchSelector 匹配到的每个元素是一个搜索结果条目（entry）\n'
-              '2. 在每个条目（entry）内，使用 itemIdSelector 查找子元素，提取其 href 属性作为 mediaId\n'
-              '3. mediaId 将用于拼接详情页URL',
-            ),
+            _buildSubTitle('rule_guide.sub_key_logic'.tr()),
+            _buildParagraph('rule_guide.logic_search'.tr()),
             SizedBox(height: 12),
-            _buildSubTitle('重要：searchSelector 的两种写法'),
-            _buildParagraph('写法1：选择容器（推荐）'),
-            _buildCodeBlock(
-              '<div class="search-results">  <!-- searchSelector: "div.search-results" -->\n'
-              '  <a class="item" href="/anime/1234">  <!-- itemIdSelector: "a.item" -->\n'
-              '    <img src="cover.jpg">\n'
-              '    <h3>番剧名称</h3>\n'
-              '  </a>\n'
-              '</div>',
-            ),
-            _buildParagraph('写法2：直接选择条目'),
-            _buildCodeBlock(
-              '<div class="search-results">\n'
-              '  <div class="item">  <!-- searchSelector: "div.search-results > div.item" -->\n'
-              '    <img src="cover.jpg">\n'
-              '    <h3>番剧名称</h3>\n'
-              '    <a href="/anime/1234">详情</a>  <!-- itemIdSelector: "a" -->\n'
-              '  </div>\n'
-              '</div>',
-            ),
-            _buildSubTitle('常见错误'),
-            _buildParagraph('❌ 错误：searchSelector 和 itemIdSelector 选择同一个元素'),
+            _buildSubTitle('rule_guide.sub_search_selector_ways'.tr()),
+            _buildParagraph('rule_guide.way1_container'.tr()),
+            _buildCodeBlock('rule_guide.code_search_example_1'.tr()),
+            _buildParagraph('rule_guide.way2_direct'.tr()),
+            _buildCodeBlock('rule_guide.code_search_example_2'.tr()),
+            _buildSubTitle('rule_guide.sub_common_errors'.tr()),
+            _buildParagraph('rule_guide.error_same_selector'.tr()),
             _buildCodeBlock(
               '{\n'
               '  "searchSelector": "div.vod-grid > a.vod-card",\n'
               '  "itemIdSelector": "a.vod-card"\n'
               '}',
             ),
-            _buildParagraph('✅ 正确：使用容器方式'),
+            _buildParagraph('rule_guide.ok_container'.tr()),
             _buildCodeBlock(
               '{\n'
               '  "searchSelector": "div.vod-grid",\n'
@@ -100,107 +91,98 @@ class RuleGuideScreen extends StatelessWidget {
             _buildDivider(),
 
             // 详情页规则
-            _buildSectionTitle('详情页规则'),
-            _buildSubTitle('URL配置'),
+            _buildSectionTitle('rule_guide.section_detail_rules'.tr()),
+            _buildSubTitle('rule_guide.sub_url_config'.tr()),
             _buildTable([
-              ['字段', '说明', '示例'],
-              ['detailUrl', '详情页路径，使用{mediaId}占位符', '{mediaId}'],
-              ['detailRequestMethod', '请求方法', 'get'],
-              ['detailRequestHeaders', '请求头', '{"User-Agent": "..."}'],
-              ['fullDetailUrl', '是否使用完整URL', 'false'],
+              [
+                'rule_guide.th_field'.tr(),
+                'rule_guide.th_description'.tr(),
+                'rule_guide.th_example'.tr(),
+              ],
+              ['detailUrl', 'rule_guide.fd_detail_url'.tr(), '{mediaId}'],
+              ['detailRequestMethod', 'rule_guide.fd_req_method'.tr(), 'get'],
+              ['detailRequestHeaders', 'rule_guide.fd_req_headers'.tr(), '{"User-Agent": "..."}'],
+              ['fullDetailUrl', 'rule_guide.fd_full_url'.tr(), 'false'],
             ]),
             SizedBox(height: 12),
-            _buildSubTitle('选择器配置'),
+            _buildSubTitle('rule_guide.sub_selector_config'.tr()),
             _buildTable([
-              ['字段', '说明', '示例'],
-              ['lineSelector', '播放线路列表的选择器', 'div.line-list'],
-              ['episodeSelector', '在线路内查找剧集链接的选择器', 'li > a'],
-              ['episodeReverse', '是否反转剧集顺序', 'false/true'],
+              [
+                'rule_guide.th_field'.tr(),
+                'rule_guide.th_description'.tr(),
+                'rule_guide.th_example'.tr(),
+              ],
+              ['lineSelector', 'rule_guide.fd_line_selector'.tr(), 'div.line-list'],
+              ['episodeSelector', 'rule_guide.fd_episode_selector'.tr(), 'li > a'],
+              ['episodeReverse', 'rule_guide.fd_episode_reverse'.tr(), 'false/true'],
             ]),
             SizedBox(height: 12),
-            _buildSubTitle('关键逻辑'),
-            _buildParagraph(
-              '1. lineSelector 匹配到的每个元素是一个播放线路\n'
-              '2. 在每个线路内，使用 episodeSelector 查找<a>标签，提取其 href 属性作为 episodeId\n'
-              '3. episodeId 将用于拼接播放页URL',
-            ),
+            _buildSubTitle('rule_guide.sub_key_logic'.tr()),
+            _buildParagraph('rule_guide.logic_detail'.tr()),
             _buildDivider(),
 
             // 播放页规则
-            _buildSectionTitle('播放页规则'),
-            _buildSubTitle('URL配置'),
+            _buildSectionTitle('rule_guide.section_player_rules'.tr()),
+            _buildSubTitle('rule_guide.sub_url_config'.tr()),
             _buildTable([
-              ['字段', '说明', '示例'],
-              ['playerUrl', '播放页路径，使用{episodeId}占位符', '{episodeId}'],
-              ['playerRequestMethod', '请求方法', 'get'],
-              ['playerRequestHeaders', '请求头', '{"User-Agent": "..."}'],
-              ['fullPlayerUrl', '是否使用完整URL', 'false'],
+              [
+                'rule_guide.th_field'.tr(),
+                'rule_guide.th_description'.tr(),
+                'rule_guide.th_example'.tr(),
+              ],
+              ['playerUrl', 'rule_guide.fd_player_url'.tr(), '{episodeId}'],
+              ['playerRequestMethod', 'rule_guide.fd_req_method'.tr(), 'get'],
+              ['playerRequestHeaders', 'rule_guide.fd_req_headers'.tr(), '{"User-Agent": "..."}'],
+              ['fullPlayerUrl', 'rule_guide.fd_full_url'.tr(), 'false'],
             ]),
             SizedBox(height: 12),
-            _buildSubTitle('选择器配置'),
+            _buildSubTitle('rule_guide.sub_selector_config'.tr()),
             _buildTable([
-              ['字段', '说明', '示例'],
-              ['playerVideoSelector', '视频元素的选择器', 'video#player'],
-              ['videoElementAttribute', '视频元素上存储URL的属性', 'src'],
-              ['embedVideoSelector', '嵌入式视频选择器（iframe等）', 'iframe'],
-              ['waitForTargetElement', '是否等待目标元素加载完成', 'true'],
-              ['videoUrlSubsChar', '视频URL截取规则', 'videoUrl='],
+              [
+                'rule_guide.th_field'.tr(),
+                'rule_guide.th_description'.tr(),
+                'rule_guide.th_example'.tr(),
+              ],
+              ['playerVideoSelector', 'rule_guide.fd_player_video_selector'.tr(), 'video#player'],
+              ['videoElementAttribute', 'rule_guide.fd_video_element_attr'.tr(), 'src'],
+              ['embedVideoSelector', 'rule_guide.fd_embed_video_selector'.tr(), 'iframe'],
+              ['waitForTargetElement', 'rule_guide.fd_wait_for_target'.tr(), 'true'],
+              ['videoUrlSubsChar', 'rule_guide.fd_video_url_subs_char'.tr(), 'videoUrl='],
             ]),
             SizedBox(height: 12),
-            _buildSubTitle('关键逻辑'),
-            _buildParagraph(
-              '1. 加载播放页后，首先查找 playerVideoSelector 匹配的视频元素\n'
-              '2. 从视频元素的 videoElementAttribute 属性中获取视频URL\n'
-              '3. 如果找不到视频元素，尝试查找 embedVideoSelector 匹配的 iframe\n'
-              '4. 如果配置了 videoUrlSubsChar，则从URL中截取指定部分',
-            ),
+            _buildSubTitle('rule_guide.sub_key_logic'.tr()),
+            _buildParagraph('rule_guide.logic_player'.tr()),
             _buildDivider(),
 
             // JS脚本规则
-            _buildSectionTitle('JS脚本规则（高级）'),
-            _buildParagraph('当CSS选择器无法获取数据时（如视频地址在JS变量中），可以使用JS脚本注入。'),
+            _buildSectionTitle('rule_guide.section_js_scripts'.tr()),
+            _buildParagraph('rule_guide.js_intro'.tr()),
             SizedBox(height: 12),
-            _buildSubTitle('配置字段'),
+            _buildSubTitle('rule_guide.sub_config_fields'.tr()),
             _buildTable([
-              ['字段', '说明', '返回值格式'],
-              ['searchScript', '搜索页JS脚本', '[{"id":"", "title":"", ...}]'],
-              ['detailScript', '详情页JS脚本', '{"lines": [{"episodes": [...]}]}'],
-              ['playerScript', '播放页JS脚本', '{"videoUrl": "https://..."}'],
+              [
+                'rule_guide.th_field'.tr(),
+                'rule_guide.th_description'.tr(),
+                'rule_guide.th_return_format'.tr(),
+              ],
+              ['searchScript', 'rule_guide.fd_search_script'.tr(), '[{"id":"", "title":"", ...}]'],
+              ['detailScript', 'rule_guide.fd_detail_script'.tr(), '{"lines": [{"episodes": [...]}]}'],
+              ['playerScript', 'rule_guide.fd_player_script'.tr(), '{"videoUrl": "https://..."}'],
             ]),
             SizedBox(height: 12),
-            _buildSubTitle('优先级'),
-            _buildParagraph(
-              '• 配置了JS脚本的页面：优先使用JS返回的JSON数据\n'
-              '• 未配置JS脚本的页面：使用CSS选择器解析',
-            ),
+            _buildSubTitle('rule_guide.sub_priority'.tr()),
+            _buildParagraph('rule_guide.priority_text'.tr()),
             SizedBox(height: 12),
-            _buildSubTitle('纯JS规则（isPureJs）'),
-            _buildParagraph(
-              '当设置 isPureJs: true 时，规则将完全依赖JS脚本获取数据，不再使用CSS选择器解析。',
-            ),
-            _buildParagraph('纯JS规则的特点：'),
-            _buildParagraph(
-              '• 自动启用WebView和JS脚本功能\n'
-              '• 隐藏所有CSS选择器输入框，只显示JS脚本输入\n'
-              '• 搜索、详情、播放页面都通过JS脚本获取数据\n'
-              '• 适合REST API或纯数据接口类型的网站',
-            ),
-            _buildParagraph('纯JS规则示例：'),
-            _buildCodeBlock(
-              '{\n'
-              '  "name": "Sorani动漫",\n'
-              '  "baseUrl": "https://example.com",\n'
-              '  "isPureJs": true,\n'
-              '  "useWebView": true,\n'
-              '  "searchScript": "(function() { ... })();",\n'
-              '  "detailScript": "(function() { ... })();",\n'
-              '  "playerScript": "(function() { ... })();"\n'
-              '}',
-            ),
+            _buildSubTitle('rule_guide.sub_pure_js'.tr()),
+            _buildParagraph('rule_guide.pure_js_desc'.tr()),
+            _buildParagraph('rule_guide.pure_js_features_title'.tr()),
+            _buildParagraph('rule_guide.pure_js_features'.tr()),
+            _buildParagraph('rule_guide.pure_js_example_title'.tr()),
+            _buildCodeBlock('rule_guide.code_pure_js'.tr()),
             SizedBox(height: 12),
-            _buildSubTitle('编码方式'),
-            _buildParagraph('JS脚本使用 Base64编码 存储在JSON中，避免转义问题。'),
-            _buildParagraph('原始JS脚本：'),
+            _buildSubTitle('rule_guide.sub_encoding'.tr()),
+            _buildParagraph('rule_guide.encoding_desc'.tr()),
+            _buildParagraph('rule_guide.original_js_title'.tr()),
             _buildCodeBlock(
               '(function() {\n'
               '  if (typeof player_aaaa !== \'undefined\' && player_aaaa.url) {\n'
@@ -209,68 +191,47 @@ class RuleGuideScreen extends StatelessWidget {
               '  return JSON.stringify({ videoUrl: \'\' });\n'
               '})();',
             ),
-            _buildParagraph('使用场景：'),
-            _buildParagraph(
-              '• 视频地址在JS变量中\n'
-              '• 需要异步加载\n'
-              '• 复杂的解析逻辑\n'
-              '• 网站提供REST API接口（纯JS规则）',
-            ),
+            _buildParagraph('rule_guide.usage_scenarios_title'.tr()),
+            _buildParagraph('rule_guide.usage_scenarios'.tr()),
             _buildDivider(),
 
             // 占位符说明
-            _buildSectionTitle('占位符说明'),
+            _buildSectionTitle('rule_guide.section_placeholders'.tr()),
             _buildTable([
-              ['占位符', '说明', '使用位置'],
-              ['{keyword}', '搜索关键词', 'searchUrl'],
-              ['{mediaId}', '详情页ID（从搜索结果提取的href）', 'detailUrl、playerUrl'],
-              ['{episodeId}', '剧集ID（从详情页提取的href）', 'playerUrl'],
+              [
+                'rule_guide.th_placeholder'.tr(),
+                'rule_guide.th_description'.tr(),
+                'rule_guide.th_used_in'.tr(),
+              ],
+              ['{keyword}', 'rule_guide.fd_ph_keyword'.tr(), 'searchUrl'],
+              ['{mediaId}', 'rule_guide.fd_ph_media_id'.tr(), 'detailUrl、playerUrl'],
+              ['{episodeId}', 'rule_guide.fd_ph_episode_id'.tr(), 'playerUrl'],
             ]),
             SizedBox(height: 12),
-            _buildParagraph(
-              '注意：mediaId 和 episodeId 提取的是完整的 href 路径，如 /anime/1234 或 /play/1234/1。',
-            ),
+            _buildParagraph('rule_guide.placeholder_note'.tr()),
             _buildDivider(),
 
             // 调试技巧
-            _buildSectionTitle('调试技巧'),
-            _buildParagraph(
-              '1. 使用WebView：动态渲染的页面必须设置 useWebView: true\n'
-              '2. 检查选择器：在浏览器控制台使用 document.querySelectorAll("你的选择器") 测试\n'
-              '3. 查看日志：应用日志会输出HTML解析结果和JS执行结果\n'
-              '4. 逐步测试：先测试搜索，再测试详情，最后测试播放\n'
-              '5. 使用JS脚本：当CSS选择器无法获取时，尝试使用JS脚本注入',
-            ),
+            _buildSectionTitle('rule_guide.section_debug_tips'.tr()),
+            _buildParagraph('rule_guide.debug_tips'.tr()),
             _buildDivider(),
 
             // 常见问题
-            _buildSectionTitle('常见问题'),
-            _buildSubTitle('Q: 搜索结果显示为空？'),
-            _buildParagraph('A: 检查 searchSelector 是否正确，确保能匹配到搜索结果条目。'),
+            _buildSectionTitle('rule_guide.section_faq'.tr()),
+            _buildSubTitle('rule_guide.faq_q_empty_search'.tr()),
+            _buildParagraph('rule_guide.faq_a_empty_search'.tr()),
             SizedBox(height: 8),
-            _buildSubTitle('Q: 详情页没有剧集？'),
-            _buildParagraph(
-              'A: 检查 lineSelector 和 episodeSelector，确保能匹配到线路和剧集链接。',
-            ),
+            _buildSubTitle('rule_guide.faq_q_no_episodes'.tr()),
+            _buildParagraph('rule_guide.faq_a_no_episodes'.tr()),
             SizedBox(height: 8),
-            _buildSubTitle('Q: 播放页获取不到视频地址？'),
-            _buildParagraph(
-              'A: \n'
-              '• 检查 playerVideoSelector 和 videoElementAttribute 是否正确\n'
-              '• 如果视频在iframe中，配置 embedVideoSelector\n'
-              '• 如果视频地址在JS变量中，使用 playerScript 注入获取',
-            ),
+            _buildSubTitle('rule_guide.faq_q_no_video'.tr()),
+            _buildParagraph('rule_guide.faq_a_no_video'.tr()),
             SizedBox(height: 8),
-            _buildSubTitle('Q: JS脚本返回空？'),
-            _buildParagraph(
-              'A: \n'
-              '• 确保JS变量已经加载（可能需要等待异步加载）\n'
-              '• 检查JS变量名是否正确\n'
-              '• 在浏览器控制台手动执行JS脚本测试',
-            ),
+            _buildSubTitle('rule_guide.faq_q_js_empty'.tr()),
+            _buildParagraph('rule_guide.faq_a_js_empty'.tr()),
             SizedBox(height: 8),
-            _buildSubTitle('Q: 如何获取Base64编码的JS脚本？'),
-            _buildParagraph('A: 使用Python编码：'),
+            _buildSubTitle('rule_guide.faq_q_base64'.tr()),
+            _buildParagraph('rule_guide.faq_a_base64'.tr()),
             _buildCodeBlock(
               'import base64\n'
               'js_code = \'\'(function() { return JSON.stringify({videoUrl: player_aaaa.url}); })();\'\'\n'

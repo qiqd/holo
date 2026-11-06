@@ -19,7 +19,9 @@ class RuleEditScreen extends StatefulWidget {
 class _RuleEditScreenState extends State<RuleEditScreen> {
   final _formKey = GlobalKey<FormState>();
   SourceService? _service;
-  late final Rule _rule = widget.rule ?? Rule();
+  late final Rule _rule = widget.rule == null
+      ? Rule()
+      : Rule.fromJson(widget.rule!.toJson());
   void _saveRule() {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -71,12 +73,12 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
           },
         ),
       IconButton(
-        tooltip: 'Save Rule To Local',
+        tooltip: 'rule_edit.save_rule_to_local'.tr(),
         icon: const Icon(Icons.save_outlined),
         onPressed: _saveRule,
       ),
       IconButton(
-        tooltip: 'Help',
+        tooltip: 'rule_edit.help'.tr(),
         icon: const Icon(Icons.help_outline_outlined),
         onPressed: () {
           context.push('/rule_guide');
@@ -201,6 +203,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             SwitchListTile(
               title: Text('rule_edit.base_use_webview_label'.tr()),
               value: _rule.useWebView,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               onChanged: (value) {
                 setState(() {
                   _rule.useWebView = value;
@@ -209,16 +214,15 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             ),
             //详情页等待视频元素加载开关
             SwitchListTile(
-              value:
-                  widget.rule?.waitForTargetElement ??
-                  _rule.waitForTargetElement,
-              onChanged: widget.isEditMode && _rule.useWebView
-                  ? (value) {
-                      setState(() {
-                        _rule.waitForTargetElement = value;
-                      });
-                    }
-                  : null,
+              value: _rule.waitForTargetElement,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _rule.waitForTargetElement = value;
+                });
+              },
               title: Text('rule_edit.wait_for_target_element_label'.tr()),
               subtitle: Text('rule_edit.wait_for_target_element_subtitle'.tr()),
             ),
@@ -226,6 +230,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             SwitchListTile(
               title: Text('rule_edit.pure_js_label'.tr()),
               subtitle: Text('rule_edit.pure_js_subtitle'.tr()),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               value: _rule.isPureJs,
               onChanged: widget.isEditMode
                   ? (value) {
@@ -244,6 +251,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             ListTile(
               title: Text('rule_edit.js_script_config_title'.tr()),
               subtitle: Text('rule_edit.js_script_config_subtitle'.tr()),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
           ],
         ),
@@ -295,6 +305,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             DropdownButtonFormField<RequestMethod>(
               //  enabled: widget.isEditMode,
               initialValue: _rule.searchRequestMethod,
+              borderRadius: BorderRadius.circular(20),
               decoration: InputDecoration(
                 labelText: 'rule_edit.request_method_label'.tr(),
                 border: OutlineInputBorder(
@@ -368,13 +379,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             // CSS选择器区域（纯JS规则时隐藏）
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.isPureJs
                   ? SizedBox.shrink(key: ValueKey('search_css_empty'))
                   : Column(
@@ -447,9 +451,10 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           subtitle: Text(
                             'rule_edit.item_img_from_src_subtitle'.tr(),
                           ),
-                          value:
-                              widget.rule?.itemImgFromSrc ??
-                              _rule.itemImgFromSrc,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          value: _rule.itemImgFromSrc,
                           onChanged: widget.isEditMode
                               ? (value) {
                                   setState(() {
@@ -623,6 +628,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             SwitchListTile(
               title: Text('rule_edit.episode_reverse_label'.tr()),
               value: _rule.episodeReverse,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               onChanged: (value) {
                 setState(() {
                   _rule.episodeReverse = value;
@@ -731,13 +739,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             // CSS选择器区域（纯JS规则时隐藏）
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.isPureJs
                   ? SizedBox.shrink(key: ValueKey('detail_css_empty'))
                   : Column(
@@ -981,13 +982,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
             // CSS选择器区域（纯JS规则时隐藏）
             AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: child,
-                );
-              },
               child: _rule.isPureJs
                   ? SizedBox.shrink(key: ValueKey('player_css_empty'))
                   : Column(
@@ -1218,7 +1212,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   Flexible(
                     fit: FlexFit.tight,
                     child: widget.rule == null || _service == null
-                        ? Center(child: Text('保存规则后即可测试'))
+                        ? Center(child: Text('rule_edit.save_rule_to_test'.tr()))
                         : RuleTestScreen(source: _service!, showNavBtn: false),
                   ),
               ],

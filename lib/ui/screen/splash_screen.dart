@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
           fit: StackFit.expand,
           children: [
             SizedBox.expand(
-              child: Image.asset("lib/images/splash.webp", scale: 4),
+              child: Image.asset("lib/assets/images/splash.webp", scale: 4),
             ),
             // ignore: unnecessary_null_comparison
             if (todayMantra != null)
