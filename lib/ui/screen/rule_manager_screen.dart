@@ -27,10 +27,9 @@ class _RuleManagerState extends State<RuleManager> {
       return;
     }
     try {
-      var futures = (json.decode(_rulesStr) as List).map((e) async {
-        return HiveUtil.setRule(Rule.fromJson(e));
-      }).toList();
-      await Future.wait(futures);
+      for (var e in json.decode(_rulesStr) as List) {
+        await HiveUtil.setRule(Rule.fromJson(e));
+      }
       safeSetState(() {
         _rules = HiveUtil.getRules();
       });
@@ -137,8 +136,9 @@ class _RuleManagerState extends State<RuleManager> {
                       ),
                       FilledButton(
                         onPressed: () {
-                          _importRulesFromJson();
-                          Navigator.of(context).pop();
+                          _importRulesFromJson().then(
+                            (_) => Navigator.of(context).pop(),
+                          );
                         },
                         child: Text('rule_manager.confirm'.tr()),
                       ),
@@ -157,89 +157,91 @@ class _RuleManagerState extends State<RuleManager> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await _refreshRulesAndSourceService();
-        },
-        child: Column(
-          children: [
-            if (_isUpdating &&
-                (Platform.isWindows || Platform.isMacOS || Platform.isLinux))
-              const Padding(
-                padding: .only(top: 4),
-                child: LinearProgressIndicator(),
-              ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _rules.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_rules[index].name),
-                    subtitle: Text(
-                      'v${_rules[index].version}${_rules[index].useJsScript ? " [JS]" : ""}',
-                    ),
-                    onTap: () {
-                      context.push(
-                        '/rule_edit',
-                        extra: {
-                          'rule': _rules[index],
-                          'isEditMode': _rules[index].isLocal,
-                        },
-                      );
-                    },
-                    leading: SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: Image.network(
-                        _rules[index].logoUrl,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Center(
-                            child: Icon(
-                              Icons.broken_image_rounded,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await _refreshRulesAndSourceService();
+          },
+          child: Column(
+            children: [
+              if (_isUpdating &&
+                  (Platform.isWindows || Platform.isMacOS || Platform.isLinux))
+                const Padding(
+                  padding: .only(top: 4),
+                  child: LinearProgressIndicator(),
+                ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _rules.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_rules[index].name),
+                      subtitle: Text(
+                        'v${_rules[index].version}${_rules[index].useJsScript ? " [JS]" : ""}',
+                      ),
+                      onTap: () {
+                        context.push(
+                          '/rule_edit',
+                          extra: {
+                            'rule': _rules[index],
+                            'isEditMode': _rules[index].isLocal,
+                          },
+                        );
+                      },
+                      leading: SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: Image.network(
+                          _rules[index].logoUrl,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Icon(
+                                Icons.broken_image_rounded,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      trailing: SizedBox(
+                        width: 110,
+                        child: Row(
+                          spacing: 4,
+                          children: [
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              icon: const Icon(Icons.delete_rounded),
+                              onPressed: () async {
+                                await HiveUtil.clearRule(
+                                  name: _rules[index].name,
+                                );
+                                setState(() {
+                                  _rules.removeAt(index);
+                                });
+                              },
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    trailing: SizedBox(
-                      width: 110,
-                      child: Row(
-                        spacing: 4,
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.delete_rounded),
-                            onPressed: () async {
-                              await HiveUtil.clearRule(
-                                name: _rules[index].name,
-                              );
-                              setState(() {
-                                _rules.removeAt(index);
-                              });
-                            },
-                          ),
 
-                          Switch(
-                            padding: .zero,
-                            value: _rules[index].isEnabled,
-                            onChanged: (value) {
-                              setState(() {
-                                _rules[index].isEnabled = value;
-                                HiveUtil.setRule(_rules[index]);
-                              });
-                            },
-                          ),
-                        ],
+                            Switch(
+                              padding: .zero,
+                              value: _rules[index].isEnabled,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rules[index].isEnabled = value;
+                                  HiveUtil.setRule(_rules[index]);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

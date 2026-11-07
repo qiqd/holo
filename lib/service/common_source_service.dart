@@ -302,7 +302,9 @@ class CommonSourceService extends SourceService {
           isPlayerPage: true,
           headers: rule.playerRequestHeaders,
           waitingForTargetElement: rule.waitForTargetElement,
-          targetElementSelector: rule.playerVideoSelector,
+          targetElementSelector: rule.embedVideoSelector.isEmpty
+              ? rule.playerVideoSelector
+              : rule.embedVideoSelector,
           onError: exceptionHandler,
           injectedScript: rule.isPureJs
               ? rule.decodedPlayerScript?.replaceAll('{episodeId}', episodeId)
@@ -341,7 +343,7 @@ class CommonSourceService extends SourceService {
         var embedSelectors = rule.embedVideoSelector.split(',');
         for (var selector in embedSelectors) {
           var tempUrl = doc.querySelector(selector)?.attributes['src'] ?? '';
-          tempUrl = tempUrl.contains('http')
+          tempUrl = tempUrl.startsWith('http')
               ? tempUrl
               : (rule.baseUrl + tempUrl);
           var tempHtmlStr = switch (rule.useWebView) {

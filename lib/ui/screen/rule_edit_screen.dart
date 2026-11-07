@@ -22,7 +22,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
   late final Rule _rule = widget.rule == null
       ? Rule()
       : Rule.fromJson(widget.rule!.toJson());
-  void _saveRule() {
+  Future<void> _saveRule() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -37,7 +37,7 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
       _rule.playerScript = Rule.encodeScript(_rule.playerScript!);
     }
     if (_rule.name.isNotEmpty) {
-      HiveUtil.setRule(_rule);
+      await HiveUtil.setRule(_rule);
       ApiService.initSources();
     }
     context.pop();
@@ -295,11 +295,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   _rule.searchUrl = value;
                 });
               },
-              validator: (value) => _handleValidator(
-                value: value,
-                trStr: 'rule_edit.search_url_validator',
-                isPureJsScript: _rule.isPureJs,
-              ),
             ),
             //搜索请求方法
             DropdownButtonFormField<RequestMethod>(
@@ -362,11 +357,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           _rule.searchRequestBody = body;
                         });
                       },
-                      validator: (value) => _handleValidator(
-                        value: value,
-                        trStr: '',
-                        isPureJsScript: _rule.isPureJs,
-                      ),
                     ),
             ),
             // CSS选择器区域（纯JS规则时隐藏）
@@ -402,11 +392,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               _rule.searchSelector = value;
                             });
                           },
-                          validator: (value) => _handleValidator(
-                            value: value,
-                            trStr: 'rule_edit.search_selector_validator',
-                            isPureJsScript: _rule.isPureJs,
-                          ),
                         ),
                         //  搜索元素图片选择器
                         TextFormField(
@@ -432,11 +417,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               _rule.itemImgSelector = value;
                             });
                           },
-                          validator: (value) => _handleValidator(
-                            value: value,
-                            trStr: 'rule_edit.item_img_selector_validator',
-                            isPureJsScript: _rule.isPureJs,
-                          ),
                         ),
                         //  搜索元素图片是否从src获取
                         SwitchListTile(
@@ -481,11 +461,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               _rule.itemTitleSelector = value;
                             });
                           },
-                          validator: (value) => _handleValidator(
-                            value: value,
-                            trStr: 'rule_edit.item_title_selector_validator',
-                            isPureJsScript: _rule.isPureJs,
-                          ),
                         ),
                         //  搜索元素id选择器
                         TextFormField(
@@ -511,11 +486,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               _rule.itemIdSelector = value;
                             });
                           },
-                          validator: (value) => _handleValidator(
-                            value: value,
-                            trStr: 'rule_edit.item_id_selector_validator',
-                            isPureJsScript: _rule.isPureJs,
-                          ),
                         ),
                         //  搜索元素类型选择器
                         TextFormField(
@@ -649,11 +619,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   _rule.detailUrl = value;
                 });
               },
-              validator: (value) => _handleValidator(
-                value: value,
-                trStr: 'rule_edit.detail_url_validator',
-                isPureJsScript: _rule.isPureJs,
-              ),
             ),
             //详情页请求方法
             DropdownButtonFormField<RequestMethod>(
@@ -715,11 +680,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           _rule.detailRequestBody = body;
                         });
                       },
-                      validator: (value) => _handleValidator(
-                        value: value,
-                        trStr: '',
-                        isPureJsScript: _rule.isPureJs,
-                      ),
                     ),
             ),
             // CSS选择器区域（纯JS规则时隐藏）
@@ -753,11 +713,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               _rule.lineSelector = value;
                             });
                           },
-                          validator: (value) => _handleValidator(
-                            value: value,
-                            trStr: 'rule_edit.line_selector_validator',
-                            isPureJsScript: _rule.isPureJs,
-                          ),
                         ),
                         //详情页剧集选择器
                         TextFormField(
@@ -783,11 +738,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               _rule.episodeSelector = value;
                             });
                           },
-                          validator: (value) => _handleValidator(
-                            value: value,
-                            trStr: 'rule_edit.episode_selector_validator',
-                            isPureJsScript: _rule.isPureJs,
-                          ),
                         ),
                       ],
                     ),
@@ -885,11 +835,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   _rule.playerUrl = value;
                 });
               },
-              validator: (value) => _handleValidator(
-                value: value,
-                trStr: 'rule_edit.player_url_validator',
-                isPureJsScript: _rule.isPureJs,
-              ),
             ),
             //详情页请求方法
             DropdownButtonFormField<RequestMethod>(
@@ -951,11 +896,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                           _rule.playerRequestBody = body;
                         });
                       },
-                      validator: (value) => _handleValidator(
-                        value: value,
-                        trStr: '',
-                        isPureJsScript: _rule.isPureJs,
-                      ),
                     ),
             ),
             // CSS选择器区域（纯JS规则时隐藏）
@@ -992,11 +932,6 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                               _rule.playerVideoSelector = value;
                             });
                           },
-                          validator: (value) => _handleValidator(
-                            value: value,
-                            trStr: 'rule_edit.player_video_selector_validator',
-                            isPureJsScript: _rule.isPureJs,
-                          ),
                         ),
                         //详情页视频元素属性选择器
                         TextFormField(
@@ -1191,7 +1126,9 @@ class _RuleEditScreenState extends State<RuleEditScreen> {
                   Flexible(
                     fit: FlexFit.tight,
                     child: widget.rule == null || _service == null
-                        ? Center(child: Text('rule_edit.save_rule_to_test'.tr()))
+                        ? Center(
+                            child: Text('rule_edit.save_rule_to_test'.tr()),
+                          )
                         : RuleTestScreen(source: _service!, showNavBtn: false),
                   ),
               ],

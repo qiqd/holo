@@ -213,7 +213,7 @@ class Rule {
     this.fullPlayerUrl = false,
     this.fullDetailUrl = false,
     this.itemImgFromSrc = true,
-    this.waitForTargetElement = true,
+    this.waitForTargetElement = false,
     this.episodeReverse = false,
     this.searchRequestHeaders = defaultUserAgent,
     this.detailRequestHeaders = defaultUserAgent,

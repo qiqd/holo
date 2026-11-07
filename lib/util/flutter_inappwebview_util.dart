@@ -240,7 +240,7 @@ class FlutterInappwebviewUtil {
                     ) &&
                     count < maxWait) {
                   log(
-                    '等待媒体元素[$_currentTargetElementSelector]... ($count/$maxWait)',
+                    '当前页面[$loadedUrl]等待媒体元素[$_currentTargetElementSelector]... ($count/$maxWait)',
                   );
                   await Future.delayed(const Duration(milliseconds: 500));
                   html =
