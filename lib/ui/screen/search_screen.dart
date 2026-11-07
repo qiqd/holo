@@ -39,7 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       );
     });
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _loading = false;
       _searchResult = result;
     });

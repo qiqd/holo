@@ -47,7 +47,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         _mediaList = search;
       });
       if (hasError) {
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _isloading = false;
         });
         return;
@@ -67,7 +67,7 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         _detail = detail;
       });
       if (hasError || detail == null || detail.lines!.isEmpty) {
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _isloading = false;
         });
         return;

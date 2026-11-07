@@ -30,7 +30,7 @@ class _RuleManagerState extends State<RuleManager> {
       for (var e in json.decode(_rulesStr) as List) {
         await HiveUtil.setRule(Rule.fromJson(e));
       }
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _rules = HiveUtil.getRules();
       });
       ApiService.initSources();
@@ -46,13 +46,13 @@ class _RuleManagerState extends State<RuleManager> {
   }
 
   Future<void> _refreshRulesAndSourceService() async {
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isUpdating = true;
     });
     _rules = HiveUtil.getRules();
     ApiService.initSources();
     await ApiService.delayTest();
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isUpdating = false;
     });
   }

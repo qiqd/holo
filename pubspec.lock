@@ -527,10 +527,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_safe_setstate
-      sha256: b433d5c0d3d3652ce69f78f486d1540d236c410df6049609ffcd7fd5c791527e
+      sha256: "9042e9e8344f3189a5df2dcf1c872d14ee9ffafabac3c622a6af464eec32c479"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.2"
+    version: "1.2.0"
   flutter_single_instance:
     dependency: "direct main"
     description:

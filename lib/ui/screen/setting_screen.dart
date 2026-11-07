@@ -160,43 +160,95 @@ class _SettingScreenState extends State<SettingScreen>
     ];
   }
 
+  static const Map<String, String> _supportedLocales = {
+    'zh-CN': 'setting.language.zh_CN',
+    'zh-TW': 'setting.language.zh_TW',
+    'en-US': 'setting.language.en_US',
+    'ja-JP': 'setting.language.ja_JP',
+  };
+
+  String _getCurrentLocaleKey() {
+    return '${context.locale.languageCode}-${context.locale.countryCode}';
+  }
+
+  String _getCurrentLanguageText() {
+    final key = _supportedLocales[_getCurrentLocaleKey()];
+    return key?.tr() ?? _getCurrentLocaleKey();
+  }
+
   List<Widget> _buildLanguage() {
     return [
       _buildSectionHeader('setting.section.language'.tr()),
       ListTile(
         leading: const Icon(Icons.language),
         title: Text('setting.language.change'.tr()),
-        subtitle: Text('setting.language.change_description'.tr()),
-        trailing: PopupMenuButton(
-          icon: Icon(Icons.menu_rounded),
-          onSelected: (value) {
-            context.setLocale(Locale(value.split('-')[0], value.split('-')[1]));
-            setState(() {});
-            log('Selected language: $value');
-          },
-          itemBuilder: (content) {
-            return [
-              PopupMenuItem(
-                value: 'zh-CN',
-                child: Text('setting.language.zh_CN'.tr()),
-              ),
-              PopupMenuItem(
-                value: 'zh-TW',
-                child: Text('setting.language.zh_TW'.tr()),
-              ),
-              PopupMenuItem(
-                value: 'en-US',
-                child: Text('setting.language.en_US'.tr()),
-              ),
-              PopupMenuItem(
-                value: 'ja-JP',
-                child: Text('setting.language.ja_JP'.tr()),
-              ),
-            ];
-          },
+        subtitle: Text(_getCurrentLanguageText()),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => _showLanguageDialog(),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Text(
+          'setting.language.change_description'.tr(),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
     ];
+  }
+
+  Future<void> _showLanguageDialog() async {
+    final currentKey = _getCurrentLocaleKey();
+    String selectedKey = _supportedLocales.containsKey(currentKey)
+        ? currentKey
+        : 'zh-CN';
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('setting.language.change'.tr()),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: _supportedLocales.entries.map((entry) {
+                  return RadioListTile<String>(
+                    title: Text(entry.value.tr()),
+                    value: entry.key,
+                    groupValue: selectedKey,
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => selectedKey = value);
+                      }
+                    },
+                  );
+                }).toList(),
+              ),
+            );
+          },
+        ),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('setting.data_management.clear_dialog_cancel'.tr()),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, selectedKey),
+            child: Text('setting.data_management.clear_dialog_confirm'.tr()),
+          ),
+        ],
+      ),
+    );
+
+    if (result == null || result == currentKey) {
+      return;
+    }
+    final parts = result.split('-');
+    await context.setLocale(Locale(parts[0], parts[1]));
+    log('Selected language: $result');
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   List<Widget> _buildDataManagement() {

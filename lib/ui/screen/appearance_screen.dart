@@ -78,10 +78,11 @@ class _AppearanceState extends State<Appearance> {
   Future<void> _showThemeModeDialog() async {
     UserSetting userSetting = MyApp.userSettingNotifier.value;
     ThemeMode? currentTheme = ThemeMode.values[userSetting.themeMode];
-    await showDialog<void>(
+    return showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('appearance.theme_dialog_title'.tr()),
+        contentPadding: EdgeInsets.zero,
         content: StatefulBuilder(
           builder: (context, setState) {
             return Column(

@@ -146,7 +146,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     bool loadDanmaku = true,
     void Function(String e)? onComplete,
   }) async {
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _msg = "";
       _isLoading = true;
     });
@@ -177,7 +177,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         _playerNotifier.value = null;
         final newUrl = await _source.fetchVideoUrl(
           _detail!.lines![_lineIndex].episodes![_episodeIndex],
-          (e) => safeSetState(() {
+          (e) => safeSetStateWrapper(() {
             _logger.e("fetchVideoUrl error: $e");
             _msg = "player.playback_error".tr();
             _isLoading = false;
@@ -185,7 +185,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           }),
         );
         if (newUrl == null || newUrl.isEmpty) {
-          safeSetState(() {
+          safeSetStateWrapper(() {
             _msg = "player.playback_error".tr();
             _isLoading = false;
             onComplete?.call(_msg);
@@ -200,7 +200,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         await newController.initialize();
 
         _playerNotifier.value = newController;
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _msg = '';
         });
         _playerNotifier.value?.setVolume(1.0);
@@ -211,12 +211,12 @@ class _PlayerScreenState extends State<PlayerScreen>
       }
     } catch (e) {
       _logger.e("fetchPlayUrl error: $e");
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _msg = "player.playback_error".tr();
         onComplete?.call(_msg);
       });
     } finally {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _isLoading = false;
       });
     }
@@ -256,7 +256,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   Future<void> _loadPlaybackHistory() async {
     final history = HiveUtil.getUserPlaybacks(id: widget.subject.id);
     if (history.isNotEmpty) {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _episodeIndex = history.first.episodeIndex;
         _lineIndex = history.first.lineIndex;
         _historyPosition = history.first.position;
@@ -359,7 +359,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           }
         },
       );
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _danmakuList = data;
       });
       double score = 0;
@@ -388,7 +388,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     }
     var remainder = _episodeIndex.remainder(_episode.length);
     if (remainder >= (_bestDanmakuSourceMatch?.episodes?.length ?? 0)) {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _isDanmakuLoading = false;
         onComplete?.call(
           "${_bestDanmakuSourceMatch?.animeTitle ?? ""} - ${"player.danmaku_not_exist".tr()}",
@@ -408,7 +408,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         }
       },
     );
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isDanmakuLoading = false;
       _dammaku = danmu;
       onComplete?.call("player.danmaku_loaded".tr());
@@ -1003,7 +1003,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               leading: IconButton(
                 onPressed: () {
                   //  _logger.d('current offset:${setting.danmakuOffset}');
-                  safeSetState(() {
+                  safeSetStateWrapper(() {
                     _danmakuOffset--;
                   });
                   onSettingChanged?.call(
@@ -1015,7 +1015,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               // 调整弹幕偏移量+1
               trailing: IconButton(
                 onPressed: () {
-                  safeSetState(() {
+                  safeSetStateWrapper(() {
                     _danmakuOffset++;
                   });
                   onSettingChanged?.call(
@@ -1184,7 +1184,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     } else if (_isSettingDrawerOpen) {
       return _buildSettingDrawer(
         setting: _setting,
-        onSettingChanged: (s) => safeSetState(() {
+        onSettingChanged: (s) => safeSetStateWrapper(() {
           _setting = s;
         }),
       );

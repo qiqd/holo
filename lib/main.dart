@@ -15,6 +15,7 @@ import 'package:holo/entity/user_setting.dart';
 import 'package:holo/service/api_service.dart';
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/screen/appearance_screen.dart';
+import 'package:holo/ui/screen/empty_screen.dart';
 import 'package:holo/ui/screen/image_search_screen.dart';
 import 'package:holo/ui/screen/logger_screen.dart';
 import 'package:holo/ui/screen/player_screen.dart';
@@ -95,7 +96,7 @@ void main() async {
       //  fallback语言
       fallbackLocale: Locale('zh', 'CN'),
       // 应用主组件
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }

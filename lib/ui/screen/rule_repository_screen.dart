@@ -22,7 +22,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
   bool _isLoading = false;
   late List<Rule> _localRules = [];
   Future<void> _getRules() async {
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isLoading = true;
     });
     _localRules = HiveUtil.getRules();
@@ -35,7 +35,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
         }
       },
     );
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _rules = r;
       _rules.sort(
         (a, b) => a.isValid == b.isValid
@@ -60,7 +60,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
         onPressed: isValid
             ? () async {
                 await _saveRule(newRule);
-                safeSetState(() {
+                safeSetStateWrapper(() {
                   _localRules = HiveUtil.getRules();
                 });
               }

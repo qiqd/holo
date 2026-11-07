@@ -73,7 +73,7 @@ class _DetailScreenState extends State<DetailScreen>
   void _loadPlaybackHistory(int id) async {
     if (widget.subject != null) {
       final temp = HiveUtil.getUserPlaybacks(id: widget.subject!.id);
-      safeSetState(() => _userPlayback = temp.first);
+      safeSetStateWrapper(() => _userPlayback = temp.first);
     }
   }
 
@@ -82,18 +82,18 @@ class _DetailScreenState extends State<DetailScreen>
 
     if (subject == null) {
       final res = await ApiService.bangumi.fetchAnimeInfoById(widget.id, (e) {
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _msg = e.toString();
         });
       });
       if (res != null) {
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _subject = res;
         });
         HiveUtil.setAnimeInfo(res);
       }
     } else {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _subject = subject;
       });
     }
@@ -102,7 +102,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   Future<void> _fetchMedia() async {
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isLoading = true;
       _isCompleted = false;
     });
@@ -132,7 +132,7 @@ class _DetailScreenState extends State<DetailScreen>
             tempSource.getName() == _userPlayback!.sourceName) {
           defaultMedia = tempMedia;
           defaultSource = tempSource;
-          safeSetState(() {
+          safeSetStateWrapper(() {
             _isLoading = false;
           });
         }
@@ -142,7 +142,7 @@ class _DetailScreenState extends State<DetailScreen>
         if (tempMedia != null && tempSource != null) {
           defaultMedia = tempMedia;
           defaultSource = tempSource;
-          safeSetState(() {
+          safeSetStateWrapper(() {
             _isLoading = false;
           });
         }
@@ -156,7 +156,7 @@ class _DetailScreenState extends State<DetailScreen>
     }
     final keys = _source2Media.keys.toList();
     keys.sort((a, b) => b.delay.compareTo(a.delay));
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _sourceService = keys;
       _isLoading = false;
       _isCompleted = true;
@@ -165,22 +165,22 @@ class _DetailScreenState extends State<DetailScreen>
 
   Future<void> _fetchPerson() async {
     final res = await ApiService.bangumi.fetchStaffs(widget.id, (e) {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _msg = e.toString();
       });
     });
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _person = res;
     });
   }
 
   Future<void> _fetchCharacter() async {
     final res = await ApiService.bangumi.fetchCharacters(widget.id, (e) {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _msg = e.toString();
       });
     });
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _character = res;
     });
   }
@@ -191,7 +191,7 @@ class _DetailScreenState extends State<DetailScreen>
         _msg = e.toString();
       });
     });
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _relation = res;
     });
   }
@@ -203,7 +203,7 @@ class _DetailScreenState extends State<DetailScreen>
 
     final subs = HiveUtil.getUserSubscribes(id: _subject!.id.toInt());
     if (subs.isNotEmpty) {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         isSubscribed = true;
         _viewingStatus = subs.first.viewingStatus;
         _userSubscribe = subs.first;

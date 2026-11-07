@@ -25,7 +25,7 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
     if (_isLoading) {
       return;
     }
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isLoading = true;
       _searchResult = null;
       _subject = [];
@@ -48,11 +48,11 @@ class _ImageSearchScreenState extends State<ImageSearchScreen> {
           SnackBar(content: Text(tr('image_search.subject_search_error'))),
         );
       });
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _subject = res;
       });
     }
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _searchResult = result;
       _isLoading = false;
     });

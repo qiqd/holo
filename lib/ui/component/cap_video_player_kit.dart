@@ -109,14 +109,14 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
 
   @override
   void onWindowEnterFullScreen() {
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isSystemFullScreen = true;
     });
   }
 
   @override
   void onWindowLeaveFullScreen() {
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isSystemFullScreen = false;
     });
   }
@@ -126,7 +126,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
     // log("showVideoControlsTimer");
     _videoControlsTimer?.cancel();
     _videoControlsTimer = Timer(Duration(seconds: 5), () {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _showVideoControls = false;
       });
     });
@@ -136,7 +136,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
   void _updateToastShowModeTimer() {
     _volumeAndBrightnessToastTimer?.cancel();
     _volumeAndBrightnessToastTimer = Timer(Duration(seconds: 1), () {
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _toastShowMode = 0;
       });
     });
@@ -163,7 +163,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
     await ScreenBrightness.instance.setApplicationScreenBrightness(
       newBrightness,
     );
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _currentBrightness = newBrightness * 100;
     });
   }
@@ -186,7 +186,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
       vol = vol - 0.01;
     }
     vol = vol.clamp(0, 1);
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _currentVolume = vol;
     });
     await VolumeController.instance.setVolume(vol);
@@ -197,7 +197,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
     if (_isLock) {
       return;
     }
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _toastShowMode = 3;
       if (direction == SwipeDirection.left) {
         _dragOffset -= 1;
@@ -283,7 +283,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
         _focusNode.requestFocus();
       }
       if (updateStateEverySecond) {
-        safeSetState(() {});
+        safeSetStateWrapper(() {});
       }
       if (_danmuController == null ||
           widget.isLoading ||
@@ -378,7 +378,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
         Duration(seconds: player.value.position.inSeconds + _dragOffset),
       );
       await player?.play();
-      safeSetState(() {
+      safeSetStateWrapper(() {
         _dragOffset = 0;
         _toastShowMode = 0;
       });
@@ -430,7 +430,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
       var player = widget.playerNotifier.value;
       //  _logger.w('player is null? ${player == null}');
       if (player == null) {
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _bufferProgress = 0.0;
         });
         return;
@@ -445,7 +445,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
         }
         widget.onPositionChanged?.call(player.value.position);
         widget.onPlayOrPause?.call(player.value.isPlaying);
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _bufferProgress = _getBuffered();
         });
       });
@@ -603,7 +603,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
       opacity: _showVideoControls ? 1 : 0,
       duration: const Duration(milliseconds: 100),
       child: Padding(
-        padding: widget.isFullScreen && (Platform.isAndroid || Platform.isIOS)
+        padding: widget.isFullScreen
             ? EdgeInsets.only(left: widget.safeInset)
             : EdgeInsets.zero,
         child: Align(
@@ -614,7 +614,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
                 ? 'cap_video_player.unlock'.tr()
                 : 'cap_video_player.lock'.tr(),
             onPressed: () {
-              safeSetState(() {
+              safeSetStateWrapper(() {
                 _isLock = !_isLock;
               });
             },
@@ -749,7 +749,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
                   horizontalThreshold: 5,
                   swipeDetectionBehavior: SwipeDetectionBehavior.continuous,
                 ),
-                onTap: () => safeSetState(() {
+                onTap: () => safeSetStateWrapper(() {
                   _showVideoControlsTimer();
                   _showVideoControls = !_showVideoControls;
                 }),
@@ -954,7 +954,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
                     tooltip: 'cap_video_player.danmaku_switch'.tr(),
                     color: Colors.white,
                     onPressed: () {
-                      safeSetState(() {
+                      safeSetStateWrapper(() {
                         _showDanmaku = !_showDanmaku;
                       });
                       _showVideoControlsTimer();
@@ -1060,11 +1060,11 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
             height: double.infinity,
             child: MouseRegion(
               opaque: false,
-              onHover: (event) => safeSetState(() {
+              onHover: (event) => safeSetStateWrapper(() {
                 _showVideoControls = true;
                 _showVideoControlsTimer();
               }),
-              onExit: (event) => safeSetState(() {
+              onExit: (event) => safeSetStateWrapper(() {
                 _showVideoControls = false;
               }),
               child: const SizedBox.expand(),
@@ -1122,7 +1122,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
     if (_isDesktop) {
       windowManager.addListener(this);
       windowManager.isFullScreen().then((full) {
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _isSystemFullScreen = full;
         });
       });
@@ -1150,7 +1150,7 @@ class _CapVideoPlayerKitState extends State<CapVideoPlayerKit>
   @override
   void didChangeDependencies() {
     _showVideoControlsTimer();
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isLandscape =
           MediaQuery.of(context).orientation == Orientation.landscape;
     });

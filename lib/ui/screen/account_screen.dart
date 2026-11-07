@@ -36,7 +36,7 @@ class _AccountScreenState extends State<AccountScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isLoading = true;
     });
     final success = await WebDAV.login(
@@ -82,7 +82,7 @@ class _AccountScreenState extends State<AccountScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text("sign.verify_failed".tr())));
     }
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isLoading = false;
     });
   }

@@ -63,7 +63,7 @@ class _SubscribeScreenState extends State<SubscribeScreen>
   void _loadHistory() {
     final playbackHistory = HiveUtil.getUserPlaybacks();
     final subscribeHistory = HiveUtil.getUserSubscribes();
-    safeSetState(() {
+    safeSetStateWrapper(() {
       playback = playbackHistory;
       subscribe = subscribeHistory;
       playback.sort((a, b) => b.lastPlaybackAt.compareTo(a.lastPlaybackAt));

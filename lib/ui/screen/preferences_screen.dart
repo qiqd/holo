@@ -82,6 +82,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.symmetric(vertical: 16),
         title: Text('preference.theme_dialog_title'.tr()),
         content: StatefulBuilder(
           builder: (context, setState) {

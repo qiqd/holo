@@ -34,7 +34,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
             FilledButton(
               onPressed: () {
                 LoggerUtil.clearLog();
-                safeSetState(() {
+                safeSetStateWrapper(() {
                   _logLines = [];
                 });
                 Navigator.of(context).pop(true);
@@ -48,12 +48,12 @@ class _LoggerScreenState extends State<LoggerScreen> {
   }
 
   Future<void> _getLog() async {
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isLoading = true;
     });
     final logString = await LoggerUtil.getLog();
     _logLines = logString.split("\n");
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _isLoading = false;
     });
   }

@@ -46,13 +46,13 @@ class _HomeScreenState extends State<HomeScreen> {
       page: _page,
       size: 20,
       exceptionHandler: (e) {
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _logger.e("home->fetch hot error: $e");
           _msg = context.tr("common.load_failed");
         });
       },
     );
-    safeSetState(() {
+    safeSetStateWrapper(() {
       _hotNotifier.value = hot;
     });
     await HiveUtil.setHotAnimeInfo(_hotNotifier.value);
@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchRank({int page = 1, bool loadMore = false}) async {
     if (_isLoading) return;
-    safeSetState(() => _isLoading = true);
+    safeSetStateWrapper(() => _isLoading = true);
 
     final rank = await ApiService.bangumi.fetchRecommend(
       sort: "rank",
@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ? 30
           : 10,
       exceptionHandler: (e) {
-        safeSetState(() {
+        safeSetStateWrapper(() {
           _logger.e("home->fetch rank error: $e");
           _msg = context.tr("common.load_failed");
           _isLoading = false;
@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
 
-    safeSetState(() {
+    safeSetStateWrapper(() {
       if (loadMore) {
         _rank.addAll(rank);
       } else {
@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     await HiveUtil.setHiScoreAnimeInfo(_rank);
-    safeSetState(() => _isLoading = false);
+    safeSetStateWrapper(() => _isLoading = false);
   }
 
   void _onScrollToBottom() {
