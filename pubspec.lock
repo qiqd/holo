@@ -710,13 +710,13 @@ packages:
     source: hosted
     version: "3.1.1"
   image_picker_ios:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: image_picker_ios
-      sha256: b8f508306db2bf71141aba2de4ec13456338bf01e13f034bd2594f341a5f8eb2
+      sha256: "592e5cfed81d73c2784bcaa04db9d06b19371faf036f2afa7f650452025db180"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.8.13+14"
+    version: "0.8.13+12"
   image_picker_linux:
     dependency: transitive
     description:
