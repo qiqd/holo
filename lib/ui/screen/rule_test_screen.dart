@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_safe_setstate/flutter_safe_setstate.dart';
 import 'package:holo/entity/media.dart' as media;
 import 'package:holo/service/source_service.dart';
 import 'package:holo/ui/component/media_grid.dart';
@@ -46,6 +47,9 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         _mediaList = search;
       });
       if (hasError) {
+        safeSetState(() {
+          _isloading = false;
+        });
         return;
       }
       var detail = await widget.source.fetchDetail(_mediaList[0].id!, (e) {
@@ -63,6 +67,9 @@ class _RuleTestScreenState extends State<RuleTestScreen> {
         _detail = detail;
       });
       if (hasError || detail == null || detail.lines!.isEmpty) {
+        safeSetState(() {
+          _isloading = false;
+        });
         return;
       }
       var url = await widget.source.fetchVideoUrl(

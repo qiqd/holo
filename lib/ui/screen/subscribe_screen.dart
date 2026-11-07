@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_safe_setstate/flutter_safe_setstate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
 import 'package:holo/entity/anime_info.dart';
 import 'package:holo/entity/user_playback.dart';
 import 'package:holo/entity/user_subscribe.dart';
-import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/main.dart';
 import 'package:holo/util/hive_util.dart';
 import 'package:holo/ui/component/loading_msg.dart';

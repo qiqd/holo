@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_safe_setstate/flutter_safe_setstate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/entity/anime_info.dart';
-import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/main.dart';
 import 'package:holo/service/api_service.dart';
 import 'package:holo/ui/component/media_grid.dart';

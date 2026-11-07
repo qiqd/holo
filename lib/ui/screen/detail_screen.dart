@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_safe_setstate/flutter_safe_setstate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:holo/api/web_dav.dart';
 import 'package:holo/entity/anime_info.dart';
@@ -24,7 +25,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:holo/util/uri_util.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:holo/extension/safe_set_state_extension.dart';
 
 class DetailScreen extends StatefulWidget {
   final int id;

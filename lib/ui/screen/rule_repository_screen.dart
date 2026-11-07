@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_safe_setstate/flutter_safe_setstate.dart';
 import 'package:holo/api/rule_api.dart';
 import 'package:holo/entity/rule.dart';
-import 'package:holo/extension/safe_set_state_extension.dart';
 import 'package:holo/service/api_service.dart';
 import 'package:holo/util/hive_util.dart';
 
@@ -20,7 +20,7 @@ class _RuleRepositoryState extends State<RuleRepository> {
       GlobalKey<RefreshIndicatorState>();
   List<Rule> _rules = [];
   bool _isLoading = false;
-  late List<Rule> _localRules;
+  late List<Rule> _localRules = [];
   Future<void> _getRules() async {
     safeSetState(() {
       _isLoading = true;
@@ -52,15 +52,14 @@ class _RuleRepositoryState extends State<RuleRepository> {
     await HiveUtil.setRule(rule);
   }
 
-  Widget _buildTileTrailing(Rule rule, bool isEnabled) {
-    if (_localRules.any(
-          (e) => double.parse(e.version) < double.parse(rule.version),
-        ) ||
-        !_localRules.any((e) => e.name == rule.name)) {
+  Widget _buildTileTrailing(Rule newRule, bool isValid) {
+    var rules = _localRules.where((e) => e.name == newRule.name).toList();
+    if (rules.isEmpty ||
+        double.parse(rules.first.version) < double.parse(newRule.version)) {
       return IconButton(
-        onPressed: isEnabled
+        onPressed: isValid
             ? () async {
-                await _saveRule(rule);
+                await _saveRule(newRule);
                 safeSetState(() {
                   _localRules = HiveUtil.getRules();
                 });

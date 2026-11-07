@@ -196,8 +196,11 @@ class CommonSourceService extends SourceService {
     void Function(String) exceptionHandler,
   ) async {
     try {
+      final tempUrl = rule.detailUrl.replaceAll(reg, mediaId);
       // 构建详情页URL
-      var detailUrl = rule.baseUrl + rule.detailUrl.replaceAll(reg, mediaId);
+      var detailUrl = tempUrl.startsWith("http")
+          ? tempUrl
+          : getBaseUrl() + tempUrl;
       // 获取HTML内容
       final htmlStr = switch (rule.useWebView) {
         true => await webviewUtil!.fetchHtmlOrJson(

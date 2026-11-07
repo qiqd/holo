@@ -40,7 +40,6 @@ class FlutterInappwebviewUtil {
   /// 返回解码后的字符串
   String unescapeUnicodeString(String input) {
     String result = input;
-
     result = result.replaceAllMapped(RegExp(r'\\{1,2}u([0-9a-fA-F]{4})'), (
       Match match,
     ) {
@@ -76,6 +75,11 @@ class FlutterInappwebviewUtil {
       log('HTML解析失败: $e');
       return false;
     }
+  }
+
+  /// 执行 JavaScript 脚本
+  Future<dynamic> executeJavaScript(String script) async {
+    return _webViewController?.evaluateJavascript(source: script);
   }
 
   /// 获取网页 HTML 内容或执行 JS 脚本返回 JSON
